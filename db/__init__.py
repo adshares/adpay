@@ -1,3 +1,5 @@
+from adpay.db import const as db_const
+
 from txmongo import filter
 import txmongo
 
@@ -31,8 +33,7 @@ MONGO_CONNECTION = None
 def get_mongo_connection():
     global MONGO_CONNECTION
     if MONGO_CONNECTION is None:
-        print "Starting lazy connection"
-        MONGO_CONNECTION = txmongo.lazyMongoConnectionPool()
+        MONGO_CONNECTION = txmongo.lazyMongoConnectionPool(port=db_const.MONGO_DB_PORT)
     return MONGO_CONNECTION
 
 
