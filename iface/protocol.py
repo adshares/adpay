@@ -40,8 +40,8 @@ class PaymentsRequest(jsonobject.JsonObject):
 
 
 class SinglePaymentResponse(jsonobject.JsonObject):
-    event_id = jsonobject.StringProperty()
-    amount = jsonobject.StringProperty()
+    event_id = jsonobject.IntegerProperty()
+    amount = jsonobject.FloatProperty()
 
 
 class PaymentsResponse(jsonobject.JsonObject):

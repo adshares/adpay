@@ -1,5 +1,6 @@
 from twisted.internet import defer
 from adpay.db import utils as db_utils
+from adpay.iface import protocol as iface_proto
 
 
 @defer.inlineCallbacks
@@ -30,4 +31,7 @@ def add_event(eventobj):
 
 
 def get_payments(payreq):
-    pass
+    payments = []
+    for event_id, amount in [(122, 33), (122, 2333)]:
+        payments.append(iface_proto.SinglePaymentResponse(event_id=event_id, amount = amount))
+    return iface_proto.PaymentsResponse(payments=payments)
