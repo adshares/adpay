@@ -27,8 +27,8 @@ class CamapaignObject(jsonobject.JsonObject):
 
 
 class EventObject(jsonobject.JsonObject):
-    #TODO: timestamp for recalculating?
     event_id = jsonobject.StringProperty()
+    timestamp = jsonobject.IntegerProperty()
     banner_id = jsonobject.StringProperty()
     keywords = jsonobject.DictProperty()
     publisher_id = jsonobject.StringProperty()
@@ -40,7 +40,7 @@ class PaymentsRequest(jsonobject.JsonObject):
 
 
 class SinglePaymentResponse(jsonobject.JsonObject):
-    event_id = jsonobject.IntegerProperty()
+    event_id = jsonobject.StringProperty()
     amount = jsonobject.FloatProperty()
 
 

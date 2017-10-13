@@ -10,15 +10,20 @@ def configure_db():
     campaign_idx = filter.sort(filter.ASCENDING("campaign_id"))
     banner_idx = filter.sort(filter.ASCENDING("banner_id"))
     timestamp_idx = filter.sort(filter.ASCENDING("timestamp"))
+    event_idx = filter.sort(filter.ASCENDING("event_id"))
 
-    #Campaign collection
+    #Campaign indexes
     get_campaign_collection().create_index(campaign_idx, unique=True)
 
-    #Banner collection
+    #Banner indexes
     get_banner_collection().create_index(banner_idx, unique=True)
 
-    #Stats collection
+    #Timestamp indexes
     get_campaign_collection().create_index(timestamp_idx, unique=True)
+    get_event_collection().create_index(timestamp_idx)
+
+    #Event indexes
+    get_event_collection().create_index(event_idx, unique=True)
 
 
 def get_mongo_db():
@@ -35,6 +40,10 @@ def get_campaign_collection():
 
 def get_banner_collection():
     return get_mongo_db().banners
+
+
+def get_event_collection():
+    return get_mongo_db().events
 
 
 MONGO_CONNECTION = None

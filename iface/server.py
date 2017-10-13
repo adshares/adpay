@@ -21,7 +21,7 @@ class AdPayIfaceServer(JSONRPCServer):
         return True
 
     #events interface
-    def jsonrpc_event_add(self, *event_data_list):
+    def jsonrpc_add_events(self, *event_data_list):
         for event_data in event_data_list:
             iface_utils.add_event(iface_proto.EventObject(event_data))
         return True
@@ -31,8 +31,14 @@ class AdPayIfaceServer(JSONRPCServer):
         """
             Return payments for events from 1hour started from timestamp.
         """
-        return iface_utils.get_payments(iface_proto.PaymentsRequest(req_data)).to_json()
 
+        def to_json(request):
+            print request
+            return request.to_json()
+
+        request = iface_utils.get_payments(iface_proto.PaymentsRequest(req_data))
+        request.addCallback(to_json)
+        return request
 
 def configure_iface(port = iface_config.SERVER_PORT):
     site = Site(AdPayIfaceServer())

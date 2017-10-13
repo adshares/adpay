@@ -26,12 +26,18 @@ def delete_campaign(campaign_id):
     yield db_utils.delete_campaign_banners(campaign_id)
 
 
+@defer.inlineCallbacks
 def add_event(eventobj):
-    pass
+    yield db_utils.update_event(eventobj.to_json())
 
 
+@defer.inlineCallbacks
 def get_payments(payreq):
-    payments = []
-    for event_id, amount in [(122, 33), (122, 2333)]:
-        payments.append(iface_proto.SinglePaymentResponse(event_id=event_id, amount = amount))
-    return iface_proto.PaymentsResponse(payments=payments)
+    payments = yield db_utils.get_payments(payreq.timestamp)
+    if not payments:
+        defer.returnValue(iface_proto.PaymentsResponse())
+
+    events_payments = []
+    for event_id, amount in payments['events'].items():
+        events_payments.append(iface_proto.SinglePaymentResponse(event_id=event_id, amount = amount))
+    defer.returnValue(iface_proto.PaymentsResponse(payments=events_payments))
