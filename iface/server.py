@@ -22,13 +22,16 @@ class AdPayIfaceServer(JSONRPCServer):
 
     #events interface
     def jsonrpc_event_add(self, *event_data_list):
-        pass
+        for event_data in event_data_list:
+            iface_utils.add_event(iface_proto.EventObject(event_data))
+        return True
 
     #payment interface
-    def jsonrpc_get_payemnts(self, timestamp):
+    def jsonrpc_get_payemnts(self, req_data):
         """
             Return payments for events from 1hour started from timestamp.
         """
+        return iface_utils.get_payments(iface_proto.PaymentsRequest(req_data))
 
 
 def configure_iface(port = iface_config.SERVER_PORT):
