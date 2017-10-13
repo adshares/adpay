@@ -10,7 +10,7 @@ log.startLogging(sys.stdout)
 
 
 if __name__ == "__main__":
-    #db.configure_db()
+    db.configure_db()
     iface_server.configure_iface()
     stats_tasks.configure_tasks()
     reactor.run()

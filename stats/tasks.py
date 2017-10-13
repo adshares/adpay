@@ -4,7 +4,7 @@ def recalculate_payments():
     print "recalculating payments"
 
 
-def recalculate_payments_task(interval_seconds=60*60):
+def recalculate_payments_task(interval_seconds=10):
     #Recalculate payments every hour.
     reactor.callLater(interval_seconds, recalculate_payments)
 

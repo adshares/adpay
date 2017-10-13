@@ -14,6 +14,25 @@ def update_campaign(campaign_doc):
 def delete_campaign(campaign_id):
     return db.get_campaign_collection().delete_many({'campaign_id':campaign_id})
 
+#########################
+##### BANNERS ###########
+#########################
+
+def get_banners_iter():
+    return db.get_banner_collection().find(cursor=True)
+
+
+def get_banner(banner_id):
+    return db.get_banner_collection().find_one({'banner_id':banner_id})
+
+
+def update_banner(banner_doc):
+    return db.get_banner_collection().replace_one({'banner_id':banner_doc['banner_id']},
+                                                  banner_doc, upsert=True)
+
+def delete_campaign_banners(campaign_id):
+    return db.get_banner_collection().delete_many({'campaign_id':campaign_id})
+
 
 ########################
 ####   STATS    ########
