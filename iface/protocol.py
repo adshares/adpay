@@ -27,6 +27,7 @@ class CamapaignObject(jsonobject.JsonObject):
 
 
 class EventObject(jsonobject.JsonObject):
+    #TODO: timestamp for recalculating?
     event_id = jsonobject.StringProperty()
     banner_id = jsonobject.StringProperty()
     keywords = jsonobject.DictProperty()
