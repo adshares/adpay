@@ -1,0 +1,3 @@
+Twisted==17.5.0
+jsonobject==0.7.1
+fastjsonrpc==0.3.0

@@ -1,0 +1,1 @@
+rsync -zarv --exclude=".git/" --include "*/" --include "*.py" --include "*.conf" --exclude "TODO.txt" --include "*.txt"  --exclude '*' --delete /Users/kuchtak/work/virtuals/adpay/adpay/ adshares@adshares:/home/adshares/adpay/adpay/
