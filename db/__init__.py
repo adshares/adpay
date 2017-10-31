@@ -1,4 +1,4 @@
-from adpay.db import const as db_const
+from adpay.db import consts as db_const
 
 from txmongo import filter
 import txmongo

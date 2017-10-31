@@ -5,7 +5,7 @@ from fastjsonrpc.server import JSONRPCServer
 
 from adpay.iface import config as iface_config
 from adpay.iface import utils as iface_utils
-from adpay.iface import protocol as iface_proto
+from adpay.iface import proto as iface_proto
 
 
 class AdPayIfaceServer(JSONRPCServer):
@@ -33,12 +33,12 @@ class AdPayIfaceServer(JSONRPCServer):
         """
 
         def to_json(request):
-            print request
             return request.to_json()
 
         request = iface_utils.get_payments(iface_proto.PaymentsRequest(req_data))
         request.addCallback(to_json)
         return request
+
 
 def configure_iface(port = iface_config.SERVER_PORT):
     site = Site(AdPayIfaceServer())
