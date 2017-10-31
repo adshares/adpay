@@ -1,6 +1,48 @@
 from twisted.internet import defer, reactor
 
 from adpay.db import utils as db_utils
+from adpay.stats import utils as stats_utils
+
+
+"""
+USER_VALUES = {
+    'campaign_id':{
+        'user_id1':{'payment':payment1, 'credibility':credibility1},
+        'user_id2':{'payment':payment2, 'credibility':credibility2}
+    }
+}
+"""
+USER_VALUES = {}
+
+
+def iter_user_values_uids(campaign_id):
+    return USER_VALUES.get(campaign_id, {}).iterkeys()
+
+
+def get_user_value_stat(campaign_id, uid):
+    return USER_VALUES.get(campaign_id, {}).get(uid, {})
+
+
+def get_user_payment_score(campaign_id, user_id, amount=5):
+    # Find most similar users to user_id
+    users = []
+    for uid in iter_user_values_uids(campaign_id):
+        similarity = stats_utils.get_users_similarity(uid, user_id)
+        stats_utils.reverse_insort(users, (similarity, uid))
+        users = users[:amount]
+
+    # Calculate payment score for user
+    score_components = []
+    for similarity, uid in users:
+        user_stat = get_user_value_stat(campaign_id, uid)
+        if user_stat:
+            score_components.append(user_stat['payment']*user_stat['credibility'])
+
+    if not score_components:
+        return 0
+
+    return 1.0*sum(score_components)/len(score_components)
+
 
 @defer.inlineCallbacks
 def recalculate_payments():
