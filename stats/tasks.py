@@ -5,7 +5,7 @@ from adpay.db import utils as db_utils
 @defer.inlineCallbacks
 def recalculate_payments():
     #TODO: guess which timestamp was last time calculated
-    #TODO: get hourly campaign budgets
+    #TODO: get max payments per event
     #TODO: limit events only from selected timestamp period
 
     last_timestamp = 1234

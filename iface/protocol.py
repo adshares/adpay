@@ -24,15 +24,21 @@ class CamapaignObject(jsonobject.JsonObject):
     filters = jsonobject.ObjectProperty(RequireExcludeListObject)
     keywords = jsonobject.DictProperty()
     banners = jsonobject.ListProperty(BannerObject)
+    max_cpc = jsonobject.FloatProperty()        # max cost per click
+    max_cpv = jsonobject.FloatProperty()        # max cost per view
+    budget = jsonobject.FloatProperty()         # hourly budget
 
 
 class EventObject(jsonobject.JsonObject):
     event_id = jsonobject.StringProperty()
+    event_type = jsonobject.StringProperty()    # define either event is click, view or conversion
+    user_id = jsonobject.StringProperty()
+    publisher_id = jsonobject.StringProperty()
     timestamp = jsonobject.IntegerProperty()
     banner_id = jsonobject.StringProperty()
-    keywords = jsonobject.DictProperty()
-    publisher_id = jsonobject.StringProperty()
-    user_id = jsonobject.StringProperty()
+    our_keywords = jsonobject.DictProperty()        # adshares keywords
+    their_keywords = jsonobject.DictProperty()      # publisher keywords
+    max_conv = jsonobject.FloatProperty()           # max price for vonversion
 
 
 class PaymentsRequest(jsonobject.JsonObject):
