@@ -1,3 +1,4 @@
+from adpay.db import consts as db_consts
 import random
 
 
@@ -36,3 +37,14 @@ def reverse_insort(a, x, lo=0, hi=None):
         if x > a[mid]: hi = mid
         else: lo = mid+1
     a.insert(lo, x)
+
+
+def get_event_max_payment(event_doc, max_cpc, max_cpv):
+    event_type, event_payment = event_doc['event_type'], 0
+    if event_type == db_consts.EVENT_TYPE_CONVERSION:
+        event_payment = event_doc['paid_amount']
+    elif event_type == db_consts.EVENT_TYPE_CLICK:
+        event_payment = max_cpc
+    elif event_type == db_consts.EVENT_TYPE_VIEW:
+        event_payment = max_cpv
+    return event_payment
