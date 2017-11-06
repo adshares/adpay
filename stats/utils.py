@@ -1,6 +1,7 @@
 from twisted.internet import defer
 
 from adpay.stats import cache as stats_cache
+from adpay.stats import consts as stats_consts
 from adpay.db import consts as db_consts
 from adpay.db import utils as db_utils
 
@@ -20,13 +21,27 @@ def get_user_credibility(user_id):
     return random.random()
 
 
+@defer.inlineCallbacks
+def get_user_profile_keywords(user_id):
+    user_profile_doc = yield db_utils.get_user_profile(user_id)
+    if not user_profile_doc:
+        defer.returnValue(None)
+
+    defer.returnValue(user_profile_doc['profile'].keys())
+
+
+@defer.inlineCallbacks
 def get_users_similarity(user1_id, user2_id):
     """
-        Return user similarity value [0, 1] from aduser.
+        Return user similarity value [0, 1] taking into account keywords similarity.
         1 - user1 is recognised as user2
         0 - user1 and user2 are completely different.
     """
-    return random.random()
+    user1_profile_keywords = yield get_user_profile_keywords(user1_id)
+    user2_profile_keywords = yield get_user_profile_keywords(user2_id)
+
+    common_keyowrds = len(set(user1_profile_keywords) & set(user2_profile_keywords))
+    defer.returnValue(1.0*common_keyowrds/stats_consts.MAX_USER_KEYWORDS_IN_PROFILE)
 
 
 def reverse_insort(a, x, lo=0, hi=None):

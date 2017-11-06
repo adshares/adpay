@@ -114,7 +114,18 @@ def update_user_keyword_frequency(user_id, keyword, frequency):
     pass
 
 
-# User keywords profile
+# User keywords profiles (user_id, keyword_score_dict e.g. {'keyword1':score1, 'keyword2':score2, ...})
+def get_user_profile(user_id):
+    pass
+
+
+def update_user_profile(user_id, profile_dict):
+    pass
+
+
+def delete_user_profiles():
+    # Remove all user profiles
+    pass
 
 
 
