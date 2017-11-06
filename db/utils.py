@@ -106,11 +106,20 @@ def get_user_keyword_frequency(user_id, keyword):
     return []
 
 
-def delete_user_keyword_frequency(_id):
+def get_user_keyword_frequency_iter(user_id):
     pass
 
 
 def update_user_keyword_frequency(user_id, keyword, frequency):
+    pass
+
+
+def get_user_keyword_frequency_distinct_userid_iter():
+    # Return distinct user id
+    pass
+
+
+def delete_user_keyword_frequency(_id):
     pass
 
 
@@ -138,6 +147,10 @@ def get_no_updated_keyword_frequency_iter():
     pass
 
 
+def update_keyword_frequency(keyword, frequency, updated):
+    pass
+
+
 def get_keyword_frequency(keyword):
     pass
 
@@ -145,9 +158,6 @@ def get_keyword_frequency(keyword):
 def delete_keyword_frequency(_id):
     pass
 
-
-def update_keyword_frequency(keyword, frequency, updated):
-    pass
 
 
 

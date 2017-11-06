@@ -175,6 +175,8 @@ def update_keywords_stats(recalculate_per_views=1000, cutoff=0.00001, deckay=0.0
             continue
 
         yield db_utils.update_keyword_frequency(keyword, new_freq, updated=True)
+    stats_cache.reset_keywords_stats()
+    stats_cache.reset_views_stats()
 
     for keyword_doc in db_utils.get_no_updated_keyword_frequency_iter():
         keyword = keyword_doc['keyword']
@@ -205,5 +207,29 @@ def update_user_keywords_stats(user_id, user_keyword, user_val, cutoff = 0.001, 
 
 
 @defer.inlineCallbacks
-def update_user_keywords_profiles():
-    pass
+def update_user_keywords_profiles(global_freq_cutoff=0.1):
+    # Remove old keywords
+    yield db_utils.delete_user_profiles()
+
+
+    # Create new user profiles based on keyword user frequency.
+    for user_id in db_utils.get_user_keyword_frequency_distinct_userid_iter():
+        user_profile_keywords = []
+
+        for user_keyword_doc in db_utils.get_user_keyword_frequency_iter(user_id):
+            keyword = user_keyword_doc['keyword']
+
+            global_keyword_doc = db_utils.get_keyword_frequency(keyword)
+            if global_keyword_doc is None:
+                continue
+
+            # Take only that keywords which global frequency is equal or less than 0.1.
+            if global_keyword_doc and global_keyword_doc['frequency']>global_freq_cutoff:
+                continue
+
+            keyword_score = 1.0*user_keyword_doc['frequency']/(0.01 + global_keyword_doc['frequency'])
+
+            reverse_insort(user_profile_keywords, (keyword_score, keyword))
+            user_profile_keywords = user_profile_keywords[:stats_consts.MAX_USER_KEYWORDS_IN_PROFILE]
+
+        yield db_utils.update_user_profile(user_id, dict([(elem[1], elem[0]) for elem in user_profile_keywords]))
