@@ -1,5 +1,15 @@
+from twisted.internet import defer
+
+from adpay.stats import cache as stats_cache
 from adpay.db import consts as db_consts
+from adpay.db import utils as db_utils
+
 import random
+
+
+def genkey(key, val, delimiter="_"):
+    keywal = "%s%s%s" % (key, delimiter, val)
+    return keywal.replace(".", "")
 
 
 def get_user_credibility(user_id):
@@ -48,3 +58,137 @@ def get_event_max_payment(event_doc, max_cpc, max_cpv):
     elif event_type == db_consts.EVENT_TYPE_VIEW:
         event_payment = max_cpv
     return event_payment
+
+
+def get_user_payment_score(campaign_id, timestamp, user_id, amount=5):
+    # To calculate user value take user values from the previous hour
+    previous_hour = timestamp - 3600
+
+    # Find most similar users to user_id
+    users = []
+    for uid in db_utils.user_value_uids_iter(campaign_id, previous_hour):
+        similarity = get_users_similarity(uid, user_id)
+        reverse_insort(users, (similarity, uid))
+        users = users[:amount]
+
+    # Calculate payment score for user
+    score_components = []
+    for similarity, uid in users:
+        user_stat = db_utils.get_user_value(campaign_id, previous_hour, uid)
+        if user_stat:
+            score_components.append(user_stat['payment']*user_stat['credibility'])
+
+    if not score_components:
+        return 0
+
+    return 1.0*sum(score_components)/len(score_components)
+
+
+@defer.inlineCallbacks
+def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=0.5):
+    campaign_doc = db_utils.get_campaign(campaign_id)
+    if campaign_doc is None:
+        return
+
+    campaign_budget = campaign_doc['budget']
+    campaign_cpc = campaign_doc['max_cpc']
+    campaign_cpv = campaign_doc['max_cpv']
+
+    # Saving payment scores for users.
+    total_users = 0
+    for uid in db_utils.get_events_distinct_uids_iter(campaign_id, timestamp):
+        payment_score = get_user_payment_score(uid)
+        db_utils.update_user_score(campaign_id, timestamp, uid, payment_score)
+        total_users +=1
+
+    # Limit paid users to given payment_percentage_cutoff
+    limit = total_users*payment_percentage_cutoff
+
+    total_score = 0
+    for user_score_doc in db_utils.get_sorted_user_score_iter(campaign_id, timestamp, limit=limit):
+        total_score+= user_score_doc['score']
+
+    for user_score_doc in db_utils.get_sorted_user_score_iter(campaign_id, timestamp, limit=limit):
+        uid = user_score_doc['uid']
+
+        # Calculate event payments
+        user_budget = 1.0*user_score_doc['score']*campaign_budget/total_score
+
+        max_user_payment, max_human_score, total_user_payments = 0, 0, 0
+        for event_doc in db_utils.get_user_events_iter(campaign_id, timestamp, uid):
+            event_payment = get_event_max_payment(event_doc, campaign_cpc, campaign_cpv)
+
+            total_user_payments += event_payment
+            max_user_payment = max([max_user_payment, event_payment])
+            max_human_score = max([max_human_score, event_doc['human_score']])
+
+
+        for event_doc in db_utils.get_user_events_iter(campaign_id, timestamp, uid):
+            event_id = event_doc['event_id']
+            event_payment = get_event_max_payment(event_doc, campaign_cpc, campaign_cpv)
+
+            event_budget = user_budget*event_payment/total_user_payments
+            yield db_utils.update_event_payment(campaign_id, timestamp, event_id, event_budget)
+
+
+        # Update User Values
+        yield db_utils.update_user_value(campaign_id, timestamp, uid, max_user_payment, max_human_score)
+
+    # Delete user scores
+    yield db_utils.delete_user_scores(campaign_id, timestamp)
+
+
+@defer.inlineCallbacks
+def update_keywords_stats(recalculate_per_views=1000, cutoff=0.00001, deckay=0.01):
+    def calculate_frequency(old_freq, new_views_count):
+        return old_freq*(1-deckay) + new_views_count*1.0/recalculate_per_views
+
+    # Recalculate only every 1000 events.
+    if stats_cache.get_views_stats() % recalculate_per_views:
+        return
+
+    for keyword, views_counts in stats_cache.get_keyword_stats_iter():
+        keyword_doc = yield db_utils.get_keyword_frequency(keyword)
+
+        old_freq = 0
+        if keyword_doc:
+            old_freq = keyword_doc['frequency']
+
+        new_freq = calculate_frequency(old_freq, views_counts)
+        if new_freq <= cutoff and keyword_doc:
+            yield db_utils.delete_keyword_frequency(keyword_doc['_id'])
+            continue
+
+        yield db_utils.update_keyword_frequency(keyword, new_freq, updated=True)
+
+    for keyword_doc in db_utils.get_no_updated_keyword_frequency_iter():
+        keyword = keyword_doc['keyword']
+        new_freq = calculate_frequency(keyword_doc['frequency'], 0)
+        if new_freq < cutoff:
+            yield db_utils.delete_keyword_frequency(keyword_doc['_id'])
+            continue
+
+        yield db_utils.update_keyword_frequency(keyword, new_freq)
+
+    yield db_utils.set_keyword_frequency_updated_flag(False)
+
+
+@defer.inlineCallbacks
+def update_user_keywords_stats(user_id, user_keyword, user_val, cutoff = 0.001, deckay=0.01):
+    keyword = genkey(user_keyword, user_val)
+
+    user_keyword_doc = yield db_utils.get_user_keyword_frequency(user_id, keyword)
+    frequency = deckay + user_keyword_doc['frequency']*(1-deckay)
+
+    if frequency <= cutoff:
+        # Delete keyword stats for user keyword.
+        yield db_utils.delete_user_keyword_frequency(user_keyword_doc['_id'])
+    else:
+
+        # Update user keyword stats.
+        yield db_utils.update_user_keyword_frequency(user_id, keyword, frequency)
+
+
+@defer.inlineCallbacks
+def update_user_keywords_profiles():
+    pass

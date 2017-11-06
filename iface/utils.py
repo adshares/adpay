@@ -4,6 +4,8 @@ from adpay.db import consts as db_consts
 from adpay.db import utils as db_utils
 from adpay.iface import proto as iface_proto
 from adpay.iface import filters as iface_filters
+from adpay.stats import utils as stats_utils
+from adpay.stats import cache as stats_cache
 
 
 @defer.inlineCallbacks
@@ -31,6 +33,8 @@ def delete_campaign(campaign_id):
 
 @defer.inlineCallbacks
 def add_event(eventobj):
+    from adpay.stats import cache as stats_cache
+
     # We do not take into account events without user_id
     if not eventobj.user_id:
         defer.returnValue(None)
@@ -53,6 +57,18 @@ def add_event(eventobj):
         defer.returnValue(None)
 
     inserted = yield db_utils.update_event(eventobj.to_json())
+
+    # Update global keywords cache and user keyword stats.
+    stats_cache.views_inc()
+    for user_keyword, user_val in eventobj.our_keywords.items():
+        keyword = stats_utils.genkey(user_keyword, user_val)
+        stats_cache.keyword_inc(keyword)
+
+        yield stats_utils.update_user_keywords_stats(eventobj.user_id, keyword)
+
+    # Update global keywords stats.
+    yield stats_utils.update_keywords_stats()
+
     defer.returnValue(inserted)
 
 

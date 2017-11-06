@@ -33,6 +33,7 @@ class EventObject(jsonobject.JsonObject):
     event_id = jsonobject.StringProperty()
     event_type = jsonobject.StringProperty()    # define either event is click, view or conversion
     user_id = jsonobject.StringProperty()
+    human_score = jsonobject.IntegerProperty()  # determine if user is bot (value = 0) or human (value = 1)
     publisher_id = jsonobject.StringProperty()
     timestamp = jsonobject.IntegerProperty()
     banner_id = jsonobject.StringProperty()
