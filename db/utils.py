@@ -53,6 +53,10 @@ def get_campaign(campaign_id):
     return db.get_campaign_collection().find_one({'campaign_id':campaign_id})
 
 
+def get_campaign_iter():
+    return query_iterator(db.get_campaign_collection().find(cursor=True))
+
+
 def update_campaign(campaign_id, time_start, time_end, max_cpc, max_cpv, budget, filters):
     return db.get_campaign_collection().replace_one({'campaign_id':campaign_id},{
         'campaign_id':campaign_id,
@@ -140,6 +144,10 @@ def get_payment_round(timestamp):
 
 def update_payment_round(timestamp):
     return db.get_payment_rounds_collection().replace_one({'timestamp':timestamp}, {'timestamp':timestamp}, upsert=True)
+
+
+def get_last_round():
+    return None
 
 
 # User Values (Columns: campaign_id, timestamp, uid, payment, credibility)

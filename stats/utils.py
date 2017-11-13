@@ -247,7 +247,6 @@ def update_user_keywords_profiles(global_freq_cutoff=0.1):
     # Remove old keywords
     yield db_utils.delete_user_profiles()
 
-
     # Create new user profiles based on keyword user frequency.
     user_keyword_frequency_distinct_userid_iter = db_utils.get_user_keyword_frequency_distinct_userid_iter()
     while True:
