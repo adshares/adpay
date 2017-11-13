@@ -5,7 +5,6 @@ from adpay.db import utils as db_utils
 from adpay.iface import proto as iface_proto
 from adpay.iface import filters as iface_filters
 from adpay.stats import utils as stats_utils
-from adpay.stats import cache as stats_cache
 
 
 @defer.inlineCallbacks
@@ -13,13 +12,13 @@ def create_or_update_campaign(cmpobj):
     # Save changes only to database
 
     yield db_utils.update_campaign(
-        cmpobj.campaign_id,
-        cmpobj.time_start,
-        cmpobj.time_end,
-        cmpobj.max_cpc,
-        cmpobj.max_cpv,
-        cmpobj.budget,
-        cmpobj.to_json()['filters']
+        campaign_id=cmpobj.campaign_id,
+        time_start=cmpobj.time_start,
+        time_end=cmpobj.time_end,
+        max_cpc=cmpobj.max_cpc,
+        max_cpv=cmpobj.max_cpv,
+        budget=cmpobj.budget,
+        filters=cmpobj.to_json()['filters']
     )
 
     # Delete previous banners
@@ -27,21 +26,23 @@ def create_or_update_campaign(cmpobj):
 
     # Update banners for campaign
     for banner in cmpobj.banners:
-        yield  db_utils.update_banner(banner.banner_id, cmpobj.campaign_id)
+        yield db_utils.update_banner(banner.banner_id, cmpobj.campaign_id)
 
 
 @defer.inlineCallbacks
 def delete_campaign(campaign_id):
-    # Save changes only to database
-    yield db_utils.delete_campaign(campaign_id)
+    # Delete campaign banners
     yield db_utils.delete_campaign_banners(campaign_id)
+
+    # Delete campaign object
+    yield db_utils.delete_campaign(campaign_id)
 
 
 @defer.inlineCallbacks
 def add_event(eventobj):
     from adpay.stats import cache as stats_cache
 
-    # We do not take into account events without user_id
+    # Do not take into account events without user_id
     if not eventobj.user_id:
         defer.returnValue(None)
 
@@ -62,7 +63,16 @@ def add_event(eventobj):
     if not iface_filters.validate_filters(campaign_doc['filters'], eventobj.our_keywords):
         defer.returnValue(None)
 
-    inserted = yield db_utils.update_event(eventobj.to_json())
+    inserted = yield db_utils.update_event(
+        event_id = eventobj.event_id,
+        event_type = eventobj.event_type,
+        timestamp = eventobj.timestamp,
+        user_id = eventobj.user_id,
+        banner_id = eventobj.banner_id,
+        paid_amount = eventobj.paid_amount,
+        keywords = eventobj.to_json()['our_keywords'],
+        human_score = eventobj.human_score
+    )
 
     # Update global keywords cache and user keyword stats.
     stats_cache.views_inc()
@@ -80,11 +90,21 @@ def add_event(eventobj):
 
 @defer.inlineCallbacks
 def get_payments(payreq):
-    payments = yield db_utils.get_payments(payreq.timestamp)
-    if not payments:
+    events_payments = []
+
+    _iter = db_utils.get_payments_iter(payreq.timestamp)
+    while True:
+        payment_doc = yield _iter.next()
+        if not payment_doc:
+            break
+
+        events_payments.append(
+            iface_proto.SinglePaymentResponse(
+                event_id=payment_doc['event_id'],
+                amount=payment_doc['payment']
+            ))
+
+    if not events_payments:
         defer.returnValue(iface_proto.PaymentsResponse())
 
-    events_payments = []
-    for event_id, amount in payments['events'].items():
-        events_payments.append(iface_proto.SinglePaymentResponse(event_id=event_id, amount = amount))
     defer.returnValue(iface_proto.PaymentsResponse(payments=events_payments))

@@ -156,16 +156,16 @@ def delete_user_scores(campaign_id, timestamp):
 
 
 # Event payments
-def get_payments(campaign_id, timestamp, event_id):
-    # TODO
-    return db.get_payment_stat_collection().find_one({'timestamp': timestamp})
+def get_payments_iter(timestamp):
+    return query_iterator(db.get_payment_stat_collection().find_one({'timestamp': timestamp}, cursor = True))
 
 
-def update_event_payment(campaign_id, timestamp, event_id, payment):
-    # TODO
-    return db.get_payment_stat_collection().replace_one({'timestamp':timestamp}, {
+def update_event_payment(campaign_id, timestamp, event_id, event_payment):
+    return db.get_payment_stat_collection().replace_one({'timestamp':timestamp, 'event_id':event_id}, {
         'timestamp':timestamp,
-        'events':payment
+        'event_id':event_id,
+        'payment':event_payment,
+        'campaign_id':campaign_id
     }, upsert=True)
 
 

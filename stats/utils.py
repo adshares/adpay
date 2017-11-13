@@ -142,8 +142,8 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
             event_id = event_doc['event_id']
             event_payment = get_event_max_payment(event_doc, campaign_cpc, campaign_cpv)
 
-            event_budget = user_budget*event_payment/total_user_payments
-            yield db_utils.update_event_payment(campaign_id, timestamp, event_id, event_budget)
+            event_payment = user_budget*event_payment/total_user_payments
+            yield db_utils.update_event_payment(campaign_id, timestamp, event_id, event_payment)
 
 
         # Update User Values
