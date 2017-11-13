@@ -1,4 +1,52 @@
+from twisted.internet import defer
 from adpay import db
+
+
+class query_iterator(object):
+    """
+        Every query with cursor = True can be iterated with simple way:
+
+        _iter = query_iterator(query)
+
+        while True:
+            elem = yield _iter.next()
+
+            if elem is None:
+                break
+
+            print "elem", elem
+    """
+
+    def __init__(self, query):
+        self.query = query
+
+        self.docs, self.dfr = None, None
+        self.docs_index = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        return self.next()
+
+    @defer.inlineCallbacks
+    def next(self):
+        if self.docs is None:
+            self.docs, self.dfr = yield self.query
+
+        if not self.docs:
+            defer.returnValue(None)
+
+        if self.docs_index >= len(self.docs):
+            self.docs, self.dfr = yield self.dfr
+            self.docs_index = 0
+            value = yield self.next()
+            defer.returnValue(value)
+
+        value = self.docs[self.docs_index]
+        self.docs_index +=1
+        defer.returnValue(value)
+
 
 # Campaigns
 def get_campaign(campaign_id):
@@ -19,6 +67,26 @@ def update_campaign(campaign_id, time_start, time_end, max_cpc, max_cpv, budget,
 
 def delete_campaign(campaign_id):
     return db.get_campaign_collection().delete_many({'campaign_id':campaign_id})
+
+
+# Banners
+def get_banner(banner_id):
+    return db.get_banner_collection().find_one({'banner_id':banner_id})
+
+
+def get_banners_iter():
+    return query_iterator(db.get_banner_collection().find(cursor=True))
+
+
+def update_banner(banner_id, campaign_id):
+    return db.get_banner_collection().replace_one({'banner_id':banner_id},{
+        'banner_id':banner_id,
+        'campaign_id':campaign_id
+    }, upsert = True)
+
+
+def delete_campaign_banners(campaign_id):
+    return db.get_banner_collection().delete_many({'campaign_id':campaign_id})
 
 
 # Events
@@ -115,7 +183,7 @@ def update_user_keyword_frequency(user_id, keyword, frequency):
 
 
 def get_user_keyword_frequency_distinct_userid_iter():
-    # Return distinct user id
+    # Return distinct user id.
     pass
 
 
@@ -137,7 +205,6 @@ def delete_user_profiles():
     pass
 
 
-
 # Keywords views (keyword, frequency, updated=False)
 def set_keyword_frequency_updated_flag(updated):
     pass
@@ -157,7 +224,3 @@ def get_keyword_frequency(keyword):
 
 def delete_keyword_frequency(_id):
     pass
-
-
-
-

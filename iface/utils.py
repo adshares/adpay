@@ -11,17 +11,23 @@ from adpay.stats import cache as stats_cache
 @defer.inlineCallbacks
 def create_or_update_campaign(cmpobj):
     # Save changes only to database
-    campaign_doc = cmpobj.to_json()
-    del campaign_doc['banners']
-    yield db_utils.update_campaign(campaign_doc)
+
+    yield db_utils.update_campaign(
+        cmpobj.campaign_id,
+        cmpobj.time_start,
+        cmpobj.time_end,
+        cmpobj.max_cpc,
+        cmpobj.max_cpv,
+        cmpobj.budget,
+        cmpobj.to_json()['filters']
+    )
 
     # Delete previous banners
     yield db_utils.delete_campaign_banners(cmpobj.campaign_id)
 
+    # Update banners for campaign
     for banner in cmpobj.banners:
-        banner_doc = banner.to_json()
-        banner_doc['campaign_id'] = cmpobj.campaign_id
-        yield db_utils.update_banner(banner_doc)
+        yield  db_utils.update_banner(banner.banner_id, cmpobj.campaign_id)
 
 
 @defer.inlineCallbacks
