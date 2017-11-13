@@ -34,6 +34,10 @@ def get_payment_stat_collection():
     return get_mongo_db().payments
 
 
+def get_payment_rounds_collection():
+    return get_mongo_db().payments_rounds
+
+
 def get_campaign_collection():
     return get_mongo_db().campaign
 

@@ -75,13 +75,19 @@ def get_event_max_payment(event_doc, max_cpc, max_cpv):
     return event_payment
 
 
+@defer.inlineCallbacks
 def get_user_payment_score(campaign_id, timestamp, user_id, amount=5):
     # To calculate user value take user values from the previous hour
     previous_hour = timestamp - 3600
 
     # Find most similar users to user_id
     users = []
-    for uid in db_utils.user_value_uids_iter(campaign_id, previous_hour):
+    user_value_uids_iter = db_utils.user_value_uids_iter(campaign_id, previous_hour)
+    while True:
+        uid = yield user_value_uids_iter.next()
+        if uid is None:
+            break
+
         similarity = get_users_similarity(uid, user_id)
         reverse_insort(users, (similarity, uid))
         users = users[:amount]
@@ -89,19 +95,19 @@ def get_user_payment_score(campaign_id, timestamp, user_id, amount=5):
     # Calculate payment score for user
     score_components = []
     for similarity, uid in users:
-        user_stat = db_utils.get_user_value(campaign_id, previous_hour, uid)
+        user_stat = yield db_utils.get_user_value(campaign_id, previous_hour, uid)
         if user_stat:
             score_components.append(user_stat['payment']*user_stat['credibility'])
 
     if not score_components:
-        return 0
+        defer.returnValue(0)
 
-    return 1.0*sum(score_components)/len(score_components)
+    defer.returnValue(1.0*sum(score_components)/len(score_components))
 
 
 @defer.inlineCallbacks
 def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=0.5):
-    campaign_doc = db_utils.get_campaign(campaign_id)
+    campaign_doc = yield db_utils.get_campaign(campaign_id)
     if campaign_doc is None:
         return
 
@@ -111,34 +117,59 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
 
     # Saving payment scores for users.
     total_users = 0
-    for uid in db_utils.get_events_distinct_uids_iter(campaign_id, timestamp):
-        payment_score = get_user_payment_score(uid)
-        db_utils.update_user_score(campaign_id, timestamp, uid, payment_score)
+    uids_iter = db_utils.get_events_distinct_uids_iter(campaign_id, timestamp)
+    while True:
+        uid = uids_iter.next()
+        if uid is None:
+            break
+
+        payment_score = yield get_user_payment_score(uid)
+        yield db_utils.update_user_score(campaign_id, timestamp, uid, payment_score)
         total_users +=1
 
     # Limit paid users to given payment_percentage_cutoff
     limit = total_users*payment_percentage_cutoff
 
     total_score = 0
-    for user_score_doc in db_utils.get_sorted_user_score_iter(campaign_id, timestamp, limit=limit):
+    user_score_iter = db_utils.get_sorted_user_score_iter(campaign_id, timestamp, limit=limit)
+    while True:
+        user_score_doc = yield user_score_iter.next()
+        if not user_score_doc:
+            break
+
         total_score+= user_score_doc['score']
 
-    for user_score_doc in db_utils.get_sorted_user_score_iter(campaign_id, timestamp, limit=limit):
+    user_score_iter = db_utils.get_sorted_user_score_iter(campaign_id, timestamp, limit=limit)
+    while True:
+        user_score_doc = yield user_score_iter.next()
+        if not user_score_doc:
+            break
+
         uid = user_score_doc['uid']
 
         # Calculate event payments
         user_budget = 1.0*user_score_doc['score']*campaign_budget/total_score
 
         max_user_payment, max_human_score, total_user_payments = 0, 0, 0
-        for event_doc in db_utils.get_user_events_iter(campaign_id, timestamp, uid):
+
+        user_events_iter = db_utils.get_user_events_iter(campaign_id, timestamp, uid)
+        while True:
+            event_doc = yield user_events_iter.next()
+            if not event_doc:
+                break
+
             event_payment = get_event_max_payment(event_doc, campaign_cpc, campaign_cpv)
 
             total_user_payments += event_payment
             max_user_payment = max([max_user_payment, event_payment])
             max_human_score = max([max_human_score, event_doc['human_score']])
 
+        user_events_iter = db_utils.get_user_events_iter(campaign_id, timestamp, uid)
+        while True:
+            event_doc = yield user_events_iter.next()
+            if event_doc is None:
+                break
 
-        for event_doc in db_utils.get_user_events_iter(campaign_id, timestamp, uid):
             event_id = event_doc['event_id']
             event_payment = get_event_max_payment(event_doc, campaign_cpc, campaign_cpv)
 
@@ -178,7 +209,12 @@ def update_keywords_stats(recalculate_per_views=1000, cutoff=0.00001, deckay=0.0
     stats_cache.reset_keywords_stats()
     stats_cache.reset_views_stats()
 
-    for keyword_doc in db_utils.get_no_updated_keyword_frequency_iter():
+    no_updated_keyword_frequency_ite = db_utils.get_no_updated_keyword_frequency_iter()
+    while True:
+        keyword_doc = yield no_updated_keyword_frequency_ite.next()
+        if keyword_doc is None:
+            break
+
         keyword = keyword_doc['keyword']
         new_freq = calculate_frequency(keyword_doc['frequency'], 0)
         if new_freq < cutoff:
@@ -213,13 +249,23 @@ def update_user_keywords_profiles(global_freq_cutoff=0.1):
 
 
     # Create new user profiles based on keyword user frequency.
-    for user_id in db_utils.get_user_keyword_frequency_distinct_userid_iter():
+    user_keyword_frequency_distinct_userid_iter = db_utils.get_user_keyword_frequency_distinct_userid_iter()
+    while True:
+        user_id = yield user_keyword_frequency_distinct_userid_iter.next()
+        if user_id is None:
+            break
+
         user_profile_keywords = []
 
-        for user_keyword_doc in db_utils.get_user_keyword_frequency_iter(user_id):
+        user_keyword_frequency_iter = db_utils.get_user_keyword_frequency_iter(user_id)
+        while True:
+            user_keyword_doc = yield user_keyword_frequency_iter.next()
+            if user_keyword_doc is None:
+                break
+
             keyword = user_keyword_doc['keyword']
 
-            global_keyword_doc = db_utils.get_keyword_frequency(keyword)
+            global_keyword_doc = yield db_utils.get_keyword_frequency(keyword)
             if global_keyword_doc is None:
                 continue
 

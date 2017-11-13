@@ -92,6 +92,12 @@ def add_event(eventobj):
 def get_payments(payreq):
     events_payments = []
 
+    # Check if payments calculation is done
+    round_doc = yield db_utils.get_payment_round(payreq.timestamp)
+    if not round_doc:
+        defer.returnValue(iface_proto.PaymentsResponse())
+
+    # Collect events and theirs payment and respond to request
     _iter = db_utils.get_payments_iter(payreq.timestamp)
     while True:
         payment_doc = yield _iter.next()
@@ -103,8 +109,5 @@ def get_payments(payreq):
                 event_id=payment_doc['event_id'],
                 amount=payment_doc['payment']
             ))
-
-    if not events_payments:
-        defer.returnValue(iface_proto.PaymentsResponse())
 
     defer.returnValue(iface_proto.PaymentsResponse(payments=events_payments))

@@ -91,7 +91,7 @@ def delete_campaign_banners(campaign_id):
 
 # Events
 def get_user_events_iter(campaign_id, timestamp, uid):
-    return db.get_event_collection().find(cursor=True)
+    return query_iterator(db.get_event_collection().find(cursor=True))
 
 
 def update_event(event_id, event_type, timestamp, user_id, banner_id, paid_amount, keywords, human_score):
@@ -110,18 +110,43 @@ def update_event(event_id, event_type, timestamp, user_id, banner_id, paid_amoun
 def get_events_distinct_uids_iter(campaign_id, timestamp):
     # Return list of distinct users ids for the given campaign and within [timestamp, timestamp+1hour) period.
     #TODO
-    return []
+    return query_iterator([])
 
 
 def delete_event(event_id):
     return db.get_banner_collection().delete_many({'event_id':event_id})
 
 
+# Event payments
+def get_payments_iter(timestamp):
+    return query_iterator(db.get_payment_stat_collection().find({'timestamp': timestamp}, cursor=True))
+
+
+def update_event_payment(campaign_id, timestamp, event_id, event_payment):
+    return db.get_payment_stat_collection().replace_one({'timestamp':timestamp, 'event_id':event_id}, {
+        'timestamp':timestamp,
+        'event_id':event_id,
+        'payment':event_payment,
+        'campaign_id':campaign_id
+    }, upsert=True)
+
+
+# Calculated payments rounds
+def get_payment_round(timestamp):
+    return db.get_payment_rounds_collection().find_one({
+        'timestamp':timestamp
+    })
+
+
+def update_payment_round(timestamp):
+    return db.get_payment_rounds_collection().replace_one({'timestamp':timestamp}, {'timestamp':timestamp}, upsert=True)
+
+
 # User Values (Columns: campaign_id, timestamp, uid, payment, credibility)
 def user_value_uids_iter(campaign_id, timestamp):
     # Return uids from user values for the given campaign and within [timestamp-1hour, timestamp) period.
     # TODO
-    return ['uid1', 'uid2']
+    return query_iterator(['uid1', 'uid2'])
 
 
 def get_user_value(campaign_id, timestamp, uid):
@@ -143,7 +168,7 @@ def update_user_value(campaign_id, timestamp, uid, payment, human_score):
 def get_sorted_user_score_iter(campaign_id, timestamp, limit):
     # Return descending by score sorted list of uids limited to limit.
     # TODO
-    return []
+    return query_iterator([])
 
 
 def update_user_score(campaign_id, timestamp, uid, score):
@@ -155,27 +180,13 @@ def delete_user_scores(campaign_id, timestamp):
     pass
 
 
-# Event payments
-def get_payments_iter(timestamp):
-    return query_iterator(db.get_payment_stat_collection().find_one({'timestamp': timestamp}, cursor = True))
-
-
-def update_event_payment(campaign_id, timestamp, event_id, event_payment):
-    return db.get_payment_stat_collection().replace_one({'timestamp':timestamp, 'event_id':event_id}, {
-        'timestamp':timestamp,
-        'event_id':event_id,
-        'payment':event_payment,
-        'campaign_id':campaign_id
-    }, upsert=True)
-
-
 # User keywords frequency (user_id, keyword, frequency)
 def get_user_keyword_frequency(user_id, keyword):
     return []
 
 
 def get_user_keyword_frequency_iter(user_id):
-    pass
+    return query_iterator([])
 
 
 def update_user_keyword_frequency(user_id, keyword, frequency):
@@ -184,7 +195,7 @@ def update_user_keyword_frequency(user_id, keyword, frequency):
 
 def get_user_keyword_frequency_distinct_userid_iter():
     # Return distinct user id.
-    pass
+    return query_iterator([])
 
 
 def delete_user_keyword_frequency(_id):
