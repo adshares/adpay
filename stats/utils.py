@@ -8,6 +8,10 @@ from adpay.db import utils as db_utils
 import random
 
 
+def timestamp2hour(timestamp):
+    return stats_consts.SECONDS_PER_HOUR*timestamp/stats_consts.SECONDS_PER_HOUR
+
+
 def genkey(key, val, delimiter="_"):
     keywal = "%s%s%s" % (key, delimiter, val)
     return keywal.replace(".", "")
@@ -82,12 +86,13 @@ def get_user_payment_score(campaign_id, timestamp, user_id, amount=5):
 
     # Find most similar users to user_id
     users = []
-    user_value_uids_iter = db_utils.user_value_uids_iter(campaign_id, previous_hour)
+    user_value_iter = db_utils.get_user_value_iter(campaign_id, previous_hour)
     while True:
-        uid = yield user_value_uids_iter.next()
-        if uid is None:
+        user_value = yield user_value_iter.next()
+        if user_value is None:
             break
 
+        uid = user_value['user_id']
         similarity = get_users_similarity(uid, user_id)
         reverse_insort(users, (similarity, uid))
         users = users[:amount]

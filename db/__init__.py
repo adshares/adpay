@@ -30,7 +30,7 @@ def get_mongo_db():
     return get_mongo_connection().spotree
 
 
-def get_payment_stat_collection():
+def get_payment_collection():
     return get_mongo_db().payments
 
 
@@ -48,6 +48,27 @@ def get_banner_collection():
 
 def get_event_collection():
     return get_mongo_db().events
+
+
+def get_user_value_collection():
+    return get_mongo_db().user_values
+
+
+def get_user_score_collection():
+    return get_mongo_db().user_scores
+
+
+def get_user_keyword_frequency_collection():
+    return get_mongo_db().user_keyword_frequency
+
+
+def get_user_profile_collection():
+    return get_mongo_db().user_profile
+
+
+def get_keyword_frequency_collection():
+    return get_mongo_db().keyword_frequency
+
 
 
 MONGO_CONNECTION = None

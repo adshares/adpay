@@ -1,4 +1,5 @@
 from twisted.internet import defer
+from txmongo import filter as txfilter
 from adpay import db
 
 
@@ -113,8 +114,12 @@ def update_event(event_id, event_type, timestamp, user_id, banner_id, paid_amoun
 
 def get_events_distinct_uids_iter(campaign_id, timestamp):
     # Return list of distinct users ids for the given campaign and within [timestamp, timestamp+1hour) period.
-    #TODO
-    return query_iterator([])
+    return query_iterator(
+        db.get_event_collection().distinct(
+            key='user_id',
+            filter = {'timestamp':timestamp, 'campaign_id':campaign_id},
+            cursor=True)
+    )
 
 
 def delete_event(event_id):
@@ -123,11 +128,11 @@ def delete_event(event_id):
 
 # Event payments
 def get_payments_iter(timestamp):
-    return query_iterator(db.get_payment_stat_collection().find({'timestamp': timestamp}, cursor=True))
+    return query_iterator(db.get_payment_collection().find({'timestamp': timestamp}, cursor=True))
 
 
 def update_event_payment(campaign_id, timestamp, event_id, event_payment):
-    return db.get_payment_stat_collection().replace_one({'timestamp':timestamp, 'event_id':event_id}, {
+    return db.get_payment_collection().replace_one({'timestamp':timestamp, 'event_id':event_id}, {
         'timestamp':timestamp,
         'event_id':event_id,
         'payment':event_payment,
@@ -147,99 +152,131 @@ def update_payment_round(timestamp):
 
 
 def get_last_round():
-    return None
+    sort_filter = txfilter.sort(txfilter.DESCENDING("timestamp"))
+    return db.get_payment_rounds_collection().find_one(sort=sort_filter)
 
 
-# User Values (Columns: campaign_id, timestamp, uid, payment, credibility)
-def user_value_uids_iter(campaign_id, timestamp):
-    # Return uids from user values for the given campaign and within [timestamp-1hour, timestamp) period.
-    # TODO
-    return query_iterator(['uid1', 'uid2'])
+# User Values (Columns: campaign_id, timestamp, user_id, payment, credibility)
+def get_user_value_iter(campaign_id, timestamp):
+    return query_iterator(db.get_user_value_collection().find({'campaign_id':campaign_id, 'timestamp':timestamp}))
 
 
-def get_user_value(campaign_id, timestamp, uid):
-    # Return user value doc for the given campaign and within [timestamp-1hour, timestamp) period.
-    # TODO
-    return {'timestamp': timestamp,
-            'campaign_id': campaign_id,
-            'uid': uid,
-            'payment': 0,
-            'credibility': 0}
+def get_user_value(campaign_id, timestamp, user_id):
+    return db.get_user_value_collection().find_one({
+        'campaign_id':campaign_id,
+        'timestamp':timestamp,
+        'user_id':user_id
+    })
+
+def update_user_value(campaign_id, timestamp, user_id, payment, human_score):
+    return db.get_user_value_collection().replace_one({
+        'campaign_id':campaign_id,
+        'timestamp':timestamp,
+        'user_id':user_id
+    },{
+        'campaign_id': campaign_id,
+        'timestamp': timestamp,
+        'user_id': user_id,
+        'payment':payment,
+        'human_score':human_score
+    }, upsert=True)
 
 
-def update_user_value(campaign_id, timestamp, uid, payment, human_score):
-    # TODO
-    pass
-
-
-# User scores (Columns: campaign_id, timestamp, uid, score)
+# User scores (Columns: campaign_id, timestamp, user_id, score)
 def get_sorted_user_score_iter(campaign_id, timestamp, limit):
-    # Return descending by score sorted list of uids limited to limit.
-    # TODO
-    return query_iterator([])
+    # Return descending by score sorted list of  to limit.
+    return query_iterator(db.get_user_score_collection().find({
+        'campaign_id':campaign_id, 'timestamp':timestamp
+    }, sort=txfilter.sort(txfilter.DESCENDING("score")), limit=limit))
 
 
-def update_user_score(campaign_id, timestamp, uid, score):
-    # TODO
-    pass
+def update_user_score(campaign_id, timestamp, user_id, score):
+    return db.get_user_score_collection().replace_one({
+        'campaign_id':campaign_id,
+        'timestamp':timestamp,
+        'user_id':user_id
+    },{
+        'campaign_id': campaign_id,
+        'timestamp': timestamp,
+        'user_id': user_id,
+        'score':score
+    }, upsert=True)
 
 
 def delete_user_scores(campaign_id, timestamp):
-    pass
+    return db.get_user_score_collection().delete_many({'campaign_id':campaign_id, 'timestamp':timestamp})
 
 
 # User keywords frequency (user_id, keyword, frequency)
 def get_user_keyword_frequency(user_id, keyword):
-    return []
+    return db.get_user_keyword_frequency_collection().find_one({'keyword':keyword, 'user_id':user_id})
 
 
 def get_user_keyword_frequency_iter(user_id):
-    return query_iterator([])
+    return query_iterator(db.get_user_keyword_frequency_collection().find({'user_id':user_id}, cursor=True))
 
 
 def update_user_keyword_frequency(user_id, keyword, frequency):
-    pass
+    return db.get_user_keyword_frequency_collection().replace_one({
+        'keyword': keyword,
+        'user_id': user_id
+    },{
+        'keyword': keyword,
+        'user_id': user_id,
+        'frequency':frequency
+    }, upsert=True)
 
 
 def get_user_keyword_frequency_distinct_userid_iter():
     # Return distinct user id.
-    return query_iterator([])
+    return query_iterator(db.get_user_keyword_frequency_collection().distinct(key='user_id', cursor=True))
 
 
 def delete_user_keyword_frequency(_id):
-    pass
+    return db.get_user_keyword_frequency_collection().delete_one({'_id':_id})
 
 
 # User keywords profiles (user_id, keyword_score_dict e.g. {'keyword1':score1, 'keyword2':score2, ...})
 def get_user_profile(user_id):
-    pass
+    return db.get_user_profile_collection().find_one({'user_id':user_id})
 
 
 def update_user_profile(user_id, profile_dict):
-    pass
+    return db.get_user_profile_collection().replace_one({
+        'user_id':user_id
+    },{
+        'user_id':user_id,
+        'profile':profile_dict
+    }, upsert=True)
 
 
 def delete_user_profiles():
     # Remove all user profiles
-    pass
+    return db.get_user_profile_collection().delete_many()
 
 
 # Keywords views (keyword, frequency, updated=False)
 def set_keyword_frequency_updated_flag(updated):
-    pass
+    return db.get_keyword_frequency_collection().update({}, {"$set": {"updated": updated}}, safe=True)
 
 
 def get_no_updated_keyword_frequency_iter():
-    pass
+    return query_iterator(db.get_keyword_frequency_collection().find({'updated':False}, cursor=True))
 
 
 def update_keyword_frequency(keyword, frequency, updated):
-    pass
+    return db.get_keyword_frequency_collection().replace_one({
+        'keyword':keyword
+    },{
+        'keyword': keyword,
+        'frequency':frequency,
+        'updated':updated
+    }, upsert = True)
 
 
 def get_keyword_frequency(keyword):
-    pass
+    return db.get_keyword_frequency_collection().find_one({'keyword':keyword})
 
 
 def delete_keyword_frequency(_id):
-    pass
+    return db.get_keyword_frequency_collection().delete_many()

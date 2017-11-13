@@ -31,7 +31,7 @@ def calculate_payments():
 
 
     # Determine which timestamp should be calculated
-    current_round = stats_consts.SECONDS_PER_HOUR*(int(time.time())/stats_consts.SECONDS_PER_HOUR)
+    current_round = stats_utils.timestamp2hour(int(time.time()))
     last_round_timestamp = current_round - stats_consts.SECONDS_PER_HOUR
 
     # If last calculated timesamp round find in database, replace last_round_timestamp

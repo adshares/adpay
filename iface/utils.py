@@ -66,7 +66,7 @@ def add_event(eventobj):
     inserted = yield db_utils.update_event(
         event_id = eventobj.event_id,
         event_type = eventobj.event_type,
-        timestamp = eventobj.timestamp,
+        timestamp = stats_utils.timestamp2hour(int(eventobj.timestamp)),
         user_id = eventobj.user_id,
         banner_id = eventobj.banner_id,
         paid_amount = eventobj.paid_amount,
