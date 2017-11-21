@@ -50,16 +50,23 @@ class query_iterator(object):
 
 
 # Campaigns
+@defer.inlineCallbacks
 def get_campaign(campaign_id):
-    return db.get_campaign_collection().find_one({'campaign_id':campaign_id})
+    collection = yield db.get_campaign_collection()
+    return_value = yield collection.find_one({'campaign_id':campaign_id})
+    defer.returnValue(return_value)
 
 
+@defer.inlineCallbacks
 def get_campaign_iter():
-    return query_iterator(db.get_campaign_collection().find(cursor=True))
+    collection = yield db.get_campaign_collection()
+    defer.returnValue(query_iterator(collection.find(cursor=True)))
 
 
+@defer.inlineCallbacks
 def update_campaign(campaign_id, time_start, time_end, max_cpc, max_cpv, budget, filters):
-    return db.get_campaign_collection().replace_one({'campaign_id':campaign_id},{
+    collection = yield db.get_campaign_collection()
+    return_value = yield collection.replace_one({'campaign_id':campaign_id},{
         'campaign_id':campaign_id,
         'time_start':time_start,
         'time_end':time_end,
@@ -69,9 +76,14 @@ def update_campaign(campaign_id, time_start, time_end, max_cpc, max_cpv, budget,
         'filters':filters
     }, upsert=True)
 
+    defer.returnValue(return_value)
 
+
+@defer.inlineCallbacks
 def delete_campaign(campaign_id):
-    return db.get_campaign_collection().delete_many({'campaign_id':campaign_id})
+    collection = yield db.get_campaign_collection()
+    return_value = yield collection.delete_many({'campaign_id':campaign_id})
+    defer.returnValue(return_value)
 
 
 # Banners

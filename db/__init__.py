@@ -1,10 +1,13 @@
 from adpay.db import consts as db_const
+from twisted.internet import defer
 
 from txmongo import filter
 import txmongo
 
+
+@defer.inlineCallbacks
 def configure_db():
-    get_mongo_db()
+    yield get_mongo_db()
 
     #Creating indexes when daemon starts
     campaign_idx = filter.sort(filter.ASCENDING("campaign_id"))
@@ -13,71 +16,95 @@ def configure_db():
     event_idx = filter.sort(filter.ASCENDING("event_id"))
 
     #Campaign indexes
-    get_campaign_collection().create_index(campaign_idx, unique=True)
+    yield get_campaign_collection().create_index(campaign_idx, unique=True)
 
     #Banner indexes
-    get_banner_collection().create_index(banner_idx, unique=True)
+    yield get_banner_collection().create_index(banner_idx, unique=True)
 
     #Timestamp indexes
-    get_campaign_collection().create_index(timestamp_idx, unique=True)
-    get_event_collection().create_index(timestamp_idx)
+    yield get_campaign_collection().create_index(timestamp_idx, unique=True)
+    yield get_event_collection().create_index(timestamp_idx)
 
     #Event indexes
-    get_event_collection().create_index(event_idx, unique=True)
+    yield get_event_collection().create_index(event_idx, unique=True)
 
 
+@defer.inlineCallbacks
 def get_mongo_db():
-    return get_mongo_connection().spotree
+    conn = yield get_mongo_connection()
+    defer.returnValue(conn.adpay)
 
 
+@defer.inlineCallbacks
 def get_payment_collection():
-    return get_mongo_db().payments
+    mongo_db = yield get_mongo_db()
+    defer.returnValue(mongo_db.payments)
 
 
+@defer.inlineCallbacks
 def get_payment_rounds_collection():
-    return get_mongo_db().payments_rounds
+    mongo_db = yield get_mongo_db()
+    defer.returnValue(mongo_db.payments_rounds)
 
 
+@defer.inlineCallbacks
 def get_campaign_collection():
-    return get_mongo_db().campaign
+    mongo_db = yield get_mongo_db()
+    defer.returnValue(mongo_db.campaign)
 
 
+@defer.inlineCallbacks
 def get_banner_collection():
-    return get_mongo_db().banners
+    mongo_db = yield get_mongo_db()
+    defer.returnValue(mongo_db.banners)
 
 
+@defer.inlineCallbacks
 def get_event_collection():
-    return get_mongo_db().events
+    mongo_db = yield get_mongo_db()
+    defer.returnValue(mongo_db.events)
 
 
+@defer.inlineCallbacks
 def get_user_value_collection():
-    return get_mongo_db().user_values
+    mongo_db = yield get_mongo_db()
+    defer.returnValue(mongo_db.user_values)
 
 
+@defer.inlineCallbacks
 def get_user_score_collection():
-    return get_mongo_db().user_scores
+    mongo_db = yield get_mongo_db()
+    defer.returnValue(mongo_db.user_scores)
 
 
+@defer.inlineCallbacks
 def get_user_keyword_frequency_collection():
-    return get_mongo_db().user_keyword_frequency
+    mongo_db = yield get_mongo_db()
+    defer.returnValue(mongo_db.user_keyword_frequency)
 
 
+@defer.inlineCallbacks
 def get_user_profile_collection():
-    return get_mongo_db().user_profile
+    mongo_db = yield get_mongo_db()
+    yield mongo_db.user_profile
 
 
+@defer.inlineCallbacks
 def get_keyword_frequency_collection():
-    return get_mongo_db().keyword_frequency
-
+    mongo_db = yield get_mongo_db()
+    defer.returnValue(mongo_db.keyword_frequency)
 
 
 MONGO_CONNECTION = None
+@defer.inlineCallbacks
 def get_mongo_connection():
     global MONGO_CONNECTION
     if MONGO_CONNECTION is None:
-        MONGO_CONNECTION = txmongo.lazyMongoConnectionPool(port=db_const.MONGO_DB_PORT)
-    return MONGO_CONNECTION
+        MONGO_CONNECTION = yield txmongo.lazyMongoConnectionPool(port=db_const.MONGO_DB_PORT)
+    defer.returnValue(MONGO_CONNECTION)
 
 
+@defer.inlineCallbacks
 def disconnect():
-    get_mongo_connection().disconnect()
+    conn = yield get_mongo_connection()
+    yield conn.disconnect()
