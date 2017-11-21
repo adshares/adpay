@@ -106,5 +106,7 @@ def get_mongo_connection():
 
 @defer.inlineCallbacks
 def disconnect():
+    global MONGO_CONNECTION
     conn = yield get_mongo_connection()
     yield conn.disconnect()
+    MONGO_CONNECTION = None

@@ -87,23 +87,34 @@ def delete_campaign(campaign_id):
 
 
 # Banners
+@defer.inlineCallbacks
 def get_banner(banner_id):
-    return db.get_banner_collection().find_one({'banner_id':banner_id})
+    collection = yield db.get_banner_collection()
+    return_value = yield collection.find_one({'banner_id':banner_id})
+    defer.returnValue(return_value)
 
 
+@defer.inlineCallbacks
 def get_banners_iter():
-    return query_iterator(db.get_banner_collection().find(cursor=True))
+    collection = yield db.get_banner_collection()
+    defer.returnValue(query_iterator(collection.find(cursor=True)))
 
 
+@defer.inlineCallbacks
 def update_banner(banner_id, campaign_id):
-    return db.get_banner_collection().replace_one({'banner_id':banner_id},{
+    collection = yield db.get_banner_collection()
+    return_value = yield collection.replace_one({'banner_id':banner_id},{
         'banner_id':banner_id,
         'campaign_id':campaign_id
     }, upsert = True)
+    defer.returnValue(return_value)
 
 
+@defer.inlineCallbacks
 def delete_campaign_banners(campaign_id):
-    return db.get_banner_collection().delete_many({'campaign_id':campaign_id})
+    collection = yield db.get_banner_collection()
+    return_value = yield collection.delete_many({'campaign_id':campaign_id})
+    defer.returnValue(return_value)
 
 
 # Events
