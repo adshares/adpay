@@ -69,6 +69,7 @@ def add_event(eventobj):
         timestamp = stats_utils.timestamp2hour(int(eventobj.timestamp)),
         user_id = eventobj.user_id,
         banner_id = eventobj.banner_id,
+        campaign_id=campaign_doc['campaign_id'],
         paid_amount = eventobj.paid_amount,
         keywords = eventobj.to_json()['our_keywords'],
         human_score = eventobj.human_score

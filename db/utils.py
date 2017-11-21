@@ -118,35 +118,50 @@ def delete_campaign_banners(campaign_id):
 
 
 # Events
-def get_user_events_iter(campaign_id, timestamp, uid):
-    return query_iterator(db.get_event_collection().find(cursor=True))
+@defer.inlineCallbacks
+def update_event(event_id, event_type, timestamp, user_id, banner_id, campaign_id, paid_amount, keywords, human_score):
+    from adpay.stats import utils as stats_utils
 
-
-def update_event(event_id, event_type, timestamp, user_id, banner_id, paid_amount, keywords, human_score):
-    return db.get_event_collection().replace_one({'event_id':event_id},{
+    collection = yield db.get_event_collection()
+    return_value = yield collection.replace_one({'event_id':event_id},{
         'event_id':event_id,
         'event_type':event_type,
-        'timestamp':timestamp,
+        'timestamp':stats_utils.timestamp2hour(timestamp),
         'user_id':user_id,
         'banner_id':banner_id,
+        'campaign_id':campaign_id,
         'paid_amount':paid_amount,
         'keywords':keywords,
         'human_score':human_score
     }, upsert=True)
+    defer.returnValue(return_value)
 
 
-def get_events_distinct_uids_iter(campaign_id, timestamp):
-    # Return list of distinct users ids for the given campaign and within [timestamp, timestamp+1hour) period.
-    return query_iterator(
-        db.get_event_collection().distinct(
-            key='user_id',
-            filter = {'timestamp':timestamp, 'campaign_id':campaign_id},
-            cursor=True)
-    )
+@defer.inlineCallbacks
+def get_user_events_iter(campaign_id, timestamp, uid):
+    from adpay.stats import utils as stats_utils
+
+    collection = yield db.get_event_collection()
+    defer.returnValue(query_iterator(collection.find({
+        'user_id':uid,
+        'campaign_id':campaign_id,
+        'timestamp':stats_utils.timestamp2hour(timestamp)
+    }, cursor=True)))
 
 
+@defer.inlineCallbacks
+def get_events_distinct_uids(campaign_id, timestamp):
+    # Return list of distinct users ids for the given campaign timestamp.
+    collection = yield db.get_event_collection()
+    return_values = yield collection.distinct(key='user_id',filter = {'timestamp':timestamp, 'campaign_id':campaign_id})
+    defer.returnValue(return_values)
+
+
+@defer.inlineCallbacks
 def delete_event(event_id):
-    return db.get_banner_collection().delete_many({'event_id':event_id})
+    collection = yield db.get_event_collection()
+    return_value = yield collection.delete_many({'event_id':event_id})
+    defer.returnValue(return_value)
 
 
 # Event payments

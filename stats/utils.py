@@ -122,12 +122,8 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
 
     # Saving payment scores for users.
     total_users = 0
-    uids_iter = db_utils.get_events_distinct_uids_iter(campaign_id, timestamp)
-    while True:
-        uid = uids_iter.next()
-        if uid is None:
-            break
-
+    uids = yield db_utils.get_events_distinct_uids(campaign_id, timestamp)
+    for uid in uids:
         payment_score = yield get_user_payment_score(uid)
         yield db_utils.update_user_score(campaign_id, timestamp, uid, payment_score)
         total_users +=1
