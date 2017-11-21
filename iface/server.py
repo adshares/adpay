@@ -42,4 +42,5 @@ class AdPayIfaceServer(JSONRPCServer):
 
 def configure_iface(port = iface_config.SERVER_PORT):
     site = Site(AdPayIfaceServer())
-    reactor.listenTCP(port, site)
+    return reactor.listenTCP(port, site)
+
