@@ -3,7 +3,7 @@ from twisted.web.server import Site
 
 from fastjsonrpc.server import JSONRPCServer
 
-from adpay.iface import config as iface_config
+from adpay.iface import consts as iface_consts
 from adpay.iface import utils as iface_utils
 from adpay.iface import proto as iface_proto
 
@@ -40,7 +40,7 @@ class AdPayIfaceServer(JSONRPCServer):
         return request
 
 
-def configure_iface(port = iface_config.SERVER_PORT):
+def configure_iface(port = iface_consts.SERVER_PORT):
     site = Site(AdPayIfaceServer())
     return reactor.listenTCP(port, site)
 
