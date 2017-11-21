@@ -165,17 +165,28 @@ def delete_event(event_id):
 
 
 # Event payments
-def get_payments_iter(timestamp):
-    return query_iterator(db.get_payment_collection().find({'timestamp': timestamp}, cursor=True))
+@defer.inlineCallbacks
+def update_event_payment(campaign_id, timestamp, event_id, payment):
+    from adpay.stats import utils as stats_utils
 
-
-def update_event_payment(campaign_id, timestamp, event_id, event_payment):
-    return db.get_payment_collection().replace_one({'timestamp':timestamp, 'event_id':event_id}, {
-        'timestamp':timestamp,
+    collection = yield db.get_payment_collection()
+    return_value = yield collection.replace_one({'event_id':event_id, 'campaign_id':campaign_id}, {
+        'timestamp':stats_utils.timestamp2hour(timestamp),
         'event_id':event_id,
-        'payment':event_payment,
+        'payment':payment,
         'campaign_id':campaign_id
     }, upsert=True)
+    defer.returnValue(return_value)
+
+
+@defer.inlineCallbacks
+def get_payments_iter(timestamp):
+    from adpay.stats import utils as stats_utils
+
+    collection = yield db.get_payment_collection()
+    defer.returnValue(query_iterator(collection.find({
+        'timestamp': stats_utils.timestamp2hour(timestamp)
+    }, cursor=True)))
 
 
 # Calculated payments rounds
