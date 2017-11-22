@@ -237,6 +237,7 @@ def get_user_value(campaign_id, timestamp, user_id):
         'user_id':user_id
     })
 
+
 def update_user_value(campaign_id, timestamp, user_id, payment, human_score):
     return db.get_user_value_collection().replace_one({
         'campaign_id':campaign_id,

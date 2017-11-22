@@ -49,7 +49,7 @@ class InterfaceCampaignTestCase(IfaceTestCase):
 
 
     @defer.inlineCallbacks
-    def test_update_campaign(self):
+    def test_change_campaign(self):
         CHANGED_CAMPAIGN_DATA = copy.deepcopy(self.CAMAPAIGN_DATA)
         CHANGED_CAMPAIGN_DATA['budget'] = 200
         CHANGED_CAMPAIGN_DATA['banners'] = [
