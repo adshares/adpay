@@ -145,6 +145,18 @@ def update_event(event_id, event_type, timestamp, user_id, banner_id, campaign_i
 
 
 @defer.inlineCallbacks
+def get_banner_events_iter(banner_id, timestamp):
+    from adpay.stats import utils as stats_utils
+    timestamp = stats_utils.timestamp2hour(timestamp)
+
+    collection = yield db.get_event_collection()
+    defer.returnValue(query_iterator(collection.find({
+        'banner_id': banner_id,
+        'timestamp': stats_utils.timestamp2hour(timestamp)
+    }, cursor=True)))
+
+
+@defer.inlineCallbacks
 def get_user_events_iter(campaign_id, timestamp, uid):
     from adpay.stats import utils as stats_utils
 
@@ -221,7 +233,7 @@ def update_payment_round(timestamp):
 def get_last_round():
     sort_filter = txfilter.sort(txfilter.DESCENDING("timestamp"))
     collection = yield db.get_payment_rounds_collection()
-    return_value =  yield collection.find_one(sort=sort_filter)
+    return_value = yield collection.find_one(sort=sort_filter)
     defer.returnValue(return_value)
 
 
@@ -278,16 +290,23 @@ def delete_user_scores(campaign_id, timestamp):
 
 
 # User keywords frequency (user_id, keyword, frequency)
+@defer.inlineCallbacks
 def get_user_keyword_frequency(user_id, keyword):
-    return db.get_user_keyword_frequency_collection().find_one({'keyword':keyword, 'user_id':user_id})
+    collection = yield db.get_user_keyword_frequency_collection()
+    return_value = yield collection.find_one({'keyword':keyword, 'user_id':user_id})
+    defer.returnValue(return_value)
 
 
+@defer.inlineCallbacks
 def get_user_keyword_frequency_iter(user_id):
-    return query_iterator(db.get_user_keyword_frequency_collection().find({'user_id':user_id}, cursor=True))
+    collection = yield db.get_user_keyword_frequency_collection()
+    defer.returnValue(query_iterator(collection.find({'user_id':user_id}, cursor=True)))
 
 
+@defer.inlineCallbacks
 def update_user_keyword_frequency(user_id, keyword, frequency):
-    return db.get_user_keyword_frequency_collection().replace_one({
+    collection = yield db.get_user_keyword_frequency_collection()
+    return_value = yield collection.replace_one({
         'keyword': keyword,
         'user_id': user_id
     },{
@@ -295,15 +314,22 @@ def update_user_keyword_frequency(user_id, keyword, frequency):
         'user_id': user_id,
         'frequency':frequency
     }, upsert=True)
+    defer.returnValue(return_value)
 
 
+@defer.inlineCallbacks
 def get_user_keyword_frequency_distinct_userid_iter():
     # Return distinct user id.
-    return query_iterator(db.get_user_keyword_frequency_collection().distinct(key='user_id', cursor=True))
+    collection = yield db.get_user_keyword_frequency_collection()
+    return_value = yield collection.distinct(key='user_id')
+    defer.returnValue(return_value)
 
 
+@defer.inlineCallbacks
 def delete_user_keyword_frequency(_id):
-    return db.get_user_keyword_frequency_collection().delete_one({'_id':_id})
+    collection = yield db.get_user_keyword_frequency_collection()
+    return_value = yield collection.delete_one({'_id':_id})
+    defer.returnValue(return_value)
 
 
 # User keywords profiles (user_id, keyword_score_dict e.g. {'keyword1':score1, 'keyword2':score2, ...})

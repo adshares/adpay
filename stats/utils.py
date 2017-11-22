@@ -228,9 +228,7 @@ def update_keywords_stats(recalculate_per_views=1000, cutoff=0.00001, deckay=0.0
 
 
 @defer.inlineCallbacks
-def update_user_keywords_stats(user_id, user_keyword, user_val, cutoff = 0.001, deckay=0.01):
-    keyword = genkey(user_keyword, user_val)
-
+def update_user_keywords_stats(user_id, keyword, cutoff = 0.001, deckay=0.01):
     user_keyword_doc = yield db_utils.get_user_keyword_frequency(user_id, keyword)
     frequency = deckay + user_keyword_doc['frequency']*(1-deckay)
 

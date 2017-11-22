@@ -106,7 +106,7 @@ def json2filter(json_data):
 
 
 def validate_filters(filters_dict, keywords):
-    for filter_json in filters_dict.get('require'):
+    for filter_json in filters_dict.get('require', []):
         keyword = filter_json['keyword']
         if keyword not in keywords:
             return False
@@ -115,7 +115,7 @@ def validate_filters(filters_dict, keywords):
         if not filter_obj.is_valid(keywords.get(keyword)):
             return False
 
-    for filter_json in filters_dict.get('exclude'):
+    for filter_json in filters_dict.get('exclude', []):
         keyword = filter_json['keyword']
         if keyword not in keywords:
             continue
@@ -123,5 +123,4 @@ def validate_filters(filters_dict, keywords):
         filter_obj = json2filter(filter_json['filter'])
         if filter_obj.is_valid(keywords.get(keyword)):
             return False
-
     return True
