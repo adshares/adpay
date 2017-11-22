@@ -79,7 +79,7 @@ def add_event(eventobj):
     for user_keyword, user_val in eventobj.our_keywords.items():
         keyword = stats_utils.genkey(user_keyword, user_val)
         stats_cache.keyword_inc(keyword)
-        #yield stats_utils.update_user_keywords_stats(eventobj.user_id, keyword)
+        yield stats_utils.update_user_keywords_stats(eventobj.user_id, keyword)
 
     # Update global keywords stats.
     yield stats_utils.update_keywords_stats()
