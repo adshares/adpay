@@ -100,7 +100,7 @@ def get_payments(payreq):
     # Collect events and theirs payment and respond to request
     _iter = yield db_utils.get_payments_iter(payreq.timestamp)
     while True:
-        payment_doc = _iter.next()
+        payment_doc = yield _iter.next()
         if not payment_doc:
             break
 

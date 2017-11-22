@@ -5,11 +5,11 @@ from adpay.stats import consts as stats_consts
 from adpay.db import consts as db_consts
 from adpay.db import utils as db_utils
 
-import random
+import random, math
 
 
 def timestamp2hour(timestamp):
-    return stats_consts.SECONDS_PER_HOUR*timestamp/stats_consts.SECONDS_PER_HOUR
+    return math.ceil(1.0*timestamp/stats_consts.SECONDS_PER_HOUR)*stats_consts.SECONDS_PER_HOUR
 
 
 def genkey(key, val, delimiter="_"):
