@@ -98,9 +98,9 @@ def get_payments(payreq):
         defer.returnValue(iface_proto.PaymentsResponse())
 
     # Collect events and theirs payment and respond to request
-    _iter = db_utils.get_payments_iter(payreq.timestamp)
+    _iter = yield db_utils.get_payments_iter(payreq.timestamp)
     while True:
-        payment_doc = yield _iter.next()
+        payment_doc = _iter.next()
         if not payment_doc:
             break
 

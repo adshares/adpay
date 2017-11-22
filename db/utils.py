@@ -197,19 +197,32 @@ def get_payments_iter(timestamp):
 
 
 # Calculated payments rounds
+@defer.inlineCallbacks
 def get_payment_round(timestamp):
-    return db.get_payment_rounds_collection().find_one({
-        'timestamp':timestamp
-    })
+    from adpay.stats import utils as stats_utils
+
+    timestamp = stats_utils.timestamp2hour(timestamp)
+    collection = yield db.get_payment_rounds_collection()
+    return_value = yield collection.find_one({'timestamp':timestamp})
+    defer.returnValue(return_value)
 
 
+@defer.inlineCallbacks
 def update_payment_round(timestamp):
-    return db.get_payment_rounds_collection().replace_one({'timestamp':timestamp}, {'timestamp':timestamp}, upsert=True)
+    from adpay.stats import utils as stats_utils
+
+    timestamp = stats_utils.timestamp2hour(timestamp)
+    collection = yield db.get_payment_rounds_collection()
+    return_value = yield collection.replace_one({'timestamp':timestamp}, {'timestamp':timestamp}, upsert=True)
+    defer.returnValue(return_value)
 
 
+@defer.inlineCallbacks
 def get_last_round():
     sort_filter = txfilter.sort(txfilter.DESCENDING("timestamp"))
-    return db.get_payment_rounds_collection().find_one(sort=sort_filter)
+    collection = yield db.get_payment_rounds_collection()
+    return_value =  yield collection.find_one(sort=sort_filter)
+    defer.returnValue(return_value)
 
 
 # User Values (Columns: campaign_id, timestamp, user_id, payment, credibility)
