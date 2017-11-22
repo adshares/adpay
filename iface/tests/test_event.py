@@ -3,6 +3,7 @@ from twisted.internet import defer
 from adpay.iface.tests import IfaceTestCase
 from adpay.db import utils as db_utils
 
+
 class InterfaceEventTestCase(IfaceTestCase):
     @defer.inlineCallbacks
     def get_banner_events(self, banner_id):
@@ -16,21 +17,20 @@ class InterfaceEventTestCase(IfaceTestCase):
             events.append(event_doc)
         defer.returnValue(events)
 
-
     @defer.inlineCallbacks
     def test_nocampaign_add_event(self):
         # Event without campaign shoudn't be added
         event_data = {
-            'event_id':'event_id',
-            'event_type':'event_type',
-            'user_id':'user_id',
-            'human_score':0.5,
-            'publisher_id':'publisher_id',
-            'timestamp':45678,
-            'banner_id':"banner_1",
-            'our_keywords':{},
-            'their_keywords':{},
-            'paid_amount':None
+            'event_id': 'event_id',
+            'event_type': 'event_type',
+            'user_id': 'user_id',
+            'human_score': 0.5,
+            'publisher_id': 'publisher_id',
+            'timestamp': 45678,
+            'banner_id': "banner_1",
+            'our_keywords': {},
+            'their_keywords': {},
+            'paid_amount': None
         }
 
         pre_banner_events = yield self.get_banner_events('banner_1')
@@ -52,7 +52,7 @@ class InterfaceEventTestCase(IfaceTestCase):
         self.assertTrue(response['result'])
 
         banner_events = yield self.get_banner_events('banner_1')
-        self.assertEqual(len(banner_events), len(pre_banner_events)+1)
+        self.assertEqual(len(banner_events), len(pre_banner_events) + 1)
 
         # Test event addition without userid
         pre_banner_events = banner_events
@@ -64,26 +64,25 @@ class InterfaceEventTestCase(IfaceTestCase):
         banner_events = yield self.get_banner_events('banner_1')
         self.assertEqual(len(banner_events), len(pre_banner_events))
 
-
     @defer.inlineCallbacks
     def test_campaign_filters_add_event(self):
         # Add campaign with filters
         yield db_utils.update_campaign("campaign_filter_id", 123, 234, 12, 34, 1000, {
-            'require':[
+            'require': [
                 {
-                    'keyword':'testkey',
-                    'filter':{
-                        'type':'=',
-                        'args':10
+                    'keyword': 'testkey',
+                    'filter': {
+                        'type': '=',
+                        'args': 10
                     }
                 }
             ],
-            'exclude':[
+            'exclude': [
                 {
-                    'keyword':'testkey',
-                    'filter':{
-                        'type':'<=',
-                        'args':5
+                    'keyword': 'testkey',
+                    'filter': {
+                        'type': '<=',
+                        'args': 5
                     }
                 }
             ]
@@ -91,16 +90,16 @@ class InterfaceEventTestCase(IfaceTestCase):
         yield db_utils.update_banner("banner_filter_id", "campaign_filter_id")
 
         event_data = {
-            'event_id':'event_id',
-            'event_type':'event_type',
-            'user_id':'user_id',
-            'human_score':0.5,
-            'publisher_id':'publisher_id',
-            'timestamp':45678,
-            'banner_id':"banner_filter_id",
-            'our_keywords':{'testkey':5},
-            'their_keywords':{},
-            'paid_amount':None
+            'event_id': 'event_id',
+            'event_type': 'event_type',
+            'user_id': 'user_id',
+            'human_score': 0.5,
+            'publisher_id': 'publisher_id',
+            'timestamp': 45678,
+            'banner_id': "banner_filter_id",
+            'our_keywords': {'testkey': 5},
+            'their_keywords': {},
+            'paid_amount': None
         }
         pre_banner_events = yield self.get_banner_events('banner_filter_id')
 
@@ -113,11 +112,10 @@ class InterfaceEventTestCase(IfaceTestCase):
         self.assertEqual(len(banner_events), len(pre_banner_events))
 
         # Test validation true.
-        event_data['our_keywords'] = {'testkey':10}
+        event_data['our_keywords'] = {'testkey': 10}
         response = yield self.get_response("add_events", [event_data])
         self.assertIsNotNone(response)
         self.assertTrue(response['result'])
 
         banner_events = yield self.get_banner_events('banner_filter_id')
-        self.assertEqual(len(banner_events), len(pre_banner_events)+1)
-
+        self.assertEqual(len(banner_events), len(pre_banner_events) + 1)
