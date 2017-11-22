@@ -86,7 +86,7 @@ def get_user_payment_score(campaign_id, timestamp, user_id, amount=5):
 
     # Find most similar users to user_id
     users = []
-    user_value_iter = db_utils.get_user_value_iter(campaign_id, previous_hour)
+    user_value_iter = yield db_utils.get_user_value_iter(campaign_id, previous_hour)
     while True:
         user_value = yield user_value_iter.next()
         if user_value is None:
@@ -132,7 +132,7 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
     limit = total_users*payment_percentage_cutoff
 
     total_score = 0
-    user_score_iter = db_utils.get_sorted_user_score_iter(campaign_id, timestamp, limit=limit)
+    user_score_iter = yield db_utils.get_sorted_user_score_iter(campaign_id, timestamp, limit=limit)
     while True:
         user_score_doc = yield user_score_iter.next()
         if not user_score_doc:
@@ -140,7 +140,7 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
 
         total_score+= user_score_doc['score']
 
-    user_score_iter = db_utils.get_sorted_user_score_iter(campaign_id, timestamp, limit=limit)
+    user_score_iter = yield db_utils.get_sorted_user_score_iter(campaign_id, timestamp, limit=limit)
     while True:
         user_score_doc = yield user_score_iter.next()
         if not user_score_doc:
@@ -153,7 +153,7 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
 
         max_user_payment, max_human_score, total_user_payments = 0, 0, 0
 
-        user_events_iter = db_utils.get_user_events_iter(campaign_id, timestamp, uid)
+        user_events_iter = yield db_utils.get_user_events_iter(campaign_id, timestamp, uid)
         while True:
             event_doc = yield user_events_iter.next()
             if not event_doc:
@@ -165,7 +165,7 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
             max_user_payment = max([max_user_payment, event_payment])
             max_human_score = max([max_human_score, event_doc['human_score']])
 
-        user_events_iter = db_utils.get_user_events_iter(campaign_id, timestamp, uid)
+        user_events_iter = yield db_utils.get_user_events_iter(campaign_id, timestamp, uid)
         while True:
             event_doc = yield user_events_iter.next()
             if event_doc is None:
@@ -210,7 +210,7 @@ def update_keywords_stats(recalculate_per_views=1000, cutoff=0.00001, deckay=0.0
     stats_cache.reset_keywords_stats()
     stats_cache.reset_views_stats()
 
-    no_updated_keyword_frequency_ite = db_utils.get_no_updated_keyword_frequency_iter()
+    no_updated_keyword_frequency_ite = yield db_utils.get_no_updated_keyword_frequency_iter()
     while True:
         keyword_doc = yield no_updated_keyword_frequency_ite.next()
         if keyword_doc is None:
@@ -252,7 +252,7 @@ def update_user_keywords_profiles(global_freq_cutoff=0.1):
     yield db_utils.delete_user_profiles()
 
     # Create new user profiles based on keyword user frequency.
-    user_keyword_frequency_distinct_userid_iter = db_utils.get_user_keyword_frequency_distinct_userid_iter()
+    user_keyword_frequency_distinct_userid_iter = yield db_utils.get_user_keyword_frequency_distinct_userid_iter()
     while True:
         user_id = yield user_keyword_frequency_distinct_userid_iter.next()
         if user_id is None:
@@ -260,7 +260,7 @@ def update_user_keywords_profiles(global_freq_cutoff=0.1):
 
         user_profile_keywords = []
 
-        user_keyword_frequency_iter = db_utils.get_user_keyword_frequency_iter(user_id)
+        user_keyword_frequency_iter = yield db_utils.get_user_keyword_frequency_iter(user_id)
         while True:
             user_keyword_doc = yield user_keyword_frequency_iter.next()
             if user_keyword_doc is None:

@@ -7,7 +7,7 @@ import time
 
 @defer.inlineCallbacks
 def _calculate_payments(timestamp):
-    campaign_iter = db_utils.get_campaign_iter()
+    campaign_iter = yield db_utils.get_campaign_iter()
     while True:
         campaign_doc = yield campaign_iter.next()
         if not campaign_doc:
