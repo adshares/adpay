@@ -32,14 +32,7 @@ class InterfaceEventTestCase(IfaceTestCase):
 
     @defer.inlineCallbacks
     def test_add_campaign(self):
-        response = yield self.get_response({
-            "jsonrpc": "2.0",
-            "id": "event_test",
-            "method": "campaign_update",
-            "params": [
-                self.CAMAPAIGN_DATA
-            ]
-        })
+        response = yield self.get_response("campaign_update", [self.CAMAPAIGN_DATA])
 
         self.assertIsNotNone(response)
         self.assertTrue(response['result'])
@@ -67,15 +60,7 @@ class InterfaceEventTestCase(IfaceTestCase):
             }
         ]
 
-        response = yield self.get_response({
-            "jsonrpc": "2.0",
-            "id": "event_test",
-            "method": "campaign_update",
-            "params": [
-                CHANGED_CAMPAIGN_DATA
-            ]
-        })
-
+        response = yield self.get_response("campaign_update", [CHANGED_CAMPAIGN_DATA])
         self.assertIsNotNone(response)
         self.assertTrue(response['result'])
 
@@ -92,14 +77,7 @@ class InterfaceEventTestCase(IfaceTestCase):
 
     @defer.inlineCallbacks
     def test_delete_campaign(self):
-        response = yield self.get_response({
-            "jsonrpc": "2.0",
-            "id": "event_test",
-            "method": "campaign_delete",
-            "params": [
-                self.CAMAPAIGN_DATA['campaign_id']
-            ]
-        })
+        response = yield self.get_response("campaign_delete", [self.CAMAPAIGN_DATA['campaign_id']])
 
         self.assertIsNotNone(response)
         self.assertTrue(response['result'])

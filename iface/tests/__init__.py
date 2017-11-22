@@ -62,8 +62,13 @@ class IfaceTestCase(unittest.TestCase):
         self.port.stopListening()
 
     @defer.inlineCallbacks
-    def get_response(self, post_data_dict=None):
-        post_data = StringProducer(json.dumps(post_data_dict)) if post_data_dict else None
+    def get_response(self, method, params=None):
+        post_data = StringProducer(json.dumps({
+            "jsonrpc": "2.0",
+            "id": "test_hit",
+            "method": method,
+            "params": params
+        }))
 
         response = yield self.client.request('POST',
                                              'http://127.0.0.1:%s' %iface_consts.SERVER_PORT,
