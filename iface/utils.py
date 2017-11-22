@@ -10,7 +10,6 @@ from adpay.stats import utils as stats_utils
 @defer.inlineCallbacks
 def create_or_update_campaign(cmpobj):
     # Save changes only to database
-
     yield db_utils.update_campaign(
         campaign_id=cmpobj.campaign_id,
         time_start=cmpobj.time_start,

@@ -101,6 +101,13 @@ def get_banners_iter():
 
 
 @defer.inlineCallbacks
+def get_campaign_banners(campaign_id):
+    collection = yield db.get_banner_collection()
+    return_value = yield collection.find({'campaign_id':campaign_id})
+    defer.returnValue(return_value)
+
+
+@defer.inlineCallbacks
 def update_banner(banner_id, campaign_id):
     collection = yield db.get_banner_collection()
     return_value = yield collection.replace_one({'banner_id':banner_id},{

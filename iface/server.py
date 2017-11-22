@@ -1,4 +1,4 @@
-from twisted.internet import reactor
+from twisted.internet import reactor, defer
 from twisted.web.server import Site
 
 from fastjsonrpc.server import JSONRPCServer
@@ -10,15 +10,17 @@ from adpay.iface import proto as iface_proto
 
 class AdPayIfaceServer(JSONRPCServer):
     #campaign interface
+    @defer.inlineCallbacks
     def jsonrpc_campaign_update(self, *campaign_data_list):
         for campaign_data in campaign_data_list:
-            iface_utils.create_or_update_campaign(iface_proto.CamapaignObject(campaign_data))
-        return True
+            yield iface_utils.create_or_update_campaign(iface_proto.CamapaignObject(campaign_data))
+        defer.returnValue(True)
 
+    @defer.inlineCallbacks
     def jsonrpc_campaign_delete(self, *campaign_id_list):
         for campaign_id in campaign_id_list:
-            iface_utils.delete_campaign(campaign_id)
-        return True
+            yield iface_utils.delete_campaign(campaign_id)
+        defer.returnValue(True)
 
     #events interface
     def jsonrpc_add_events(self, *event_data_list):
