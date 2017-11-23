@@ -50,6 +50,7 @@ class IfaceTestCase(unittest.TestCase):
     def setUp(self):
         self.conn = yield db.get_mongo_connection()
         self.db = yield db.get_mongo_db()
+        yield db.configure_db()
 
         self.port = iface_server.configure_iface()
         self.client = Agent(reactor)

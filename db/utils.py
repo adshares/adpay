@@ -241,8 +241,15 @@ def update_payment_round(timestamp):
     timestamp = stats_utils.timestamp2hour(timestamp)
     collection = yield db.get_payment_rounds_collection()
 
-    return_value = yield collection.insert({'timestamp': timestamp}, safe=True)
+    round_doc = {'timestamp': timestamp}
+    return_value = yield collection.update(round_doc, round_doc, upsert=True)
     defer.returnValue(return_value)
+
+
+@defer.inlineCallbacks
+def get_payment_round_iter():
+    collection = yield db.get_payment_rounds_collection()
+    defer.returnValue(query_iterator(collection.find(cursor=True)))
 
 
 @defer.inlineCallbacks
@@ -262,7 +269,7 @@ def get_user_value_iter(campaign_id, timestamp):
     timestamp = stats_utils.timestamp2hour(timestamp)
     collection = yield db.get_user_value_collection()
 
-    defer.returnValue(query_iterator(collection.find({'campaign_id': campaign_id, 'timestamp': timestamp})))
+    defer.returnValue(query_iterator(collection.find({'campaign_id': campaign_id, 'timestamp': timestamp}, cursor=True)))
 
 
 @defer.inlineCallbacks

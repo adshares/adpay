@@ -228,7 +228,7 @@ def update_keywords_stats(recalculate_per_views=1000, cutoff=0.00001, deckay=0.0
 
 
 @defer.inlineCallbacks
-def update_user_keywords_stats(user_id, keyword, cutoff = 0.001, deckay=0.01):
+def update_user_keywords_stats(user_id, keyword, cutoff=0.001, deckay=0.01):
     user_keyword_doc = yield db_utils.get_user_keyword_frequency(user_id, keyword)
 
     old_keyword_frequency = 0
@@ -241,7 +241,6 @@ def update_user_keywords_stats(user_id, keyword, cutoff = 0.001, deckay=0.01):
         # Delete keyword stats for user keyword.
         yield db_utils.delete_user_keyword_frequency(user_keyword_doc['_id'])
     else:
-
         # Update user keyword stats.
         yield db_utils.update_user_keyword_frequency(user_id, keyword, frequency)
 

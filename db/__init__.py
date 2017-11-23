@@ -15,18 +15,23 @@ def configure_db():
     timestamp_idx = filter.sort(filter.ASCENDING("timestamp"))
     event_idx = filter.sort(filter.ASCENDING("event_id"))
 
-    #Campaign indexes
-    yield get_campaign_collection().create_index(campaign_idx, unique=True)
+    campaign_collection = yield get_campaign_collection()
+    banner_collection = yield get_banner_collection()
+    event_collection = yield get_event_collection()
+    payment_round_collection = yield get_payment_rounds_collection()
 
-    #Banner indexes
-    yield get_banner_collection().create_index(banner_idx, unique=True)
+    # Campaign indexes
+    yield campaign_collection.create_index(campaign_idx, unique=True)
 
-    #Timestamp indexes
-    yield get_campaign_collection().create_index(timestamp_idx, unique=True)
-    yield get_event_collection().create_index(timestamp_idx)
+    # Banner indexes
+    yield banner_collection.create_index(banner_idx, unique=True)
 
-    #Event indexes
-    yield get_event_collection().create_index(event_idx, unique=True)
+    # Timestamp indexes
+    yield event_collection.create_index(timestamp_idx)
+    yield payment_round_collection.create_index(timestamp_idx, unique=True)
+
+    # Event indexes
+    yield event_collection.create_index(event_idx, unique=True)
 
 
 @defer.inlineCallbacks
