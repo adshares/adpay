@@ -278,3 +278,15 @@ def update_user_keywords_profiles(global_freq_cutoff=0.1):
             user_profile_keywords = user_profile_keywords[:stats_consts.MAX_USER_KEYWORDS_IN_PROFILE]
 
         yield db_utils.update_user_profile(user_id, dict([(elem[1], elem[0]) for elem in user_profile_keywords]))
+
+
+@defer.inlineCallbacks
+def add_view_keywords(user_id, keywords_list):
+    # Update global keywords cache and user keyword stats.
+    stats_cache.views_inc()
+    for keyword in keywords_list:
+        stats_cache.keyword_inc(keyword)
+        yield update_user_keywords_stats(user_id, keyword)
+
+    # Update global keywords stats.
+    yield update_keywords_stats()

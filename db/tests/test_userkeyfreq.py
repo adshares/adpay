@@ -42,7 +42,6 @@ class DBTestCase(unittest.TestCase):
             freq = i*0.001
             yield db_utils.update_user_keyword_frequency(user_id, keyword, freq)
 
-
         distinct_uids = yield db_utils.get_user_keyword_frequency_distinct_userids()
         self.assertEqual(distinct_uids, ["user_%s" %i for i in range(20)])
 

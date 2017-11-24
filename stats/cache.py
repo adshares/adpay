@@ -35,4 +35,3 @@ def get_views_stats():
 def views_inc():
     global EVENTS_STATS_VIEWS
     EVENTS_STATS_VIEWS += 1
-

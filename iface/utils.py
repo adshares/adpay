@@ -63,26 +63,22 @@ def add_event(eventobj):
         defer.returnValue(None)
 
     inserted = yield db_utils.update_event(
-        event_id = eventobj.event_id,
-        event_type = eventobj.event_type,
-        timestamp = stats_utils.timestamp2hour(int(eventobj.timestamp)),
-        user_id = eventobj.user_id,
-        banner_id = eventobj.banner_id,
+        event_id=eventobj.event_id,
+        event_type=eventobj.event_type,
+        timestamp=stats_utils.timestamp2hour(int(eventobj.timestamp)),
+        user_id=eventobj.user_id,
+        banner_id=eventobj.banner_id,
         campaign_id=campaign_doc['campaign_id'],
-        paid_amount = eventobj.paid_amount,
-        keywords = eventobj.to_json()['our_keywords'],
-        human_score = eventobj.human_score
+        paid_amount=eventobj.paid_amount,
+        keywords=eventobj.to_json()['our_keywords'],
+        human_score=eventobj.human_score
     )
 
     # Update global keywords cache and user keyword stats.
-    stats_cache.views_inc()
+    view_keyowrds = []
     for user_keyword, user_val in eventobj.our_keywords.items():
-        keyword = stats_utils.genkey(user_keyword, user_val)
-        stats_cache.keyword_inc(keyword)
-        yield stats_utils.update_user_keywords_stats(eventobj.user_id, keyword)
-
-    # Update global keywords stats.
-    yield stats_utils.update_keywords_stats()
+        view_keyowrds.append(stats_utils.genkey(user_keyword, user_val))
+    yield stats_utils.add_view_keywords(eventobj.user_id, view_keyowrds)
 
     defer.returnValue(inserted)
 
