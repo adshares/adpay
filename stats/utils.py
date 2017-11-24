@@ -118,7 +118,7 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
     for uid in uids:
         payment_score = yield get_user_payment_score(uid)
         yield db_utils.update_user_score(campaign_id, timestamp, uid, payment_score)
-        total_users +=1
+        total_users += 1
 
     # Limit paid users to given payment_percentage_cutoff
     limit = total_users*payment_percentage_cutoff
@@ -179,42 +179,34 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
 
 @defer.inlineCallbacks
 def update_keywords_stats(recalculate_per_views=1000, cutoff=0.00001, deckay=0.01):
-    def calculate_frequency(old_freq, new_views_count):
-        return old_freq*(1-deckay) + new_views_count*1.0/recalculate_per_views
-
     # Recalculate only every 1000 events.
     if stats_cache.get_views_stats() % recalculate_per_views:
-        return
+        defer.returnValue(None)
 
     for keyword, views_counts in stats_cache.get_keyword_stats_iter():
-        keyword_doc = yield db_utils.get_keyword_frequency(keyword)
+        keyword_frequency_doc = yield db_utils.get_keyword_frequency(keyword)
 
-        old_freq = 0
-        if keyword_doc:
-            old_freq = keyword_doc['frequency']
+        old_keyword_freq = 0
+        if keyword_frequency_doc:
+            old_keyword_freq = keyword_frequency_doc['frequency']
 
-        new_freq = calculate_frequency(old_freq, views_counts)
-        if new_freq <= cutoff and keyword_doc:
-            yield db_utils.delete_keyword_frequency(keyword_doc['_id'])
-            continue
-
-        yield db_utils.update_keyword_frequency(keyword, new_freq, updated=True)
+        new_keyword_frequency = 1.0*deckay*views_counts/recalculate_per_views + old_keyword_freq*(1-deckay)
+        yield db_utils.update_keyword_frequency(keyword, new_keyword_frequency)
     stats_cache.reset_keywords_stats()
     stats_cache.reset_views_stats()
 
     no_updated_keyword_frequency_ite = yield db_utils.get_no_updated_keyword_frequency_iter()
     while True:
-        keyword_doc = yield no_updated_keyword_frequency_ite.next()
-        if keyword_doc is None:
+        keyword_frequency_doc = yield no_updated_keyword_frequency_ite.next()
+        if keyword_frequency_doc is None:
             break
 
-        keyword = keyword_doc['keyword']
-        new_freq = calculate_frequency(keyword_doc['frequency'], 0)
-        if new_freq < cutoff:
-            yield db_utils.delete_keyword_frequency(keyword_doc['_id'])
-            continue
-
-        yield db_utils.update_keyword_frequency(keyword, new_freq)
+        keyword = keyword_frequency_doc['keyword']
+        new_keyword_frequency = keyword_frequency_doc['frequency']*(1-deckay)
+        if new_keyword_frequency <= cutoff:
+            yield db_utils.delete_keyword_frequency(keyword_frequency_doc['_id'])
+        else:
+            yield db_utils.update_keyword_frequency(keyword, new_keyword_frequency)
 
     yield db_utils.set_keyword_frequency_updated_flag()
 
@@ -229,7 +221,7 @@ def update_user_keywords_stats(user_id, keywords_list, cutoff=0.001, deckay=0.01
         if user_keyword_doc is not None:
             old_keyword_frequency = user_keyword_doc['frequency']
 
-        frequency = deckay + old_keyword_frequency * (1 - deckay)
+        frequency = deckay + old_keyword_frequency*(1 - deckay)
         yield db_utils.update_user_keyword_frequency(user_id, keyword, frequency)
 
     # Decay keywords frequencies in database.
@@ -279,7 +271,7 @@ def update_user_keywords_profiles(global_freq_cutoff=0.1):
                 continue
 
             # Take only that keywords which global frequency is equal or less than 0.1.
-            if global_keyword_doc and global_keyword_doc['frequency']>global_freq_cutoff:
+            if global_keyword_doc and global_keyword_doc['frequency'] > global_freq_cutoff:
                 continue
 
             keyword_score = 1.0*user_keyword_doc['frequency']/(0.01 + global_keyword_doc['frequency'])
