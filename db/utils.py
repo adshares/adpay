@@ -426,20 +426,7 @@ def delete_user_profiles():
 
 # Keywords views (keyword, frequency, updated=False)
 @defer.inlineCallbacks
-def set_keyword_frequency_updated_flag(updated):
-    collection = yield db.get_keyword_frequency_collection()
-    return_value = yield collection.update({}, {"$set": {"updated": updated}}, safe=True)
-    defer.returnValue(return_value)
-
-
-@defer.inlineCallbacks
-def get_no_updated_keyword_frequency_iter():
-    collection = yield db.get_keyword_frequency_collection()
-    defer.returnValue(query_iterator(collection.find({'updated': False}, cursor=True)))
-
-
-@defer.inlineCallbacks
-def update_keyword_frequency(keyword, frequency, updated):
+def update_keyword_frequency(keyword, frequency, updated=False):
     collection = yield db.get_keyword_frequency_collection()
     return_value = yield collection.replace_one({
         'keyword': keyword
@@ -449,6 +436,19 @@ def update_keyword_frequency(keyword, frequency, updated):
         'updated': updated
     }, upsert=True)
     defer.returnValue(return_value)
+
+
+@defer.inlineCallbacks
+def set_keyword_frequency_updated_flag(updated=False):
+    collection = yield db.get_keyword_frequency_collection()
+    return_value = yield collection.update_many({}, {"$set": {"updated": updated}})
+    defer.returnValue(return_value)
+
+
+@defer.inlineCallbacks
+def get_no_updated_keyword_frequency_iter():
+    collection = yield db.get_keyword_frequency_collection()
+    defer.returnValue(query_iterator(collection.find({'updated': False}, cursor=True)))
 
 
 @defer.inlineCallbacks

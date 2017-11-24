@@ -224,7 +224,7 @@ def update_keywords_stats(recalculate_per_views=1000, cutoff=0.00001, deckay=0.0
 
         yield db_utils.update_keyword_frequency(keyword, new_freq)
 
-    yield db_utils.set_keyword_frequency_updated_flag(False)
+    yield db_utils.set_keyword_frequency_updated_flag()
 
 
 @defer.inlineCallbacks
