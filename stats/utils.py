@@ -26,7 +26,7 @@ def get_user_profile_keywords(user_id):
     if not user_profile_doc:
         defer.returnValue(None)
 
-    defer.returnValue(user_profile_doc['profile'].keys())
+    defer.returnValue(list(set(user_profile_doc['profile'].keys()))[:stats_consts.MAX_USER_KEYWORDS_IN_PROFILE])
 
 
 @defer.inlineCallbacks
