@@ -355,19 +355,6 @@ def delete_user_scores(campaign_id, timestamp):
 
 # User keywords frequency (user_id, keyword, frequency)
 @defer.inlineCallbacks
-def get_user_keyword_frequency(user_id, keyword):
-    collection = yield db.get_user_keyword_frequency_collection()
-    return_value = yield collection.find_one({'keyword': keyword, 'user_id': user_id})
-    defer.returnValue(return_value)
-
-
-@defer.inlineCallbacks
-def get_user_keyword_frequency_iter(user_id):
-    collection = yield db.get_user_keyword_frequency_collection()
-    defer.returnValue(query_iterator(collection.find({'user_id': user_id}, cursor=True)))
-
-
-@defer.inlineCallbacks
 def update_user_keyword_frequency(user_id, keyword, frequency):
     collection = yield db.get_user_keyword_frequency_collection()
     return_value = yield collection.replace_one({
@@ -382,7 +369,20 @@ def update_user_keyword_frequency(user_id, keyword, frequency):
 
 
 @defer.inlineCallbacks
-def get_user_keyword_frequency_distinct_userid_iter():
+def get_user_keyword_frequency(user_id, keyword):
+    collection = yield db.get_user_keyword_frequency_collection()
+    return_value = yield collection.find_one({'keyword': keyword, 'user_id': user_id})
+    defer.returnValue(return_value)
+
+
+@defer.inlineCallbacks
+def get_user_keyword_frequency_iter(user_id):
+    collection = yield db.get_user_keyword_frequency_collection()
+    defer.returnValue(query_iterator(collection.find({'user_id': user_id}, cursor=True)))
+
+
+@defer.inlineCallbacks
+def get_user_keyword_frequency_distinct_userids():
     # Return distinct user id.
     collection = yield db.get_user_keyword_frequency_collection()
     return_value = yield collection.distinct(key='user_id')

@@ -251,12 +251,9 @@ def update_user_keywords_profiles(global_freq_cutoff=0.1):
     yield db_utils.delete_user_profiles()
 
     # Create new user profiles based on keyword user frequency.
-    user_keyword_frequency_distinct_userid_iter = yield db_utils.get_user_keyword_frequency_distinct_userid_iter()
-    while True:
-        user_id = yield user_keyword_frequency_distinct_userid_iter.next()
-        if user_id is None:
-            break
 
+    _iter_list = yield db_utils.get_user_keyword_frequency_distinct_userids()
+    for user_id in _iter_list:
         user_profile_keywords = []
 
         user_keyword_frequency_iter = yield db_utils.get_user_keyword_frequency_iter(user_id)
