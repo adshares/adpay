@@ -252,15 +252,6 @@ def get_payment_round_iter():
     defer.returnValue(query_iterator(collection.find(cursor=True)))
 
 
-@defer.inlineCallbacks
-def get_last_round():
-    sort_filter = txfilter.sort(txfilter.DESCENDING("timestamp"))
-    collection = yield db.get_payment_rounds_collection()
-
-    return_value = yield collection.find_one(sort=sort_filter)
-    defer.returnValue(return_value)
-
-
 # User Values (Columns: campaign_id, timestamp, user_id, payment, credibility)
 @defer.inlineCallbacks
 def get_user_value_iter(campaign_id, timestamp):

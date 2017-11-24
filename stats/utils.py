@@ -169,7 +169,6 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
             event_payment = user_budget*event_payment/total_user_payments
             yield db_utils.update_event_payment(campaign_id, timestamp, event_id, event_payment)
 
-
         # Update User Values
         yield db_utils.update_user_value(campaign_id, timestamp, uid, max_user_payment, max_human_score)
 
@@ -253,7 +252,6 @@ def update_user_keywords_profiles(global_freq_cutoff=0.1):
     yield db_utils.delete_user_profiles()
 
     # Create new user profiles based on keyword user frequency.
-
     _iter_list = yield db_utils.get_user_keyword_frequency_distinct_userids()
     for user_id in _iter_list:
         user_profile_keywords = []
@@ -271,7 +269,7 @@ def update_user_keywords_profiles(global_freq_cutoff=0.1):
                 continue
 
             # Take only that keywords which global frequency is equal or less than 0.1.
-            if global_keyword_doc and global_keyword_doc['frequency'] > global_freq_cutoff:
+            if global_keyword_doc['frequency'] > global_freq_cutoff:
                 continue
 
             keyword_score = 1.0*user_keyword_doc['frequency']/(0.01 + global_keyword_doc['frequency'])
@@ -297,3 +295,11 @@ def add_view_keywords(user_id, keywords_list):
         yield update_keywords_stats()
     finally:
         yield ADD_EVENT_LOCK.release()
+
+
+@defer.inlineCallbacks
+def delete_campaign(campaign_id):
+    # TODO: add deleting events and other objects related to campaign.
+
+    yield db_utils.delete_campaign(campaign_id)
+    yield db_utils.delete_campaign_banners(campaign_id)

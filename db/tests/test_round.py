@@ -21,6 +21,3 @@ class DBTestCase(db_tests.DBTestCase):
             counter += 1
             self.assertIn(round_doc['timestamp'], [3600, 7200])
         self.assertEqual(counter, 2)
-
-        last_round_doc = yield db_utils.get_last_round()
-        self.assertEqual(last_round_doc['timestamp'], 7200)

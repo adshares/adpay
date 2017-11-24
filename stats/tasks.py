@@ -6,54 +6,47 @@ import time
 
 
 @defer.inlineCallbacks
-def _calculate_payments(timestamp):
-    campaign_iter = yield db_utils.get_campaign_iter()
-    while True:
-        campaign_doc = yield campaign_iter.next()
-        if not campaign_doc:
-            break
-
-        # Do not calculate campaign which are finished
-        if campaign_doc['end_timestamp'] <= timestamp - stats_consts.SECONDS_PER_HOUR:
-            continue
-
-        yield stats_utils.calculate_events_payments(campaign_doc['campaign_id'], timestamp)
-
-
-@defer.inlineCallbacks
-def calculate_payments():
+def _adpay_task(timestamp=None):
     """
         Task calculate payments and update user profiles only once a hour.
     """
 
+    # As recalculate only finished hours, take timestamp from an hour before now.
+    if timestamp is None:
+        timestamp = int(time.time()) - stats_consts.SECONDS_PER_HOUR
+    timestamp = stats_utils.timestamp2hour(timestamp)
+
+    last_round_doc = yield db_utils.get_payment_round(timestamp)
+    if last_round_doc is not None:
+        defer.returnValue(None)
+
     # User keywords profiles update
     yield stats_utils.update_user_keywords_profiles()
 
-    # Determine which timestamp should be calculated
-    current_round = stats_utils.timestamp2hour(int(time.time()))
-    last_round_timestamp = current_round - stats_consts.SECONDS_PER_HOUR
-
-    # If last calculated timesamp round find in database, replace last_round_timestamp
-    last_round_doc = yield db_utils.get_last_round()
-    if last_round_doc:
-        last_round_timestamp = last_round_doc['timestamp']
-
-    # If last_round_timestamp is not found in database, calculate last hour only.
+    # Calculate payments for every campaign in the round
+    _iter = yield db_utils.get_campaign_iter()
     while True:
-        last_round_timestamp += stats_consts.SECONDS_PER_HOUR
-        if last_round_timestamp > current_round:
+        campaign_doc = yield _iter.next()
+        if not campaign_doc:
             break
 
-        yield _calculate_payments(last_round_timestamp)
-        yield db_utils.update_payment_round(last_round_timestamp)
+        # Clear camapaign data and do not calculate.
+        if campaign_doc['end_timestamp'] < timestamp:
+            yield stats_utils.delete_campaign(campaign_doc['campaign_id'])
+            continue
+
+        yield stats_utils.calculate_events_payments(campaign_doc['campaign_id'], timestamp)
+
+    yield db_utils.update_payment_round(timestamp)
 
 
-def calculate_payments_task(interval_seconds=2):
-    #Recalculate payments every hour.
+def adpay_task(interval_seconds=60):
+    def callback(*args, **kwgs):
+        reactor.callLater(interval_seconds, adpay_task)
 
-    calculate_payments()
-    reactor.callLater(interval_seconds, calculate_payments_task)
+    deffered = _adpay_task()
+    deffered.addCallback(callback)
 
 
 def configure_tasks(interval_seconds=2):
-    reactor.callLater(interval_seconds, calculate_payments_task)
+    reactor.callLater(interval_seconds, adpay_task)
