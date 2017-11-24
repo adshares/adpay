@@ -18,7 +18,7 @@ class DBTestCase(unittest.TestCase):
         yield db.disconnect()
 
     @defer.inlineCallbacks
-    def test_user_value(self):
+    def test_uservalue(self):
         # Test adding user value
         for i in range(100):
             yield db_utils.update_user_value(campaign_id="campaign_id",

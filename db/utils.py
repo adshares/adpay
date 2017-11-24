@@ -318,7 +318,8 @@ def get_sorted_user_score_iter(campaign_id, timestamp, limit):
     collection = yield db.get_user_score_collection()
 
     defer.returnValue(query_iterator(collection.find({'campaign_id': campaign_id, 'timestamp': timestamp},
-                                                     sort=txfilter.sort(txfilter.DESCENDING("score")), limit=limit)))
+                                                     sort=txfilter.sort(txfilter.DESCENDING("score")),
+                                                     limit=limit, cursor=True)))
 
 
 @defer.inlineCallbacks

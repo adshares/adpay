@@ -138,7 +138,7 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
         if not user_score_doc:
             break
 
-        total_score+= user_score_doc['score']
+        total_score += user_score_doc['score']
 
     user_score_iter = yield db_utils.get_sorted_user_score_iter(campaign_id, timestamp, limit=limit)
     while True:
