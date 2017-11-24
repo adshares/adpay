@@ -29,7 +29,6 @@ def calculate_payments():
     # User keywords profiles update
     yield stats_utils.update_user_keywords_profiles()
 
-
     # Determine which timestamp should be calculated
     current_round = stats_utils.timestamp2hour(int(time.time()))
     last_round_timestamp = current_round - stats_consts.SECONDS_PER_HOUR
@@ -38,7 +37,6 @@ def calculate_payments():
     last_round_doc = yield db_utils.get_last_round()
     if last_round_doc:
         last_round_timestamp = last_round_doc['timestamp']
-
 
     # If last_round_timestamp is not found in database, calculate last hour only.
     while True:

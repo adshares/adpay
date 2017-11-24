@@ -5,7 +5,10 @@ from adpay.stats import consts as stats_consts
 from adpay.db import consts as db_consts
 from adpay.db import utils as db_utils
 
-import random, math
+import math
+
+
+ADD_EVENT_LOCK = defer.DeferredLock()
 
 
 def timestamp2hour(timestamp):
@@ -15,14 +18,6 @@ def timestamp2hour(timestamp):
 def genkey(key, val, delimiter="_"):
     keywal = "%s%s%s" % (key, delimiter, val)
     return keywal.replace(".", "")
-
-
-def get_user_credibility(user_id):
-    """
-        Return user credibility value [0, 1] from aduser.
-        The value determines whether user is the real user or the bot.
-    """
-    return random.random()
 
 
 @defer.inlineCallbacks
@@ -282,11 +277,15 @@ def update_user_keywords_profiles(global_freq_cutoff=0.1):
 
 @defer.inlineCallbacks
 def add_view_keywords(user_id, keywords_list):
-    # Update global keywords cache and user keyword stats.
-    stats_cache.views_inc()
-    for keyword in keywords_list:
-        stats_cache.keyword_inc(keyword)
-        yield update_user_keywords_stats(user_id, keyword)
+    try:
+        yield ADD_EVENT_LOCK.acquire()
+        # Update global keywords cache and user keyword stats.
+        stats_cache.views_inc()
+        for keyword in keywords_list:
+            stats_cache.keyword_inc(keyword)
+            yield update_user_keywords_stats(user_id, keyword)
 
-    # Update global keywords stats.
-    yield update_keywords_stats()
+        # Update global keywords stats.
+        yield update_keywords_stats()
+    finally:
+        yield ADD_EVENT_LOCK.release()
