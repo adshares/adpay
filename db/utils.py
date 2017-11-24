@@ -398,13 +398,6 @@ def delete_user_keyword_frequency(_id):
 
 # User keywords profiles (user_id, keyword_score_dict e.g. {'keyword1':score1, 'keyword2':score2, ...})
 @defer.inlineCallbacks
-def get_user_profile(user_id):
-    collection = yield db.get_user_profile_collection()
-    return_value = yield collection.find_one({'user_id': user_id})
-    defer.returnValue(return_value)
-
-
-@defer.inlineCallbacks
 def update_user_profile(user_id, profile_dict):
     collection = yield db.get_user_profile_collection()
     return_value = yield collection.replace_one({
@@ -417,10 +410,17 @@ def update_user_profile(user_id, profile_dict):
 
 
 @defer.inlineCallbacks
+def get_user_profile(user_id):
+    collection = yield db.get_user_profile_collection()
+    return_value = yield collection.find_one({'user_id': user_id})
+    defer.returnValue(return_value)
+
+
+@defer.inlineCallbacks
 def delete_user_profiles():
     # Remove all user profiles
     collection = yield db.get_user_profile_collection()
-    return_value = yield collection.delete_many()
+    return_value = yield collection.delete_many({})
     defer.returnValue(return_value)
 
 

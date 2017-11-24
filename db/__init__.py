@@ -91,7 +91,7 @@ def get_user_keyword_frequency_collection():
 @defer.inlineCallbacks
 def get_user_profile_collection():
     mongo_db = yield get_mongo_db()
-    yield mongo_db.user_profile
+    defer.returnValue(mongo_db.user_profile)
 
 
 @defer.inlineCallbacks
