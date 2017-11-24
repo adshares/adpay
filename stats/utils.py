@@ -195,9 +195,9 @@ def update_keywords_stats(recalculate_per_views=1000, cutoff=0.00001, deckay=0.0
     stats_cache.reset_keywords_stats()
     stats_cache.reset_views_stats()
 
-    no_updated_keyword_frequency_ite = yield db_utils.get_no_updated_keyword_frequency_iter()
+    _iter = yield db_utils.get_no_updated_keyword_frequency_iter()
     while True:
-        keyword_frequency_doc = yield no_updated_keyword_frequency_ite.next()
+        keyword_frequency_doc = yield _iter.next()
         if keyword_frequency_doc is None:
             break
 
@@ -286,13 +286,14 @@ def update_user_keywords_profiles(global_freq_cutoff=0.1):
 def add_view_keywords(user_id, keywords_list):
     try:
         yield ADD_EVENT_LOCK.acquire()
-        # Update global keywords cache and user keyword stats.
-        stats_cache.views_inc()
-        for keyword in keywords_list:
-            stats_cache.keyword_inc(keyword)
+
+        # Update user keyword stats.
         yield update_user_keywords_stats(user_id, keywords_list)
 
         # Update global keywords stats.
+        for keyword in keywords_list:
+            stats_cache.keyword_inc(keyword)
+        stats_cache.views_inc()
         yield update_keywords_stats()
     finally:
         yield ADD_EVENT_LOCK.release()
