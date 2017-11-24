@@ -76,12 +76,9 @@ def get_event_max_payment(event_doc, max_cpc, max_cpv):
 
 @defer.inlineCallbacks
 def get_user_payment_score(campaign_id, timestamp, user_id, amount=5):
-    # To calculate user value take user values from the previous hour
-    previous_hour = timestamp - 3600
-
     # Find most similar users to user_id
     users = []
-    user_value_iter = yield db_utils.get_user_value_iter(campaign_id, previous_hour)
+    user_value_iter = yield db_utils.get_user_value_iter(campaign_id, timestamp)
     while True:
         user_value = yield user_value_iter.next()
         if user_value is None:
@@ -95,7 +92,7 @@ def get_user_payment_score(campaign_id, timestamp, user_id, amount=5):
     # Calculate payment score for user
     score_components = []
     for similarity, uid in users:
-        user_stat = yield db_utils.get_user_value(campaign_id, previous_hour, uid)
+        user_stat = yield db_utils.get_user_value(campaign_id, timestamp, uid)
         if user_stat:
             score_components.append(user_stat['payment']*user_stat['credibility'])
 
@@ -223,21 +220,39 @@ def update_keywords_stats(recalculate_per_views=1000, cutoff=0.00001, deckay=0.0
 
 
 @defer.inlineCallbacks
-def update_user_keywords_stats(user_id, keyword, cutoff=0.001, deckay=0.01):
-    user_keyword_doc = yield db_utils.get_user_keyword_frequency(user_id, keyword)
+def update_user_keywords_stats(user_id, keywords_list, cutoff=0.001, deckay=0.01):
+    # Update new keyword to database.
+    for keyword in keywords_list:
+        user_keyword_doc = yield db_utils.get_user_keyword_frequency(user_id, keyword)
 
-    old_keyword_frequency = 0
-    if user_keyword_doc is not None:
-        old_keyword_frequency = user_keyword_doc['frequency']
+        old_keyword_frequency = 0
+        if user_keyword_doc is not None:
+            old_keyword_frequency = user_keyword_doc['frequency']
 
-    frequency = deckay + old_keyword_frequency*(1-deckay)
-
-    if frequency <= cutoff:
-        # Delete keyword stats for user keyword.
-        yield db_utils.delete_user_keyword_frequency(user_keyword_doc['_id'])
-    else:
-        # Update user keyword stats.
+        frequency = deckay + old_keyword_frequency * (1 - deckay)
         yield db_utils.update_user_keyword_frequency(user_id, keyword, frequency)
+
+    # Decay keywords frequencies in database.
+    _iter = yield db_utils.get_user_keyword_frequency_iter(user_id)
+    while True:
+        user_keyword_doc = yield _iter.next()
+        if user_keyword_doc is None:
+            break
+
+        if user_keyword_doc['updated']:
+            continue
+
+        keyword = user_keyword_doc['keyword']
+        frequency = user_keyword_doc['frequency']*(1-deckay)
+
+        if frequency <= cutoff:
+            # Delete keyword stats for user keyword.
+            yield db_utils.delete_user_keyword_frequency(user_keyword_doc['_id'])
+        else:
+            # Update user keyword stats.
+            yield db_utils.update_user_keyword_frequency(user_id, keyword, frequency)
+
+    yield db_utils.set_user_keyword_frequency_updated_flag(updated=False)
 
 
 @defer.inlineCallbacks
@@ -283,7 +298,7 @@ def add_view_keywords(user_id, keywords_list):
         stats_cache.views_inc()
         for keyword in keywords_list:
             stats_cache.keyword_inc(keyword)
-            yield update_user_keywords_stats(user_id, keyword)
+        yield update_user_keywords_stats(user_id, keywords_list)
 
         # Update global keywords stats.
         yield update_keywords_stats()

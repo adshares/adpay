@@ -21,12 +21,13 @@ class DBTestCase(db_tests.DBTestCase):
             keyword_freq_doc = yield db_utils.get_keyword_frequency(keyword)
             self.assertEqual(keyword_freq_doc['keyword'], keyword)
             self.assertEqual(keyword_freq_doc['frequency'], freq)
-            self.assertEqual(keyword_freq_doc['updated'], False)
+            self.assertTrue(keyword_freq_doc['updated'])
 
 
             yield db_utils.update_keyword_frequency(
                 keyword = keyword,
-                frequency = 2*freq
+                frequency = 2*freq,
+                updated=False
             )
             keyword_freq_doc = yield db_utils.get_keyword_frequency(keyword)
             self.assertEqual(keyword_freq_doc['frequency'], 2*freq)

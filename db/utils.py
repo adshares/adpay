@@ -353,9 +353,9 @@ def delete_user_scores(campaign_id, timestamp):
     defer.returnValue(return_value)
 
 
-# User keywords frequency (user_id, keyword, frequency)
+# User keywords frequency (user_id, keyword, frequency, updated=True)
 @defer.inlineCallbacks
-def update_user_keyword_frequency(user_id, keyword, frequency):
+def update_user_keyword_frequency(user_id, keyword, frequency, updated=True):
     collection = yield db.get_user_keyword_frequency_collection()
     return_value = yield collection.replace_one({
         'keyword': keyword,
@@ -363,8 +363,16 @@ def update_user_keyword_frequency(user_id, keyword, frequency):
     }, {
         'keyword': keyword,
         'user_id': user_id,
-        'frequency': frequency
+        'frequency': frequency,
+        'updated': updated
     }, upsert=True)
+    defer.returnValue(return_value)
+
+
+@defer.inlineCallbacks
+def set_user_keyword_frequency_updated_flag(updated=False):
+    collection = yield db.get_user_keyword_frequency_collection()
+    return_value = yield collection.update_many({}, {"$set": {"updated": updated}})
     defer.returnValue(return_value)
 
 
@@ -426,7 +434,7 @@ def delete_user_profiles():
 
 # Keywords views (keyword, frequency, updated=False)
 @defer.inlineCallbacks
-def update_keyword_frequency(keyword, frequency, updated=False):
+def update_keyword_frequency(keyword, frequency, updated=True):
     collection = yield db.get_keyword_frequency_collection()
     return_value = yield collection.replace_one({
         'keyword': keyword
