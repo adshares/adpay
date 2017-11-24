@@ -5,7 +5,6 @@ from adpay.db import utils as db_utils
 
 
 class DBTestCase(db_tests.DBTestCase):
-
     @defer.inlineCallbacks
     def test_userscore(self):
         # Test adding user scores
@@ -13,7 +12,7 @@ class DBTestCase(db_tests.DBTestCase):
             yield db_utils.update_user_score(campaign_id="campaign_id",
                                              timestamp=3500,
                                              user_id=i,
-                                             score=i*10)
+                                             score=i * 10)
 
         _iter = yield db_utils.get_sorted_user_score_iter("campaign_id", 3600, 50)
         last_score, counter = None, 0
@@ -32,7 +31,7 @@ class DBTestCase(db_tests.DBTestCase):
             yield db_utils.update_user_score(campaign_id="campaign_id",
                                              timestamp=3500,
                                              user_id=i,
-                                             score=i*100)
+                                             score=i * 100)
 
         _iter = yield db_utils.get_sorted_user_score_iter("campaign_id", 3600, 50)
         while True:
@@ -40,7 +39,7 @@ class DBTestCase(db_tests.DBTestCase):
             if user_score_doc is None:
                 break
 
-            self.assertEqual(user_score_doc['user_id']*100, user_score_doc['score'])
+            self.assertEqual(user_score_doc['user_id'] * 100, user_score_doc['score'])
 
         # Test deleting user scores.
         yield db_utils.delete_user_scores("campaign_id", 3600)

@@ -6,7 +6,6 @@ from adpay.stats import utils as stats_utils
 
 
 class DBTestCase(db_tests.DBTestCase):
-
     @defer.inlineCallbacks
     def test_user_keyword_stats_update(self):
         cutoff, deckay = 0.001, 0.01
@@ -26,13 +25,13 @@ class DBTestCase(db_tests.DBTestCase):
             self.assertIsNotNone(_key2_freq_doc)
 
             if key1_freq_doc is not None:
-                self.assertEqual(deckay + (1-deckay)*key1_freq_doc['frequency'], _key1_freq_doc['frequency'])
+                self.assertEqual(deckay + (1 - deckay) * key1_freq_doc['frequency'], _key1_freq_doc['frequency'])
 
             if key2_freq_doc is not None:
-                self.assertEqual(deckay + (1-deckay)*key2_freq_doc['frequency'], _key1_freq_doc['frequency'])
+                self.assertEqual(deckay + (1 - deckay) * key2_freq_doc['frequency'], _key1_freq_doc['frequency'])
 
             _key3_freq_doc = yield db_utils.get_user_keyword_frequency("user_id", "keyword_3")
             if _key3_freq_doc is not None:
-                self.assertEqual(_key3_freq_doc['frequency'], key3_freq_doc['frequency']*(1-deckay))
+                self.assertEqual(_key3_freq_doc['frequency'], key3_freq_doc['frequency'] * (1 - deckay))
 
             key1_freq_doc, key2_freq_doc, key3_freq_doc = _key1_freq_doc, _key2_freq_doc, _key3_freq_doc

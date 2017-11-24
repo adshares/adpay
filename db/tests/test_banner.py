@@ -5,7 +5,6 @@ from adpay.db import utils as db_utils
 
 
 class DBTestCase(db_tests.DBTestCase):
-
     @defer.inlineCallbacks
     def test_banner(self):
         yield db_utils.update_banner("banner_id1", "campaign_id")

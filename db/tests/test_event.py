@@ -6,7 +6,6 @@ from adpay.db import consts as db_consts
 
 
 class DBTestCase(db_tests.DBTestCase):
-
     @defer.inlineCallbacks
     def test_event(self):
         # Test event add.
@@ -15,7 +14,7 @@ class DBTestCase(db_tests.DBTestCase):
                 event_id=i,
                 event_type=db_consts.EVENT_TYPE_CLICK,
                 timestamp=0,
-                user_id=i%20,
+                user_id=i % 20,
                 banner_id=1,
                 campaign_id="campaign_id",
                 paid_amount=10,
@@ -33,7 +32,7 @@ class DBTestCase(db_tests.DBTestCase):
             self.assertEqual(event_doc['user_id'], 0)
             self.assertEqual(event_doc['timestamp'], 0)
             self.assertEqual(event_doc['campaign_id'], "campaign_id")
-            counter +=1
+            counter += 1
         self.assertEqual(counter, 15)
 
         unique_uids = yield db_utils.get_events_distinct_uids("campaign_id", timestamp=0)
@@ -49,6 +48,5 @@ class DBTestCase(db_tests.DBTestCase):
             event_doc = yield event_iter.next()
             if not event_doc:
                 break
-            counter +=1
+            counter += 1
         self.assertEqual(counter, 0)
-

@@ -5,7 +5,6 @@ from adpay.db import utils as db_utils
 
 
 class DBTestCase(db_tests.DBTestCase):
-
     @defer.inlineCallbacks
     def test_round(self):
         for timestamp in range(7200, 1, -1000):
@@ -19,7 +18,7 @@ class DBTestCase(db_tests.DBTestCase):
             if round_doc is None:
                 break
 
-            counter +=1
+            counter += 1
             self.assertIn(round_doc['timestamp'], [3600, 7200])
         self.assertEqual(counter, 2)
 
