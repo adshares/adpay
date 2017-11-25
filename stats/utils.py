@@ -125,7 +125,7 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
         total_users += 1
 
     # Limit paid users to given payment_percentage_cutoff
-    limit = total_users*payment_percentage_cutoff
+    limit = int(total_users*payment_percentage_cutoff)
 
     total_score = 0
     user_score_iter = yield db_utils.get_sorted_user_score_iter(campaign_id, timestamp, limit=limit)
