@@ -36,6 +36,10 @@ def get_users_similarity(user1_id, user2_id):
         1 - user1 is recognised as user2
         0 - user1 and user2 are completely different.
     """
+
+    if user1_id == user2_id:
+        defer.returnValue(1.0)
+
     user1_profile_keywords = yield get_user_profile_keywords(user1_id)
     user2_profile_keywords = yield get_user_profile_keywords(user2_id)
 
@@ -80,12 +84,12 @@ def get_user_payment_score(campaign_id, timestamp, user_id, amount=5):
     users = []
     user_value_iter = yield db_utils.get_user_value_iter(campaign_id, timestamp)
     while True:
-        user_value = yield user_value_iter.next()
-        if user_value is None:
+        user_value_doc = yield user_value_iter.next()
+        if user_value_doc is None:
             break
 
-        uid = user_value['user_id']
-        similarity = get_users_similarity(uid, user_id)
+        uid = user_value_doc['user_id']
+        similarity = yield get_users_similarity(uid, user_id)
         reverse_insort(users, (similarity, uid))
         users = users[:amount]
 
@@ -94,7 +98,7 @@ def get_user_payment_score(campaign_id, timestamp, user_id, amount=5):
     for similarity, uid in users:
         user_stat = yield db_utils.get_user_value(campaign_id, timestamp, uid)
         if user_stat:
-            score_components.append(user_stat['payment']*user_stat['credibility'])
+            score_components.append(user_stat['payment']*user_stat['human_score'])
 
     if not score_components:
         defer.returnValue(0)

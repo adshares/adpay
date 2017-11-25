@@ -252,7 +252,7 @@ def get_payment_round_iter():
     defer.returnValue(query_iterator(collection.find(cursor=True)))
 
 
-# User Values (Columns: campaign_id, timestamp, user_id, payment, credibility)
+# User Values (Columns: campaign_id, timestamp, user_id, payment, human_score)
 @defer.inlineCallbacks
 def get_user_value_iter(campaign_id, timestamp):
     from adpay.stats import utils as stats_utils

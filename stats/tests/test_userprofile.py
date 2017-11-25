@@ -4,7 +4,6 @@ from adpay.db import tests as db_tests
 from adpay.db import utils as db_utils
 from adpay.stats import utils as stats_utils
 from adpay.stats import consts as stats_consts
-from adpay.stats import cache as stats_cache
 
 
 class DBTestCase(db_tests.DBTestCase):
