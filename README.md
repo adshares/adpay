@@ -19,6 +19,9 @@ Create virtualenv environment for adpay.
 $ cd ~
 $ virtualenv adpay
 $ source ~/adpay/bin/activate
+
+$ export VIRTUALENV_ROOT=$HOME/adpay
+$ export PYTHONPATH=$HOME/adpay:$PYTHONPATH
 ```
 
 Create folder for MONGO database.
