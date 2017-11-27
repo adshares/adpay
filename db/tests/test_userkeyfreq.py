@@ -31,17 +31,4 @@ class DBTestCase(db_tests.DBTestCase):
             yield db_utils.update_user_keyword_frequency(user_id, keyword, freq)
 
         distinct_uids = yield db_utils.get_user_keyword_frequency_distinct_userids()
-        self.assertEqual(distinct_uids, ["user_%s" % i for i in range(20)])
-
-        for index, uid in enumerate(distinct_uids):
-            user_keywords = []
-            _iter = yield db_utils.get_user_keyword_frequency_iter(uid)
-            while True:
-                user_keyword_freq_doc = yield _iter.next()
-                if not user_keyword_freq_doc:
-                    break
-
-                user_keywords.append(user_keyword_freq_doc)
-
-            keywords = [elem['keyword'] for elem in user_keywords]
-            self.assertEqual(keywords, ["keyword_%s" % (index + 20 * i) for i in range(5)])
+        self.assertFalse(set(distinct_uids) - set([u"user_%s" % i for i in range(20)]))

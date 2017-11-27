@@ -9,29 +9,52 @@ import txmongo
 def configure_db():
     yield get_mongo_db()
 
-    #Creating indexes when daemon starts
     campaign_idx = filter.sort(filter.ASCENDING("campaign_id"))
     banner_idx = filter.sort(filter.ASCENDING("banner_id"))
     timestamp_idx = filter.sort(filter.ASCENDING("timestamp"))
     event_idx = filter.sort(filter.ASCENDING("event_id"))
+    user_idx = filter.sort(filter.ASCENDING("user_id"))
+    keyowrd_idx = filter.sort(filter.ASCENDING("keyword"))
+    updated_idx = filter.sort(filter.ASCENDING("updated"))
 
     campaign_collection = yield get_campaign_collection()
-    banner_collection = yield get_banner_collection()
-    event_collection = yield get_event_collection()
-    payment_round_collection = yield get_payment_rounds_collection()
-
-    # Campaign indexes
     yield campaign_collection.create_index(campaign_idx, unique=True)
 
-    # Banner indexes
+    banner_collection = yield get_banner_collection()
     yield banner_collection.create_index(banner_idx, unique=True)
+    yield banner_collection.create_index(campaign_idx)
 
-    # Timestamp indexes
+    event_collection = yield get_event_collection()
+    yield event_collection.create_index(event_idx, unique=True)
     yield event_collection.create_index(timestamp_idx)
+    yield event_collection.create_index(banner_idx)
+    yield event_collection.create_index(user_idx)
+
+    payment_collection = yield get_payment_collection()
+    yield payment_collection.create_index(timestamp_idx)
+
+    payment_round_collection = yield get_payment_rounds_collection()
     yield payment_round_collection.create_index(timestamp_idx, unique=True)
 
-    # Event indexes
-    yield event_collection.create_index(event_idx, unique=True)
+    user_value_collection = yield get_user_value_collection()
+    yield user_value_collection.create_index(user_idx)
+    yield user_value_collection.create_index(campaign_idx)
+
+    user_score_collection = yield get_user_score_collection()
+    yield user_score_collection.create_index(timestamp_idx)
+    yield user_value_collection.create_index(campaign_idx)
+    yield user_value_collection.create_index(user_idx)
+
+    user_keyword_frequency_collection = yield get_user_keyword_frequency_collection()
+    yield user_keyword_frequency_collection.create_index(user_idx)
+    yield user_keyword_frequency_collection.create_index(keyowrd_idx)
+
+    user_profile_collection = yield get_user_profile_collection()
+    yield user_profile_collection.create_index(user_idx)
+
+    keyword_frequency_collection = yield get_keyword_frequency_collection()
+    keyword_frequency_collection.create_index(updated_idx)
+    keyword_frequency_collection.create_index(keyowrd_idx)
 
 
 @defer.inlineCallbacks
