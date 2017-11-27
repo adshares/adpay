@@ -4,7 +4,6 @@ from adpay.db import tests as db_tests
 from adpay.db import utils as db_utils
 from adpay.db import consts as db_consts
 from adpay.stats import utils as stats_utils
-from adpay.stats import consts as stats_consts
 
 
 class DBTestCase(db_tests.DBTestCase):
@@ -35,6 +34,16 @@ class DBTestCase(db_tests.DBTestCase):
         user2_value_doc = yield db_utils.get_user_value("campaign_id", "user_id2")
         self.assertEqual(user2_value_doc['payment'], 100)
         self.assertEqual(user2_value_doc['human_score'], 0.5)
+
+        # Check payments
+        _iter = yield db_utils.get_payments_iter(3600)
+        while True:
+            event_payment_doc = yield _iter.next()
+            if event_payment_doc is None:
+                break
+
+            self.assertEqual(event_payment_doc['payment'], 100)
+            self.assertEqual(event_payment_doc['campaign_id'], "campaign_id")
 
         # User scores should be empty.
         _iter = yield db_utils.get_sorted_user_score_iter("campaign_id", 3600, limit=1)
