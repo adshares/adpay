@@ -47,4 +47,9 @@ Run adpay daemon.
 $ supervisord -c ~/adpay/adpay/config/supervisord.conf
 ```
 
+## Build
+```
+$ cd ~/adpay/adpay
+$ trial db iface stats
+```
 
