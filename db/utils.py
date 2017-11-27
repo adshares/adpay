@@ -252,46 +252,33 @@ def get_payment_round_iter():
     defer.returnValue(query_iterator(collection.find(cursor=True)))
 
 
-# User Values (Columns: campaign_id, timestamp, user_id, payment, human_score)
+# User Values (Columns: campaign_id, user_id, payment, human_score)
 @defer.inlineCallbacks
-def get_user_value_iter(campaign_id, timestamp):
-    from adpay.stats import utils as stats_utils
-
-    timestamp = stats_utils.timestamp2hour(timestamp)
+def get_user_value_iter(campaign_id):
     collection = yield db.get_user_value_collection()
-
-    defer.returnValue(query_iterator(collection.find({'campaign_id': campaign_id, 'timestamp': timestamp}, cursor=True)))
+    defer.returnValue(query_iterator(collection.find({'campaign_id': campaign_id}, cursor=True)))
 
 
 @defer.inlineCallbacks
-def get_user_value(campaign_id, timestamp, user_id):
-    from adpay.stats import utils as stats_utils
-
-    timestamp = stats_utils.timestamp2hour(timestamp)
+def get_user_value(campaign_id, user_id):
     collection = yield db.get_user_value_collection()
 
     return_value = yield collection.find_one({
         'campaign_id': campaign_id,
-        'timestamp': timestamp,
         'user_id': user_id
     })
     defer.returnValue(return_value)
 
 
 @defer.inlineCallbacks
-def update_user_value(campaign_id, timestamp, user_id, payment, human_score):
-    from adpay.stats import utils as stats_utils
-
-    timestamp = stats_utils.timestamp2hour(timestamp)
+def update_user_value(campaign_id, user_id, payment, human_score):
     collection = yield db.get_user_value_collection()
 
     return_value = yield collection.replace_one({
         'campaign_id': campaign_id,
-        'timestamp': timestamp,
         'user_id': user_id
     }, {
         'campaign_id': campaign_id,
-        'timestamp': timestamp,
         'user_id': user_id,
         'payment': payment,
         'human_score': human_score

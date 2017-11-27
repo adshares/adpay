@@ -10,12 +10,11 @@ class DBTestCase(db_tests.DBTestCase):
         # Test adding user value
         for i in range(100):
             yield db_utils.update_user_value(campaign_id="campaign_id",
-                                             timestamp=3500,
                                              user_id=i,
                                              payment=i * 10,
                                              human_score=10)
 
-        _iter = yield db_utils.get_user_value_iter("campaign_id", 3600)
+        _iter = yield db_utils.get_user_value_iter("campaign_id")
         user_values = []
         while True:
             user_value_doc = yield _iter.next()
@@ -29,12 +28,11 @@ class DBTestCase(db_tests.DBTestCase):
         # Test update user value
         for i in range(100):
             yield db_utils.update_user_value(campaign_id="campaign_id",
-                                             timestamp=3500,
                                              user_id=i,
                                              payment=i * 20,
                                              human_score=10)
 
         # Test get user value.
         for i in range(100):
-            user_value_doc = yield db_utils.get_user_value("campaign_id", 3600, i)
+            user_value_doc = yield db_utils.get_user_value("campaign_id", i)
             self.assertEqual(user_value_doc["payment"], i * 20)

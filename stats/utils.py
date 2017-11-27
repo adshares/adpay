@@ -43,6 +43,9 @@ def get_users_similarity(user1_id, user2_id):
     user1_profile_keywords = yield get_user_profile_keywords(user1_id)
     user2_profile_keywords = yield get_user_profile_keywords(user2_id)
 
+    user1_profile_keywords = user1_profile_keywords or []
+    user2_profile_keywords = user2_profile_keywords or []
+
     common_keyowrds = len(set(user1_profile_keywords) & set(user2_profile_keywords))
     defer.returnValue(1.0*common_keyowrds/stats_consts.MAX_USER_KEYWORDS_IN_PROFILE)
 
@@ -79,10 +82,10 @@ def get_event_max_payment(event_doc, max_cpc, max_cpv):
 
 
 @defer.inlineCallbacks
-def get_user_payment_score(campaign_id, timestamp, user_id, amount=5):
+def get_user_payment_score(campaign_id, user_id, amount=5):
     # Find most similar users to user_id
     users = []
-    user_value_iter = yield db_utils.get_user_value_iter(campaign_id, timestamp)
+    user_value_iter = yield db_utils.get_user_value_iter(campaign_id)
     while True:
         user_value_doc = yield user_value_iter.next()
         if user_value_doc is None:
@@ -90,13 +93,14 @@ def get_user_payment_score(campaign_id, timestamp, user_id, amount=5):
 
         uid = user_value_doc['user_id']
         similarity = yield get_users_similarity(uid, user_id)
-        reverse_insort(users, (similarity, uid))
-        users = users[:amount]
+        if similarity > 0:
+            reverse_insort(users, (similarity, uid))
+            users = users[:amount]
 
     # Calculate payment score for user
     score_components = []
     for similarity, uid in users:
-        user_stat = yield db_utils.get_user_value(campaign_id, timestamp, uid)
+        user_stat = yield db_utils.get_user_value(campaign_id, uid)
         if user_stat:
             score_components.append(user_stat['payment']*user_stat['human_score'])
 
@@ -116,11 +120,28 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
     campaign_cpc = campaign_doc['max_cpc']
     campaign_cpv = campaign_doc['max_cpv']
 
+    # For new users add payments as cpv
+    uids = yield db_utils.get_events_distinct_uids(campaign_id, timestamp)
+    for uid in uids:
+        max_human_score = 0
+
+        user_events_iter = yield db_utils.get_user_events_iter(campaign_id, timestamp, uid)
+        while True:
+            event_doc = yield user_events_iter.next()
+            if not event_doc:
+                break
+
+            max_human_score = max([max_human_score, event_doc['human_score']])
+
+        user_value_doc = yield db_utils.get_user_value(campaign_id, uid)
+        if user_value_doc is None or user_value_doc['payment'] <= campaign_cpv:
+            yield db_utils.update_user_value(campaign_id, uid, campaign_cpv, max_human_score)
+
     # Saving payment scores for users.
     total_users = 0
     uids = yield db_utils.get_events_distinct_uids(campaign_id, timestamp)
     for uid in uids:
-        payment_score = yield get_user_payment_score(uid)
+        payment_score = yield get_user_payment_score(campaign_id, uid)
         yield db_utils.update_user_score(campaign_id, timestamp, uid, payment_score)
         total_users += 1
 
@@ -142,12 +163,16 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
         if not user_score_doc:
             break
 
-        uid = user_score_doc['uid']
+        uid = user_score_doc['user_id']
 
         # Calculate event payments
         user_budget = 1.0*user_score_doc['score']*campaign_budget/total_score
 
         max_user_payment, max_human_score, total_user_payments = 0, 0, 0
+
+        user_value_doc = yield db_utils.get_user_value(campaign_id, uid)
+        if user_value_doc is not None:
+            max_user_payment = user_value_doc['payment']
 
         user_events_iter = yield db_utils.get_user_events_iter(campaign_id, timestamp, uid)
         while True:
@@ -174,7 +199,7 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
             yield db_utils.update_event_payment(campaign_id, timestamp, event_id, event_payment)
 
         # Update User Values
-        yield db_utils.update_user_value(campaign_id, timestamp, uid, max_user_payment, max_human_score)
+        yield db_utils.update_user_value(campaign_id, uid, max_user_payment, max_human_score)
 
     # Delete user scores
     yield db_utils.delete_user_scores(campaign_id, timestamp)
