@@ -21,12 +21,27 @@ $ virtualenv adpay
 $ source ~/adpay/bin/activate
 ```
 
+Create folder for MONGO database.
+```
+$ mkdir -p ~/adpay/db/mongo
+```
+
+
+Create folders for supervisor.
+```
+$ mkdir -p ~/adpay/log/supervisor ~/adpay/log/adpay ~/adpay/log/mongo
+$ mkdir -p ~/adpay/run/supervisor ~/adpay/run/adpay ~/adpay/run/mongo
+```
+
 Download source code and install dependencies.
 ```
 $ git clone https://github.com/adshares/adpay.git ~/adpay/adpay
 $ pip install -r ~/adpay/adpay/requirements.txt
 ```
 
-Edit virtualenv local variable.
+Run adpay daemon.
+```
+$ supervisord -c ~/adpay/adpay/config/supervisord.conf
+```
 
 
