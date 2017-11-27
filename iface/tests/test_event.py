@@ -30,7 +30,7 @@ class InterfaceEventTestCase(IfaceTestCase):
             'banner_id': "banner_1",
             'our_keywords': {},
             'their_keywords': {},
-            'paid_amount': None
+            'event_value': None
         }
 
         pre_banner_events = yield self.get_banner_events('banner_1')
@@ -99,7 +99,7 @@ class InterfaceEventTestCase(IfaceTestCase):
             'banner_id': "banner_filter_id",
             'our_keywords': {'testkey': 5},
             'their_keywords': {},
-            'paid_amount': None
+            'event_value': None
         }
         pre_banner_events = yield self.get_banner_events('banner_filter_id')
 

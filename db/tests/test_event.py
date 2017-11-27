@@ -17,7 +17,7 @@ class DBTestCase(db_tests.DBTestCase):
                 user_id=i % 20,
                 banner_id=1,
                 campaign_id="campaign_id",
-                paid_amount=10,
+                event_value=10,
                 keywords="{}",
                 human_score=10)
 

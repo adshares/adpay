@@ -126,7 +126,7 @@ def delete_campaign_banners(campaign_id):
 
 # Events
 @defer.inlineCallbacks
-def update_event(event_id, event_type, timestamp, user_id, banner_id, campaign_id, paid_amount, keywords, human_score):
+def update_event(event_id, event_type, timestamp, user_id, banner_id, campaign_id, event_value, keywords, human_score):
     from adpay.stats import utils as stats_utils
 
     timestamp = stats_utils.timestamp2hour(timestamp)
@@ -139,7 +139,7 @@ def update_event(event_id, event_type, timestamp, user_id, banner_id, campaign_i
         'user_id': user_id,
         'banner_id': banner_id,
         'campaign_id': campaign_id,
-        'paid_amount': paid_amount,
+        'event_value': event_value,
         'keywords': keywords,
         'human_score': human_score
     }, upsert=True)

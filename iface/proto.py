@@ -39,7 +39,7 @@ class EventObject(jsonobject.JsonObject):
     banner_id = jsonobject.StringProperty()
     our_keywords = jsonobject.DictProperty()        # adshares keywords
     their_keywords = jsonobject.DictProperty()      # publisher keywords
-    paid_amount = jsonobject.FloatProperty()
+    event_value = jsonobject.FloatProperty()
 
 
 class PaymentsRequest(jsonobject.JsonObject):

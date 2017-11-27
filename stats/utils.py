@@ -73,7 +73,7 @@ def reverse_insort(a, x, lo=0, hi=None):
 def get_event_max_payment(event_doc, max_cpc, max_cpv):
     event_type, event_payment = event_doc['event_type'], 0
     if event_type == db_consts.EVENT_TYPE_CONVERSION:
-        event_payment = event_doc['paid_amount']
+        event_payment = event_doc['event_value']
     elif event_type == db_consts.EVENT_TYPE_CLICK:
         event_payment = max_cpc
     elif event_type == db_consts.EVENT_TYPE_VIEW:
