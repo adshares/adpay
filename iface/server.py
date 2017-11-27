@@ -6,6 +6,7 @@ from fastjsonrpc.server import JSONRPCServer
 from adpay.iface import consts as iface_consts
 from adpay.iface import utils as iface_utils
 from adpay.iface import proto as iface_proto
+from adpay.stats import tasks as stats_tasks
 
 
 class AdPayIfaceServer(JSONRPCServer):
@@ -37,6 +38,15 @@ class AdPayIfaceServer(JSONRPCServer):
         """
         response = yield iface_utils.get_payments(iface_proto.PaymentsRequest(req_data))
         defer.returnValue(response.to_json())
+
+    #test interface
+    @defer.inlineCallbacks
+    def jsonrpc_test_get_payments(self, *args, **kwgs):
+        """
+            Force payments recalculation.
+        """
+        return_value = yield stats_tasks.force_payment_recalculation()
+        defer.returnValue(True)
 
 
 def configure_iface(port = iface_consts.SERVER_PORT):

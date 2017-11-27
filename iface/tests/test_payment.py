@@ -35,3 +35,7 @@ class InterfacePaymentTestCase(IfaceTestCase):
         response = yield self.get_response("get_payments", [{'timestamp': 6500}])
         self.assertIsNotNone(response)
         self.assertEqual(len(response['result']['payments']), 100)
+
+    @defer.inlineCallbacks
+    def test_force_get_payments(self):
+        response = yield self.get_response("test_get_payments", [{'timestamp': 0}])

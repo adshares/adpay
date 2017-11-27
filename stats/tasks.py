@@ -40,6 +40,19 @@ def _adpay_task(timestamp=None):
     yield db_utils.update_payment_round(timestamp)
 
 
+@defer.inlineCallbacks
+def force_payment_recalculation():
+    # User keywords profiles update
+    timestamp = stats_utils.timestamp2hour(int(time.time()))
+
+    last_round_doc = yield db_utils.get_payment_round(timestamp)
+    if last_round_doc is not None:
+        yield db_utils.delete_payment_round(timestamp)
+
+    return_value = yield _adpay_task()
+    defer.returnValue(return_value)
+
+
 def adpay_task(interval_seconds=60):
     def callback(*args, **kwgs):
         reactor.callLater(interval_seconds, adpay_task)

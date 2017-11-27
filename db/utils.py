@@ -252,6 +252,17 @@ def get_payment_round_iter():
     defer.returnValue(query_iterator(collection.find(cursor=True)))
 
 
+@defer.inlineCallbacks
+def delete_payment_round(timestamp):
+    from adpay.stats import utils as stats_utils
+
+    timestamp = stats_utils.timestamp2hour(timestamp)
+    collection = yield db.get_payment_rounds_collection()
+
+    return_value = yield collection.delete_many({'timestamp': timestamp})
+    defer.returnValue(return_value)
+
+
 # User Values (Columns: campaign_id, user_id, payment, human_score)
 @defer.inlineCallbacks
 def get_user_value_iter(campaign_id):
