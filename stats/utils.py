@@ -70,14 +70,14 @@ def reverse_insort(a, x, lo=0, hi=None):
     a.insert(lo, x)
 
 
-def get_event_max_payment(event_doc, max_cpc, max_cpv):
+def get_event_max_payment(event_doc, max_cpc, max_cpm):
     event_type, event_payment = event_doc['event_type'], 0
     if event_type == db_consts.EVENT_TYPE_CONVERSION:
         event_payment = event_doc['event_value']
     elif event_type == db_consts.EVENT_TYPE_CLICK:
         event_payment = max_cpc
     elif event_type == db_consts.EVENT_TYPE_VIEW:
-        event_payment = max_cpv
+        event_payment = max_cpm
     return event_payment
 
 
@@ -118,7 +118,7 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
 
     campaign_budget = campaign_doc['budget']
     campaign_cpc = campaign_doc['max_cpc']
-    campaign_cpv = campaign_doc['max_cpv']
+    campaign_cpm = campaign_doc['max_cpm']
 
     # For new users add payments as cpv
     uids = yield db_utils.get_events_distinct_uids(campaign_id, timestamp)
@@ -134,8 +134,8 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
             max_human_score = max([max_human_score, event_doc['human_score']])
 
         user_value_doc = yield db_utils.get_user_value(campaign_id, uid)
-        if user_value_doc is None or user_value_doc['payment'] <= campaign_cpv:
-            yield db_utils.update_user_value(campaign_id, uid, campaign_cpv, max_human_score)
+        if user_value_doc is None or user_value_doc['payment'] <= campaign_cpm:
+            yield db_utils.update_user_value(campaign_id, uid, campaign_cpm, max_human_score)
 
     # Saving payment scores for users.
     total_users = 0
@@ -180,7 +180,7 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
             if not event_doc:
                 break
 
-            event_payment = get_event_max_payment(event_doc, campaign_cpc, campaign_cpv)
+            event_payment = get_event_max_payment(event_doc, campaign_cpc, campaign_cpm)
 
             total_user_payments += event_payment
             max_user_payment = max([max_user_payment, event_payment])
@@ -193,7 +193,7 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
                 break
 
             event_id = event_doc['event_id']
-            max_event_payment = get_event_max_payment(event_doc, campaign_cpc, campaign_cpv)
+            max_event_payment = get_event_max_payment(event_doc, campaign_cpc, campaign_cpm)
             event_payment = min([user_budget*max_event_payment/total_user_payments, max_event_payment])
             yield db_utils.update_event_payment(campaign_id, timestamp, event_id, event_payment)
 

@@ -13,7 +13,7 @@ class DBTestCase(db_tests.DBTestCase):
         self.assertEqual(campaign_doc['time_start'], 12345)
         self.assertEqual(campaign_doc['time_end'], 12347)
         self.assertEqual(campaign_doc['max_cpc'], 100)
-        self.assertEqual(campaign_doc['max_cpv'], 200)
+        self.assertEqual(campaign_doc['max_cpm'], 200)
         self.assertEqual(campaign_doc['budget'], 1000)
 
         yield db_utils.delete_campaign("campaign_id")

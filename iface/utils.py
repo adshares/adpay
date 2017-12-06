@@ -9,13 +9,16 @@ from adpay.stats import utils as stats_utils
 
 @defer.inlineCallbacks
 def create_or_update_campaign(cmpobj):
+    if cmpobj.max_cpm is not None:
+        cmpobj.max_cpm = cmpobj.max_cpm/1000.0
+
     # Save changes only to database
     yield db_utils.update_campaign(
         campaign_id=cmpobj.campaign_id,
         time_start=cmpobj.time_start,
         time_end=cmpobj.time_end,
         max_cpc=cmpobj.max_cpc,
-        max_cpv=cmpobj.max_cpv,
+        max_cpm=cmpobj.max_cpm,
         budget=cmpobj.budget,
         filters=cmpobj.to_json()['filters']
     )

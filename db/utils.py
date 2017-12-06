@@ -64,14 +64,14 @@ def get_campaign_iter():
 
 
 @defer.inlineCallbacks
-def update_campaign(campaign_id, time_start, time_end, max_cpc, max_cpv, budget, filters):
+def update_campaign(campaign_id, time_start, time_end, max_cpc, max_cpm, budget, filters):
     collection = yield db.get_campaign_collection()
     return_value = yield collection.replace_one({'campaign_id': campaign_id}, {
         'campaign_id': campaign_id,
         'time_start': time_start,
         'time_end': time_end,
         'max_cpc': max_cpc,
-        'max_cpv': max_cpv,
+        'max_cpm': max_cpm,
         'budget': budget,
         'filters': filters
     }, upsert=True)

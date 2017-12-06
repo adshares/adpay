@@ -27,7 +27,7 @@ class InterfaceCampaignTestCase(IfaceTestCase):
             }
         ],
         'max_cpc': 10,
-        'max_cpv': 15,
+        'max_cpm': 15,
         'budget': 1000
     }
 

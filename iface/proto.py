@@ -25,7 +25,7 @@ class CamapaignObject(jsonobject.JsonObject):
     keywords = jsonobject.DictProperty()
     banners = jsonobject.ListProperty(BannerObject)
     max_cpc = jsonobject.FloatProperty()        # max cost per click
-    max_cpv = jsonobject.FloatProperty()        # max cost per view
+    max_cpm = jsonobject.FloatProperty()        # max cost per view
     budget = jsonobject.FloatProperty()         # hourly budget
 
 
