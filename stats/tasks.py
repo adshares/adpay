@@ -31,7 +31,7 @@ def _adpay_task(timestamp=None):
             break
 
         # Clear camapaign data and do not calculate.
-        if campaign_doc['end_timestamp'] < timestamp:
+        if campaign_doc['time_end'] < timestamp:
             yield stats_utils.delete_campaign(campaign_doc['campaign_id'])
             continue
 
