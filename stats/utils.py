@@ -12,7 +12,7 @@ ADD_EVENT_LOCK = defer.DeferredLock()
 
 
 def timestamp2hour(timestamp):
-    return math.ceil(1.0*timestamp/stats_consts.SECONDS_PER_HOUR)*stats_consts.SECONDS_PER_HOUR
+    return math.floor(1.0*timestamp/stats_consts.SECONDS_PER_HOUR)*stats_consts.SECONDS_PER_HOUR
 
 
 def genkey(key, val, delimiter="_"):

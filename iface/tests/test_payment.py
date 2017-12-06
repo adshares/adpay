@@ -28,11 +28,11 @@ class InterfacePaymentTestCase(IfaceTestCase):
         self.assertIsNotNone(response)
         self.assertEqual(response['result']['payments'], [])
 
-        response = yield self.get_response("get_payments", [{'timestamp': 7210}])
+        response = yield self.get_response("get_payments", [{'timestamp': 11000}])
         self.assertIsNotNone(response)
         self.assertEqual(response['result']['payments'], [])
 
-        response = yield self.get_response("get_payments", [{'timestamp': 6500}])
+        response = yield self.get_response("get_payments", [{'timestamp': 7210}])
         self.assertIsNotNone(response)
         self.assertEqual(len(response['result']['payments']), 100)
 

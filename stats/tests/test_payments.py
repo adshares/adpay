@@ -20,12 +20,12 @@ class DBTestCase(db_tests.DBTestCase):
 
         # Add events for users
         yield db_utils.update_event("event1_user_id1", db_consts.EVENT_TYPE_CLICK,
-                                    3200, "user_id1", "banner_id1", "campaign_id", 0, {}, 0.1)
+                                    3601, "user_id1", "banner_id1", "campaign_id", 0, {}, 0.1)
         yield db_utils.update_event("event2_user_id1", db_consts.EVENT_TYPE_VIEW,
-                                    3100, "user_id1", "banner_id1", "campaign_id", 0, {}, 0.2)
+                                    3600, "user_id1", "banner_id1", "campaign_id", 0, {}, 0.2)
 
         yield db_utils.update_event("event1_user_id2", db_consts.EVENT_TYPE_CONVERSION,
-                                    3000, "user_id2", "banner_id3", "campaign_id", 100, {}, 0.5)
+                                    3602, "user_id2", "banner_id3", "campaign_id", 100, {}, 0.5)
 
         yield stats_utils.calculate_events_payments("campaign_id", 3600,
                                                     payment_percentage_cutoff=payment_percentage_cutoff)

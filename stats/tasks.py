@@ -6,19 +6,19 @@ import time
 
 
 @defer.inlineCallbacks
-def _adpay_task(timestamp=None):
+def _adpay_task(timestamp=None, check_payment_round_exists=True):
     """
         Task calculate payments and update user profiles only once a hour.
     """
-
     # As recalculate only finished hours, take timestamp from an hour before now.
     if timestamp is None:
-        timestamp = int(time.time()) - stats_consts.SECONDS_PER_HOUR
+        timestamp = int(time.time())
     timestamp = stats_utils.timestamp2hour(timestamp)
 
-    last_round_doc = yield db_utils.get_payment_round(timestamp)
-    if last_round_doc is not None:
-        defer.returnValue(None)
+    if not check_payment_round_exists:
+        last_round_doc = yield db_utils.get_payment_round(timestamp)
+        if last_round_doc is not None:
+            defer.returnValue(None)
 
     # User keywords profiles update
     yield stats_utils.update_user_keywords_profiles()
@@ -42,14 +42,7 @@ def _adpay_task(timestamp=None):
 
 @defer.inlineCallbacks
 def force_payment_recalculation():
-    # User keywords profiles update
-    timestamp = stats_utils.timestamp2hour(int(time.time()))
-
-    last_round_doc = yield db_utils.get_payment_round(timestamp)
-    if last_round_doc is not None:
-        yield db_utils.delete_payment_round(timestamp)
-
-    return_value = yield _adpay_task()
+    return_value = yield _adpay_task(check_payment_round_exists=False)
     defer.returnValue(return_value)
 
 

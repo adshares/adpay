@@ -19,5 +19,5 @@ class DBTestCase(db_tests.DBTestCase):
                 break
 
             counter += 1
-            self.assertIn(round_doc['timestamp'], [3600, 7200])
-        self.assertEqual(counter, 2)
+            self.assertIn(round_doc['timestamp'], [0, 3600, 7200])
+        self.assertEqual(counter, 3)

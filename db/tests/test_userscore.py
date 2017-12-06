@@ -10,7 +10,7 @@ class DBTestCase(db_tests.DBTestCase):
         # Test adding user scores
         for i in range(100):
             yield db_utils.update_user_score(campaign_id="campaign_id",
-                                             timestamp=3500,
+                                             timestamp=3700,
                                              user_id=i,
                                              score=i * 10)
 
@@ -29,7 +29,7 @@ class DBTestCase(db_tests.DBTestCase):
         # Test updating user scores
         for i in range(100):
             yield db_utils.update_user_score(campaign_id="campaign_id",
-                                             timestamp=3500,
+                                             timestamp=3700,
                                              user_id=i,
                                              score=i * 100)
 
