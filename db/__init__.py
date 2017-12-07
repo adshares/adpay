@@ -53,8 +53,8 @@ def configure_db():
     yield user_profile_collection.create_index(user_idx)
 
     keyword_frequency_collection = yield get_keyword_frequency_collection()
-    keyword_frequency_collection.create_index(updated_idx)
-    keyword_frequency_collection.create_index(keyowrd_idx)
+    yield keyword_frequency_collection.create_index(updated_idx)
+    yield keyword_frequency_collection.create_index(keyowrd_idx)
 
 
 @defer.inlineCallbacks
