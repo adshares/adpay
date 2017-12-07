@@ -2,6 +2,7 @@ from twisted.internet import reactor, defer
 from twisted.web.server import Site
 
 from fastjsonrpc.server import JSONRPCServer
+from fastjsonrpc.jsonrpc import JSONRPCError
 
 from adpay.iface import consts as iface_consts
 from adpay.iface import utils as iface_utils
@@ -36,7 +37,12 @@ class AdPayIfaceServer(JSONRPCServer):
         """
             Return payments for events from 1hour started from timestamp.
         """
-        response = yield iface_utils.get_payments(iface_proto.PaymentsRequest(req_data))
+
+        try:
+            response = yield iface_utils.get_payments(iface_proto.PaymentsRequest(req_data))
+        except iface_utils.PaymentsNotCalculatedException:
+            raise JSONRPCError("Payments not calculated yet")
+
         defer.returnValue(response.to_json())
 
     #test interface

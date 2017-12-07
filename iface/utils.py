@@ -7,6 +7,10 @@ from adpay.iface import filters as iface_filters
 from adpay.stats import utils as stats_utils
 
 
+class PaymentsNotCalculatedException(Exception):
+    pass
+
+
 @defer.inlineCallbacks
 def create_or_update_campaign(cmpobj):
     if cmpobj.max_cpm is not None:
@@ -93,7 +97,7 @@ def get_payments(payreq):
     # Check if payments calculation is done
     round_doc = yield db_utils.get_payment_round(payreq.timestamp)
     if not round_doc:
-        defer.returnValue(iface_proto.PaymentsResponse())
+        raise PaymentsNotCalculatedException()
 
     # Collect events and theirs payment and respond to request
     _iter = yield db_utils.get_payments_iter(payreq.timestamp)
