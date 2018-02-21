@@ -57,15 +57,15 @@ $ trial db iface stats
 #adpay
 apt-get install python-virtualenv mongodb
 screen -S adpay
-cd ~
+cd /home/adshares/
 virtualenv adpay
 export VIRTUALENV_ROOT=$HOME/adpay
 export PYTHONPATH=$HOME/adpay:$PYTHONPATH
-source ~/adpay/bin/activate
-mkdir -p ~/adpay/db/mongo
-mkdir -p ~/adpay/log/supervisor ~/adpay/log/adpay ~/adpay/log/mongo
-mkdir -p ~/adpay/run/supervisor ~/adpay/run/adpay ~/adpay/run/mongo
-git clone https://github.com/adshares/adpay.git ~/adpay/adpay
-pip install -r ~/adpay/adpay/requirements.txt
-supervisord -c ~/adpay/adpay/config/supervisord.conf
+source ./adpay/bin/activate
+mkdir -p ./adpay/db/mongo
+mkdir -p ./adpay/log/supervisor ./adpay/log/adpay ./adpay/log/mongo
+mkdir -p ./adpay/run/supervisor ~/adpay/run/adpay ./adpay/run/mongo
+git clone https://github.com/adshares/adpay.git ./adpay/adpay
+pip install -r ./adpay/adpay/requirements.txt
+supervisord -c ./adpay/adpay/config/supervisord.conf
 ```
