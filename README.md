@@ -11,7 +11,7 @@ All dependenies are listed in requirements.txt file.
 
 Exmaple for Debian based systems:
 ```
-$ sudo apt-get install python-virtualenv
+$ sudo apt-get install python-virtualenv mongodb python-pip virtualenv
 ```
 
 Create virtualenv environment for adpay.
@@ -52,12 +52,12 @@ $ supervisord -c ~/adpay/adpay/config/supervisord.conf
 $ cd ~/adpay/adpay
 $ trial db iface stats
 ```
-## TL;DR
+## TL;DR  
 ```
 #adpay
-apt-get install python-virtualenv mongodb
+apt-get install python-virtualenv mongodb python-pip virtualenv
 screen -S adpay
-cd /home/adshares/
+cd ~
 virtualenv adpay
 export VIRTUALENV_ROOT=$HOME/adpay
 export PYTHONPATH=$HOME/adpay:$PYTHONPATH
