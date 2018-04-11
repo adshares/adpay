@@ -98,5 +98,4 @@ ENV/
 /site
 deploy.sh
 
-TODO.txt
-
+.idea
