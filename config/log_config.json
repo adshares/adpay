@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "formatters": {
+    "basic": {
+      "format": "%(asctime)s %(name)-12s %(levelname)-6s %(message)s"
+    }
+  },
+  "handlers": {
+    "console": {
+      "class": "logging.StreamHandler",
+      "formatter": "basic",
+      "level": "DEBUG"
+    }
+  },
+  "root": {
+    "handlers": ["console"],
+    "level": "DEBUG"
+  }
+}
