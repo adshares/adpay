@@ -12,6 +12,7 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+from __future__ import print_function
 import os
 import sys
 
@@ -22,9 +23,9 @@ sys.path.insert(0, os.path.abspath('../../../'))
 sys.path.insert(0, os.path.abspath('../../../../'))
 
 # Sphinx / readthedocs output
-print "sys.paths:"
+print("sys.paths:")
 for sp in sys.path:
-    print sp
+    print(sp)
 
 # -- Project information -----------------------------------------------------
 

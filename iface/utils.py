@@ -64,8 +64,7 @@ def add_event(eventobj):
         defer.returnValue(None)
 
     # Conversion event must send max paid amount
-    if eventobj.event_type == db_consts.EVENT_TYPE_CONVERSION:
-        if not eventobj.event_value:
+    if eventobj.event_type == db_consts.EVENT_TYPE_CONVERSION and not eventobj.event_value:
             defer.returnValue(None)
 
     # Events are filtered by the campaign filters
