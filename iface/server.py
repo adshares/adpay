@@ -76,8 +76,6 @@ class AdPayIfaceServer(JSONRPCServer):
         """
         Force payments recalculation.
 
-        :param args:
-        :param kwgs:
         :return: True
         """
         yield stats_tasks.force_payment_recalculation()

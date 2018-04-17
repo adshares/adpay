@@ -30,7 +30,7 @@ def _adpay_task(timestamp=None, check_payment_round_exists=True):
         if not campaign_doc:
             break
 
-        # Clear camapaign data and do not calculate.
+        # Clear campaign data and do not calculate.
         if campaign_doc['time_end'] < timestamp:
             yield stats_utils.delete_campaign(campaign_doc['campaign_id'])
             continue
@@ -47,7 +47,7 @@ def force_payment_recalculation():
 
 
 def adpay_task(interval_seconds=60):
-    def callback(*args, **kwgs):
+    def callback():
         reactor.callLater(interval_seconds, adpay_task)
 
     deferred = _adpay_task()
