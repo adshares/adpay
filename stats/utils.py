@@ -175,7 +175,7 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
         total_users += 1
 
     # Limit paid users to given payment_percentage_cutoff
-    limit = int(total_users*payment_percentage_cutoff)
+    limit = int(total_users * payment_percentage_cutoff)
 
     total_score = 0
     user_score_iter = yield db_utils.get_sorted_user_score_iter(campaign_id, timestamp, limit=limit)
@@ -195,12 +195,12 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
         uid = user_score_doc['user_id']
 
         # Calculate event payments
-        user_budget = 1.0*user_score_doc['score']*campaign_budget/total_score
+        user_budget = 1.0 * user_score_doc['score'] * campaign_budget / total_score
 
         max_user_payment, max_human_score, total_user_payments = 0, 0, 0
 
         user_value_doc = yield db_utils.get_user_value(campaign_id, uid)
-        if user_value_doc is not None:
+        if user_value_doc:
             max_user_payment = user_value_doc['payment']
 
         user_events_iter = yield db_utils.get_user_events_iter(campaign_id, timestamp, uid)
@@ -223,7 +223,7 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
 
             event_id = event_doc['event_id']
             max_event_payment = get_event_max_payment(event_doc, campaign_cpc, campaign_cpm)
-            event_payment = min([user_budget*max_event_payment/total_user_payments, max_event_payment])
+            event_payment = min([user_budget * max_event_payment / total_user_payments, max_event_payment])
             yield db_utils.update_event_payment(campaign_id, timestamp, event_id, event_payment)
 
         # Update User Values
