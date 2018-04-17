@@ -1,12 +1,17 @@
-from adpay.db import consts as db_const
 from twisted.internet import defer
-
-from txmongo import filter
 import txmongo
+from txmongo import filter
+
+from adpay.db import consts as db_const
 
 
 @defer.inlineCallbacks
 def configure_db():
+    """
+    Initialize the database.
+
+    :return:
+    """
     yield get_mongo_db()
 
     campaign_idx = filter.sort(filter.ASCENDING("campaign_id"))
@@ -59,73 +64,111 @@ def configure_db():
 
 @defer.inlineCallbacks
 def get_mongo_db():
+    """
+    :return: Database
+    """
     conn = yield get_mongo_connection()
     defer.returnValue(conn.adpay)
 
 
 @defer.inlineCallbacks
 def get_payment_collection():
+    """
+    :return: Payments collection
+    """
     mongo_db = yield get_mongo_db()
     defer.returnValue(mongo_db.payments)
 
 
 @defer.inlineCallbacks
 def get_payment_rounds_collection():
+    """
+    :return: Payment rounds collection
+    """
     mongo_db = yield get_mongo_db()
     defer.returnValue(mongo_db.payments_rounds)
 
 
 @defer.inlineCallbacks
 def get_campaign_collection():
+    """
+    :return: Campaign collection
+    """
     mongo_db = yield get_mongo_db()
     defer.returnValue(mongo_db.campaign)
 
 
 @defer.inlineCallbacks
 def get_banner_collection():
+    """
+    :return: Banner collection
+    """
     mongo_db = yield get_mongo_db()
     defer.returnValue(mongo_db.banners)
 
 
 @defer.inlineCallbacks
 def get_event_collection():
+    """
+    :return: Event collection
+    """
     mongo_db = yield get_mongo_db()
     defer.returnValue(mongo_db.events)
 
 
 @defer.inlineCallbacks
 def get_user_value_collection():
+    """
+    :return: User values collection
+    """
     mongo_db = yield get_mongo_db()
     defer.returnValue(mongo_db.user_values)
 
 
 @defer.inlineCallbacks
 def get_user_score_collection():
+    """
+    :return: User score collection
+    """
     mongo_db = yield get_mongo_db()
     defer.returnValue(mongo_db.user_scores)
 
 
 @defer.inlineCallbacks
 def get_user_keyword_frequency_collection():
+    """
+    :return: User keyword frequency collection
+    """
     mongo_db = yield get_mongo_db()
     defer.returnValue(mongo_db.user_keyword_frequency)
 
 
 @defer.inlineCallbacks
 def get_user_profile_collection():
+    """
+    :return: User profile collection
+    """
     mongo_db = yield get_mongo_db()
     defer.returnValue(mongo_db.user_profile)
 
 
 @defer.inlineCallbacks
 def get_keyword_frequency_collection():
+    """
+    :return: Keyword collection
+    """
     mongo_db = yield get_mongo_db()
     defer.returnValue(mongo_db.keyword_frequency)
 
 
+#: Global MongoDB connection
 MONGO_CONNECTION = None
+
 @defer.inlineCallbacks
 def get_mongo_connection():
+    """
+    :return: Global MongoDB connection (MONGO_CONNECTION)
+    """
     global MONGO_CONNECTION
     if MONGO_CONNECTION is None:
         MONGO_CONNECTION = yield txmongo.lazyMongoConnectionPool(port=db_const.MONGO_DB_PORT)
@@ -134,6 +177,11 @@ def get_mongo_connection():
 
 @defer.inlineCallbacks
 def disconnect():
+    """
+    Disconnect the global connection
+
+    :return:
+    """
     global MONGO_CONNECTION
     conn = yield get_mongo_connection()
     yield conn.disconnect()

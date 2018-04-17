@@ -12,6 +12,12 @@ ADD_EVENT_LOCK = defer.DeferredLock()
 
 
 def timestamp2hour(timestamp):
+    """
+    Get epoch timestamp of the hour of the `timestamp`.
+
+    :param timestamp: timestamp
+    :return: timestamp of the hour (floored)
+    """
     return math.floor(1.0*timestamp/stats_consts.SECONDS_PER_HOUR)*stats_consts.SECONDS_PER_HOUR
 
 
@@ -22,6 +28,11 @@ def genkey(key, val, delimiter="_"):
 
 @defer.inlineCallbacks
 def get_user_profile_keywords(user_id):
+    """
+
+    :param user_id: User identifier
+    :return: Unique list of keywords cut off at `stats_consts.MAX_USER_KEYWORDS_IN_PROFILE`
+    """
     user_profile_doc = yield db_utils.get_user_profile(user_id)
     if not user_profile_doc:
         defer.returnValue(None)
@@ -32,9 +43,13 @@ def get_user_profile_keywords(user_id):
 @defer.inlineCallbacks
 def get_users_similarity(user1_id, user2_id):
     """
-        Return user similarity value [0, 1] taking into account keywords similarity.
-        1 - user1 is recognised as user2
-        0 - user1 and user2 are completely different.
+    Return user similarity value [0, 1] taking into account keywords similarity.
+    1 - user1 is recognised as user2
+    0 - user1 and user2 are completely different.
+
+    :param user1_id: User identifier
+    :param user2_id: User identifier
+    :return: User similarity value [0, 1]
     """
 
     if user1_id == user2_id:
@@ -65,12 +80,21 @@ def reverse_insort(a, x, lo=0, hi=None):
         hi = len(a)
     while lo < hi:
         mid = (lo+hi)//2
-        if x > a[mid]: hi = mid
-        else: lo = mid+1
+        if x > a[mid]:
+            hi = mid
+        else:
+            lo = mid+1
     a.insert(lo, x)
 
 
 def get_event_max_payment(event_doc, max_cpc, max_cpm):
+    """
+
+    :param event_doc: Event document
+    :param max_cpc: Value per click
+    :param max_cpm: Value per view
+    :return: Payment per event
+    """
     event_type, event_payment = event_doc['event_type'], 0
     if event_type == db_consts.EVENT_TYPE_CONVERSION:
         event_payment = event_doc['event_value']
@@ -83,6 +107,17 @@ def get_event_max_payment(event_doc, max_cpc, max_cpm):
 
 @defer.inlineCallbacks
 def get_user_payment_score(campaign_id, user_id, amount=5):
+    """
+    Payment score for user
+    1. Find most similar user.
+    2. Calculate scores for similar users (payment stats and human score)
+    3. Get average of user payment score.
+
+    :param campaign_id:
+    :param user_id:
+    :param amount: Limit to how many users we compare
+    :return: User payment score.
+    """
     # Find most similar users to user_id
     users = []
     user_value_iter = yield db_utils.get_user_value_iter(campaign_id)
@@ -112,6 +147,17 @@ def get_user_payment_score(campaign_id, user_id, amount=5):
 
 @defer.inlineCallbacks
 def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=0.5):
+    """
+    For new users:
+    1. Assign them max_human_score from the database and CPM value (per campaign)
+    2. Assign payment score based on average of other users.
+    3.
+
+    :param campaign_id:
+    :param timestamp:
+    :param payment_percentage_cutoff:
+    :return:
+    """
     campaign_doc = yield db_utils.get_campaign(campaign_id)
     if campaign_doc is None:
         return
@@ -205,20 +251,29 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
 
 
 @defer.inlineCallbacks
-def update_keywords_stats(recalculate_per_views=1000, cutoff=0.00001, deckay=0.01):
+def update_keywords_stats(recalculate_per_views=1000, cutoff=0.00001, decay=0.01):
+    """
+    Update global keyword frequencies.
+
+    :param recalculate_per_views:
+    :param cutoff:
+    :param decay:
+    :return:
+    """
     # Recalculate only every 1000 events.
     if stats_cache.get_views_stats() % recalculate_per_views:
         defer.returnValue(None)
 
     for keyword, views_counts in stats_cache.get_keyword_stats_iter():
+
+        new_keyword_frequency = 1.0 * decay * views_counts / recalculate_per_views
+
         keyword_frequency_doc = yield db_utils.get_keyword_frequency(keyword)
-
-        old_keyword_freq = 0
         if keyword_frequency_doc:
-            old_keyword_freq = keyword_frequency_doc['frequency']
+            new_keyword_frequency += keyword_frequency_doc['frequency'] * (1 - decay)
 
-        new_keyword_frequency = 1.0*deckay*views_counts/recalculate_per_views + old_keyword_freq*(1-deckay)
         yield db_utils.update_keyword_frequency(keyword, new_keyword_frequency)
+
     stats_cache.reset_keywords_stats()
     stats_cache.reset_views_stats()
 
@@ -229,7 +284,7 @@ def update_keywords_stats(recalculate_per_views=1000, cutoff=0.00001, deckay=0.0
             break
 
         keyword = keyword_frequency_doc['keyword']
-        new_keyword_frequency = keyword_frequency_doc['frequency']*(1-deckay)
+        new_keyword_frequency = keyword_frequency_doc['frequency']*(1 - decay)
         if new_keyword_frequency <= cutoff:
             yield db_utils.delete_keyword_frequency(keyword_frequency_doc['_id'])
         else:
@@ -239,16 +294,26 @@ def update_keywords_stats(recalculate_per_views=1000, cutoff=0.00001, deckay=0.0
 
 
 @defer.inlineCallbacks
-def update_user_keywords_stats(user_id, keywords_list, cutoff=0.001, deckay=0.01):
+def update_user_keywords_stats(user_id, keywords_list, cutoff=0.001, decay=0.01):
+    """
+    Update user keyword frequencies:
+    1. Add new ones.
+    2. Decay old ones.
+
+    :param user_id:
+    :param keywords_list:
+    :param cutoff:
+    :param decay:
+    :return:
+    """
     # Update new keyword to database.
     for keyword in keywords_list:
+        frequency = decay
+
         user_keyword_doc = yield db_utils.get_user_keyword_frequency(user_id, keyword)
+        if user_keyword_doc:
+            frequency += user_keyword_doc['frequency'] * (1 - decay)
 
-        old_keyword_frequency = 0
-        if user_keyword_doc is not None:
-            old_keyword_frequency = user_keyword_doc['frequency']
-
-        frequency = deckay + old_keyword_frequency*(1 - deckay)
         yield db_utils.update_user_keyword_frequency(user_id, keyword, frequency)
 
     # Decay keywords frequencies in database.
@@ -262,7 +327,7 @@ def update_user_keywords_stats(user_id, keywords_list, cutoff=0.001, deckay=0.01
             continue
 
         keyword = user_keyword_doc['keyword']
-        frequency = user_keyword_doc['frequency']*(1-deckay)
+        frequency = user_keyword_doc['frequency']*(1 - decay)
 
         if frequency <= cutoff:
             # Delete keyword stats for user keyword.
@@ -276,6 +341,18 @@ def update_user_keywords_stats(user_id, keywords_list, cutoff=0.001, deckay=0.01
 
 @defer.inlineCallbacks
 def update_user_keywords_profiles(global_freq_cutoff=0.1):
+    """
+    There are two kind of keyword frequencies: global and user.
+
+    1. Get user ids from user keyword frequency collection.
+    2. Iterate over user keyword frequency collection.
+    3. Get keywords with global frequency higher than `global_freq_cutoff`.
+    4. Calculate keyword score. Score increases with user frequency and decreases with global frequency.
+    5. Save a list of highest scoring keywords in user profile.
+
+    :param global_freq_cutoff:
+    :return:
+    """
     # Remove old keywords
     yield db_utils.delete_user_profiles()
 
@@ -310,6 +387,13 @@ def update_user_keywords_profiles(global_freq_cutoff=0.1):
 
 @defer.inlineCallbacks
 def add_view_keywords(user_id, keywords_list):
+    """
+    Update cache
+
+    :param user_id:
+    :param keywords_list:
+    :return:
+    """
     try:
         yield ADD_EVENT_LOCK.acquire()
 
@@ -327,6 +411,12 @@ def add_view_keywords(user_id, keywords_list):
 
 @defer.inlineCallbacks
 def delete_campaign(campaign_id):
+    """
+    Delete campaign document and all campaign banners
+
+    :param campaign_id:
+    :return:
+    """
     # TODO: add deleting events and other objects related to campaign.
 
     yield db_utils.delete_campaign(campaign_id)

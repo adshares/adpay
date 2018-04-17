@@ -1,7 +1,6 @@
 from twisted.internet import defer, reactor
 from adpay.db import utils as db_utils
 from adpay.stats import utils as stats_utils
-from adpay.stats import consts as stats_consts
 import time
 
 
@@ -50,8 +49,8 @@ def adpay_task(interval_seconds=60):
     def callback(*args, **kwgs):
         reactor.callLater(interval_seconds, adpay_task)
 
-    deffered = _adpay_task()
-    deffered.addCallback(callback)
+    deferred = _adpay_task()
+    deferred.addCallback(callback)
 
 
 def configure_tasks(interval_seconds=2):

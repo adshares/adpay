@@ -1,9 +1,11 @@
-EVENTS_STATS_KEYWORDS = {}
+from collections import defaultdict
+
+EVENTS_STATS_KEYWORDS = defaultdict(lambda: int(0))
 
 
 def reset_keywords_stats():
     global EVENTS_STATS_KEYWORDS
-    EVENTS_STATS_KEYWORDS = {}
+    EVENTS_STATS_KEYWORDS = defaultdict(lambda: int(0))
 
 
 def get_keyword_stats_iter():
@@ -12,11 +14,7 @@ def get_keyword_stats_iter():
 
 def keyword_inc(keyword):
     global EVENTS_STATS_VIEWS
-
-    if keyword not in EVENTS_STATS_KEYWORDS:
-        EVENTS_STATS_KEYWORDS[keyword] = 0
     EVENTS_STATS_KEYWORDS[keyword] += 1
-
     EVENTS_STATS_VIEWS += 1
 
 

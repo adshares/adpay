@@ -20,7 +20,7 @@ class DBTestCase(db_tests.DBTestCase):
 
             yield stats_utils.update_keywords_stats(recalculate_per_views=recalculate_per_views,
                                                     cutoff=cutoff,
-                                                    deckay=deckay)
+                                                    decay=deckay)
 
             _key1_freq_doc = yield db_utils.get_keyword_frequency("keyword_1")
             self.assertIsNotNone(_key1_freq_doc)
@@ -41,7 +41,7 @@ class DBTestCase(db_tests.DBTestCase):
         stats_cache.views_inc()
         yield stats_utils.update_keywords_stats(recalculate_per_views=recalculate_per_views,
                                                 cutoff=cutoff,
-                                                deckay=deckay)
+                                                decay=deckay)
         key3_freq_doc = yield db_utils.get_keyword_frequency("keyword_3")
 
         while True:
@@ -51,7 +51,7 @@ class DBTestCase(db_tests.DBTestCase):
 
             yield stats_utils.update_keywords_stats(recalculate_per_views=recalculate_per_views,
                                                     cutoff=cutoff,
-                                                    deckay=deckay)
+                                                    decay=deckay)
 
             _key3_freq_doc = yield db_utils.get_keyword_frequency("keyword_3")
             self.assertEqual(_key3_freq_doc['frequency'], key3_freq_doc['frequency'] * (1 - deckay))
@@ -67,6 +67,6 @@ class DBTestCase(db_tests.DBTestCase):
 
         yield stats_utils.update_keywords_stats(recalculate_per_views=recalculate_per_views,
                                                 cutoff=cutoff,
-                                                deckay=deckay)
+                                                decay=deckay)
         key3_freq_doc = yield db_utils.get_user_keyword_frequency("user_id", "keyword_3")
         self.assertIsNone(key3_freq_doc)

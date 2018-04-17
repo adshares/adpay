@@ -46,8 +46,19 @@ def delete_campaign(campaign_id):
 
 @defer.inlineCallbacks
 def add_event(eventobj):
-    from adpay.stats import cache as stats_cache
+    """
+    Insert event object into the database, if conditions are met:
+    * user_id must be provided
+    * if event is a conversion, event_value must be provided
+    * banner must be in the database
+    * campaign must be in the database
+    * campaign filters must match our keywords
 
+    Update keywords and view statistics.
+
+    :param eventobj:
+    :return:
+    """
     # Do not take into account events without user_id
     if not eventobj.user_id:
         defer.returnValue(None)
@@ -92,6 +103,13 @@ def add_event(eventobj):
 
 @defer.inlineCallbacks
 def get_payments(payreq):
+    """
+    1. Check if payment calculation for last round is done.
+    2. Get payment interations per event
+
+    :param payreq:
+    :return:
+    """
     events_payments = []
 
     # Check if payments calculation is done

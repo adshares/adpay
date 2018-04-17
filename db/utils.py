@@ -1,37 +1,57 @@
 from twisted.internet import defer
 from txmongo import filter as txfilter
+
 from adpay import db
+from adpay.stats import utils as stats_utils
 
 
-class query_iterator(object):
+class QueryIterator(object):
     """
-        Every query with cursor = True can be iterated with simple way:
+    Every query with cursor = True can be iterated with simple way:
 
-        _iter = query_iterator(query)
+    _iter = query_iterator(query)
 
-        while True:
-            elem = yield _iter.next()
+    while True:
+        elem = yield _iter.next()
 
-            if elem is None:
-                break
+        if elem is None:
+            break
 
-            print "elem", elem
+        print "elem", elem
     """
 
     def __init__(self, query):
+        """
+        Constructor
+
+        :param query: Query object.
+        """
         self.query = query
 
         self.docs, self.dfr = None, None
         self.docs_index = 0
 
     def __iter__(self):
+        """
+
+        :return: `self`, iterable object.
+        """
         return self
 
     def __next__(self):
+        """
+
+        :return: Next item.
+        """
         return self.next()
 
     @defer.inlineCallbacks
     def next(self):
+        """
+        Generator for items.
+
+        :return: item.
+        """
         if self.docs is None:
             self.docs, self.dfr = yield self.query
 
@@ -60,7 +80,7 @@ def get_campaign(campaign_id):
 @defer.inlineCallbacks
 def get_campaign_iter():
     collection = yield db.get_campaign_collection()
-    defer.returnValue(query_iterator(collection.find(cursor=True)))
+    defer.returnValue(QueryIterator(collection.find(cursor=True)))
 
 
 @defer.inlineCallbacks
@@ -97,7 +117,7 @@ def get_banner(banner_id):
 @defer.inlineCallbacks
 def get_banners_iter():
     collection = yield db.get_banner_collection()
-    defer.returnValue(query_iterator(collection.find(cursor=True)))
+    defer.returnValue(QueryIterator(collection.find(cursor=True)))
 
 
 @defer.inlineCallbacks
@@ -127,7 +147,6 @@ def delete_campaign_banners(campaign_id):
 # Events
 @defer.inlineCallbacks
 def update_event(event_id, event_type, timestamp, user_id, banner_id, campaign_id, event_value, keywords, human_score):
-    from adpay.stats import utils as stats_utils
 
     timestamp = stats_utils.timestamp2hour(timestamp)
     collection = yield db.get_event_collection()
@@ -148,12 +167,11 @@ def update_event(event_id, event_type, timestamp, user_id, banner_id, campaign_i
 
 @defer.inlineCallbacks
 def get_banner_events_iter(banner_id, timestamp):
-    from adpay.stats import utils as stats_utils
 
     timestamp = stats_utils.timestamp2hour(timestamp)
     collection = yield db.get_event_collection()
 
-    defer.returnValue(query_iterator(collection.find({
+    defer.returnValue(QueryIterator(collection.find({
         'banner_id': banner_id,
         'timestamp': stats_utils.timestamp2hour(timestamp)
     }, cursor=True)))
@@ -161,12 +179,11 @@ def get_banner_events_iter(banner_id, timestamp):
 
 @defer.inlineCallbacks
 def get_user_events_iter(campaign_id, timestamp, uid):
-    from adpay.stats import utils as stats_utils
 
     timestamp = stats_utils.timestamp2hour(timestamp)
     collection = yield db.get_event_collection()
 
-    defer.returnValue(query_iterator(collection.find({
+    defer.returnValue(QueryIterator(collection.find({
         'user_id': uid,
         'campaign_id': campaign_id,
         'timestamp': timestamp
@@ -176,7 +193,6 @@ def get_user_events_iter(campaign_id, timestamp, uid):
 @defer.inlineCallbacks
 def get_events_distinct_uids(campaign_id, timestamp):
     # Return list of distinct users ids for the given campaign timestamp.
-    from adpay.stats import utils as stats_utils
 
     timestamp = stats_utils.timestamp2hour(timestamp)
     collection = yield db.get_event_collection()
@@ -196,7 +212,6 @@ def delete_event(event_id):
 # Event payments
 @defer.inlineCallbacks
 def update_event_payment(campaign_id, timestamp, event_id, payment):
-    from adpay.stats import utils as stats_utils
 
     timestamp = stats_utils.timestamp2hour(timestamp)
     collection = yield db.get_payment_collection()
@@ -212,12 +227,11 @@ def update_event_payment(campaign_id, timestamp, event_id, payment):
 
 @defer.inlineCallbacks
 def get_payments_iter(timestamp):
-    from adpay.stats import utils as stats_utils
 
     timestamp = stats_utils.timestamp2hour(timestamp)
     collection = yield db.get_payment_collection()
 
-    defer.returnValue(query_iterator(collection.find({
+    defer.returnValue(QueryIterator(collection.find({
         'timestamp': timestamp
     }, cursor=True)))
 
@@ -225,7 +239,6 @@ def get_payments_iter(timestamp):
 # Calculated payments rounds
 @defer.inlineCallbacks
 def get_payment_round(timestamp):
-    from adpay.stats import utils as stats_utils
 
     timestamp = stats_utils.timestamp2hour(timestamp)
     collection = yield db.get_payment_rounds_collection()
@@ -236,7 +249,6 @@ def get_payment_round(timestamp):
 
 @defer.inlineCallbacks
 def update_payment_round(timestamp):
-    from adpay.stats import utils as stats_utils
 
     timestamp = stats_utils.timestamp2hour(timestamp)
     collection = yield db.get_payment_rounds_collection()
@@ -249,12 +261,11 @@ def update_payment_round(timestamp):
 @defer.inlineCallbacks
 def get_payment_round_iter():
     collection = yield db.get_payment_rounds_collection()
-    defer.returnValue(query_iterator(collection.find(cursor=True)))
+    defer.returnValue(QueryIterator(collection.find(cursor=True)))
 
 
 @defer.inlineCallbacks
 def delete_payment_round(timestamp):
-    from adpay.stats import utils as stats_utils
 
     timestamp = stats_utils.timestamp2hour(timestamp)
     collection = yield db.get_payment_rounds_collection()
@@ -267,7 +278,7 @@ def delete_payment_round(timestamp):
 @defer.inlineCallbacks
 def get_user_value_iter(campaign_id):
     collection = yield db.get_user_value_collection()
-    defer.returnValue(query_iterator(collection.find({'campaign_id': campaign_id}, cursor=True)))
+    defer.returnValue(QueryIterator(collection.find({'campaign_id': campaign_id}, cursor=True)))
 
 
 @defer.inlineCallbacks
@@ -301,19 +312,26 @@ def update_user_value(campaign_id, user_id, payment, human_score):
 @defer.inlineCallbacks
 def get_sorted_user_score_iter(campaign_id, timestamp, limit):
     # Return descending by score sorted list of  to limit.
-    from adpay.stats import utils as stats_utils
 
     timestamp = stats_utils.timestamp2hour(timestamp)
     collection = yield db.get_user_score_collection()
 
-    defer.returnValue(query_iterator(collection.find({'campaign_id': campaign_id, 'timestamp': timestamp},
-                                                     sort=txfilter.sort(txfilter.DESCENDING("score")),
-                                                     limit=limit, cursor=True)))
+    defer.returnValue(QueryIterator(collection.find({'campaign_id': campaign_id, 'timestamp': timestamp},
+                                                    sort=txfilter.sort(txfilter.DESCENDING("score")),
+                                                    limit=limit, cursor=True)))
 
 
 @defer.inlineCallbacks
 def update_user_score(campaign_id, timestamp, user_id, score):
-    from adpay.stats import utils as stats_utils
+    """
+    Update user score with new score and timestamp, per campaign.
+
+    :param campaign_id:
+    :param timestamp:
+    :param user_id:
+    :param score:
+    :return:
+    """
 
     timestamp = stats_utils.timestamp2hour(timestamp)
     collection = yield db.get_user_score_collection()
@@ -333,8 +351,12 @@ def update_user_score(campaign_id, timestamp, user_id, score):
 
 @defer.inlineCallbacks
 def delete_user_scores(campaign_id, timestamp):
-    from adpay.stats import utils as stats_utils
+    """
 
+    :param campaign_id:
+    :param timestamp:
+    :return:
+    """
     timestamp = stats_utils.timestamp2hour(timestamp)
     collection = yield db.get_user_score_collection()
 
@@ -375,7 +397,7 @@ def get_user_keyword_frequency(user_id, keyword):
 @defer.inlineCallbacks
 def get_user_keyword_frequency_iter(user_id):
     collection = yield db.get_user_keyword_frequency_collection()
-    defer.returnValue(query_iterator(collection.find({'user_id': user_id}, cursor=True)))
+    defer.returnValue(QueryIterator(collection.find({'user_id': user_id}, cursor=True)))
 
 
 @defer.inlineCallbacks
@@ -445,7 +467,7 @@ def set_keyword_frequency_updated_flag(updated=False):
 @defer.inlineCallbacks
 def get_no_updated_keyword_frequency_iter():
     collection = yield db.get_keyword_frequency_collection()
-    defer.returnValue(query_iterator(collection.find({'updated': False}, cursor=True)))
+    defer.returnValue(QueryIterator(collection.find({'updated': False}, cursor=True)))
 
 
 @defer.inlineCallbacks

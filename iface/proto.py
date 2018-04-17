@@ -1,5 +1,6 @@
 import jsonobject
 
+
 class KeywordFilterObject(jsonobject.JsonObject):
     keyword = jsonobject.StringProperty()
     filter = jsonobject.DictProperty()

@@ -12,16 +12,16 @@ class DBTestCase(db_tests.DBTestCase):
         global_freq_cutoff = 0.1
 
         for user_id in range(10):
-            user = "user_%s" %user_id
+            user = "user_%s" % user_id
             for keyword_id in range(100):
-                keyword = "keyword_%s" %keyword_id
+                keyword = "keyword_%s" % keyword_id
                 yield db_utils.update_user_keyword_frequency(user, keyword, (user_id+keyword_id)*1.0/100, updated=False)
 
         yield stats_utils.update_user_keywords_profiles(global_freq_cutoff=global_freq_cutoff)
 
         # As global keyword frequencies are empty, profiles should not be constructed.
         for user_id in range(10):
-            user = "user_%s" %user_id
+            user = "user_%s" % user_id
             user_profile_doc = yield db_utils.get_user_profile(user)
             if user_profile_doc:
                 self.assertEqual(user_profile_doc['profile'], {})
@@ -35,7 +35,7 @@ class DBTestCase(db_tests.DBTestCase):
         yield stats_utils.update_user_keywords_profiles(global_freq_cutoff=global_freq_cutoff)
 
         for user_id in range(10):
-            user = "user_%s" %user_id
+            user = "user_%s" % user_id
             user_profile_doc = yield db_utils.get_user_profile(user)
             self.assertEqual(len(user_profile_doc['profile']), stats_consts.MAX_USER_KEYWORDS_IN_PROFILE)
 
