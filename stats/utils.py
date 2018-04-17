@@ -244,10 +244,10 @@ def update_keywords_stats(recalculate_per_views=1000, cutoff=0.00001, decay=0.01
     :return:
     """
     # Recalculate only every 1000 events.
-    if stats_cache.get_views_stats() % recalculate_per_views:
+    if stats_cache.EVENTS_STATS_VIEWS % recalculate_per_views:
         defer.returnValue(None)
 
-    for keyword, views_counts in stats_cache.get_keyword_stats_iter():
+    for keyword, views_counts in stats_cache.EVENTS_STATS_KEYWORDS.iteritems():
 
         new_keyword_frequency = 1.0 * decay * views_counts / recalculate_per_views
 
@@ -258,7 +258,7 @@ def update_keywords_stats(recalculate_per_views=1000, cutoff=0.00001, decay=0.01
         yield db_utils.update_keyword_frequency(keyword, new_keyword_frequency)
 
     stats_cache.reset_keywords_stats()
-    stats_cache.reset_views_stats()
+    stats_cache.EVENTS_STATS_VIEWS = 0
 
     _iter = yield db_utils.get_no_updated_keyword_frequency_iter()
     while True:
@@ -386,7 +386,9 @@ def add_view_keywords(user_id, keywords_list):
         # Update global keywords stats.
         for keyword in keywords_list:
             stats_cache.keyword_inc(keyword)
-        stats_cache.views_inc()
+
+        stats_cache.EVENTS_STATS_VIEWS += 1
+
         yield update_keywords_stats()
     finally:
         yield ADD_EVENT_LOCK.release()
