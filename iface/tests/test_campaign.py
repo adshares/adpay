@@ -50,9 +50,9 @@ class InterfaceCampaignTestCase(IfaceTestCase):
 
     @defer.inlineCallbacks
     def test_change_campaign(self):
-        CHANGED_CAMPAIGN_DATA = copy.deepcopy(self.CAMAPAIGN_DATA)
-        CHANGED_CAMPAIGN_DATA['budget'] = 200
-        CHANGED_CAMPAIGN_DATA['banners'] = [
+        changed_campaign_data = copy.deepcopy(self.CAMAPAIGN_DATA)
+        changed_campaign_data['budget'] = 200
+        changed_campaign_data['banners'] = [
             {
                 'banner_id': 'changed',
                 'banner_size': '100x200',
@@ -60,19 +60,19 @@ class InterfaceCampaignTestCase(IfaceTestCase):
             }
         ]
 
-        response = yield self.get_response("campaign_update", [CHANGED_CAMPAIGN_DATA])
+        response = yield self.get_response("campaign_update", [changed_campaign_data])
         self.assertIsNotNone(response)
         self.assertTrue(response['result'])
 
-        campaign_doc = yield db_utils.get_campaign(CHANGED_CAMPAIGN_DATA['campaign_id'])
+        campaign_doc = yield db_utils.get_campaign(changed_campaign_data['campaign_id'])
         self.assertIsNotNone(campaign_doc)
-        self.assertEqual(campaign_doc['campaign_id'], CHANGED_CAMPAIGN_DATA['campaign_id'])
-        self.assertEqual(campaign_doc['budget'], CHANGED_CAMPAIGN_DATA['budget'])
+        self.assertEqual(campaign_doc['campaign_id'], changed_campaign_data['campaign_id'])
+        self.assertEqual(campaign_doc['budget'], changed_campaign_data['budget'])
 
-        campaign_banners = yield db_utils.get_campaign_banners(CHANGED_CAMPAIGN_DATA['campaign_id'])
+        campaign_banners = yield db_utils.get_campaign_banners(changed_campaign_data['campaign_id'])
 
         self.assertEqual(len(campaign_banners), 1)
-        self.assertEqual(campaign_banners[0]['banner_id'], CHANGED_CAMPAIGN_DATA['banners'][0]['banner_id'])
+        self.assertEqual(campaign_banners[0]['banner_id'], changed_campaign_data['banners'][0]['banner_id'])
 
     @defer.inlineCallbacks
     def test_delete_campaign(self):

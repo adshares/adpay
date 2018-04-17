@@ -39,4 +39,4 @@ class InterfacePaymentTestCase(IfaceTestCase):
 
     @defer.inlineCallbacks
     def test_force_get_payments(self):
-        response = yield self.get_response("test_get_payments", [{'timestamp': 0}])
+        yield self.get_response("test_get_payments", [{'timestamp': 0}])

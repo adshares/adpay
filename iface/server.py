@@ -72,7 +72,7 @@ class AdPayIfaceServer(JSONRPCServer):
 
     # test interface
     @defer.inlineCallbacks
-    def jsonrpc_test_get_payments(self, *args, **kwgs):
+    def jsonrpc_test_get_payments(self):
         """
         Force payments recalculation.
 
@@ -84,7 +84,7 @@ class AdPayIfaceServer(JSONRPCServer):
         defer.returnValue(True)
 
 
-def configure_iface(port = iface_consts.SERVER_PORT):
+def configure_iface(port=iface_consts.SERVER_PORT):
     """
     Set up Twisted reactor to listen on TCP.
 

@@ -38,8 +38,8 @@ class ReceiverProtocol(Protocol):
         self.finished = finished
         self.body = []
 
-    def dataReceived(self, bytes):
-        self.body.append(bytes)
+    def dataReceived(self, databytes):
+        self.body.append(databytes)
 
     def connectionLost(self, reason):
         self.finished.callback(''.join(self.body))
@@ -72,8 +72,8 @@ class IfaceTestCase(unittest.TestCase):
         }))
 
         response = yield self.client.request('POST',
-                                             'http://127.0.0.1:%s' %iface_consts.SERVER_PORT,
-                                             Headers({'content-type':['text/plain']}),
+                                             'http://127.0.0.1:%s' % iface_consts.SERVER_PORT,
+                                             Headers({'content-type': ['text/plain']}),
                                              post_data)
 
         finished = defer.Deferred()

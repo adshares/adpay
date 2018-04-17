@@ -164,6 +164,7 @@ def get_keyword_frequency_collection():
 #: Global MongoDB connection
 MONGO_CONNECTION = None
 
+
 @defer.inlineCallbacks
 def get_mongo_connection():
     """
