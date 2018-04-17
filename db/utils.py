@@ -2,7 +2,7 @@ from twisted.internet import defer
 from txmongo import filter as txfilter
 
 from adpay import db
-from adpay.stats import utils as stats_utils
+from adpay.utils import common as common_utils
 
 
 class QueryIterator(object):
@@ -148,7 +148,7 @@ def delete_campaign_banners(campaign_id):
 @defer.inlineCallbacks
 def update_event(event_id, event_type, timestamp, user_id, banner_id, campaign_id, event_value, keywords, human_score):
 
-    timestamp = stats_utils.timestamp2hour(timestamp)
+    timestamp = common_utils.timestamp2hour(timestamp)
     collection = yield db.get_event_collection()
 
     return_value = yield collection.replace_one({'event_id': event_id}, {
@@ -168,19 +168,19 @@ def update_event(event_id, event_type, timestamp, user_id, banner_id, campaign_i
 @defer.inlineCallbacks
 def get_banner_events_iter(banner_id, timestamp):
 
-    timestamp = stats_utils.timestamp2hour(timestamp)
+    timestamp = common_utils.timestamp2hour(timestamp)
     collection = yield db.get_event_collection()
 
     defer.returnValue(QueryIterator(collection.find({
         'banner_id': banner_id,
-        'timestamp': stats_utils.timestamp2hour(timestamp)
+        'timestamp': common_utils.timestamp2hour(timestamp)
     }, cursor=True)))
 
 
 @defer.inlineCallbacks
 def get_user_events_iter(campaign_id, timestamp, uid):
 
-    timestamp = stats_utils.timestamp2hour(timestamp)
+    timestamp = common_utils.timestamp2hour(timestamp)
     collection = yield db.get_event_collection()
 
     defer.returnValue(QueryIterator(collection.find({
@@ -194,7 +194,7 @@ def get_user_events_iter(campaign_id, timestamp, uid):
 def get_events_distinct_uids(campaign_id, timestamp):
     # Return list of distinct users ids for the given campaign timestamp.
 
-    timestamp = stats_utils.timestamp2hour(timestamp)
+    timestamp = common_utils.timestamp2hour(timestamp)
     collection = yield db.get_event_collection()
 
     return_values = yield collection.distinct(key='user_id',
@@ -213,7 +213,7 @@ def delete_event(event_id):
 @defer.inlineCallbacks
 def update_event_payment(campaign_id, timestamp, event_id, payment):
 
-    timestamp = stats_utils.timestamp2hour(timestamp)
+    timestamp = common_utils.timestamp2hour(timestamp)
     collection = yield db.get_payment_collection()
 
     return_value = yield collection.replace_one({'event_id': event_id, 'campaign_id': campaign_id}, {
@@ -228,7 +228,7 @@ def update_event_payment(campaign_id, timestamp, event_id, payment):
 @defer.inlineCallbacks
 def get_payments_iter(timestamp):
 
-    timestamp = stats_utils.timestamp2hour(timestamp)
+    timestamp = common_utils.timestamp2hour(timestamp)
     collection = yield db.get_payment_collection()
 
     defer.returnValue(QueryIterator(collection.find({
@@ -240,7 +240,7 @@ def get_payments_iter(timestamp):
 @defer.inlineCallbacks
 def get_payment_round(timestamp):
 
-    timestamp = stats_utils.timestamp2hour(timestamp)
+    timestamp = common_utils.timestamp2hour(timestamp)
     collection = yield db.get_payment_rounds_collection()
 
     return_value = yield collection.find_one({'timestamp': timestamp})
@@ -250,7 +250,7 @@ def get_payment_round(timestamp):
 @defer.inlineCallbacks
 def update_payment_round(timestamp):
 
-    timestamp = stats_utils.timestamp2hour(timestamp)
+    timestamp = common_utils.timestamp2hour(timestamp)
     collection = yield db.get_payment_rounds_collection()
 
     round_doc = {'timestamp': timestamp}
@@ -267,7 +267,7 @@ def get_payment_round_iter():
 @defer.inlineCallbacks
 def delete_payment_round(timestamp):
 
-    timestamp = stats_utils.timestamp2hour(timestamp)
+    timestamp = common_utils.timestamp2hour(timestamp)
     collection = yield db.get_payment_rounds_collection()
 
     return_value = yield collection.delete_many({'timestamp': timestamp})
@@ -313,7 +313,7 @@ def update_user_value(campaign_id, user_id, payment, human_score):
 def get_sorted_user_score_iter(campaign_id, timestamp, limit):
     # Return descending by score sorted list of  to limit.
 
-    timestamp = stats_utils.timestamp2hour(timestamp)
+    timestamp = common_utils.timestamp2hour(timestamp)
     collection = yield db.get_user_score_collection()
 
     defer.returnValue(QueryIterator(collection.find({'campaign_id': campaign_id, 'timestamp': timestamp},
@@ -333,7 +333,7 @@ def update_user_score(campaign_id, timestamp, user_id, score):
     :return:
     """
 
-    timestamp = stats_utils.timestamp2hour(timestamp)
+    timestamp = common_utils.timestamp2hour(timestamp)
     collection = yield db.get_user_score_collection()
 
     return_value = yield collection.replace_one({
@@ -357,7 +357,7 @@ def delete_user_scores(campaign_id, timestamp):
     :param timestamp:
     :return:
     """
-    timestamp = stats_utils.timestamp2hour(timestamp)
+    timestamp = common_utils.timestamp2hour(timestamp)
     collection = yield db.get_user_score_collection()
 
     return_value = yield collection.delete_many({'campaign_id': campaign_id, 'timestamp': timestamp})
