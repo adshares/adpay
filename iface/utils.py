@@ -1,3 +1,5 @@
+import copy
+
 from twisted.internet import defer
 
 from adpay.db import consts as db_consts
@@ -80,23 +82,17 @@ def add_event(eventobj):
     if not iface_filters.validate_filters(campaign_doc['filters'], eventobj.our_keywords):
         defer.returnValue(None)
 
-    inserted = yield db_utils.update_event(
-        event_id=eventobj.event_id,
-        event_type=eventobj.event_type,
-        timestamp=common_utils.timestamp2hour(int(eventobj.timestamp)),
-        user_id=eventobj.user_id,
-        banner_id=eventobj.banner_id,
-        campaign_id=campaign_doc['campaign_id'],
-        event_value=eventobj.event_value,
-        keywords=eventobj.to_json()['our_keywords'],
-        human_score=eventobj.human_score
-    )
+    new_event_obj = copy.copy(eventobj)
+    new_event_obj.campaign_id = campaign_doc['campaign_id']
+    new_event_obj.keywords = eventobj.to_json()['our_keywords']
+
+    inserted = yield db_utils.update_event(new_event_obj)
 
     # Update global keywords cache and user keyword stats.
-    view_keyowrds = []
+    view_view_keywords = []
     for user_keyword, user_val in eventobj.our_keywords.items():
-        view_keyowrds.append(common_utils.genkey(user_keyword, user_val))
-    yield stats_utils.add_view_keywords(eventobj.user_id, view_keyowrds)
+        view_view_keywords.append(common_utils.genkey(user_keyword, user_val))
+    yield stats_utils.add_view_keywords(eventobj.user_id, view_view_keywords)
 
     defer.returnValue(inserted)
 

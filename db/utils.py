@@ -146,22 +146,12 @@ def delete_campaign_banners(campaign_id):
 
 # Events
 @defer.inlineCallbacks
-def update_event(event_id, event_type, timestamp, user_id, banner_id, campaign_id, event_value, keywords, human_score):
+def update_event(event_obj, timestamp):
 
-    timestamp = common_utils.timestamp2hour(timestamp)
+    event_obj.timestamp = common_utils.timestamp2hour(timestamp)
     collection = yield db.get_event_collection()
 
-    return_value = yield collection.replace_one({'event_id': event_id}, {
-        'event_id': event_id,
-        'event_type': event_type,
-        'timestamp': timestamp,
-        'user_id': user_id,
-        'banner_id': banner_id,
-        'campaign_id': campaign_id,
-        'event_value': event_value,
-        'keywords': keywords,
-        'human_score': human_score
-    }, upsert=True)
+    return_value = yield collection.replace_one({'event_id': event_obj.event_id}, event_obj, upsert=True)
     defer.returnValue(return_value)
 
 
