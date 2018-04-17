@@ -19,7 +19,7 @@ class InterfaceEventTestCase(IfaceTestCase):
 
     @defer.inlineCallbacks
     def test_nocampaign_add_event(self):
-        # Event without campaign shoudn't be added
+        # Event without campaign shouldn't be added
         event_data = {
             'event_id': 'event_id',
             'event_type': 'event_type',

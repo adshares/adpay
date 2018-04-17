@@ -2,9 +2,10 @@ from twisted.internet import defer
 
 from adpay.db import tests as db_tests
 from adpay.db import utils as db_utils
-from adpay.stats import utils as stats_utils
 from adpay.stats import consts as stats_consts
 from adpay.stats import tasks as stats_tasks
+from adpay.utils import common as common_utils
+
 
 import time
 
@@ -35,5 +36,5 @@ class DBTestCase(db_tests.DBTestCase):
 
         payment_round = yield db_utils.get_payment_round(timestamp)
         payment_rounds = yield self.get_payment_rounds()
-        self.assertEqual(payment_round['timestamp'], stats_utils.timestamp2hour(timestamp))
+        self.assertEqual(payment_round['timestamp'], common_utils.timestamp2hour(timestamp))
         self.assertEqual(len(payment_rounds), 1)

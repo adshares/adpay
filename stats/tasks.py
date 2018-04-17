@@ -1,6 +1,7 @@
 from twisted.internet import defer, reactor
 from adpay.db import utils as db_utils
 from adpay.stats import utils as stats_utils
+from adpay.utils import common as common_utils
 import time
 
 
@@ -12,7 +13,7 @@ def _adpay_task(timestamp=None, check_payment_round_exists=True):
     # As recalculate only finished hours, take timestamp from an hour before now.
     if timestamp is None:
         timestamp = int(time.time())
-    timestamp = stats_utils.timestamp2hour(timestamp)
+    timestamp = common_utils.timestamp2hour(timestamp)
 
     if not check_payment_round_exists:
         last_round_doc = yield db_utils.get_payment_round(timestamp)

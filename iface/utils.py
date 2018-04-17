@@ -5,6 +5,7 @@ from adpay.db import utils as db_utils
 from adpay.iface import proto as iface_proto
 from adpay.iface import filters as iface_filters
 from adpay.stats import utils as stats_utils
+from adpay.utils import common as common_utils
 
 
 class PaymentsNotCalculatedException(Exception):
@@ -82,7 +83,7 @@ def add_event(eventobj):
     inserted = yield db_utils.update_event(
         event_id=eventobj.event_id,
         event_type=eventobj.event_type,
-        timestamp=stats_utils.timestamp2hour(int(eventobj.timestamp)),
+        timestamp=common_utils.timestamp2hour(int(eventobj.timestamp)),
         user_id=eventobj.user_id,
         banner_id=eventobj.banner_id,
         campaign_id=campaign_doc['campaign_id'],
@@ -94,7 +95,7 @@ def add_event(eventobj):
     # Update global keywords cache and user keyword stats.
     view_keyowrds = []
     for user_keyword, user_val in eventobj.our_keywords.items():
-        view_keyowrds.append(stats_utils.genkey(user_keyword, user_val))
+        view_keyowrds.append(common_utils.genkey(user_keyword, user_val))
     yield stats_utils.add_view_keywords(eventobj.user_id, view_keyowrds)
 
     defer.returnValue(inserted)
