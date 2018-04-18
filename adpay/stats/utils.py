@@ -1,9 +1,9 @@
 from twisted.internet import defer
 
-from adpay.stats import cache as stats_cache
-from adpay.stats import consts as stats_consts
-from adpay.db import consts as db_consts
-from adpay.db import utils as db_utils
+from adpay import cache as stats_cache
+from adpay import consts as stats_consts
+from adpay import consts as db_consts
+from adpay import utils as db_utils
 
 
 ADD_EVENT_LOCK = defer.DeferredLock()

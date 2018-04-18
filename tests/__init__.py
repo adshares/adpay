@@ -10,8 +10,8 @@ from twisted.web.http_headers import Headers
 
 from zope.interface import implements
 
-from adpay.iface import server as iface_server
-from adpay.iface import consts as iface_consts
+from adpay import server as iface_server
+from adpay import consts as iface_consts
 from adpay import db
 
 

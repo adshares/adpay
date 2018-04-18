@@ -1,7 +1,7 @@
 from twisted.internet import defer, reactor
-from adpay.db import utils as db_utils
-from adpay.stats import utils as stats_utils
-from adpay.utils import common as common_utils
+from adpay import utils as db_utils
+from adpay import utils as stats_utils
+from adpay import common as common_utils
 import time
 
 

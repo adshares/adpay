@@ -1,7 +1,7 @@
 from twisted.internet import defer
 
-from adpay.iface.tests import IfaceTestCase
-from adpay.db import utils as db_utils
+from adpay import IfaceTestCase
+from adpay import utils as db_utils
 
 import copy
 

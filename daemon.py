@@ -2,8 +2,8 @@ from twisted.internet import reactor
 from twisted.python import log
 import sys
 
-from adpay.iface import server as iface_server
-from adpay.stats import tasks as stats_tasks
+from adpay import server as iface_server
+from adpay import tasks as stats_tasks
 from adpay import db
 
 log.startLogging(sys.stdout)
