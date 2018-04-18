@@ -2,7 +2,7 @@ from twisted.internet import defer
 from txmongo import filter as txfilter
 
 from adpay import db
-from adpay import common as common_utils
+from adpay.utils import common as common_utils
 
 
 class QueryIterator(object):

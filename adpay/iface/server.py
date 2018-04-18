@@ -4,10 +4,10 @@ from twisted.web.server import Site
 from fastjsonrpc.server import JSONRPCServer
 from fastjsonrpc.jsonrpc import JSONRPCError
 
-from adpay import consts as iface_consts
-from adpay import utils as iface_utils
-from adpay import proto as iface_proto
-from adpay import tasks as stats_tasks
+from adpay.iface import consts as iface_consts
+from adpay.iface import utils as iface_utils
+from adpay.iface import proto as iface_proto
+from adpay.stats import tasks as stats_tasks
 
 
 class AdPayIfaceServer(JSONRPCServer):
