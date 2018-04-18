@@ -1,7 +1,7 @@
 from twisted.internet import defer
 
-from adpay import tests as db_tests
-from adpay import utils as db_utils
+import tests
+from adpay.db import utils as db_utils
 from adpay import consts as stats_consts
 from adpay import tasks as stats_tasks
 from adpay import common as common_utils
@@ -10,7 +10,7 @@ from adpay import common as common_utils
 import time
 
 
-class DBTestCase(db_tests.DBTestCase):
+class DBTestCase(tests.DBTestCase):
     @defer.inlineCallbacks
     def get_payment_rounds(self):
         _iter = yield db_utils.get_payment_round_iter()

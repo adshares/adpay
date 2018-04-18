@@ -1,12 +1,12 @@
 from twisted.internet import defer
 
-from adpay import IfaceTestCase
-from adpay import utils as db_utils
+import tests
+from adpay.db import utils as db_utils
 
 import copy
 
 
-class InterfaceCampaignTestCase(IfaceTestCase):
+class InterfaceCampaignTestCase(tests.IfaceTestCase):
     CAMAPAIGN_DATA = {
         'campaign_id': 'campaign_id',
         'advertiser_id': 'advertiser_id',

@@ -1,12 +1,12 @@
 from twisted.internet import defer
 
-from adpay import tests as db_tests
-from adpay import utils as db_utils
-from adpay import utils as stats_utils
-from adpay import cache as stats_cache
+import tests
+from adpay.db import utils as db_utils
+from adpay.stats import utils as stats_utils
+from adpay.stats import cache as stats_cache
 
 
-class DBTestCase(db_tests.DBTestCase):
+class DBTestCase(tests.DBTestCase):
     @defer.inlineCallbacks
     def test_keyword_stats_update(self):
         recalculate_per_views, cutoff, deckay = 1, 0.001, 0.1

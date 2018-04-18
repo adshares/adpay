@@ -1,11 +1,11 @@
 from twisted.internet import defer
 
-from adpay import tests as db_tests
-from adpay import utils as db_utils
-from adpay import consts as db_consts
+import tests
+from adpay.db import utils as db_utils
+from adpay.db import consts as db_consts
 
 
-class DBTestCase(db_tests.DBTestCase):
+class DBTestCase(tests.DBTestCase):
     @defer.inlineCallbacks
     def test_event(self):
         # Test event add.

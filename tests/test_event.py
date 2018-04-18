@@ -1,10 +1,10 @@
 from twisted.internet import defer
 
-from adpay import IfaceTestCase
-from adpay import utils as db_utils
+import tests
+from adpay.db import utils as db_utils
 
 
-class InterfaceEventTestCase(IfaceTestCase):
+class InterfaceEventTestCase(tests.IfaceTestCase):
     @defer.inlineCallbacks
     def get_banner_events(self, banner_id):
         events = []

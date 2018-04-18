@@ -1,12 +1,12 @@
 from twisted.internet import defer
 
-from adpay import tests as db_tests
-from adpay import utils as db_utils
-from adpay import utils as stats_utils
-from adpay import consts as stats_consts
+import tests
+from adpay.db import utils as db_utils
+from adpay.stats import utils as stats_utils
+from adpay.stats import consts as stats_consts
 
 
-class DBTestCase(db_tests.DBTestCase):
+class DBTestCase(tests.DBTestCase):
     @defer.inlineCallbacks
     def test_user_similarity(self):
         yield db_utils.update_user_profile("userid_1", {'key1': 0.1, 'key2': 0.2, 'key3': 0.4})

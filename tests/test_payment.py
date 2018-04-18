@@ -1,11 +1,11 @@
 from twisted.internet import defer
-
-from adpay import IfaceTestCase
-from adpay import utils as db_utils
 from fastjsonrpc.jsonrpc import INTERNAL_ERROR
 
+import tests
+from adpay.db import utils as db_utils
 
-class InterfacePaymentTestCase(IfaceTestCase):
+
+class InterfacePaymentTestCase(tests.IfaceTestCase):
     @defer.inlineCallbacks
     def test_get_payments(self):
         response = yield self.get_response("get_payments", [{'timestamp': 0}])

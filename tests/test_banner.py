@@ -1,10 +1,10 @@
 from twisted.internet import defer
 
-from adpay import tests as db_tests
+import tests
 from adpay import utils as db_utils
 
 
-class DBTestCase(db_tests.DBTestCase):
+class DBTestCase(tests.DBTestCase):
     @defer.inlineCallbacks
     def test_banner(self):
         yield db_utils.update_banner("banner_id1", "campaign_id")
