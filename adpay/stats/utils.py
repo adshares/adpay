@@ -385,7 +385,8 @@ def add_view_keywords(user_id, keywords_list):
 
         # Update global keywords stats.
         for keyword in keywords_list:
-            stats_cache.keyword_inc(keyword)
+            stats_cache.EVENTS_STATS_KEYWORDS[keyword] += 1
+            stats_cache.EVENTS_STATS_VIEWS += 1
 
         stats_cache.EVENTS_STATS_VIEWS += 1
 
