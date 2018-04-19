@@ -151,7 +151,7 @@ def update_event(event_obj, timestamp):
     event_obj.timestamp = common_utils.timestamp2hour(timestamp)
     collection = yield db.get_event_collection()
 
-    return_value = yield collection.replace_one({'event_id': event_obj.event_id}, event_obj, upsert=True)
+    return_value = yield collection.replace_one({'event_id': event_obj.event_id}, event_obj.to_json(), upsert=True)
     defer.returnValue(return_value)
 
 
