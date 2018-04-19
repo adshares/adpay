@@ -1,4 +1,5 @@
 import json
+import socket
 
 from twisted.trial import unittest
 from twisted.internet import defer, reactor
@@ -13,19 +14,6 @@ from zope.interface import implements
 from adpay.iface import server as iface_server
 from adpay.iface import consts as iface_consts
 from adpay import db
-
-
-class DBTestCase(unittest.TestCase):
-    @defer.inlineCallbacks
-    def setUp(self):
-        self.conn = yield db.get_mongo_connection()
-        self.db = yield db.get_mongo_db()
-        yield db.configure_db()
-
-    @defer.inlineCallbacks
-    def tearDown(self):
-        yield self.conn.drop_database(self.db)
-        yield db.disconnect()
 
 
 class StringProducer(object):
@@ -58,20 +46,33 @@ class ReceiverProtocol(Protocol):
         self.finished.callback(''.join(self.body))
 
 
-class IfaceTestCase(unittest.TestCase):
+class DBTestCase(unittest.TestCase):
     @defer.inlineCallbacks
     def setUp(self):
         self.conn = yield db.get_mongo_connection()
         self.db = yield db.get_mongo_db()
+
         yield db.configure_db()
+        self.timeout = 5
+
+    @defer.inlineCallbacks
+    def tearDown(self):
+        yield self.conn.drop_database(self.db)
+        yield db.disconnect()
+
+
+class WebTestCase(DBTestCase):
+
+    @defer.inlineCallbacks
+    def setUp(self):
+        yield super(WebTestCase, self).setUp()
 
         self.port = iface_server.configure_iface()
         self.client = Agent(reactor)
 
     @defer.inlineCallbacks
     def tearDown(self):
-        yield self.conn.drop_database(self.db)
-        yield db.disconnect()
+        yield super(WebTestCase, self).tearDown()
 
         self.port.stopListening()
 
@@ -84,8 +85,10 @@ class IfaceTestCase(unittest.TestCase):
             "params": params
         }))
 
+        host = socket.gethostbyname(socket.gethostname())
+
         response = yield self.client.request('POST',
-                                             'http://127.0.0.1:%s' % iface_consts.SERVER_PORT,
+                                             'http://{0}:{1}'.format(host, iface_consts.SERVER_PORT),
                                              Headers({'content-type': ['text/plain']}),
                                              post_data)
 
