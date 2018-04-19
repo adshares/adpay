@@ -44,8 +44,8 @@ def get_users_similarity(user1_id, user2_id):
     user1_profile_keywords = user1_profile_keywords or []
     user2_profile_keywords = user2_profile_keywords or []
 
-    common_keyowrds = len(set(user1_profile_keywords) & set(user2_profile_keywords))
-    defer.returnValue(1.0*common_keyowrds/stats_consts.MAX_USER_KEYWORDS_IN_PROFILE)
+    len_common_keywords = len(set(user1_profile_keywords).intersection(set(user2_profile_keywords)))
+    defer.returnValue(1.0 * len_common_keywords / stats_consts.MAX_USER_KEYWORDS_IN_PROFILE)
 
 
 def reverse_insort(a, x, lo=0, hi=None):
