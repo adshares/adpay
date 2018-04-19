@@ -5,7 +5,7 @@ import tests
 from adpay.db import utils as db_utils
 
 
-class InterfacePaymentTestCase(tests.IfaceTestCase):
+class InterfacePaymentTestCase(tests.WebTestCase):
     @defer.inlineCallbacks
     def test_get_payments(self):
         response = yield self.get_response("get_payments", [{'timestamp': 0}])

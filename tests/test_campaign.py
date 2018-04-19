@@ -6,7 +6,7 @@ from adpay.db import utils as db_utils
 import copy
 
 
-class InterfaceCampaignTestCase(tests.IfaceTestCase):
+class InterfaceCampaignTestCase(tests.WebTestCase):
     CAMAPAIGN_DATA = {
         'campaign_id': 'campaign_id',
         'advertiser_id': 'advertiser_id',

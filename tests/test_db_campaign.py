@@ -1,7 +1,7 @@
 from twisted.internet import defer
 
 import tests
-from adpay import utils as db_utils
+from adpay.db import utils as db_utils
 
 
 class DBTestCase(tests.DBTestCase):

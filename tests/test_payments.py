@@ -4,6 +4,7 @@ import tests
 from adpay.db import utils as db_utils
 from adpay.db import consts as db_consts
 from adpay.stats import utils as stats_utils
+from adpay.iface.proto import EventObject
 
 
 class DBTestCase(tests.DBTestCase):
@@ -19,13 +20,36 @@ class DBTestCase(tests.DBTestCase):
         yield db_utils.update_banner("banner_id3", "campaign_id")
 
         # Add events for users
-        yield db_utils.update_event("event1_user_id1", db_consts.EVENT_TYPE_CLICK,
-                                    3601, "user_id1", "banner_id1", "campaign_id", 0, {}, 0.1)
-        yield db_utils.update_event("event2_user_id1", db_consts.EVENT_TYPE_VIEW,
-                                    3600, "user_id1", "banner_id1", "campaign_id", 0, {}, 0.2)
 
-        yield db_utils.update_event("event1_user_id2", db_consts.EVENT_TYPE_CONVERSION,
-                                    3602, "user_id2", "banner_id3", "campaign_id", 100, {}, 0.5)
+        event = EventObject(
+            event_id="event1_user_id1",
+            event_type=db_consts.EVENT_TYPE_CLICK,
+            timestamp=3601,
+            user_id="user_id1",
+            banner_id="banner_id1",
+            publisher_id="campaign_id",
+            human_score=10,
+            our_keywords={},
+            event_value=0.1)
+
+        yield db_utils.update_event(event, event.timestamp)
+
+        event.event_id = "event2_user_id1"
+        event.event_type = db_consts.EVENT_TYPE_VIEW
+        event.timestamp = 3600
+        event.event_value = 0.2
+
+        yield db_utils.update_event(event, event.timestamp)
+
+        event.event_id = "event2_user_id2"
+        event.event_type = db_consts.EVENT_TYPE_CONVERSION
+        event.timestamp = 3602
+        event.user_id = "user_id2"
+        event.publisher_id = "campaign_id"
+        event.human_score = 100
+        event.event_value = 0.5
+
+        yield db_utils.update_event(event, event.timestamp)
 
         yield stats_utils.calculate_events_payments("campaign_id", 3600,
                                                     payment_percentage_cutoff=payment_percentage_cutoff)

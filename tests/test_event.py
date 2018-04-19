@@ -4,7 +4,7 @@ import tests
 from adpay.db import utils as db_utils
 
 
-class InterfaceEventTestCase(tests.IfaceTestCase):
+class InterfaceEventTestCase(tests.WebTestCase):
     @defer.inlineCallbacks
     def get_banner_events(self, banner_id):
         events = []

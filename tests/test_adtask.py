@@ -2,9 +2,9 @@ from twisted.internet import defer
 
 import tests
 from adpay.db import utils as db_utils
-from adpay import consts as stats_consts
-from adpay import tasks as stats_tasks
-from adpay import common as common_utils
+from adpay.stats import consts as stats_consts
+from adpay.stats import tasks as stats_tasks
+from adpay.utils import common as common_utils
 
 
 import time
