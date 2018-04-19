@@ -130,6 +130,14 @@ def get_user_payment_score(campaign_id, user_id, amount=5):
 
 @defer.inlineCallbacks
 def calculate_payments_for_new_users(campaign_id, timestamp, campaign_cpm):
+    """
+    Calculate payments for new uses. Use CPM as default payment.
+
+    :param campaign_id:
+    :param timestamp:
+    :param campaign_cpm:
+    :return:
+    """
     # For new users add payments as cpv
     uids = yield db_utils.get_events_distinct_uids(campaign_id, timestamp)
     for uid in uids:
@@ -146,6 +154,62 @@ def calculate_payments_for_new_users(campaign_id, timestamp, campaign_cpm):
         user_value_doc = yield db_utils.get_user_value(campaign_id, uid)
         if user_value_doc is None or user_value_doc['payment'] <= campaign_cpm:
             yield db_utils.update_user_value(campaign_id, uid, campaign_cpm, max_human_score)
+
+
+@defer.inlineCallbacks
+def get_total_user_score(campaign_id, timestamp, limit):
+    """
+    Calculate total score of all users.
+
+    :param campaign_id: Campaign identifier.
+    :param timestamp: Timestamp (last hour)
+    :param limit: User limit.
+    :return:
+    """
+    total_score = 0
+    user_score_iter = yield db_utils.get_sorted_user_score_iter(campaign_id, timestamp, limit=limit)
+    while True:
+        user_score_doc = yield user_score_iter.next()
+        if not user_score_doc:
+            break
+
+        total_score += user_score_doc['score']
+
+    defer.returnValue(total_score)
+
+
+@defer.inlineCallbacks
+def get_best_user_payments_and_humanity(campaign_id, timestamp, uid, campaign_cpc, campaign_cpm):
+    """
+    Return user information: best payment, total payment and max human score.
+
+    :param campaign_id:
+    :param timestamp:
+    :param uid:
+    :param campaign_cpc:
+    :param campaign_cpm:
+    :return: Tuple: max_user_payment, max_human_score, total_user_payments
+    """
+
+    max_user_payment, max_human_score, total_user_payments = 0, 0, 0
+
+    user_value_doc = yield db_utils.get_user_value(campaign_id, uid)
+    if user_value_doc:
+        max_user_payment = user_value_doc['payment']
+
+    user_events_iter = yield db_utils.get_user_events_iter(campaign_id, timestamp, uid)
+    while True:
+        event_doc = yield user_events_iter.next()
+        if not event_doc:
+            break
+
+        event_payment = get_event_max_payment(event_doc, campaign_cpc, campaign_cpm)
+
+        total_user_payments += event_payment
+        max_user_payment = max([max_user_payment, event_payment])
+        max_human_score = max([max_human_score, event_doc['human_score']])
+
+    defer.returnValue((max_user_payment, max_human_score, total_user_payments))
 
 
 @defer.inlineCallbacks
@@ -172,24 +236,15 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
     yield calculate_payments_for_new_users(campaign_id, timestamp, campaign_cpm)
 
     # Saving payment scores for users.
-    total_users = 0
     uids = yield db_utils.get_events_distinct_uids(campaign_id, timestamp)
     for uid in uids:
         payment_score = yield get_user_payment_score(campaign_id, uid)
         yield db_utils.update_user_score(campaign_id, timestamp, uid, payment_score)
-        total_users += 1
 
     # Limit paid users to given payment_percentage_cutoff
-    limit = int(total_users * payment_percentage_cutoff)
+    limit = int(len(uids) * payment_percentage_cutoff)
 
-    total_score = 0
-    user_score_iter = yield db_utils.get_sorted_user_score_iter(campaign_id, timestamp, limit=limit)
-    while True:
-        user_score_doc = yield user_score_iter.next()
-        if not user_score_doc:
-            break
-
-        total_score += user_score_doc['score']
+    total_score = yield get_total_user_score(campaign_id, timestamp, limit)
 
     user_score_iter = yield db_utils.get_sorted_user_score_iter(campaign_id, timestamp, limit=limit)
     while True:
@@ -202,23 +257,7 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
         # Calculate event payments
         user_budget = 1.0 * user_score_doc['score'] * campaign_budget / total_score
 
-        max_user_payment, max_human_score, total_user_payments = 0, 0, 0
-
-        user_value_doc = yield db_utils.get_user_value(campaign_id, uid)
-        if user_value_doc:
-            max_user_payment = user_value_doc['payment']
-
-        user_events_iter = yield db_utils.get_user_events_iter(campaign_id, timestamp, uid)
-        while True:
-            event_doc = yield user_events_iter.next()
-            if not event_doc:
-                break
-
-            event_payment = get_event_max_payment(event_doc, campaign_cpc, campaign_cpm)
-
-            total_user_payments += event_payment
-            max_user_payment = max([max_user_payment, event_payment])
-            max_human_score = max([max_human_score, event_doc['human_score']])
+        max_user_payment, max_human_score, total_user_payments = yield get_best_user_payments_and_humanity(campaign_id, timestamp, uid, campaign_cpc, campaign_cpm)
 
         user_events_iter = yield db_utils.get_user_events_iter(campaign_id, timestamp, uid)
         while True:
@@ -229,6 +268,7 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
             event_id = event_doc['event_id']
             max_event_payment = get_event_max_payment(event_doc, campaign_cpc, campaign_cpm)
             event_payment = min([user_budget * max_event_payment / total_user_payments, max_event_payment])
+
             yield db_utils.update_event_payment(campaign_id, timestamp, event_id, event_payment)
 
         # Update User Values
