@@ -100,3 +100,6 @@ ENV/
 deploy.sh
 
 .idea
+
+# Sonar scanner
+.scannerwork
