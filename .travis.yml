@@ -1,0 +1,47 @@
+# Project language
+language: python
+
+# Python version
+python:
+  - 2.7
+
+# Allows use container-based infrastructure
+sudo: false
+
+addons:
+  sonarcloud:
+    organization: "adshares-github"
+    token:
+      secure: "Y9DOaaaGq7185QSRWIWSu1+R+5FnTyxWp68IPkUm31NxE7YXi3bzyKVBJ8xvaJqIxaZxt8J1EI6/vas0qygfraeYUngTzFjPQD0FrCpy64+eb2eZ9l+C/g0J/3isJkdAoqMqPFB98vQYOImozz7IAX4UhdgXSvsAhuPMXq1vQPom1MnYL5Hjbl886gbYIzDFwuACqjiTKNA8QaQNpNwn3RTGQBFGIUKvfZtKcwH9JhTG/WMPdMNHN3oUMIznv/dvJOJ20zR/tAgg1jRQb06eLPURtYiZLV+ewtLG0aDSFk1rkgXjagImKofV+3DAhBqw+e4v3lgsiFhDMsenIQD8gkz8qMntKXRlSj9dYASWbD1H7SKh+Fv9QSz2kyWKUIxlGYpLdTqq7Sp2amA6OxkminHR4znY3zIwfZdXAcqqqba4NI5i3Uw/uyGCHXxpr1pFmbV/P+r2o1vhxD4DoUu2NjBbULE4lzif+tXH9eR0K/VgjQOCthACs/IPMyGjXjadwKldS5rRlCH4v123JXai3+z2GgDInGgoFPgOLFdTgU1cnBwHnlzp9RGgiD2NS+U17J/xYgoZVRPxyIs8CQ7gktq5N/WgFH2XPjFLFfY+SFTZfQh/M6/9NRFfGQ7s9tVm9zPtbGnwIvAV7kUyfEsYkacgkNKWPhnC/t0P1giBow0="
+    github_token:
+      secure: "KVEz+mR1roJkpNHTqbVgRcZhpEN6G9AEeKJDycMEyE3+YbLSJO+INMy5szylHPvImP9S9BSYlRuVWkVuS0gC1G15J4RpMx5+8i7bgKsU/48rjLttcBSXvguhfrzSRnTOff+5C0Xq1duJ3v1YOhkO7qhKMYFNbAMBGyhDV67OTnRCVPeZ5W0yVz/dLzPyystYqkPCYQFEtwicjbBGt3PGOPb4+6mNoRKnsxaf79sN3LR8qFLdKHgE7V7ONem+6fwqa8BBOJ1b6GO/gInSeFDG9FeWoo2ufkA7RVYJ2LQPFkGq88YhddZ/28Trjy/gP0MglZHHoSSWJH24XsJD/k4HC5Lv2SBLIimDmQXTR744JxoF6RDvF7HY3GB635B6rjfgPyRs7IbQfL1xLv54addJ2RsPTqdIIGGOpq4A48QInWtqzbaaAoaxtBqaBn20prpQF4a5V4DNk6kPV5cRAS8V+KzCNPXkk2fRwXpFZR+uF+oGclRoO/xzcFKjf8El2V5LuakO90SAwe2tcXo13yUOOjkjNo1JCMh7d/kgtzGvyVcd6d4XZP35AE0u45PhzSyNFIONPft7fOWfZ4lzWasE3X0+i4ujHKV9t/vvVZGaG0odiwBP/AATkpF738FgVueX7qOlxwA6b8sSmBgiulC+Xhjcoos/D0FOXuVz9IV4CjI="
+    
+install:
+  - pip install -r requirements.txt
+  - pip install coverage
+
+stages:
+  - test
+  - quality
+
+jobs:
+  include:
+    # Python unit tests and coverage generation
+    - stage: test
+      script:
+       - export PYTHONPATH=$PYTHONPATH:$(pwd)
+       - coverage run `which trial` tests
+       - coverage xml -i
+    # Sonar Qube
+    - stage: quality
+      script: sonar-scanner
+
+
+# After a build, send email notification with the build results
+notifications:
+  email: false
+  slack:
+    rooms:
+      secure: "D8RlKysJuY/CpVNHnQx125iLOoBpwrvXHtvqzS+fSwqZ3gcEIpVY1EsV84ZhG+QFPGm1xzz61/RvjmiZgbMRuRu0AJZNeVbcut5W7ZhByeqgl7o9F7hG/0fjTaLuvVbv2n2TD9Ip4avl4NdteZXyoYKhCP4/kLR2KI+PmH6v0m8FzrwXa6vjOrsktqmHD8RHPPkQdhNpEcHnyUH23PIQQebpGYU5Fy6jtHqUzEsomldCUcbeLFpyf+sZ8mlbzVyp3qx0EhbaaGJSOqhAtN9YKZYo0OQSTCjHDbvLZtWyX9JD5aSAFFniBfaq8xRxOKxHcdGm/PuxlQFkiCxlpg2kcImY0URTwPx3UX51zDoS+/ylSUgnJZVPlvSfD0W25oBn1+49OZa67dqi1YYD510+Hehq2qpLyTPZcREIBUDaMlDG9vmAdv5k/EcawDcqOArPITsjI10XqacDKHvxxYW38nhEej9i0zU0H3rLjMDwX7wQkTJ6Z/YZK5zo1m9+gXbSA/Unng1ykqiMi5NIoWxL7b7l0fJad0c4EzD22gXCKVX12KlrESLNi004R/ariGGLKAdGTxlB9/OUt3MZYk2hUlUDIFWwVXSFZL68a9aW09S7yNFfyDMAHOUavL8ZXdFVd1MoF9bda8fPE/KMU3EhdHqmm7S8avfIUGNRuSTgIcg="
+    on_success: change
+    on_failure: always

@@ -1,0 +1,9 @@
+[run]
+omit =
+    # omit everything in /usr
+    /usr/*
+    # omit tests directory
+    */tests/*.py
+    # omit Travis-CI virtualenv directory
+    */virtualenv/python*
+    */lib/python*/site-packages/*
