@@ -30,11 +30,14 @@ jobs:
     - stage: test
       script:
        - export PYTHONPATH=$PYTHONPATH:$(pwd)
-       - coverage run `which trial` tests
-       - coverage xml -i
+       - trial tests
     # Sonar Qube
     - stage: quality
-      script: sonar-scanner
+      script:
+       - export PYTHONPATH=$PYTHONPATH:$(pwd)
+       - coverage run `which trial` tests
+       - coverage xml -i
+       - sonar-scanner
 
 
 # After a build, send email notification with the build results
