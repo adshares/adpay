@@ -8,33 +8,37 @@ python:
 # Allows use container-based infrastructure
 sudo: false
 
+# Cache pip dependencies
+cache: pip
+
 addons:
   sonarcloud:
     organization: "adshares-github"
     token:
-      secure: "Y9DOaaaGq7185QSRWIWSu1+R+5FnTyxWp68IPkUm31NxE7YXi3bzyKVBJ8xvaJqIxaZxt8J1EI6/vas0qygfraeYUngTzFjPQD0FrCpy64+eb2eZ9l+C/g0J/3isJkdAoqMqPFB98vQYOImozz7IAX4UhdgXSvsAhuPMXq1vQPom1MnYL5Hjbl886gbYIzDFwuACqjiTKNA8QaQNpNwn3RTGQBFGIUKvfZtKcwH9JhTG/WMPdMNHN3oUMIznv/dvJOJ20zR/tAgg1jRQb06eLPURtYiZLV+ewtLG0aDSFk1rkgXjagImKofV+3DAhBqw+e4v3lgsiFhDMsenIQD8gkz8qMntKXRlSj9dYASWbD1H7SKh+Fv9QSz2kyWKUIxlGYpLdTqq7Sp2amA6OxkminHR4znY3zIwfZdXAcqqqba4NI5i3Uw/uyGCHXxpr1pFmbV/P+r2o1vhxD4DoUu2NjBbULE4lzif+tXH9eR0K/VgjQOCthACs/IPMyGjXjadwKldS5rRlCH4v123JXai3+z2GgDInGgoFPgOLFdTgU1cnBwHnlzp9RGgiD2NS+U17J/xYgoZVRPxyIs8CQ7gktq5N/WgFH2XPjFLFfY+SFTZfQh/M6/9NRFfGQ7s9tVm9zPtbGnwIvAV7kUyfEsYkacgkNKWPhnC/t0P1giBow0="
+      secure: "LGt/hA4zB/M+3074MlKXDYZdg2u74IKGRURRqTbRuH6baFVvSr3ixCv/H5DvEBNQNGHUvkVJLuVILncBSsc6vyqI9HWUHObTCJPB8qEw35qjbRAfKfysyZ1hV6Ebx5p3ASzfStKp6nZjWy/A4KCr4nh9lceKOm2ERgjNC7GMkYpUx9BVLQSBILwAe+a4SQyYNo42IKO3JfbWuYx9pVyCksK2NEv5K1PBdq0YbJ2ZZthgdCd1+9Dt3Y7fNIvtVSkYTATRGUirTBwIXU/vIVPzTqoq4aeJhumhJ5PJ/eUuD3f/fgFshWkf0kw2mT09HYuZI59a5VcwzVImVKygXPt+6th1cWSXgfvpxc9bI/Yhljerk7LAMO1UWGB3D1fOsW7bbtgI40fdH5YmOFFdWnNzDdb+z6trU/xmmNiR8YwFBgCwmW/OK4vDctIRI3wwIYrnwXkb1ahUF4gJHYgL7PR3vSl3lJXxBTYaWG0Z/Ughi5Rrzws3OagXvs1y/9QewfcZlvJVfDsG3kPt6HDZjPKEaYXZu9TuYBAQQFL534+ULkAtSoYW7N3O4fZbEdvgcEUvZSchkcO4eq3w8y2siXB08C9DlwYapFCEwxhkmLyp9QDnvlILlG2mEzg23UMxSyWFh7IjHpJ2NN+PjkWqKPKVBAKAbd/Q+Zw43sTm675F7m4="
     github_token:
-      secure: "KVEz+mR1roJkpNHTqbVgRcZhpEN6G9AEeKJDycMEyE3+YbLSJO+INMy5szylHPvImP9S9BSYlRuVWkVuS0gC1G15J4RpMx5+8i7bgKsU/48rjLttcBSXvguhfrzSRnTOff+5C0Xq1duJ3v1YOhkO7qhKMYFNbAMBGyhDV67OTnRCVPeZ5W0yVz/dLzPyystYqkPCYQFEtwicjbBGt3PGOPb4+6mNoRKnsxaf79sN3LR8qFLdKHgE7V7ONem+6fwqa8BBOJ1b6GO/gInSeFDG9FeWoo2ufkA7RVYJ2LQPFkGq88YhddZ/28Trjy/gP0MglZHHoSSWJH24XsJD/k4HC5Lv2SBLIimDmQXTR744JxoF6RDvF7HY3GB635B6rjfgPyRs7IbQfL1xLv54addJ2RsPTqdIIGGOpq4A48QInWtqzbaaAoaxtBqaBn20prpQF4a5V4DNk6kPV5cRAS8V+KzCNPXkk2fRwXpFZR+uF+oGclRoO/xzcFKjf8El2V5LuakO90SAwe2tcXo13yUOOjkjNo1JCMh7d/kgtzGvyVcd6d4XZP35AE0u45PhzSyNFIONPft7fOWfZ4lzWasE3X0+i4ujHKV9t/vvVZGaG0odiwBP/AATkpF738FgVueX7qOlxwA6b8sSmBgiulC+Xhjcoos/D0FOXuVz9IV4CjI="
+      secure: "0xWHF+OSlTgGs5lni2VDxjYeC8Obvl3wBq8fwPZJ96rx6mylXRfA2OvjXQ+Au4Yhs5EH7k+UdkP6nzaSD2J+O9XoDwudgAl88J7JJBic32oh4Tns8EmFet28AqZ00axo9K32RwLdwqlw3jm3EzzUEsNnzdYkScAIJqSt4hKhCZLp0e40LQqR3ZpMG814g+H77I3zwLsgBTIzyahMztQfNDNSNTs7mo0d1Q1I56SqiF3rU20UAcJl1lsrYpQz61G9D9BAPsL4GRITp/147HtzuvhAVUEJydtjqdGBknDEgpxbznyZjLMoDDmYRqADaCmOD/Vk0R1RU+PmACJ5QHdZdiU6E7b06+p/dUOZW+WL6SwHqvantzmSdt9W39B9fGzt2XaH6xn3zJWCJJj0drORRZb+V4LRZHaQWMv/Dz0z7elqKYxlxW7DA54yBxOFjF5Jp9NbwB0nonTUmk2sJDnqfVIApB2kT5OKDwGNYb5jwlkIio5I08DTXFEp8vP7tzLrW9iO7yYR93UdWs+qA2w6rRdtIKEbEeWpE5NHU6E6nIZ4mFtVMhqGsSSfaUUQVSCTuIHv/RTIgv5BeWEpVC83s0cUQOAhzOefcm1UcVp4GWepVl4CXaZCV7892w5K/dPg3Wndd/iK/zHSAYrpj4YLIRb6iWiln0DfTvMurcTDakI="
     
+# Install python dependencies
 install:
   - pip install -r requirements.txt
-  - pip install coverage
 
+before_script:
+  - export PYTHONPATH=$PYTHONPATH:$(pwd)
+  
 stages:
   - test
   - quality
 
 jobs:
   include:
-    # Python unit tests and coverage generation
+    # Python unit tests
     - stage: test
-      script:
-       - export PYTHONPATH=$PYTHONPATH:$(pwd)
-       - trial tests
-    # Sonar Qube
+      script: trial tests
+    # Coverage generation and Sonar Qube
     - stage: quality
       script:
-       - export PYTHONPATH=$PYTHONPATH:$(pwd)
+       - pip install coverage
        - coverage run `which trial` tests
        - coverage xml -i
        - sonar-scanner
@@ -45,6 +49,6 @@ notifications:
   email: false
   slack:
     rooms:
-      secure: "D8RlKysJuY/CpVNHnQx125iLOoBpwrvXHtvqzS+fSwqZ3gcEIpVY1EsV84ZhG+QFPGm1xzz61/RvjmiZgbMRuRu0AJZNeVbcut5W7ZhByeqgl7o9F7hG/0fjTaLuvVbv2n2TD9Ip4avl4NdteZXyoYKhCP4/kLR2KI+PmH6v0m8FzrwXa6vjOrsktqmHD8RHPPkQdhNpEcHnyUH23PIQQebpGYU5Fy6jtHqUzEsomldCUcbeLFpyf+sZ8mlbzVyp3qx0EhbaaGJSOqhAtN9YKZYo0OQSTCjHDbvLZtWyX9JD5aSAFFniBfaq8xRxOKxHcdGm/PuxlQFkiCxlpg2kcImY0URTwPx3UX51zDoS+/ylSUgnJZVPlvSfD0W25oBn1+49OZa67dqi1YYD510+Hehq2qpLyTPZcREIBUDaMlDG9vmAdv5k/EcawDcqOArPITsjI10XqacDKHvxxYW38nhEej9i0zU0H3rLjMDwX7wQkTJ6Z/YZK5zo1m9+gXbSA/Unng1ykqiMi5NIoWxL7b7l0fJad0c4EzD22gXCKVX12KlrESLNi004R/ariGGLKAdGTxlB9/OUt3MZYk2hUlUDIFWwVXSFZL68a9aW09S7yNFfyDMAHOUavL8ZXdFVd1MoF9bda8fPE/KMU3EhdHqmm7S8avfIUGNRuSTgIcg="
+      secure: "eSRA9ymsTLvqgDmcyrekeb23g8bfb7HrJF80qZxQSvJA/b5TBfMpOa9HOE/Gm/3PIcWf3odpyybrFTwXpCuQ5OXRWK8wvwe+4WoyPV1iJeJMEU2r8gMSWxcXktgavUYWOBpvzoE0uUUbtt5gP6X+CDoIibls/P1vO81eGOoI3jKPNBaJRita/WwQzltxwRhCDE100rkFbHGX2TQ3UV32zeegUVGGrmCzA87/c7hz1FFsWrCVz5GjTEf6iAoDTfwrVD6ym8XtQKjKN+nVuDFEsiPwA5SmTKg/HDbTYg41xUsbE2hr3iDwhMNkl38XITfw6WzIYVdYPO4OPlBHoR973Ao1FFQWIrzsfINC2ogn4SnexPyk/m/gNG9y3l7ammRO5fVKrXdidXLisdlDQ0NrgyqtQRss0u6Lpk81ksFgI1e/Ffei3/0LJfuvKgtX7/dUnzDxnGmvrJUvUtbaXiqpulOoCTVrTdN8XqV4fB+qnadYhBGmksCQhFERwCF09AS9+dSQElPTHoa/3qo4Ftnud6OCgkdSjK+9d83Gh7u1WezqctQdgc2s5SKmTmkt3cg11qqVtVtYh32qpoUOiJkm2LH0EZMgibsnTbevMYVvPiCrLfUz7SE9asJrNFQfuoX6pDhvCN7tKPFechMnqmJoFWh4o4DKJxE5iFfjPeWzWCg="
     on_success: change
     on_failure: always
