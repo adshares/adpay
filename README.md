@@ -1,5 +1,5 @@
 # adpay
-
+[![Build Status](https://travis-ci.org/adshares/adpay.svg?branch=master)](https://travis-ci.org/adshares/adpay)
 ## Build
 ADPAY is fully implemented in python.
 
