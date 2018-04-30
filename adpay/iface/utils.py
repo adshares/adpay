@@ -7,7 +7,7 @@ from adpay.db import utils as db_utils
 from adpay.iface import proto as iface_proto
 from adpay.iface import filters as iface_filters
 from adpay.stats import utils as stats_utils
-from adpay.utils import common as common_utils
+from adpay.utils import utils as common_utils
 
 
 class PaymentsNotCalculatedException(Exception):

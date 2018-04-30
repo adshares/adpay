@@ -2,7 +2,7 @@ from twisted.internet import defer
 from txmongo import filter as txfilter
 
 from adpay import db
-from adpay.utils import common as common_utils
+from adpay.utils import utils as common_utils
 
 
 class QueryIterator(object):
@@ -31,20 +31,6 @@ class QueryIterator(object):
         self.docs, self.dfr = None, None
         self.docs_index = 0
 
-    def __iter__(self):
-        """
-
-        :return: `self`, iterable object.
-        """
-        return self
-
-    def __next__(self):
-        """
-
-        :return: Next item.
-        """
-        return self.next()
-
     @defer.inlineCallbacks
     def next(self):
         """
@@ -64,9 +50,12 @@ class QueryIterator(object):
             value = yield self.next()
             defer.returnValue(value)
 
-        value = self.docs[self.docs_index]
-        self.docs_index += 1
-        defer.returnValue(value)
+        try:
+            value = self.docs[self.docs_index]
+            self.docs_index += 1
+            defer.returnValue(value)
+        except IndexError:
+            raise StopIteration()
 
 
 # Campaigns
@@ -146,12 +135,14 @@ def delete_campaign_banners(campaign_id):
 
 # Events
 @defer.inlineCallbacks
-def update_event(event_obj, timestamp):
+def update_event(event_obj):
 
-    event_obj.timestamp = common_utils.timestamp2hour(timestamp)
+    event_obj.timestamp = common_utils.timestamp2hour(event_obj.timestamp)
     collection = yield db.get_event_collection()
 
-    return_value = yield collection.replace_one({'event_id': event_obj.event_id}, event_obj.to_json(), upsert=True)
+    return_value = yield collection.replace_one({'event_id': event_obj.event_id},
+                                                event_obj.to_json(),
+                                                upsert=True)
     defer.returnValue(return_value)
 
 

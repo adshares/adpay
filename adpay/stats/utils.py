@@ -140,6 +140,7 @@ def calculate_payments_for_new_users(campaign_id, timestamp, campaign_cpm):
     """
     # For new users add payments as cpv
     uids = yield db_utils.get_events_distinct_uids(campaign_id, timestamp)
+
     for uid in uids:
         max_human_score = 0
 
@@ -152,6 +153,7 @@ def calculate_payments_for_new_users(campaign_id, timestamp, campaign_cpm):
             max_human_score = max([max_human_score, event_doc['human_score']])
 
         user_value_doc = yield db_utils.get_user_value(campaign_id, uid)
+
         if user_value_doc is None or user_value_doc['payment'] <= campaign_cpm:
             yield db_utils.update_user_value(campaign_id, uid, campaign_cpm, max_human_score)
 

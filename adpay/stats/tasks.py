@@ -1,7 +1,7 @@
 from twisted.internet import defer, reactor
 from adpay.db import utils as db_utils
 from adpay.stats import utils as stats_utils
-from adpay.utils import common as common_utils
+from adpay.utils import utils as common_utils
 import time
 
 
@@ -46,12 +46,11 @@ def force_payment_recalculation():
     defer.returnValue(return_value)
 
 
+@defer.inlineCallbacks
 def adpay_task(interval_seconds=60):
-    def callback():
-        reactor.callLater(interval_seconds, adpay_task)
 
-    deferred = _adpay_task()
-    deferred.addCallback(callback)
+    yield _adpay_task()
+    yield reactor.callLater(interval_seconds, adpay_task)
 
 
 def configure_tasks(interval_seconds=2):
