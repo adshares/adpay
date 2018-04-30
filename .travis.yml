@@ -8,6 +8,9 @@ python:
 # Allows use container-based infrastructure
 sudo: false
 
+# Cache pip dependencies
+cache: pip
+
 addons:
   sonarcloud:
     organization: "adshares-github"
@@ -18,7 +21,10 @@ addons:
     
 install:
   - pip install -r requirements.txt
-  - pip install coverage
+  - pip install mock mongomock
+
+before_script:
+  - export PYTHONPATH=$PYTHONPATH:$(pwd)
 
 stages:
   - test
@@ -26,15 +32,13 @@ stages:
 
 jobs:
   include:
-    # Python unit tests and coverage generation
+    # Python unit tests
     - stage: test
-      script:
-       - export PYTHONPATH=$PYTHONPATH:$(pwd)
-       - trial tests
-    # Sonar Qube
+      script: trial tests
+    # Coverage generation and Sonar Qube
     - stage: quality
       script:
-       - export PYTHONPATH=$PYTHONPATH:$(pwd)
+       - pip install coverage
        - coverage run `which trial` tests
        - coverage xml -i
        - sonar-scanner
