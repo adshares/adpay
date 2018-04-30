@@ -19,6 +19,7 @@ from zope.interface import implements
 from adpay.iface import server as iface_server
 from adpay.iface import consts as iface_consts
 from adpay import db
+from adpay.db import utils as db_utils
 
 
 class StringProducer(object):
@@ -166,11 +167,11 @@ class DataTestCase(unittest.TestCase):
 
     def load_campaigns(self):
         for campaign in self.campaigns:
-            db.utils.update_campaign(campaign)
+            db_utils.update_campaign(campaign)
 
             for banner in campaign['banners']:
                 banner['campaign_id'] = campaign['campaign_id']
-                yield db.utils.update_banner(banner)
+                yield db_utils.update_banner(banner)
 
 
 class DBTestCase(DataTestCase):

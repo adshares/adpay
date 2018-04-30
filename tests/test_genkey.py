@@ -20,5 +20,5 @@ class TestGenkey(TestCase):
         self.assertIs(type(ts), int)
 
     def test_reverse_insort(self):
-        with self.assertRaises(ValueError)as e:
+        with self.assertRaises(ValueError):
             stats_utils.reverse_insort(0, range(20), -5)

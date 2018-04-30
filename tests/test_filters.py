@@ -41,28 +41,27 @@ class FilterTestCase(unittest.TestCase):
 
     def test_and_filter(self):
         and_filter_object = iface_filters.AndFilter([iface_filters.EqualFilter(True),
-                                                       iface_filters.EqualFilter(True)])
+                                                     iface_filters.EqualFilter(True)])
 
         self.assertTrue(and_filter_object.is_valid(True))
 
         and_filter_object = iface_filters.AndFilter([iface_filters.EqualFilter(True),
-                                                       iface_filters.EqualFilter(False)])
+                                                     iface_filters.EqualFilter(False)])
 
         self.assertFalse(and_filter_object.is_valid(True))
 
     def test_or_filter(self):
         or_filter_object = iface_filters.OrFilter([iface_filters.EqualFilter(True),
-                                                     iface_filters.EqualFilter(False)])
+                                                   iface_filters.EqualFilter(False)])
 
         self.assertTrue(or_filter_object.is_valid(True))
 
         or_filter_object = iface_filters.OrFilter([iface_filters.EqualFilter(False),
-                                                     iface_filters.EqualFilter(False)])
+                                                   iface_filters.EqualFilter(False)])
 
         self.assertFalse(or_filter_object.is_valid(True))
 
     def test_json_filter(self):
-
         json_filter = iface_filters.json2filter(json.loads('{"type": "=<><><="}'))
         self.assertIsNone(json_filter)
 
@@ -73,5 +72,5 @@ class FilterTestCase(unittest.TestCase):
         self.assertIsNot(json_filter, None)
 
         json_filter = iface_filters.json2filter(json.loads('{"type": "and", "args": [{"type": "=", "args": [1]}, '
-                                                             '                         {"type": "=", "args": [2]}]} '))
+                                                           '                         {"type": "=", "args": [2]}]} '))
         self.assertIsNot(json_filter, None)
