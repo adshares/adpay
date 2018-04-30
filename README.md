@@ -1,5 +1,6 @@
 # adpay
 [![Build Status](https://travis-ci.org/adshares/adpay.svg?branch=master)](https://travis-ci.org/adshares/adpay)
+[![Build Status](https://sonarcloud.io/api/project_badges/measure?project=adshares-adpay&metric=alert_status)](https://sonarcloud.io/dashboard?id=adshares-adpay)
 ## Build
 ADPAY is fully implemented in python.
 
