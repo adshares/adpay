@@ -6,7 +6,7 @@ from adpay.stats import utils as stats_utils
 from adpay.stats import cache as stats_cache
 
 
-class DBTestCase(tests.DBTestCase):
+class DBTestCase(tests.db_test_case):
     @defer.inlineCallbacks
     def test_keyword_stats_update(self):
         recalculate_per_views, cutoff, decay = 1, 0.001, 0.1

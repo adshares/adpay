@@ -5,7 +5,7 @@ from adpay.db import utils as db_utils
 from adpay.stats import utils as stats_utils
 
 
-class DBTestCase(tests.DBTestCase):
+class DBTestCase(tests.db_test_case):
     @defer.inlineCallbacks
     def test_user_keyword_stats_update(self):
         cutoff, decay = 0.001, 0.1

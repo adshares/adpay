@@ -6,7 +6,7 @@ from adpay.db import consts as db_consts
 from adpay.iface import proto as iface_proto
 
 
-class DBTestCase(tests.DBTestCase):
+class DBTestCase(tests.db_test_case):
     @defer.inlineCallbacks
     def test_event(self):
         # Test event add.
@@ -20,7 +20,7 @@ class DBTestCase(tests.DBTestCase):
                 campaign_id="campaign_id",
                 event_value=10,
                 our_keywords={},
-                human_score=1), 0)
+                human_score=1))
 
         # Test event select.
         counter = 0
@@ -38,7 +38,7 @@ class DBTestCase(tests.DBTestCase):
         self.assertEqual(counter, 15)
 
         unique_uids = yield db_utils.get_events_distinct_uids("campaign_id", timestamp=0)
-        self.assertEqual(unique_uids, [str(x) for x in range(20)])
+        self.assertEqual(set(unique_uids), set([str(x) for x in range(20)]))
 
         # Test event deletion.
         for i in range(300):

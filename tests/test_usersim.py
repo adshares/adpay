@@ -6,7 +6,7 @@ from adpay.stats import utils as stats_utils
 from adpay.stats import consts as stats_consts
 
 
-class DBTestCase(tests.DBTestCase):
+class DBTestCase(tests.DataTestCase):
     @defer.inlineCallbacks
     def test_user_similarity(self):
         yield db_utils.update_user_profile("userid_1", {'key1': 0.1, 'key2': 0.2, 'key3': 0.4})
@@ -20,3 +20,6 @@ class DBTestCase(tests.DBTestCase):
 
         users_similarity = yield stats_utils.get_users_similarity("userid_1", "userid_2")
         self.assertEqual(users_similarity, 1.0 / stats_consts.MAX_USER_KEYWORDS_IN_PROFILE)
+
+        user_keywords = yield stats_utils.get_user_profile_keywords("invalid_userid")
+        self.assertIsNone(user_keywords)

@@ -6,7 +6,7 @@ from adpay.stats import utils as stats_utils
 from adpay.stats import consts as stats_consts
 
 
-class DBTestCase(tests.DBTestCase):
+class DBTestCase(tests.db_test_case):
     @defer.inlineCallbacks
     def test_user_profile(self):
         global_freq_cutoff = 0.1
