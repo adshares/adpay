@@ -2,4 +2,4 @@ Twisted==18.4.0
 jsonobject==0.8.0
 fastjsonrpc==0.3.0
 txmongo==18.1.0
-supervisor==3.3.3
+supervisor==3.3.4
