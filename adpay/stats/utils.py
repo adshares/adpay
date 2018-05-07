@@ -237,14 +237,10 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
 
     yield calculate_payments_for_new_users(campaign_id, timestamp, campaign_cpm)
 
-    # Saving payment scores for users.
-    uids = yield db_utils.get_events_distinct_uids(campaign_id, timestamp)
-    for uid in uids:
-        payment_score = yield get_user_payment_score(campaign_id, uid)
-        yield db_utils.update_user_score(campaign_id, timestamp, uid, payment_score)
+    uid_count = yield update_users_score_and_payments(campaign_id, timestamp)
 
     # Limit paid users to given payment_percentage_cutoff
-    limit = int(len(uids) * payment_percentage_cutoff)
+    limit = int(uid_count * payment_percentage_cutoff)
 
     total_score = yield get_total_user_score(campaign_id, timestamp, limit)
 
@@ -257,7 +253,7 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
         uid = user_score_doc['user_id']
 
         # Calculate event payments
-        user_budget = 1.0 * user_score_doc['score'] * campaign_budget / total_score
+        user_budget = 1.0 * campaign_budget * user_score_doc['score'] / total_score
 
         max_user_payment, max_human_score, total_user_payments = yield get_best_user_payments_and_humanity(campaign_id, timestamp, uid, campaign_cpc, campaign_cpm)
 
@@ -278,6 +274,17 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
 
     # Delete user scores
     yield db_utils.delete_user_scores(campaign_id, timestamp)
+
+
+@defer.inlineCallbacks
+def update_users_score_and_payments(campaign_id, timestamp):
+    # Saving payment scores for users.
+    uids = yield db_utils.get_events_distinct_uids(campaign_id, timestamp)
+    for uid in uids:
+        payment_score = yield get_user_payment_score(campaign_id, uid)
+        yield db_utils.update_user_score(campaign_id, timestamp, uid, payment_score)
+
+    defer.returnValue(len(uids))
 
 
 @defer.inlineCallbacks
