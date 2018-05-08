@@ -1,4 +1,7 @@
 class Filter(object):
+    """
+    Filter base class for filtering keywords.
+    """
     NAME = None
     NESTED_FILTERS = False
 
@@ -66,7 +69,7 @@ class GreaterFilter(Filter):
         return value > self.filter_arg
 
 
-REGISTERD_FILTERS = [
+REGISTERED_FILTERS = [
     AndFilter,
     OrFilter,
     EqualFilter,
@@ -75,21 +78,18 @@ REGISTERD_FILTERS = [
     LessFilter,
     GreaterFilter
 ]
-FILTERS_NAMES_DICT = dict([(cls.NAME, cls) for cls in REGISTERD_FILTERS])
+FILTERS_NAMES_DICT = dict([(cls.NAME, cls) for cls in REGISTERED_FILTERS])
 
 
 def json2filter(json_data):
     """
-        Convert json type filter to object filter e.g.
-        {
-            type:and,
-            args:[
-                {
-                    type:type1,
-                    args:''
-                }...
-            ]
-        }
+    Convert nested json type filter to object filter e.g.
+
+    {type: and,
+     args: [ {type: type1, args: ''}, ... ]}
+
+    :param json_data: JSON data containing filter *'type'*
+    :return: Filter object
     """
     filter_type = json_data.get('type')
     if filter_type not in FILTERS_NAMES_DICT:
