@@ -256,24 +256,28 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
         user_budget = 1.0 * campaign_budget * user_score_doc['score'] / total_score
 
         max_user_payment, max_human_score, total_user_payments = yield get_best_user_payments_and_humanity(campaign_id, timestamp, uid, campaign_cpc, campaign_cpm)
-
-        user_events_iter = yield db_utils.get_user_events_iter(campaign_id, timestamp, uid)
-        while True:
-            event_doc = yield user_events_iter.next()
-            if event_doc is None:
-                break
-
-            event_id = event_doc['event_id']
-            max_event_payment = get_event_max_payment(event_doc, campaign_cpc, campaign_cpm)
-            event_payment = min([user_budget * max_event_payment / total_user_payments, max_event_payment])
-
-            yield db_utils.update_event_payment(campaign_id, timestamp, event_id, event_payment)
-
         # Update User Values
         yield db_utils.update_user_value(campaign_id, uid, max_user_payment, max_human_score)
 
+        yield update_events_payments(campaign_id, timestamp, uid, user_budget, campaign_cpc, campaign_cpm,
+                                     total_user_payments)
+
     # Delete user scores
     yield db_utils.delete_user_scores(campaign_id, timestamp)
+
+
+@defer.inlineCallbacks
+def update_events_payments(campaign_id, timestamp, uid, user_budget, campaign_cpc, campaign_cpm, total_user_payments):
+    user_events_iter = yield db_utils.get_user_events_iter(campaign_id, timestamp, uid)
+    while True:
+        event_doc = yield user_events_iter.next()
+        if event_doc is None:
+            break
+
+        max_event_payment = get_event_max_payment(event_doc, campaign_cpc, campaign_cpm)
+        event_payment = min([user_budget * max_event_payment / total_user_payments, max_event_payment])
+
+        yield db_utils.update_event_payment(campaign_id, timestamp, event_doc['event_id'], event_payment)
 
 
 @defer.inlineCallbacks
