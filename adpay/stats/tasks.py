@@ -8,7 +8,9 @@ import time
 @defer.inlineCallbacks
 def _adpay_task(timestamp=None, check_payment_round_exists=True):
     """
-        Task calculate payments and update user profiles only once a hour.
+    Task calculate payments and update user profiles only once a hour.
+    :param timestamp: Timestamp for which to calculate the payments.
+    :param check_payment_round_exists: Check first if the payment is already calculated.
     """
     # As recalculate only finished hours, take timestamp from an hour before now.
     if timestamp is None:
@@ -42,16 +44,26 @@ def _adpay_task(timestamp=None, check_payment_round_exists=True):
 
 @defer.inlineCallbacks
 def force_payment_recalculation():
+    """
+    Recalculate payments now.
+    """
     return_value = yield _adpay_task(check_payment_round_exists=False)
     defer.returnValue(return_value)
 
 
 @defer.inlineCallbacks
 def adpay_task(interval_seconds=60):
-
+    """
+    Recalculate payments and schedule them again in interval_seconds.
+    :param interval_seconds: time after which the task will rerun.
+    """
     yield _adpay_task()
     yield reactor.callLater(interval_seconds, adpay_task)
 
 
 def configure_tasks(interval_seconds=2):
+    """
+    Schedule payment calculation.
+    :param interval_seconds:
+    """
     reactor.callLater(interval_seconds, adpay_task)
