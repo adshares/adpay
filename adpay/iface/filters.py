@@ -106,6 +106,13 @@ def json2filter(json_data):
 
 
 def validate_filters(filters_dict, keywords):
+    """
+    Validate required and excluded keywords.
+
+    :param filters_dict: Required and excluded keywords
+    :param keywords: Keywords being tested.
+    :return: True or False
+    """
     for filter_json in filters_dict.get('require', []):
         keyword = filter_json['keyword']
         if keyword not in keywords:
