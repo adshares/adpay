@@ -13,5 +13,14 @@ def timestamp2hour(timestamp):
 
 
 def genkey(key, val, delimiter="_"):
+    """
+    Generate keyword identifier, ex. {'animal': 'dog'} becomes 'animal_dog'
+
+    :param key: Key
+    :param val: Value
+    :param delimiter: Delimiter, default "_"
+    :return: Generated identifier
+    """
     keywal = "%s%s%s" % (key, delimiter, val)
     return keywal.replace(".", "")
+

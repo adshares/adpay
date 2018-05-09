@@ -16,6 +16,12 @@ class PaymentsNotCalculatedException(Exception):
 
 @defer.inlineCallbacks
 def create_or_update_campaign(cmpobj):
+    """
+    Create or update campaign. Removes old banners and adds new ones.
+
+    :param cmpobj:
+    :return:
+    """
     if cmpobj.max_cpm is not None:
         cmpobj.max_cpm = cmpobj.max_cpm/1000.0
 
@@ -40,6 +46,12 @@ def create_or_update_campaign(cmpobj):
 
 @defer.inlineCallbacks
 def delete_campaign(campaign_id):
+    """
+    Remove campaign.
+
+    :param campaign_id:
+    :return:
+    """
     # Delete campaign banners
     yield db_utils.delete_campaign_banners(campaign_id)
 

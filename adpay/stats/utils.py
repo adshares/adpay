@@ -5,7 +5,7 @@ from adpay.stats import consts as stats_consts
 from adpay.db import consts as db_consts
 from adpay.db import utils as db_utils
 
-
+#: Deferred lock for updating events
 ADD_EVENT_LOCK = defer.DeferredLock()
 
 
@@ -49,24 +49,37 @@ def get_users_similarity(user1_id, user2_id):
 
 
 def reverse_insort(a, x, lo=0, hi=None):
-    """Insert item x in list a, and keep it reverse-sorted assuming a
+    """
+    (https://stackoverflow.com/a/2247433 CC-BY-SA)
+
+    Insert item x in list a, and keep it reverse-sorted assuming a
     is reverse-sorted.
 
     If x is already in a, insert it to the right of the rightmost x.
 
     Optional args lo (default 0) and hi (default len(a)) bound the
     slice of a to be searched.
+
+    In place operation.
+
+    :param a: List we are sorting.
+    :param x: Item we insert.
+    :param lo: Lower bound of slice we're scanning.
+    :param hi: Higher bound of slice we're scanning.
     """
     if lo < 0:
         raise ValueError('lo must be non-negative')
+
     if hi is None:
         hi = len(a)
+
     while lo < hi:
         mid = (lo+hi)//2
         if x > a[mid]:
             hi = mid
         else:
             lo = mid+1
+
     a.insert(lo, x)
 
 
@@ -268,6 +281,18 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
 
 @defer.inlineCallbacks
 def update_events_payments(campaign_id, timestamp, uid, user_budget, campaign_cpc, campaign_cpm, total_user_payments):
+    """
+    Update or create event payments by dividing user budget among events.
+
+    :param campaign_id:
+    :param timestamp:
+    :param uid:
+    :param user_budget:
+    :param campaign_cpc:
+    :param campaign_cpm:
+    :param total_user_payments:
+    :return:
+    """
     user_events_iter = yield db_utils.get_user_events_iter(campaign_id, timestamp, uid)
     while True:
         event_doc = yield user_events_iter.next()
@@ -282,7 +307,13 @@ def update_events_payments(campaign_id, timestamp, uid, user_budget, campaign_cp
 
 @defer.inlineCallbacks
 def update_users_score_and_payments(campaign_id, timestamp):
-    # Saving payment scores for users.
+    """
+    Saving payment scores for users.
+
+    :param campaign_id:
+    :param timestamp:
+    :return:
+    """
     uids = yield db_utils.get_events_distinct_uids(campaign_id, timestamp)
     for uid in uids:
         payment_score = yield get_user_payment_score(campaign_id, uid)
