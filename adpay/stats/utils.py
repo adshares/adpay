@@ -1,3 +1,5 @@
+import logging
+
 from twisted.internet import defer
 
 from adpay.stats import cache as stats_cache
@@ -16,9 +18,14 @@ def get_user_profile_keywords(user_id):
     :param user_id: User identifier
     :return: Unique list of keywords cut off at `stats_consts.MAX_USER_KEYWORDS_IN_PROFILE`
     """
+    logger = logging.getLogger(__name__)
     user_profile_doc = yield db_utils.get_user_profile(user_id)
     if not user_profile_doc:
+        yield logger.warn("User profile keywords not found.")
         defer.returnValue(None)
+
+    yield logger.debug("User keyword profile for {0} limited to: {1}".format(user_id), stats_consts.MAX_USER_KEYWORDS_IN_PROFILE)
+    yield logger.debug(list(set(user_profile_doc['profile'].keys()))[:stats_consts.MAX_USER_KEYWORDS_IN_PROFILE])
 
     defer.returnValue(list(set(user_profile_doc['profile'].keys()))[:stats_consts.MAX_USER_KEYWORDS_IN_PROFILE])
 
@@ -34,8 +41,10 @@ def get_users_similarity(user1_id, user2_id):
     :param user2_id: User identifier
     :return: User similarity value [0, 1]
     """
-
+    logger = logging.getLogger(__name__)
+    yield logger.info("Measuring user similarity.")
     if user1_id == user2_id:
+        yield logger.warn("It's the same user!")
         defer.returnValue(1.0)
 
     user1_profile_keywords = yield get_user_profile_keywords(user1_id)
@@ -45,6 +54,10 @@ def get_users_similarity(user1_id, user2_id):
     user2_profile_keywords = user2_profile_keywords or []
 
     len_common_keywords = len(set(user1_profile_keywords).intersection(set(user2_profile_keywords)))
+
+    yield logger.debug("{0} common keywords found".format(len_common_keywords))
+    yield logger.debug("Similarity score value: {0}".format(1.0 * len_common_keywords / stats_consts.MAX_USER_KEYWORDS_IN_PROFILE))
+
     defer.returnValue(1.0 * len_common_keywords / stats_consts.MAX_USER_KEYWORDS_IN_PROFILE)
 
 
@@ -98,6 +111,10 @@ def get_event_max_payment(event_doc, max_cpc, max_cpm):
         event_payment = max_cpc
     elif event_type == db_consts.EVENT_TYPE_VIEW:
         event_payment = max_cpm
+
+    logger = logging.getLogger(__name__)
+    logger.debug("Event type {0}, value: {1}".format(event_type, event_payment))
+
     return event_payment
 
 
@@ -114,6 +131,9 @@ def get_user_payment_score(campaign_id, user_id, amount=5):
     :param amount: Limit to how many users we compare
     :return: User payment score.
     """
+    logger = logging.getLogger(__name__)
+    yield logger.info("Calculating user payment score for user {0} and campaign {1}".format(user_id, campaign_id))
+
     # Find most similar users to user_id
     users = []
     user_value_iter = yield db_utils.get_user_value_iter(campaign_id)
@@ -131,13 +151,17 @@ def get_user_payment_score(campaign_id, user_id, amount=5):
     # Calculate payment score for user
     score_components = []
     for similarity, uid in users:
+
         user_stat = yield db_utils.get_user_value(campaign_id, uid)
         if user_stat:
-            score_components.append(user_stat['payment']*user_stat['human_score'])
+            yield logger.info("Getting user value from user: {0}".format(uid))
+            score_components.append(user_stat['payment'] * user_stat['human_score'])
 
     if not score_components:
+        yield logger.warn("No similar users or no scores for similar users. User score value: 0")
         defer.returnValue(0)
 
+    yield logger.debug("User {0} payment score: {1}".format(user_id, 1.0*sum(score_components)/len(score_components)))
     defer.returnValue(1.0*sum(score_components)/len(score_components))
 
 
@@ -151,8 +175,12 @@ def calculate_payments_for_new_users(campaign_id, timestamp, campaign_cpm):
     :param campaign_cpm:
     :return:
     """
+    logger = logging.getLogger(__name__)
+    yield logger.info("Calculating payment score for new user.")
+
     # For new users add payments as cpv
     uids = yield db_utils.get_events_distinct_uids(campaign_id, timestamp)
+    yield logger.debug("Found {0} distinct user ids".format(len(uids)))
 
     for uid in uids:
         max_human_score = 0
@@ -168,6 +196,7 @@ def calculate_payments_for_new_users(campaign_id, timestamp, campaign_cpm):
         user_value_doc = yield db_utils.get_user_value(campaign_id, uid)
 
         if user_value_doc is None or user_value_doc['payment'] <= campaign_cpm:
+            yield logger.info("Updating user value for {0}".format(uid))
             yield db_utils.update_user_value(campaign_id, uid, campaign_cpm, max_human_score)
 
 
@@ -181,6 +210,7 @@ def get_total_user_score(campaign_id, timestamp, limit):
     :param limit: User limit.
     :return:
     """
+    logger = logging.getLogger(__name__)
     total_score = 0
     user_score_iter = yield db_utils.get_sorted_user_score_iter(campaign_id, timestamp, limit=limit)
     while True:
@@ -189,7 +219,7 @@ def get_total_user_score(campaign_id, timestamp, limit):
             break
 
         total_score += user_score_doc['score']
-
+    yield logger.info("Total user score is: {0}".format(total_score))
     defer.returnValue(total_score)
 
 
@@ -205,7 +235,7 @@ def get_best_user_payments_and_humanity(campaign_id, timestamp, uid, campaign_cp
     :param campaign_cpm:
     :return: Tuple: max_user_payment, max_human_score, total_user_payments
     """
-
+    logger = logging.getLogger(__name__)
     max_user_payment, max_human_score, total_user_payments = 0, 0, 0
 
     user_value_doc = yield db_utils.get_user_value(campaign_id, uid)
@@ -223,7 +253,7 @@ def get_best_user_payments_and_humanity(campaign_id, timestamp, uid, campaign_cp
         total_user_payments += event_payment
         max_user_payment = max([max_user_payment, event_payment])
         max_human_score = max([max_human_score, event_doc['human_score']])
-
+    yield logger.info("User {0} max_user_payment, max_human_score, total_user_payments: {1}".format(uid, (max_user_payment, max_human_score, total_user_payments)))
     defer.returnValue((max_user_payment, max_human_score, total_user_payments))
 
 
@@ -240,8 +270,10 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
     :param payment_percentage_cutoff:
     :return:
     """
+    logger = logging.getLogger(__name__)
     campaign_doc = yield db_utils.get_campaign(campaign_id)
     if campaign_doc is None:
+        logger.warn("Campaign not found: {0}".format(campaign_id))
         return
 
     campaign_budget = campaign_doc['budget']
@@ -293,6 +325,7 @@ def update_events_payments(campaign_id, timestamp, uid, user_budget, campaign_cp
     :param total_user_payments:
     :return:
     """
+    logger = logging.getLogger(__name__)
     user_events_iter = yield db_utils.get_user_events_iter(campaign_id, timestamp, uid)
     while True:
         event_doc = yield user_events_iter.next()
@@ -301,7 +334,7 @@ def update_events_payments(campaign_id, timestamp, uid, user_budget, campaign_cp
 
         max_event_payment = get_event_max_payment(event_doc, campaign_cpc, campaign_cpm)
         event_payment = min([user_budget * max_event_payment / total_user_payments, max_event_payment])
-
+        yield logger.debug("campaign_id, timestamp, event_doc['event_id'], event_payment: {0}".format((campaign_id, timestamp, event_doc['event_id'], event_payment)))
         yield db_utils.update_event_payment(campaign_id, timestamp, event_doc['event_id'], event_payment)
 
 
@@ -314,11 +347,12 @@ def update_users_score_and_payments(campaign_id, timestamp):
     :param timestamp:
     :return:
     """
+    logger = logging.getLogger(__name__)
     uids = yield db_utils.get_events_distinct_uids(campaign_id, timestamp)
     for uid in uids:
         payment_score = yield get_user_payment_score(campaign_id, uid)
         yield db_utils.update_user_score(campaign_id, timestamp, uid, payment_score)
-
+    yield logger.info("Updates {0} user scores.".format(len(uids)))
     defer.returnValue(len(uids))
 
 
@@ -332,8 +366,10 @@ def update_keywords_stats(recalculate_per_views=1000, cutoff=0.00001, decay=0.01
     :param decay:
     :return:
     """
+    logger = logging.getLogger(__name__)
     # Recalculate only every 1000 events.
     if stats_cache.EVENTS_STATS_VIEWS % recalculate_per_views:
+        yield logger.warn("Updates permitted only per {0} views".format(recalculate_per_views))
         defer.returnValue(None)
 
     for keyword, views_counts in stats_cache.EVENTS_STATS_KEYWORDS.iteritems():
@@ -346,7 +382,8 @@ def update_keywords_stats(recalculate_per_views=1000, cutoff=0.00001, decay=0.01
 
         yield db_utils.update_keyword_frequency(keyword, new_keyword_frequency)
 
-    stats_cache.reset_keywords_stats()
+    yield logger.info("Resetting keyword stats.")
+    stats_cache.rfset_keywords_stats()
     stats_cache.EVENTS_STATS_VIEWS = 0
 
     _iter = yield db_utils.get_no_updated_keyword_frequency_iter()
@@ -378,8 +415,10 @@ def update_user_keywords_stats(user_id, keywords_list, cutoff=0.001, decay=0.01)
     :param decay:
     :return:
     """
+    logger = logging.getLogger(__name__)
     # Update new keyword to database.
     for keyword in keywords_list:
+        yield logger.debug("Adding new keyowrd: {0}".format(keyword))
         frequency = decay
 
         user_keyword_doc = yield db_utils.get_user_keyword_frequency(user_id, keyword)
@@ -425,6 +464,8 @@ def update_user_keywords_profiles(global_freq_cutoff=0.1):
     :param global_freq_cutoff:
     :return:
     """
+    logger = logging.getLogger(__name__)
+    yield logger.info("Remove old keyword profile.")
     # Remove old keywords
     yield db_utils.delete_user_profiles()
 
@@ -466,6 +507,7 @@ def add_view_keywords(user_id, keywords_list):
     :param keywords_list:
     :return:
     """
+    logger = logging.getLogger(__name__)
     try:
         yield ADD_EVENT_LOCK.acquire()
 
@@ -474,6 +516,7 @@ def add_view_keywords(user_id, keywords_list):
 
         # Update global keywords stats.
         for keyword in keywords_list:
+            yield logger.info("Incrementing views.")
             stats_cache.EVENTS_STATS_KEYWORDS[keyword] += 1
             stats_cache.EVENTS_STATS_VIEWS += 1
 
@@ -493,6 +536,7 @@ def delete_campaign(campaign_id):
     :return:
     """
     # TODO: add deleting events and other objects related to campaign.
-
+    logger = logging.getLogger(__name__)
+    yield logger.info("Removing campaigns and banners.")
     yield db_utils.delete_campaign(campaign_id)
     yield db_utils.delete_campaign_banners(campaign_id)

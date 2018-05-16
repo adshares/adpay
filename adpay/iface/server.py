@@ -1,3 +1,5 @@
+import logging
+
 from twisted.internet import reactor, defer
 from twisted.web.server import Site
 
@@ -11,6 +13,11 @@ from adpay.stats import tasks as stats_tasks
 
 
 class AdPayIfaceServer(JSONRPCServer):
+
+    def __init__(self):
+        JSONRPCServer.__init__(self)
+        self.logger = logging.getLogger(__name__)
+
     """
     JSON-RPC endpoint.
     """
@@ -23,8 +30,12 @@ class AdPayIfaceServer(JSONRPCServer):
         :param campaign_data_list:
         :return: True
         """
-        for campaign_data in campaign_data_list:
-            yield iface_utils.create_or_update_campaign(iface_proto.CamapaignObject(campaign_data))
+        if not campaign_data_list:
+            yield self.logger.warning("No campaign data to update.")
+        else:
+            for campaign_data in campaign_data_list:
+                yield self.logger.debug("Campaign update: {0}".format(campaign_data))
+                yield iface_utils.create_or_update_campaign(iface_proto.CamapaignObject(campaign_data))
         defer.returnValue(True)
 
     @defer.inlineCallbacks
@@ -35,8 +46,12 @@ class AdPayIfaceServer(JSONRPCServer):
         :param campaign_id_list: List of campaign identifiers.
         :return: True
         """
-        for campaign_id in campaign_id_list:
-            yield iface_utils.delete_campaign(campaign_id)
+        if not campaign_id_list:
+            yield self.logger.warning("No campaign id to remove.")
+        else:
+            for campaign_id in campaign_id_list:
+                yield self.logger.info("Campaign removal: {0}".format(campaign_id))
+                yield iface_utils.delete_campaign(campaign_id)
         defer.returnValue(True)
 
     # events interface
@@ -48,8 +63,12 @@ class AdPayIfaceServer(JSONRPCServer):
         :param event_data_list: List of impression data.
         :return: True
         """
-        for event_data in event_data_list:
-            yield iface_utils.add_event(iface_proto.EventObject(event_data))
+        if not event_data_list:
+            yield self.logger.warning("No event data to add.")
+        else:
+            for event_data in event_data_list:
+                yield self.logger.debug("Adding event data: {0}".format(event_data))
+                yield iface_utils.add_event(iface_proto.EventObject(event_data))
         defer.returnValue(True)
 
     # payment interface
@@ -65,8 +84,10 @@ class AdPayIfaceServer(JSONRPCServer):
         """
         try:
             response = yield iface_utils.get_payments(iface_proto.PaymentsRequest(req_data))
+            yield self.logger.info("Payments not calculated.")
         except iface_utils.PaymentsNotCalculatedException:
-            raise JSONRPCError("Payments not calculated yet")
+            yield self.logger.error("Payments not calculated yet.")
+            raise JSONRPCError("Payments not calculated yet.")
 
         defer.returnValue(response.to_json())
 
@@ -89,5 +110,7 @@ def configure_iface(port=iface_consts.SERVER_PORT):
     :param port: Listening port.
     :return: Listening reactor.
     """
+    logger = logging.getLogger(__name__)
+    logger.info("Initializing interface server.")
     site = Site(AdPayIfaceServer())
     return reactor.listenTCP(port, site)
