@@ -10,10 +10,30 @@
       "class": "logging.StreamHandler",
       "formatter": "basic",
       "level": "DEBUG"
+    },
+    "file": {
+      "class": "logging.StreamHandler",
+      "formatter": "basic",
+      "level": "DEBUG",
+      "filename": "adpay.log"
+    },
+    "rotating_file": {
+      "class": "logging.handlers.RotatingFileHandler",
+      "formatter": "basic",
+      "level": "DEBUG",
+      "filename": "adpay.log",
+      "maxBytes": 10737418240,
+      "backupCount": 10
+    },
+    "graylog_tcp": {
+      "class": "pygelf.GelfTcpHandler",
+      "level": "DEBUG",
+      "host": "127.0.0.1",
+      "port": 9401
     }
   },
   "root": {
-    "handlers": ["console"],
+    "handlers": ["console", "graylog_tcp"],
     "level": "DEBUG"
   }
 }
