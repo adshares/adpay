@@ -12,7 +12,7 @@
       "level": "DEBUG"
     },
     "file": {
-      "class": "logging.StreamHandler",
+      "class": "logging.FileHandler",
       "formatter": "basic",
       "level": "DEBUG",
       "filename": "adpay.log"
