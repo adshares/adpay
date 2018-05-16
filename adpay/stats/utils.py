@@ -24,7 +24,7 @@ def get_user_profile_keywords(user_id):
         yield logger.warning("User profile keywords not found.")
         defer.returnValue(None)
 
-    yield logger.debug("User keyword profile for {0} limited to: {1}".format(user_id), stats_consts.MAX_USER_KEYWORDS_IN_PROFILE)
+    yield logger.debug("User keyword profile for {0} limited to: {1}".format(user_id, stats_consts.MAX_USER_KEYWORDS_IN_PROFILE))
     yield logger.debug(list(set(user_profile_doc['profile'].keys()))[:stats_consts.MAX_USER_KEYWORDS_IN_PROFILE])
 
     defer.returnValue(list(set(user_profile_doc['profile'].keys()))[:stats_consts.MAX_USER_KEYWORDS_IN_PROFILE])
@@ -383,7 +383,7 @@ def update_keywords_stats(recalculate_per_views=1000, cutoff=0.00001, decay=0.01
         yield db_utils.update_keyword_frequency(keyword, new_keyword_frequency)
 
     yield logger.info("Resetting keyword stats.")
-    stats_cache.rfset_keywords_stats()
+    stats_cache.reset_keywords_stats()
     stats_cache.EVENTS_STATS_VIEWS = 0
 
     _iter = yield db_utils.get_no_updated_keyword_frequency_iter()
