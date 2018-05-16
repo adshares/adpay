@@ -19,14 +19,14 @@ def _adpay_task(timestamp=None, check_payment_round_exists=True):
 
     # As recalculate only finished hours, take timestamp from an hour before now.
     if timestamp is None:
-        yield logger.warn("No timestamp found for recalculation, using current time.")
+        yield logger.warning("No timestamp found for recalculation, using current time.")
         timestamp = int(time.time())
     timestamp = common_utils.timestamp2hour(timestamp)
 
     if check_payment_round_exists:
         last_round_doc = yield db_utils.get_payment_round(timestamp)
         if last_round_doc is not None:
-            yield logger.warn("Payment already calculated for {0}".format(timestamp))
+            yield logger.warning("Payment already calculated for {0}".format(timestamp))
             defer.returnValue(None)
 
     # User keywords profiles update

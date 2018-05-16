@@ -94,27 +94,27 @@ def add_event(eventobj):
 
     # Do not take into account events without user_id
     if not eventobj.user_id:
-        yield logger.warn("Ignoring event update - No user identifier found.")
+        yield logger.warning("Ignoring event update - No user identifier found.")
         defer.returnValue(None)
 
     # Conversion event must send max paid amount
     if eventobj.event_type == db_consts.EVENT_TYPE_CONVERSION and not eventobj.event_value:
-        yield logger.warn("Ignoring event update - No event value for conversion event.")
+        yield logger.warning("Ignoring event update - No event value for conversion event.")
         defer.returnValue(None)
 
     # Events are filtered by the campaign filters
     banner_doc = yield db_utils.get_banner(eventobj.banner_id)
     if not banner_doc:
-        yield logger.warn("Ignoring event update - No banner found.")
+        yield logger.warning("Ignoring event update - No banner found.")
         defer.returnValue(None)
 
     campaign_doc = yield db_utils.get_campaign(banner_doc['campaign_id'])
     if not campaign_doc:
-        yield logger.warn("Ignoring event update - No campaign found.")
+        yield logger.warning("Ignoring event update - No campaign found.")
         defer.returnValue(None)
 
     if not iface_filters.validate_filters(campaign_doc['filters'], eventobj.our_keywords):
-        yield logger.warn("Ignoring event update - Keywords not validated.")
+        yield logger.warning("Ignoring event update - Keywords not validated.")
         defer.returnValue(None)
 
     new_event_obj = copy.copy(eventobj)

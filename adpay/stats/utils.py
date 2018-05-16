@@ -21,7 +21,7 @@ def get_user_profile_keywords(user_id):
     logger = logging.getLogger(__name__)
     user_profile_doc = yield db_utils.get_user_profile(user_id)
     if not user_profile_doc:
-        yield logger.warn("User profile keywords not found.")
+        yield logger.warning("User profile keywords not found.")
         defer.returnValue(None)
 
     yield logger.debug("User keyword profile for {0} limited to: {1}".format(user_id), stats_consts.MAX_USER_KEYWORDS_IN_PROFILE)
@@ -44,7 +44,7 @@ def get_users_similarity(user1_id, user2_id):
     logger = logging.getLogger(__name__)
     yield logger.info("Measuring user similarity.")
     if user1_id == user2_id:
-        yield logger.warn("It's the same user!")
+        yield logger.warning("It's the same user!")
         defer.returnValue(1.0)
 
     user1_profile_keywords = yield get_user_profile_keywords(user1_id)
@@ -158,7 +158,7 @@ def get_user_payment_score(campaign_id, user_id, amount=5):
             score_components.append(user_stat['payment'] * user_stat['human_score'])
 
     if not score_components:
-        yield logger.warn("No similar users or no scores for similar users. User score value: 0")
+        yield logger.warning("No similar users or no scores for similar users. User score value: 0")
         defer.returnValue(0)
 
     yield logger.debug("User {0} payment score: {1}".format(user_id, 1.0*sum(score_components)/len(score_components)))
@@ -273,7 +273,7 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
     logger = logging.getLogger(__name__)
     campaign_doc = yield db_utils.get_campaign(campaign_id)
     if campaign_doc is None:
-        logger.warn("Campaign not found: {0}".format(campaign_id))
+        logger.warning("Campaign not found: {0}".format(campaign_id))
         return
 
     campaign_budget = campaign_doc['budget']
@@ -369,7 +369,7 @@ def update_keywords_stats(recalculate_per_views=1000, cutoff=0.00001, decay=0.01
     logger = logging.getLogger(__name__)
     # Recalculate only every 1000 events.
     if stats_cache.EVENTS_STATS_VIEWS % recalculate_per_views:
-        yield logger.warn("Updates permitted only per {0} views".format(recalculate_per_views))
+        yield logger.warning("Updates permitted only per {0} views".format(recalculate_per_views))
         defer.returnValue(None)
 
     for keyword, views_counts in stats_cache.EVENTS_STATS_KEYWORDS.iteritems():
