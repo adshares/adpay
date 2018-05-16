@@ -33,6 +33,10 @@ class InterfaceCampaignTestCase(tests.WebTestCase):
 
     @defer.inlineCallbacks
     def test_add_campaign(self):
+        response = yield self.get_response("campaign_update", [])
+        self.assertIsNotNone(response)
+        self.assertTrue(response['result'])
+
         response = yield self.get_response("campaign_update", [self.CAMAPAIGN_DATA])
 
         self.assertIsNotNone(response)
@@ -76,6 +80,10 @@ class InterfaceCampaignTestCase(tests.WebTestCase):
 
     @defer.inlineCallbacks
     def test_delete_campaign(self):
+        response = yield self.get_response("campaign_delete", [])
+        self.assertIsNotNone(response)
+        self.assertTrue(response['result'])
+
         response = yield self.get_response("campaign_delete", [self.CAMAPAIGN_DATA['campaign_id']])
 
         self.assertIsNotNone(response)

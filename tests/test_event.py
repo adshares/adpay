@@ -119,3 +119,9 @@ class InterfaceEventTestCase(tests.WebTestCase):
 
         banner_events = yield self.get_banner_events('banner_filter_id')
         self.assertEqual(len(banner_events), len(pre_banner_events) + 1)
+
+    @defer.inlineCallbacks
+    def test_add_empty(self):
+        response = yield self.get_response("add_events", [])
+        self.assertIsNotNone(response)
+        self.assertTrue(response['result'])
