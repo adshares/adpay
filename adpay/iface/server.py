@@ -13,14 +13,13 @@ from adpay.stats import tasks as stats_tasks
 
 
 class AdPayIfaceServer(JSONRPCServer):
-
+    """
+    JSON-RPC endpoint.
+    """
     def __init__(self):
         JSONRPCServer.__init__(self)
         self.logger = logging.getLogger(__name__)
 
-    """
-    JSON-RPC endpoint.
-    """
     # campaign interface
     @defer.inlineCallbacks
     def jsonrpc_campaign_update(self, *campaign_data_list):
