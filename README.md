@@ -33,7 +33,7 @@ $ mkdir -p ~/adpay/db/mongo
 
 Create folders for supervisor.
 ```
-$ mkdir -p ~/adpay/log/supervisor ~/adpay/log/adpay ~/adpay/log/mongo
+$ mkdir -p ~/adpay/log
 $ mkdir -p ~/adpay/run/supervisor ~/adpay/run/adpay ~/adpay/run/mongo
 ```
 
@@ -64,7 +64,7 @@ export VIRTUALENV_ROOT=$HOME/adpay
 export PYTHONPATH=$HOME/adpay:$PYTHONPATH
 source ./adpay/bin/activate
 mkdir -p ./adpay/db/mongo
-mkdir -p ./adpay/log/supervisor ./adpay/log/adpay ./adpay/log/mongo
+mkdir -p ./adpay/log
 mkdir -p ./adpay/run/supervisor ./adpay/run/adpay ./adpay/run/mongo
 git clone https://github.com/adshares/adpay.git ./adpay/adpay
 pip install -r ./adpay/adpay/requirements.txt
