@@ -9,7 +9,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=.
 set BUILDDIR=_build
-set SPHINXPROJ=AdSelect
+set SPHINXPROJ=AdPay
 
 if "%1" == "" goto help
 

@@ -4,7 +4,7 @@
 #
 # This file does only contain a selection of the most common options. For a
 # full list see the documentation:
-# http://www.sphinx-doc.org/en/stable/config
+# http://www.sphinx-doc.org/en/master/config
 
 # -- Path setup --------------------------------------------------------------
 
@@ -22,15 +22,10 @@ sys.path.insert(0, os.path.abspath('../../'))
 sys.path.insert(0, os.path.abspath('../../../'))
 sys.path.insert(0, os.path.abspath('../../../../'))
 
-# Sphinx / readthedocs output
-print("sys.paths:")
-for sp in sys.path:
-    print(sp)
 
 # -- Project information -----------------------------------------------------
 
-
-project = u'AdSelect'
+project = u'AdPay'
 copyright = u'2018, Adshares.net'
 author = u'Adshares.net'
 
@@ -51,10 +46,11 @@ release = u''
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'sphinx.ext.intersphinx'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -101,7 +97,7 @@ html_theme = 'sphinx_rtd_theme'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static']
+html_static_path = ['_static']
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -117,7 +113,7 @@ html_theme = 'sphinx_rtd_theme'
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'AdSelectdoc'
+htmlhelp_basename = 'AdPaydoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -144,8 +140,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'AdSelect.tex', u'AdSelect Documentation',
-     u'AdShares.net', 'manual'),
+    (master_doc, 'AdPay.tex', u'AdPay Documentation',
+     u'Adshares.net', 'manual'),
 ]
 
 
@@ -154,7 +150,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'adselect', u'AdSelect Documentation',
+    (master_doc, 'adpay', u'AdPay Documentation',
      [author], 1)
 ]
 
@@ -165,9 +161,20 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'AdSelect', u'AdSelect Documentation',
-     author, 'AdSelect', 'One line description of project.',
+    (master_doc, 'AdPay', u'AdPay Documentation',
+     author, 'AdPay', 'One line description of project.',
      'Miscellaneous'),
 ]
 
+
 # -- Extension configuration -------------------------------------------------
+
+# -- Options for intersphinx extension ---------------------------------------
+
+# Example configuration for intersphinx: refer to the Python standard library.
+intersphinx_mapping = {'https://docs.python.org/': None}
+
+# -- Options for todo extension ----------------------------------------------
+
+# If true, `todo` and `todoList` produce output, else they produce nothing.
+todo_include_todos = True
