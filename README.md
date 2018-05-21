@@ -1,8 +1,9 @@
-# adpay
+# AdPay
 [![Build Status](https://travis-ci.org/adshares/adpay.svg?branch=master)](https://travis-ci.org/adshares/adpay)
 [![Build Status](https://sonarcloud.io/api/project_badges/measure?project=adshares-adpay&metric=alert_status)](https://sonarcloud.io/dashboard?id=adshares-adpay)
+[![Docs Status](https://readthedocs.org/projects/adshares-adpay/badge/?version=latest)](http://adshares-adpay.readthedocs.io/en/latest/)
 ## Build
-ADPAY is fully implemented in python.
+AdPay is fully implemented in python.
 
 ### Dependencies
 
