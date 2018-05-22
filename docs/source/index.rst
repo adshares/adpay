@@ -90,7 +90,7 @@ Development
 Extending functionality
 -----------------------
 
-All the payment calculations happen in the adpay.stats module, so if you want to change the algorithms, you'll need to rewrite that part of the code. Some configuration is possible through the config files.
+All the payment calculations happen in the :py:mod:`adpay.stats` module, so if you want to change the algorithms, you'll need to rewrite that part of the code. Some configuration is possible through the config files.
 
 The calculations are run periodically. The main function for each run is the :py:func:`adpay.stats.tasks._adpay_task`. Calculation functions can be found in :py:mod:`adpay.stasts.utils`.
 
