@@ -1,0 +1,11 @@
+@startuml
+AdServer -> AdPay_Interface: [list] Add event data
+AdPay_Interface -> AdPay: Add event
+AdPay -> AdPay: Validate event
+AdPay -> AdPay_Database: Save event
+AdPay -> AdPay_Cache: Increment event count
+AdPay -> AdPay_Cache: Increment event count per keyword
+AdPay_Cache -> AdPay_Cache: Recalculate keyword frequency
+AdPay_Cache -> AdPay_Database: Update keyword frequency
+AdServer <-- AdPay_Interface: OK
+@enduml

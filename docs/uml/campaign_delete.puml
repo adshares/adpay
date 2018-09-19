@@ -1,0 +1,7 @@
+@startuml
+AdServer -> AdPay_Interface: [list] Remove campaign information (incl. banners, filters)
+AdPay_Interface -> AdPay_Database: Remove campaign banners
+AdPay_Interface -> AdPay_Database: Remove campaign information (incl. filters)
+AdServer <-- AdPay_Interface: OK
+@enduml
+

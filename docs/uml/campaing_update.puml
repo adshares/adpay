@@ -1,0 +1,8 @@
+@startuml
+AdServer -> AdPay_Interface: [list] Create/Update campaign information (incl. banners, filters)
+AdPay_Interface -> AdPay_Database: Create/Update campaign information (incl. filters)
+AdPay_Interface -> AdPay_Database: Remove campaign banners
+AdPay_Interface -> AdPay_Database: [list] Add campaign banners
+AdServer <-- AdPay_Interface: OK
+@enduml
+

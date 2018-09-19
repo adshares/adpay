@@ -1,0 +1,7 @@
+@startuml
+AdServer -> AdPay_Interface: Request payment information
+AdPay_Interface -> AdPay_Database: Read payments
+AdPay_Interface <-- AdPay_Database
+AdServer <-- AdPay_Interface: Payment response
+@enduml
+

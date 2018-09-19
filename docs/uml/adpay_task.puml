@@ -1,0 +1,8 @@
+@startuml
+AdPay -> AdPay_Database: Update keyword frequencies (global)
+AdPay -> AdPay_Database: Update keyword frequencies (per user)
+AdPay -> AdPay_Database: Cleanup campaign information
+AdPay -> AdPay_Calculator: Caclulate payments
+AdPay -> AdPay_Database: Update payment information
+@enduml
+
