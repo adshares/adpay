@@ -10,6 +10,9 @@ if [ ! -z "$TRAVIS" ]; then
   cd /build/adpay
 fi
 
+# Temporarily here for testing (it should be in pre-build)
+apt-get install -y python python-virtualenv python-pip
+
 pip install -r requirements.txt
 
 cp .env.dist .env
