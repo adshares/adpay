@@ -2,6 +2,8 @@ import logging.config
 import json
 import os
 
+from dotenv import load_dotenv
+
 from twisted.internet import reactor
 
 from adpay.iface import server as iface_server
@@ -11,9 +13,11 @@ from adpay import db
 
 if __name__ == "__main__":
 
+    load_dotenv()
+
     logging.basicConfig()
 
-    logfile_path = os.path.join(os.environ["ADPAY_ROOT"], "adpay", "config", "log_config.json")
+    logfile_path = os.path.join(os.getenv('ADPAY_LOG_CONFIG_FILE'))
 
     with open(logfile_path, "r") as fd:
         logging.config.dictConfig(json.load(fd))
