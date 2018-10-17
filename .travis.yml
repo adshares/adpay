@@ -16,6 +16,14 @@ stages:
   - test
   - quality
 
+before_script:
+  # Enable aliases for non-interactive shells
+  - shopt -s expand_aliases
+  # Set alias - please note the missing quote you need to append.
+  - alias in_docker='docker exec $BUILD_NAME -w $BUILD_PATH'
+  # Set aliast for cleanup
+  - alias cleanup_docker='docker stop $BUILD_NAME && docker rm $BUILD_NAME'
+
 jobs:
   include:
     # Python unit tests
@@ -27,18 +35,13 @@ jobs:
         - docker run -d --mount type=bind,src=$HOST_PATH,dst=$BUILD_PATH --name $BUILD_NAME $DOCKER_IMAGE sleep infinity
 
         # Run build script
-        - docker exec $BUILD_NAME /bin/bash -c "cd $BUILD_PATH && ./scripts/build.sh"
+        - in_docker /bin/bash scripts/build.sh
 
-        # Enable aliases for non-interactive shells
-        - shopt -s expand_aliases
-        # Set alias - please note the missing quote you need to append.
-        - alias docker_exec='docker exec $BUILD_NAME /bin/bash -c "cd $BUILD_PATH && '
-
-        - docker_exec pip install mock mongomock"
-        - docker_exec trial tests"
+        - in_docker pip install mock mongomock
+        - in_docker trial tests
 
         # Cleanup
-        - docker stop $BUILD_NAME && docker rm $BUILD_NAME
+        - cleanup_docker
 
     # Coverage generation and Sonar Qube
     - stage: quality
