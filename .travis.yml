@@ -18,6 +18,7 @@ install:
 
 before_script:
   - export PYTHONPATH=$PYTHONPATH:$(pwd)
+  - export _=$(pwd)
   - cp .env.dist .env
 
 stages:
