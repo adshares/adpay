@@ -20,7 +20,7 @@ before_script:
   # Enable aliases for non-interactive shells
   - shopt -s expand_aliases
   # Set alias - please note the missing quote you need to append.
-  - alias in_docker='docker exec $BUILD_NAME -w $BUILD_PATH'
+  - alias in_docker='docker exec -w $BUILD_PATH $BUILD_NAME'
   # Set aliast for cleanup
   - alias cleanup_docker='docker stop $BUILD_NAME && docker rm $BUILD_NAME'
 
