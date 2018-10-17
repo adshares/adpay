@@ -1,7 +1,8 @@
 import os
 from dotenv import load_dotenv, find_dotenv
+import dotenv
 
-load_dotenv(find_dotenv(raise_error_if_not_found=True))
+load_dotenv()
 
 print(os.environ)
 
