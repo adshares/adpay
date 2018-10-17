@@ -68,7 +68,7 @@ def get_mongo_db():
     :return: Database
     """
     conn = yield get_mongo_connection()
-    defer.returnValue(conn.adpay)
+    defer.returnValue(getattr(conn, db_const.MONGO_DB_NAME))
 
 
 @defer.inlineCallbacks
