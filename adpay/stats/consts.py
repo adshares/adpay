@@ -1,7 +1,4 @@
 import os
-from dotenv import load_dotenv
-
-load_dotenv()
 
 #: Seconds per hour (3600)
 SECONDS_PER_HOUR = int(os.getenv('ADPAY_SECONDS_PER_HOUR'))

@@ -1,7 +1,4 @@
 import os
-from dotenv import load_dotenv
-
-load_dotenv()
 
 #: MongoDB port
 MONGO_DB_PORT = int(os.getenv('ADPAY_MONGO_DB_PORT'))
