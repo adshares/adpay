@@ -90,9 +90,7 @@ jobs:
         # Run build script
         - in_docker ./scripts/build.sh"
 
-        - in_docker pipenv run coverage run \$VIRTUAL_ENV/bin/trial tests"
-        - in_docker pipenv run coverage xml -i"
-        - in_docker pipenv run sonar-scanner"
+        - in_docker ./scripts/quality-test.sh"
 
         # Cleanup
         - cleanup_docker
