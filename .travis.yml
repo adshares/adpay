@@ -85,14 +85,14 @@ jobs:
           sleep infinity
 
         # Run pre-build script
-        - docker exec $BUILD_NAME /bin/bash -c "cd $BUILD_PATH && ./scripts/pre-build.sh"
+        - in_docker ./scripts/pre-build.sh"
 
         # Run build script
-        - docker exec $BUILD_NAME /bin/bash -c "cd $BUILD_PATH && ./scripts/build.sh"
+        - in_docker ./scripts/build.sh"
 
-        - docker_exec pipenv run coverage run \$VIRTUAL_ENV/bin/trial tests"
-        - docker_exec pipenv run coverage xml -i"
-        - docker_exec pipenv run sonar-scanner"
+        - in_docker pipenv run coverage run \$VIRTUAL_ENV/bin/trial tests"
+        - in_docker pipenv run coverage xml -i"
+        - in_docker pipenv run sonar-scanner"
 
         # Cleanup
         - cleanup_docker
