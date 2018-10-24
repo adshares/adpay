@@ -45,7 +45,15 @@ jobs:
         ## Setup test environment
         # Run docker container
         - docker pull $DOCKER_IMAGE
-        - docker run -d --mount type=bind,src=$HOST_PATH,dst=$BUILD_PATH --name $BUILD_NAME $DOCKER_IMAGE sleep infinity
+        - env | grep ADPAY > adpay.env
+        - >
+          docker run -d
+          --mount type=bind,src=$HOST_PATH,dst=$BUILD_PATH
+          -e TRAVIS=true
+          --env-file adpay.env
+          --name $BUILD_NAME
+          $DOCKER_IMAGE
+          sleep infinity
 
         # Run pre-build script
         - in_docker /bin/bash scripts/pre-build.sh"
@@ -72,10 +80,9 @@ jobs:
         # Run build script
         - docker exec $BUILD_NAME /bin/bash -c "cd $BUILD_PATH && ./scripts/build.sh"
 
-        - docker_exec pip install coverage"
-        - docker_exec coverage run `which trial` tests"
-        - docker_exec coverage xml -i"
-        - docker_exec sonar-scanner"
+        - docker_exec pipenv run coverage run `which trial` tests"
+        - docker_exec pipenv run coverage xml -i"
+        - docker_exec pipenv run sonar-scanner"
 
         # Cleanup
         - cleanup_docker

@@ -105,3 +105,6 @@ deploy.sh
 .scannerwork
 
 */_trial_temp
+
+# Travis
+adpay.env
