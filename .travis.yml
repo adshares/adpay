@@ -115,4 +115,6 @@ addons:
       secure: "0xWHF+OSlTgGs5lni2VDxjYeC8Obvl3wBq8fwPZJ96rx6mylXRfA2OvjXQ+Au4Yhs5EH7k+UdkP6nzaSD2J+O9XoDwudgAl88J7JJBic32oh4Tns8EmFet28AqZ00axo9K32RwLdwqlw3jm3EzzUEsNnzdYkScAIJqSt4hKhCZLp0e40LQqR3ZpMG814g+H77I3zwLsgBTIzyahMztQfNDNSNTs7mo0d1Q1I56SqiF3rU20UAcJl1lsrYpQz61G9D9BAPsL4GRITp/147HtzuvhAVUEJydtjqdGBknDEgpxbznyZjLMoDDmYRqADaCmOD/Vk0R1RU+PmACJ5QHdZdiU6E7b06+p/dUOZW+WL6SwHqvantzmSdt9W39B9fGzt2XaH6xn3zJWCJJj0drORRZb+V4LRZHaQWMv/Dz0z7elqKYxlxW7DA54yBxOFjF5Jp9NbwB0nonTUmk2sJDnqfVIApB2kT5OKDwGNYb5jwlkIio5I08DTXFEp8vP7tzLrW9iO7yYR93UdWs+qA2w6rRdtIKEbEeWpE5NHU6E6nIZ4mFtVMhqGsSSfaUUQVSCTuIHv/RTIgv5BeWEpVC83s0cUQOAhzOefcm1UcVp4GWepVl4CXaZCV7892w5K/dPg3Wndd/iK/zHSAYrpj4YLIRb6iWiln0DfTvMurcTDakI="
   apt:
     packages:
-      - oracle-java8-set-default
+      - openjdk-8-jdk
+
+jdk: openjdk8
