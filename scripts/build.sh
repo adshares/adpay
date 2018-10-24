@@ -30,4 +30,10 @@ echo "##${normal}"
 
 envsubst < .env.dist | tee .env
 
-pipenv install
+if [ ${ADPAY_APP_ENV} == 'dev' ]; then
+    pip install --dev pipenv
+elif [ ${ADPAY_APP_ENV} == 'deploy' ]; then
+    pip install --deploy pipenv
+else
+    pip install pipenv
+fi
