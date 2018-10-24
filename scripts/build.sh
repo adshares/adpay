@@ -1,18 +1,33 @@
 #!/usr/bin/env bash
 
-if [ ! -z "$TRAVIS" ]; then
+## Shell cosmetics
+bold=$(tput bold)
+normal=$(tput sgr0)
+
+env | sort
+
+if [ ! -v TRAVIS ]; then
   # Checkout repo and change directory
 
   # Install git
-  apt-get install -y git
+  git --version || apt-get install -y git
 
-  git clone https://github.com/adshares/adpay.git /build/adpay
-  cd /build/adpay
+  git clone \
+    --depth=1 \
+    https://github.com/adshares/adpanel.git \
+    --branch ${ADPAY_INSTALLATION_BRANCH} \
+    ${ADPAY_BUILD_PATH}/build
+
+  cd ${ADPAY_BUILD_PATH}/build
 fi
 
-# Temporarily here for testing (it should be in pre-build)
-apt-get install -y python python-virtualenv python-pip
+# Output versions
+echo "${bold}## Installation information"
+python --version
+pip --version
+pip freeze
+echo "##${normal}"
 
-pip install -r requirements.txt
+envsubst < .env.dist | tee .env
 
-cp .env.dist .env
+pipenv install
