@@ -21,19 +21,12 @@ if [ ! -v TRAVIS ]; then
   cd ${ADPAY_BUILD_PATH}/build
 fi
 
-# Output versions
-echo "${bold}## Installation information"
-python --version
-pip --version
-pip freeze
-echo "##${normal}"
-
 envsubst < .env.dist | tee .env
 
 if [ ${ADPAY_APP_ENV} == 'dev' ]; then
-    pip install --dev pipenv
+    pipenv install --dev pipenv
 elif [ ${ADPAY_APP_ENV} == 'deploy' ]; then
-    pip install --deploy pipenv
+    pipenv install --deploy pipenv
 else
-    pip install pipenv
+    pipenv install pipenv
 fi
