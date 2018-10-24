@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-pipenv run coverage run `which trial` tests
+TRIAL_BIN=`pipenv run which trial`
+pipenv run coverage run $TRIAL_BIN tests
 pipenv run coverage xml -i
-pipenv run sonar-scanner
