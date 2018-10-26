@@ -1,42 +1,103 @@
-# Project language
-language: python
+sudo: required
 
-# Python version
-python:
-  - 2.7
+language: jvm
 
-# Allows use container-based infrastructure
-sudo: false
+jdk: openjdk9
 
-# Cache pip dependencies
-cache: pip
+services:
+  - docker
 
-# Install python dependencies
-install:
-  - pip install -r requirements.txt
-  - pip install mock mongomock
-
-before_script:
-  - export PYTHONPATH=$PYTHONPATH:$(pwd)
-  - export _=$(pwd)
-  - cp .env.dist .env
+env:
+  global:
+    - >-
+      DOCKER_IMAGE=awlodarkiewicz/devops:build-latest
+      HOST_PATH=/home/travis/build/adshares/adpay
+      BUILD_PATH=/build/adpay
+      BUILD_NAME=adpay_build
+      PYTHONPATH=$PYTHONPATH:$BUILD_PATH
+      ADPAY_LOG_CONFIG_FILE=config/log_config.json
+      ADPAY_MONGO_DB_PORT=27016
+      ADPAY_MONGO_DB_NAME=adpay
+      ADPAY_MAX_USER_KEYWORDS_IN_PROFILE=50
+      ADPAY_EVENT_TYPE_CLICK=click
+      ADPAY_EVENT_TYPE_VIEW=view
+      ADPAY_EVENT_TYPE_CONVERSION=conversion
+      ADPAY_SERVER_PORT=8090
+      ADPAY_SECONDS_PER_HOUR=3600
+  matrix:
+    - ADPAY_APP_ENV=dev
 
 stages:
   - test
   - quality
 
+before_script:
+  # Enable aliases for non-interactive shells
+  - shopt -s expand_aliases
+  # Set alias - please note the missing quote you need to append.
+  - alias in_docker='docker exec $BUILD_NAME /bin/bash -c "cd $BUILD_PATH && '
+  # Set aliast for cleanup
+  - alias cleanup_docker='docker stop $BUILD_NAME && docker rm $BUILD_NAME'
+
 jobs:
   include:
     # Python unit tests
     - stage: test
-      script: trial tests
+      script:
+        ## Setup test environment
+        # Run docker container
+        - docker pull $DOCKER_IMAGE
+        - env | grep ADPAY > adpay.env
+        - >
+          docker run -d
+          --mount type=bind,src=$HOST_PATH,dst=$BUILD_PATH
+          -e TRAVIS=true
+          -e PYTHONPATH=$BUILD_PATH
+          --env-file adpay.env
+          --name $BUILD_NAME
+          $DOCKER_IMAGE
+          sleep infinity
+
+        # Run pre-build script
+        - in_docker /bin/bash scripts/pre-build.sh"
+
+        # Run build script
+        - in_docker /bin/bash scripts/build.sh"
+
+        - in_docker pipenv run trial tests"
+
+        # Cleanup
+        - cleanup_docker
+
     # Coverage generation and Sonar Qube
     - stage: quality
       script:
-       - pip install coverage
-       - coverage run `which trial` tests
-       - coverage xml -i
-       - sonar-scanner
+        ## Setup test environment
+        # Run docker container
+        - docker pull $DOCKER_IMAGE
+        - env | grep ADPAY > adpay.env
+        - >
+          docker run -d
+          --mount type=bind,src=$HOST_PATH,dst=$BUILD_PATH
+          -e TRAVIS=true
+          -e PYTHONPATH=$BUILD_PATH
+          --env-file adpay.env
+          --name $BUILD_NAME
+          $DOCKER_IMAGE
+          sleep infinity
+
+        # Run pre-build script
+        - in_docker ./scripts/pre-build.sh"
+
+        # Run build script
+        - in_docker ./scripts/build.sh"
+
+        - in_docker ./scripts/quality-test.sh"
+
+        - sonar-scanner
+
+        # Cleanup
+        - cleanup_docker
 
 # After a build, send email notification with the build results
 notifications:

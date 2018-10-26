@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[dev-packages]
+coverage = "==4.5.1"
+mock = "==2.0.0"
+mongomock = "==3.13.0"
+
+[packages]
+jsonobject = "==0.8.0"
+fastjsonrpc = "==0.3.0"
+txmongo = "==18.1.0"
+supervisor = "==3.3.4"
+pygelf = "==0.3.3"
+Twisted = "==18.4.0"
+
+[requires]
+python_version = "2.7"
