@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "3692e41c26e09fbe25ea41f682ec18ab411b0b0877a2065f9ed3df6c71ddadc6"
+            "sha256": "c712fe0a59ac1930af3af6499d6d4558d787de24d142ec7404e5811dab8e9614"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -72,19 +72,12 @@
             "index": "pypi",
             "version": "==0.8.0"
         },
-        "meld3": {
+        "pyhamcrest": {
             "hashes": [
-                "sha256:b28a9bfac342aadb4557aa144bea9f8e6208bfb0596190570d10a892d35ff7dc",
-                "sha256:f7b754a0fde7a4429b2ebe49409db240b5699385a572501bb0d5627d299f9558"
+                "sha256:6b672c02fdf7470df9674ab82263841ce8333fb143f32f021f6cb26f0e512420",
+                "sha256:8ffaa0a53da57e89de14ced7185ac746227a8894dbd5a3c718bf05ddbd1d56cd"
             ],
-            "version": "==1.0.2"
-        },
-        "pygelf": {
-            "hashes": [
-                "sha256:3b3d522024162a3a08a3e5fcc26c81956bcf94f3e3b24ae871a947a1aecbb2ad"
-            ],
-            "index": "pypi",
-            "version": "==0.3.3"
+            "version": "==1.9.0"
         },
         "pymongo": {
             "hashes": [
@@ -132,20 +125,12 @@
             ],
             "version": "==1.11.0"
         },
-        "supervisor": {
-            "hashes": [
-                "sha256:212201a3fd1d35c150ef0c35bf0676fd1a6c195fb60bf0f2147fe7dbd317e672"
-            ],
-            "index": "pypi",
-            "version": "==3.3.4"
-        },
         "twisted": {
             "hashes": [
-                "sha256:3ad1e553c7b66a501abbcf7736620210cc58928730d3e1b905b345fc30043d4b",
-                "sha256:a4cc164a781859c74de47f17f0e85f4bce8a3321a9d0892c015c8f80c4158ad9"
+                "sha256:294be2c6bf84ae776df2fc98e7af7d6537e1c5e60a46d33c3ce2a197677da395"
             ],
             "index": "pypi",
-            "version": "==18.4.0"
+            "version": "==18.9.0"
         },
         "txmongo": {
             "hashes": [
