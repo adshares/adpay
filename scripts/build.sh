@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-## Shell cosmetics
-bold=$(tput bold)
-normal=$(tput sgr0)
+set -e
 
 env | sort
 
@@ -14,11 +12,11 @@ if [ ! -v TRAVIS ]; then
 
   git clone \
     --depth=1 \
-    https://github.com/adshares/adpanel.git \
+    https://github.com/adshares/adpay.git \
     --branch ${ADPAY_INSTALLATION_BRANCH} \
-    ${ADPAY_BUILD_PATH}/build
+    ${BUILD_PATH}/build
 
-  cd ${ADPAY_BUILD_PATH}/build
+  cd ${BUILD_PATH}/build
 fi
 
 envsubst < .env.dist | tee .env
