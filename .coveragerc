@@ -9,5 +9,3 @@ omit =
     */lib/python*/site-packages/*
     # omit pipenv
     .venv/*
-    # omit pybrowscap
-    pybrowscap/*
