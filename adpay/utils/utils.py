@@ -1,5 +1,6 @@
-from adpay.stats import consts as stats_consts
 import math
+
+from adpay.stats import consts as stats_consts
 
 
 def timestamp2hour(timestamp):

@@ -2,10 +2,8 @@ import logging
 
 from twisted.internet import defer
 
-from adpay.stats import cache as stats_cache
-from adpay.stats import consts as stats_consts
-from adpay.db import consts as db_consts
-from adpay.db import utils as db_utils
+from adpay.db import consts as db_consts, utils as db_utils
+from adpay.stats import cache as stats_cache, consts as stats_consts
 
 #: Deferred lock for updating events
 ADD_EVENT_LOCK = defer.DeferredLock()

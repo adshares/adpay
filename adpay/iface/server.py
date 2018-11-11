@@ -1,14 +1,11 @@
 import logging
 
-from twisted.internet import reactor, defer
+from fastjsonrpc.jsonrpc import JSONRPCError
+from fastjsonrpc.server import JSONRPCServer
+from twisted.internet import defer, reactor
 from twisted.web.server import Site
 
-from fastjsonrpc.server import JSONRPCServer
-from fastjsonrpc.jsonrpc import JSONRPCError
-
-from adpay.iface import consts as iface_consts
-from adpay.iface import utils as iface_utils
-from adpay.iface import proto as iface_proto
+from adpay.iface import consts as iface_consts, proto as iface_proto, utils as iface_utils
 from adpay.stats import tasks as stats_tasks
 
 

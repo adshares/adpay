@@ -69,15 +69,14 @@ class GreaterFilter(Filter):
         return value > self.filter_arg
 
 
-REGISTERED_FILTERS = [
-    AndFilter,
-    OrFilter,
-    EqualFilter,
-    GreaterEqualFilter,
-    LessEqualFilter,
-    LessFilter,
-    GreaterFilter
-]
+REGISTERED_FILTERS = [AndFilter,
+                      OrFilter,
+                      EqualFilter,
+                      GreaterEqualFilter,
+                      LessEqualFilter,
+                      LessFilter,
+                      GreaterFilter]
+
 FILTERS_NAMES_DICT = dict([(cls.NAME, cls) for cls in REGISTERED_FILTERS])
 
 

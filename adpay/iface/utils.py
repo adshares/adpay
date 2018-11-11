@@ -3,10 +3,8 @@ import logging
 
 from twisted.internet import defer
 
-from adpay.db import consts as db_consts
-from adpay.db import utils as db_utils
-from adpay.iface import proto as iface_proto
-from adpay.iface import filters as iface_filters
+from adpay.db import consts as db_consts, utils as db_utils
+from adpay.iface import filters as iface_filters, proto as iface_proto
 from adpay.stats import utils as stats_utils
 from adpay.utils import utils as common_utils
 
@@ -34,14 +32,14 @@ def create_or_update_campaign(cmpobj):
 
     # Save changes only to database
     yield db_utils.update_campaign(
-        campaign_id=cmpobj.campaign_id,
-        time_start=cmpobj.time_start,
-        time_end=cmpobj.time_end,
-        max_cpc=cmpobj.max_cpc,
-        max_cpm=cmpobj.max_cpm,
-        budget=cmpobj.budget,
-        filters=cmpobj.to_json()['filters']
-    )
+            campaign_id=cmpobj.campaign_id,
+            time_start=cmpobj.time_start,
+            time_end=cmpobj.time_end,
+            max_cpc=cmpobj.max_cpc,
+            max_cpm=cmpobj.max_cpm,
+            budget=cmpobj.budget,
+            filters=cmpobj.to_json()['filters']
+        )
 
     # Delete previous banners
     yield logger.info("Removing campaign banners for: {0}".format(cmpobj.campaign_id))
@@ -159,10 +157,9 @@ def get_payments(payreq):
             break
 
         events_payments.append(
-            iface_proto.SinglePaymentResponse(
-                event_id=payment_doc['event_id'],
-                amount=payment_doc['payment']
-            ))
+            iface_proto.SinglePaymentResponse(event_id=payment_doc['event_id'],
+                                              amount=payment_doc['payment']
+                                             ))
 
     yield logger.debug(events_payments)
 
