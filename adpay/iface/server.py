@@ -31,7 +31,7 @@ class AdPayIfaceServer(JSONRPCServer):
         else:
             for campaign_data in campaign_data_list:
                 yield self.logger.debug("Campaign update: {0}".format(campaign_data))
-                yield iface_utils.create_or_update_campaign(iface_proto.CamapaignObject(campaign_data))
+                yield iface_utils.create_or_update_campaign(iface_proto.CampaignObject(campaign_data))
         defer.returnValue(True)
 
     @defer.inlineCallbacks

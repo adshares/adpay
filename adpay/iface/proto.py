@@ -17,7 +17,7 @@ class BannerObject(jsonobject.JsonObject):
     keywords = jsonobject.DictProperty()
 
 
-class CamapaignObject(jsonobject.JsonObject):
+class CampaignObject(jsonobject.JsonObject):
     campaign_id = jsonobject.StringProperty()
     advertiser_id = jsonobject.StringProperty()
     time_start = jsonobject.IntegerProperty()
