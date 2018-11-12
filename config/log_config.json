@@ -24,16 +24,10 @@
       "filename": "adpay.log",
       "maxBytes": 10737418240,
       "backupCount": 10
-    },
-    "graylog_tcp": {
-      "class": "pygelf.GelfTcpHandler",
-      "level": "DEBUG",
-      "host": "127.0.0.1",
-      "port": 9401
     }
   },
   "root": {
-    "handlers": ["console", "graylog_tcp"],
+    "handlers": ["console"],
     "level": "DEBUG"
   }
 }
