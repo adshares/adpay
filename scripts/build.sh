@@ -13,7 +13,7 @@ if [ ! -v TRAVIS ]; then
   git clone \
     --depth=1 \
     https://github.com/adshares/adpay.git \
-    --branch ${ADPAY_INSTALLATION_BRANCH} \
+    --branch ${BUILD_BRANCH:-master} \
     ${BUILD_PATH}/build
 
   cd ${BUILD_PATH}/build
