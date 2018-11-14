@@ -9,7 +9,7 @@ services:
 
 env:
   global:
-    - DOCKER_IMAGE=awlodarkiewicz/devops:build-latest
+    - DOCKER_IMAGE=awlodarkiewicz/devops:python
     - HOST_PATH=/home/travis/build/adshares/adpay
     - BUILD_PATH=/build/adpay
     - BUILD_NAME=adpay_build
