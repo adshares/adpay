@@ -52,11 +52,13 @@ jobs:
           -e TRAVIS=true
           -e PYTHONPATH=$BUILD_PATH
           -e PIPENV_VENV_IN_PROJECT=1
+          -e LC_ALL=C.UTF-8
           --env-file adpay.env
           --name $BUILD_NAME
           $DOCKER_IMAGE
           sleep infinity
 
+        - in_docker apt-get -qq update"
         # Run pre-build script
         - in_docker ./scripts/pre-build.sh"
 
