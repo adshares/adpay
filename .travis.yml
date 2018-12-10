@@ -23,6 +23,7 @@ env:
     - ADPAY_EVENT_TYPE_CONVERSION=conversion
     - ADPAY_SERVER_PORT=8090
     - ADPAY_SECONDS_PER_HOUR=3600
+    - PIPENV_DONT_LOAD_ENV=true
   matrix:
     - ADPAY_APP_ENV=dev
 
