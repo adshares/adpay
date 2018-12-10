@@ -19,7 +19,9 @@ if [ ! -v TRAVIS ]; then
   cd ${BUILD_PATH}/build
 fi
 
-envsubst < .env.dist | tee .env
+if [ ! -v PIPENV_DONT_LOAD_ENV ]; then
+    envsubst < .env.dist | tee .env
+fi
 
 if [ ${ADPAY_APP_ENV} == 'dev' ]; then
     pipenv install --dev pipenv
