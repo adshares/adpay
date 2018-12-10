@@ -4,7 +4,7 @@ import logging
 from twisted.internet import defer
 
 from adpay.db import consts as db_consts, utils as db_utils
-from adpay.iface import filters as iface_filters, proto as iface_proto
+from adpay.iface import proto as iface_proto
 from adpay.stats import utils as stats_utils
 from adpay.utils import utils as common_utils
 
@@ -111,9 +111,9 @@ def add_event(eventobj):
         yield logger.warning("Ignoring event update - No campaign found.")
         defer.returnValue(None)
 
-    if not iface_filters.validate_filters(campaign_doc['filters'], eventobj.our_keywords):
-        yield logger.warning("Ignoring event update - Keywords not validated.")
-        defer.returnValue(None)
+    #if not iface_filters.validate_filters(campaign_doc['filters'], eventobj.our_keywords):
+    #    yield logger.warning("Ignoring event update - Keywords not validated.")
+    #    defer.returnValue(None)
 
     new_event_obj = copy.copy(eventobj)
     new_event_obj.campaign_id = campaign_doc['campaign_id']
