@@ -19,4 +19,6 @@ python_version = "2.7"
 
 [scripts]
 tests = "coverage run .venv/bin/trial tests"
+tests_mongo = "coverage run .venv/bin/trial --without-module=mongomock tests"
 quality = "coverage xml -i"
+build_docs = "sphinx-build -b html docs/source docs/_build"

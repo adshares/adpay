@@ -16,5 +16,4 @@ Module contents
 
 .. automodule:: adpay
     :members:
-    :undoc-members:
     :show-inheritance:
