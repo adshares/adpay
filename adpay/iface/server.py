@@ -83,7 +83,7 @@ class AdPayIfaceServer(JSONRPCServer):
             yield self.logger.info("Payments not calculated.")
         except iface_utils.PaymentsNotCalculatedException:
             yield self.logger.error("Payments not calculated yet.")
-            raise JSONRPCError("Payments not calculated yet.")
+            raise JSONRPCError("Payments not calculated yet.", -32000)
 
         defer.returnValue(response.to_json())
 

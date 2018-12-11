@@ -144,8 +144,8 @@ Error responses
         {
          "jsonrpc": "2.0",
          "error": {
-                   "code": -32603,
-                   "message": "Internal error"
+                   "code": -32000,
+                   "message": "Payments not calculated yet."
                    },
          "id": null
         }
