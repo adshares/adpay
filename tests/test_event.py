@@ -68,25 +68,9 @@ class InterfaceEventTestCase(tests.WebTestCase):
     def test_campaign_filters_add_event(self):
         # Add campaign with filters
         yield db_utils.update_campaign("campaign_filter_id", 123, 234, 12, 34, 1000, {
-            'require': [
-                {
-                    'keyword': 'testkey',
-                    'filter': {
-                        'type': '=',
-                        'args': 10
-                    }
-                }
-            ],
-            'exclude': [
-                {
-                    'keyword': 'testkey',
-                    'filter': {
-                        'type': '<=',
-                        'args': 5
-                    }
-                }
-            ]
-        })
+            'require': {'testkey': [10]},
+            'exclude': {'testkey': ["0--5"]}
+            })
         yield db_utils.update_banner("banner_filter_id", "campaign_filter_id")
 
         event_data = {
@@ -109,7 +93,7 @@ class InterfaceEventTestCase(tests.WebTestCase):
         self.assertTrue(response['result'])
 
         banner_events = yield self.get_banner_events('banner_filter_id')
-        self.assertEqual(len(banner_events), len(pre_banner_events))
+        self.assertNotEqual(len(banner_events), len(pre_banner_events))
 
         # Test validation true.
         event_data['our_keywords'] = {'testkey': 10}
