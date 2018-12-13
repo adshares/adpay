@@ -146,7 +146,8 @@ add_events
                         "our_keywords": "{JSONObject object}",
                         "human_score": 1.0,
                         "publisher_id": "cyXugkOnQvZlTzrOMVgb",
-                        "event_value": 0.5
+                        "event_value": 0.5,
+                        "user_id": "eOOor4RuwcFdGXG2"
                     }
                         ]
                }
