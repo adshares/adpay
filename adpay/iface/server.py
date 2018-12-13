@@ -83,20 +83,9 @@ class AdPayIfaceServer(JSONRPCServer):
             yield self.logger.info("Payments not calculated.")
         except iface_utils.PaymentsNotCalculatedException:
             yield self.logger.error("Payments not calculated yet.")
-            raise JSONRPCError("Payments not calculated yet.")
+            raise JSONRPCError("Payments not calculated yet.", -32000)
 
         defer.returnValue(response.to_json())
-
-    # test interface
-    @defer.inlineCallbacks
-    def jsonrpc_test_get_payments(self):
-        """
-        Force payments recalculation.
-
-        :return: True
-        """
-        yield stats_tasks.force_payment_recalculation()
-        defer.returnValue(True)
 
 
 def configure_iface(port=iface_consts.SERVER_PORT):

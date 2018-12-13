@@ -1,5 +1,4 @@
 from twisted.internet import defer
-from fastjsonrpc.jsonrpc import INTERNAL_ERROR
 
 import tests
 from adpay.db import utils as db_utils
@@ -10,7 +9,7 @@ class InterfacePaymentTestCase(tests.WebTestCase):
     def test_get_payments(self):
         response = yield self.get_response("get_payments", [{'timestamp': 0}])
         self.assertIsNotNone(response)
-        self.assertEqual(response['error']['code'], INTERNAL_ERROR)
+        self.assertEqual(response['error']['code'], -32000)
 
         # Add some dummy payments.
         yield db_utils.update_payment_round(7200)
@@ -27,11 +26,11 @@ class InterfacePaymentTestCase(tests.WebTestCase):
 
         response = yield self.get_response("get_payments", [{'timestamp': 3600}])
         self.assertIsNotNone(response)
-        self.assertEqual(response['error']['code'], INTERNAL_ERROR)
+        self.assertEqual(response['error']['code'], -32000)
 
         response = yield self.get_response("get_payments", [{'timestamp': 11000}])
         self.assertIsNotNone(response)
-        self.assertEqual(response['error']['code'], INTERNAL_ERROR)
+        self.assertEqual(response['error']['code'], -32000)
 
         response = yield self.get_response("get_payments", [{'timestamp': 7210}])
         self.assertIsNotNone(response)
