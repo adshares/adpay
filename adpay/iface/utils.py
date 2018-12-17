@@ -161,12 +161,12 @@ def get_payments(payreq):
 
         events_payments.append(
             iface_proto.SinglePaymentResponse(event_id=payment_doc['event_id'],
-                                              amount=payment_doc['payment']
-                                             ))
+                                              amount=payment_doc['payment']).to_json())
 
     yield logger.debug(events_payments)
 
     defer.returnValue(iface_proto.PaymentsResponse(payments=events_payments))
+
 
 def validate_keywords(filters_dict, keywords):
     """
