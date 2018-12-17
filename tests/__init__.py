@@ -285,9 +285,8 @@ class WebTestCase(db_test_case):
 
         response = yield self.client.request('POST',
                                              'http://{0}:{1}'.format(host, iface_consts.SERVER_PORT),
-                                             Headers({'content-type': ['text/plain']}),
+                                             Headers({'content-type': ['application/json']}),
                                              post_data)
-
         finished = defer.Deferred()
         response.deliverBody(ReceiverProtocol(finished))
         data = yield finished

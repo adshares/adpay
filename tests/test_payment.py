@@ -12,7 +12,6 @@ class InterfacePaymentTestCase(tests.WebTestCase):
         self.assertIsNotNone(response)
         self.assertEqual(response['error']['code'], PAYMENTS_NOT_CALCULATED_YET)
 
-
         # Add some dummy payments.
         yield db_utils.update_payment_round(7200)
         for i in range(100):
@@ -28,7 +27,6 @@ class InterfacePaymentTestCase(tests.WebTestCase):
 
         response = yield self.get_response("get_payments", [{'timestamp': 3600}])
         self.assertIsNotNone(response)
-
         self.assertEqual(response['error']['code'], PAYMENTS_NOT_CALCULATED_YET)
 
         response = yield self.get_response("get_payments", [{'timestamp': 11000}])
@@ -38,7 +36,3 @@ class InterfacePaymentTestCase(tests.WebTestCase):
         response = yield self.get_response("get_payments", [{'timestamp': 7210}])
         self.assertIsNotNone(response)
         self.assertEqual(len(response['result']['payments']), 100)
-
-    @defer.inlineCallbacks
-    def test_force_get_payments(self):
-        yield self.get_response("test_get_payments", [{'timestamp': 0}])
