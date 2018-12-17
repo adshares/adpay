@@ -296,8 +296,10 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
         uid = user_score_doc['user_id']
 
         # Calculate event payments
-        user_budget = 1.0 * campaign_budget * user_score_doc['score'] / total_score
-
+        if total_score > 0:
+            user_budget = 1.0 * campaign_budget * user_score_doc['score'] / total_score
+        else:
+            user_budget = 0
         max_user_payment, max_human_score, total_user_payments = yield get_best_user_payments_and_humanity(campaign_id, timestamp, uid, campaign_cpc, campaign_cpm)
         # Update User Values
         yield db_utils.update_user_value(campaign_id, uid, max_user_payment, max_human_score)
@@ -331,7 +333,10 @@ def update_events_payments(campaign_id, timestamp, uid, user_budget, campaign_cp
             break
 
         max_event_payment = get_event_max_payment(event_doc, campaign_cpc, campaign_cpm)
-        event_payment = min([user_budget * max_event_payment / total_user_payments, max_event_payment])
+        if total_user_payments > 0:
+            event_payment = min([max_event_payment * user_budget / total_user_payments, max_event_payment])
+        else:
+            event_payment = 0
         yield logger.debug("campaign_id, timestamp, event_doc['event_id'], event_payment: {0}".format((campaign_id, timestamp, event_doc['event_id'], event_payment)))
         yield db_utils.update_event_payment(campaign_id, timestamp, event_doc['event_id'], event_payment)
 
