@@ -80,12 +80,11 @@ class AdPayIfaceServer(JSONRPCServer):
         """
         try:
             response = yield iface_utils.get_payments(iface_proto.PaymentsRequest(req_data))
-            yield self.logger.info("Payments not calculated.")
+            yield self.logger.info("Payments calculated and returned.")
         except iface_utils.PaymentsNotCalculatedException:
             yield self.logger.error("Payments not calculated yet.")
             raise JSONRPCError("Payments not calculated yet.", iface_consts.PAYMENTS_NOT_CALCULATED_YET)
-
-        defer.returnValue(response)
+        defer.returnValue(response.to_json())
 
     # test interface
     @defer.inlineCallbacks
