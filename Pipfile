@@ -7,6 +7,8 @@ name = "pypi"
 coverage = "~=4.5"
 mock = "~=2.0"
 mongomock = "~=3.13"
+behave = "*"
+requests = "*"
 
 [packages]
 jsonobject = "~=0.9.5"
