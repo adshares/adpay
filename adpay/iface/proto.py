@@ -152,5 +152,5 @@ class PaymentsResponse(jsonobject.JsonObject):
        :property [SinglePaymentResponse] payments: List of payments for individual events
 
     """
-    payments = jsonobject.ListProperty(SinglePaymentResponse, required=True)
+    payments = jsonobject.ListProperty(SinglePaymentResponse)
     """List of payments for individual events"""
