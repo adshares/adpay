@@ -2,6 +2,7 @@ from twisted.internet import defer
 
 import tests
 from adpay.db import utils as db_utils
+from adpay.iface.consts import PAYMENTS_NOT_CALCULATED_YET
 
 
 class InterfacePaymentTestCase(tests.WebTestCase):
@@ -9,7 +10,8 @@ class InterfacePaymentTestCase(tests.WebTestCase):
     def test_get_payments(self):
         response = yield self.get_response("get_payments", [{'timestamp': 0}])
         self.assertIsNotNone(response)
-        self.assertEqual(response['error']['code'], -32000)
+        self.assertEqual(response['error']['code'], PAYMENTS_NOT_CALCULATED_YET)
+
 
         # Add some dummy payments.
         yield db_utils.update_payment_round(7200)
@@ -26,11 +28,12 @@ class InterfacePaymentTestCase(tests.WebTestCase):
 
         response = yield self.get_response("get_payments", [{'timestamp': 3600}])
         self.assertIsNotNone(response)
-        self.assertEqual(response['error']['code'], -32000)
+
+        self.assertEqual(response['error']['code'], PAYMENTS_NOT_CALCULATED_YET)
 
         response = yield self.get_response("get_payments", [{'timestamp': 11000}])
         self.assertIsNotNone(response)
-        self.assertEqual(response['error']['code'], -32000)
+        self.assertEqual(response['error']['code'], PAYMENTS_NOT_CALCULATED_YET)
 
         response = yield self.get_response("get_payments", [{'timestamp': 7210}])
         self.assertIsNotNone(response)
