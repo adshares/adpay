@@ -1,5 +1,5 @@
 import logging
-import time
+import time, datetime
 
 from twisted.internet import defer, reactor
 
@@ -22,11 +22,14 @@ def _adpay_task(timestamp=None, check_payment_round_exists=True):
         yield logger.warning("No timestamp found for recalculation, using current time.")
         timestamp = int(time.time())
     timestamp = common_utils.timestamp2hour(timestamp)
-
+    nice_time = datetime.datetime.fromtimestamp(timestamp)
+    yield logger.info(nice_time)
     if check_payment_round_exists:
+        yield logger.info('Checking if payment round exists')
         last_round_doc = yield db_utils.get_payment_round(timestamp)
         if last_round_doc is not None:
             yield logger.warning("Payment already calculated for {0}".format(timestamp))
+            yield logger.warning("Payment already calculated for {0}".format(nice_time))
             defer.returnValue(None)
 
     # User keywords profiles update
@@ -52,13 +55,13 @@ def _adpay_task(timestamp=None, check_payment_round_exists=True):
 
 
 @defer.inlineCallbacks
-def force_payment_recalculation():
+def force_payment_recalculation(timestamp=None):
     """
     Recalculate payments now.
     """
     logger = logging.getLogger(__name__)
     yield logger.info("Forcing payment recalculation.")
-    return_value = yield _adpay_task(check_payment_round_exists=False)
+    return_value = yield _adpay_task(timestamp, check_payment_round_exists=False)
     defer.returnValue(return_value)
 
 
