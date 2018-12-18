@@ -48,12 +48,22 @@ def step_impl(context, timestamp):
 @then('I have payments for timestamp "{timestamp}" and "{event_id}"')
 def step_impl(context, timestamp, event_id):
 
-    def test_item(item):
-        assert item is not None
+    class QueryAnalyzer:
 
-    def test_query(query):
-        assert query is None
-        assert isinstance(query, utils.QueryIterator)
+        def __init__(self, dfr):
+            self.finished = False
+            self.length = 0
+            dfr.addCallback(self.test_query)
 
-    payments = utils.get_payments_iter(timestamp)
-    payments.addCallback(test_query)
+        def test_query(self, query):
+            assert query is not None
+            assert isinstance(query, utils.QueryIterator)
+
+            while not self.finished:
+                payment_doc = yield query.next()
+                if not payment_doc:
+                    self.finished = True
+                self.length += 1
+
+    qa = QueryAnalyzer(utils.get_payments_iter(timestamp))
+    assert qa.length > 0
