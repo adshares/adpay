@@ -12,3 +12,8 @@ Feature: Campaign functionality
     And Events
       |event_id|    event_type|    user_id|    human_score|    publisher_id|    timestamp|    banner_id|    our_keywords|    their_keywords|    event_value |
       |a34     |click         |dasda3     |0.5            |n43aop          |500          |fnawo47t     |{}              |{}                |0.25            |
+      |a35     |click         |dasda3     |0.5            |n43aop          |500          |fnawo47t     |{}              |{}                |0.25            |
+      |a36     |click         |dasda3     |0.5            |n43aop          |500          |fnawo47t     |{}              |{}                |0.25            |
+    When I execute payment calculation for timestamp "499"
+    Then I have a payment round in DB timestamp "499"
+    And I have payments for timestamp "499" and "a36"
