@@ -1,7 +1,7 @@
 import os
 
 #: MongoDB port
-MONGO_DB_PORT = int(os.getenv('ADPAY_MONGO_DB_PORT', '27017'))
+MONGO_DB_PORT = int(os.getenv('ADPAY_MONGO_DB_PORT', 27017))
 MONGO_DB_NAME = os.getenv('ADPAY_MONGO_DB_NAME', 'adpay')
 MONGO_DB_HOST = os.getenv('ADPAY_MONGO_DB_HOST', 'localhost')
 
