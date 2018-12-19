@@ -45,8 +45,8 @@ def step_impl(context, timestamp):
     last_round_doc.addCallback(test_doc)
 
 
-@then('I have payments for timestamp "{timestamp}" and "{event_id}"')
-def step_impl(context, timestamp, event_id):
+@then('I have "{number}" payments for timestamp "{timestamp}" and "{event_id}"')
+def step_impl(context, number, timestamp, event_id):
 
     class QueryAnalyzer:
 
@@ -66,4 +66,4 @@ def step_impl(context, timestamp, event_id):
                 self.length += 1
 
     qa = QueryAnalyzer(utils.get_payments_iter(timestamp))
-    assert qa.length > 0
+    assert qa.length == int(number)
