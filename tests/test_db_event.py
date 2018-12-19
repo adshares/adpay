@@ -11,16 +11,16 @@ class DBTestCase(tests.db_test_case):
     def test_event(self):
         # Test event add.
         for i in range(300):
-            yield db_utils.update_event(iface_proto.EventObject(
-                event_id=str(i),
-                event_type=db_consts.EVENT_TYPE_CLICK,
-                timestamp=0,
-                user_id=str(i % 20),
-                banner_id='1',
-                campaign_id="campaign_id",
-                event_value=10,
-                our_keywords={},
-                human_score=1))
+            yield db_utils.update_event({
+                "event_id": str(i),
+                "event_type": db_consts.EVENT_TYPE_CLICK,
+                "timestamp": 0,
+                "user_id": str(i % 20),
+                "banner_id": '1',
+                "campaign_id": "campaign_id",
+                "event_value": 10,
+                "our_keywords": {},
+                "human_score": 1})
 
         # Test event select.
         counter = 0

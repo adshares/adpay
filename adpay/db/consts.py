@@ -6,8 +6,8 @@ MONGO_DB_NAME = os.getenv('ADPAY_MONGO_DB_NAME', 'adpay')
 MONGO_DB_HOST = os.getenv('ADPAY_MONGO_DB_HOST', 'localhost')
 
 #: Click event
-EVENT_TYPE_CLICK = os.getenv('ADPAY_EVENT_TYPE_CLICK')
+EVENT_TYPE_CLICK = os.getenv('ADPAY_EVENT_TYPE_CLICK', 'click')
 #: View (impression) event
-EVENT_TYPE_VIEW = os.getenv('ADPAY_EVENT_TYPE_VIEW')
+EVENT_TYPE_VIEW = os.getenv('ADPAY_EVENT_TYPE_VIEW', 'view')
 #: Conversion event
-EVENT_TYPE_CONVERSION = os.getenv('ADPAY_EVENT_TYPE_CONVERSION')
+EVENT_TYPE_CONVERSION = os.getenv('ADPAY_EVENT_TYPE_CONVERSION', 'conversion')

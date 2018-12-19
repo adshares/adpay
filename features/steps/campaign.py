@@ -1,81 +1,69 @@
-import json
-
-import requests as req
 from behave import *
 
-from adpay.iface.proto import *
+from adpay.db import utils
+from adpay.stats.tasks import _adpay_task
 
 
-def row_to_object(row, cls, defaults=None):
-    if not defaults:
-        defaults = {}
+def write_to_db(table, update_function):
+    for row in table:
+        doc = {}
+        for attr in row.headings:
+            doc[attr] = row[attr]
 
-    dict_repr = defaults
-
-    for attr in row.headings:
-        if hasattr(cls, attr):
-            prop = getattr(cls, attr)
-            if isinstance(prop, jsonobject.IntegerProperty):
-                dict_repr[attr] = int(row[attr])
-            elif isinstance(prop, jsonobject.StringProperty):
-                dict_repr[attr] = str(row[attr])
-            elif isinstance(prop, jsonobject.FloatProperty):
-                dict_repr[attr] = float(row[attr])
-            elif isinstance(prop, RequireExcludeObject):
-                dict_repr[attr] = RequireExcludeObject(require={},
-                                                       exclude={})
-            elif isinstance(prop, jsonobject.DictProperty):
-                dict_repr[attr] = json.loads(row[attr])
-
-    return dict_repr
+        update_function(doc)
 
 
-@given('A campaign')
+@given('Campaigns')
 def step_impl(context):
-    for row in context.table:
-        context.campaign = row
-
-    context.campaign_banners = []
+    write_to_db(context.table, utils.update_campaign)
 
 
 @given('Banners')
 def step_impl(context):
-    assert context.campaign is not None
-    assert len(context.campaign_banners) == 0
-
-    for row in context.table:
-        context.campaign_banners.append({'banner_id': row['banner_id'],
-                                         'banner_size': row['banner_size'],
-                                         'keywords': {}})
-
-    cmp_dict = row_to_object(context.campaign, CampaignObject, {'banners': context.campaign_banners})
-
-    data = {"jsonrpc": "2.0",
-            "id": "test_hit",
-            "method": 'campaign_update',
-            "params": [cmp_dict]}
-
-    response = req.post(context.server_url, json=data, timeout=5)
-
-    assert response.status_code == 200
-    json_resp = json.loads(response.content)
-    assert 'result' in json_resp
+    write_to_db(context.table, utils.update_banner)
 
 
 @given('Events')
 def step_impl(context):
+    write_to_db(context.table, utils.update_event)
 
-    event_list = []
-    for row in context.table:
-        event_list.append(row_to_object(row, EventObject))
 
-    data = {"jsonrpc": "2.0",
-            "id": "test_hit",
-            "method": 'add_events',
-            "params": event_list}
+@when('I execute payment calculation for timestamp "{timestamp}"')
+def step_impl(context, timestamp):
+    _adpay_task(timestamp, int(timestamp))
 
-    response = req.post(context.server_url, json=data, timeout=5)
-    assert response.status_code == 200
-    json_resp = json.loads(response.content)
-    assert 'result' in json_resp
 
+@then('I have a payment round in DB timestamp "{timestamp}"')
+def step_impl(context, timestamp):
+
+    def test_doc(doc):
+        assert doc is not None
+        assert 'timestamp' in doc
+        assert doc['timestamp'] <= timestamp
+
+    last_round_doc = utils.get_payment_round(timestamp)
+    last_round_doc.addCallback(test_doc)
+
+
+@then('I have "{number}" payments for timestamp "{timestamp}" and "{event_id}"')
+def step_impl(context, number, timestamp, event_id):
+
+    class QueryAnalyzer:
+
+        def __init__(self, dfr):
+            self.finished = False
+            self.length = 0
+            dfr.addCallback(self.test_query)
+
+        def test_query(self, query):
+            assert query is not None
+            assert isinstance(query, utils.QueryIterator)
+
+            while not self.finished:
+                payment_doc = yield query.next()
+                if not payment_doc:
+                    self.finished = True
+                self.length += 1
+
+    qa = QueryAnalyzer(utils.get_payments_iter(timestamp))
+    assert qa.length == int(number)

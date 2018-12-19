@@ -23,7 +23,7 @@ class TestAdd_event(db_test_case):
 
         self.assertIsNone(no_value)
 
-        yield db_utils.update_banner("banner_id1", "campaign_id")
+        yield db_utils.update_banner({'banner_id': 'banner_id1', 'campaign_id': 'campaign_id'})
 
         no_campaign = yield iface_utils.add_event(iface_proto.EventObject(
             event_id=str(100),

@@ -24,8 +24,14 @@ class DBTestCase(tests.db_test_case):
 
     @defer.inlineCallbacks
     def test_adpay_task(self):
-
-        yield db_utils.update_campaign("campaign_id", 12345, 12347, 100, 200, 1000, "{}")
+        cmp_doc = {"campaign_id": "campaign_id",
+                   "time_start": 12345,
+                   "time_end": 12347,
+                   "max_cpc": 100,
+                   "max_cpm": 200,
+                   "budget": 1000,
+                   "filters": {}}
+        yield db_utils.update_campaign(cmp_doc)
 
         timestamp = int(time.time()) - stats_consts.SECONDS_PER_HOUR
 
@@ -44,7 +50,15 @@ class DBTestCase(tests.db_test_case):
 
         yield stats_tasks._adpay_task(timestamp, False)
 
-        yield db_utils.update_campaign("campaign_id", 12345, 12347, 100, 200, 1000, "{}")
+        cmp_doc = {"campaign_id": "campaign_id",
+                   "time_start": 12345,
+                   "time_end": 12347,
+                   "max_cpc": 100,
+                   "max_cpm": 200,
+                   "budget": 1000,
+                   "filters": {}}
+        yield db_utils.update_campaign(cmp_doc)
+
         yield stats_tasks._adpay_task(0)
         yield stats_tasks._adpay_task(timestamp + 10000)
 

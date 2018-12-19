@@ -10,7 +10,7 @@ def timestamp2hour(timestamp):
     :param timestamp: timestamp
     :return: timestamp of the hour (floored)
     """
-    return int(math.floor(1.0*timestamp/stats_consts.SECONDS_PER_HOUR)*stats_consts.SECONDS_PER_HOUR)
+    return int(math.floor(float(timestamp)/stats_consts.SECONDS_PER_HOUR)*stats_consts.SECONDS_PER_HOUR)
 
 
 def genkey(key, val, delimiter="_"):

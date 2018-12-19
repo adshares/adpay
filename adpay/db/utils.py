@@ -82,29 +82,16 @@ def get_campaign_iter():
 
 
 @defer.inlineCallbacks
-def update_campaign(campaign_id, time_start, time_end, max_cpc, max_cpm, budget, filters):
+def update_campaign(campaign_doc):
     """
-    Save campaign data in the database.
+    Update campaign data or create one if doesn't exist.
 
-    :param campaign_id: Main identifier.
-    :param time_start: Start time (epoch).
-    :param time_end: End time (epoch).
-    :param max_cpc: Maximum payment per click.
-    :param max_cpm: Maximum payment per impression.
-    :param budget: Total campaign budget.
-    :param filters: Restrictions for the campaign.
-    :return:
+    :param campaign_doc: New campaign data, must include campaign_id to identify existing data.
+    :return: deferred instance of :class:`pymongo.results.UpdateResult`.
     """
     collection = yield db.get_campaign_collection()
-    return_value = yield collection.replace_one({'campaign_id': campaign_id}, {
-        'campaign_id': campaign_id,
-        'time_start': time_start,
-        'time_end': time_end,
-        'max_cpc': max_cpc,
-        'max_cpm': max_cpm,
-        'budget': budget,
-        'filters': filters
-    }, upsert=True)
+    return_value = yield collection.replace_one({'campaign_id': campaign_doc['campaign_id']},
+                                                campaign_doc, upsert=True)
 
     defer.returnValue(return_value)
 
@@ -159,19 +146,16 @@ def get_campaign_banners(campaign_id):
 
 
 @defer.inlineCallbacks
-def update_banner(banner_id, campaign_id):
+def update_banner(banner_doc):
     """
-    Create or update a banner.
+    Update banner data or create a new one if doesn't exist.
 
-    :param banner_id: Banner identifier.
-    :param campaign_id: Campaign identifier.
-    :return:
+    :param banner_doc: New banner data, must include banner_id.
+    :return: deferred instance of :class:`pymongo.results.UpdateResult`.
     """
     collection = yield db.get_banner_collection()
-    return_value = yield collection.replace_one({'banner_id': banner_id}, {
-        'banner_id': banner_id,
-        'campaign_id': campaign_id
-    }, upsert=True)
+    return_value = yield collection.replace_one({'banner_id': banner_doc['banner_id']},
+                                                banner_doc, upsert=True)
     defer.returnValue(return_value)
 
 
@@ -190,7 +174,7 @@ def delete_campaign_banners(campaign_id):
 
 # Events
 @defer.inlineCallbacks
-def update_event(event_obj):
+def update_event(event_doc):
     """
     Create or update an event
 
@@ -198,11 +182,11 @@ def update_event(event_obj):
     :return:
     """
 
-    event_obj.timestamp = common_utils.timestamp2hour(event_obj.timestamp)
+    event_doc['timestamp'] = common_utils.timestamp2hour(event_doc['timestamp'])
     collection = yield db.get_event_collection()
 
-    return_value = yield collection.replace_one({'event_id': event_obj.event_id},
-                                                event_obj.to_json(),
+    return_value = yield collection.replace_one({'event_id': event_doc['event_id']},
+                                                event_doc,
                                                 upsert=True)
     defer.returnValue(return_value)
 
@@ -221,7 +205,7 @@ def get_banner_events_iter(banner_id, timestamp):
     defer.returnValue(QueryIterator(collection.find({
         'banner_id': banner_id,
         'timestamp': common_utils.timestamp2hour(timestamp)
-    }, cursor=True)))
+        }, cursor=True)))
 
 
 @defer.inlineCallbacks
@@ -240,7 +224,7 @@ def get_user_events_iter(campaign_id, timestamp, uid):
         'user_id': uid,
         'campaign_id': campaign_id,
         'timestamp': timestamp
-    }, cursor=True)))
+        }, cursor=True)))
 
 
 @defer.inlineCallbacks
@@ -292,7 +276,7 @@ def update_event_payment(campaign_id, timestamp, event_id, payment):
         'event_id': event_id,
         'payment': payment,
         'campaign_id': campaign_id
-    }, upsert=True)
+        }, upsert=True)
     defer.returnValue(return_value)
 
 
@@ -308,7 +292,7 @@ def get_payments_iter(timestamp):
 
     defer.returnValue(QueryIterator(collection.find({
         'timestamp': timestamp
-    }, cursor=True)))
+        }, cursor=True)))
 
 
 # Calculated payments rounds
@@ -392,7 +376,7 @@ def get_user_value(campaign_id, user_id):
     return_value = yield collection.find_one({
         'campaign_id': campaign_id,
         'user_id': user_id
-    })
+        })
     defer.returnValue(return_value)
 
 
@@ -412,12 +396,12 @@ def update_user_value(campaign_id, user_id, payment, human_score):
     return_value = yield collection.replace_one({
         'campaign_id': campaign_id,
         'user_id': user_id
-    }, {
+        }, {
         'campaign_id': campaign_id,
         'user_id': user_id,
         'payment': payment,
         'human_score': human_score
-    }, upsert=True)
+        }, upsert=True)
     defer.returnValue(return_value)
 
 
@@ -458,12 +442,12 @@ def update_user_score(campaign_id, timestamp, user_id, score):
         'campaign_id': campaign_id,
         'timestamp': timestamp,
         'user_id': user_id
-    }, {
+        }, {
         'campaign_id': campaign_id,
         'timestamp': timestamp,
         'user_id': user_id,
         'score': score
-    }, upsert=True)
+        }, upsert=True)
     defer.returnValue(return_value)
 
 
@@ -498,12 +482,12 @@ def update_user_keyword_frequency(user_id, keyword, frequency, updated=True):
     return_value = yield collection.replace_one({
         'keyword': keyword,
         'user_id': user_id
-    }, {
+        }, {
         'keyword': keyword,
         'user_id': user_id,
         'frequency': frequency,
         'updated': updated
-    }, upsert=True)
+        }, upsert=True)
     defer.returnValue(return_value)
 
 
@@ -580,10 +564,10 @@ def update_user_profile(user_id, profile_dict):
     collection = yield db.get_user_profile_collection()
     return_value = yield collection.replace_one({
         'user_id': user_id
-    }, {
+        }, {
         'user_id': user_id,
         'profile': profile_dict
-    }, upsert=True)
+        }, upsert=True)
     defer.returnValue(return_value)
 
 
@@ -624,11 +608,11 @@ def update_keyword_frequency(keyword, frequency, updated=True):
     collection = yield db.get_keyword_frequency_collection()
     return_value = yield collection.replace_one({
         'keyword': keyword
-    }, {
+        }, {
         'keyword': keyword,
         'frequency': frequency,
         'updated': updated
-    }, upsert=True)
+        }, upsert=True)
     defer.returnValue(return_value)
 
 
