@@ -1,12 +1,8 @@
-@fixture.adpay.server
+@fixture.adpay.db
 Feature: Campaign functionality
 
   Scenario: Adding data
-  @fixture.adpay.server
-  Feature: Campaign functionality
-
-  Scenario: Adding data
-    Given Campaign
+    Given Campaigns
       | _id                      | time_start | campaign_id                      | budget         | max_cpc | filters                                                                                                                                                                                                                       | max_cpm | time_end   |
       | 5c1753a0163a745c915a0cdd | 1545034020 | 77dbe8457ef2494683297a59e0bd6a7b | 43210          | 100     | { "exclude" : {  }, "require" : {  } }                                                                                                                                                                                        | 100     | 1576568607 |
       | 5c17585d163a745c915c0d39 | 1545034020 | 4a25f30b8d444f8aac0e18f8c7c2c5d1 | 543210         | 200     | { "exclude" : {  }, "require" : {  } }, "max_cpm" : 100000000, "time_end" : 1576569821 }                                                                                                                                      | 200     | 1576568607 |
@@ -18,7 +14,6 @@ Feature: Campaign functionality
       | 5c178372163a745c916ec491 | 1542221703 | de550ed7eefb457ba2129f1f7678d7c8 | 121110987654   | 800     | { "exclude" : {  }, "require" : { "interest" : [ "100" ] } }                                                                                                                                                                  | 800     | 1576244161 |
       | 5c17880b163a745c9170cbf8 | 1542882034 | dcUOVNOMkO902SrFdcUOVNOMkO902SrF | 1312111098765  | 900     | { "exclude" : { "user:lang" : [ "it" ], "site:domain" : [ "coinmarketcap.com", "icoalert.com" ] }, "require" : { "site:lang" : [ "pl", "en", "it", "jp" ], "user:gender" : [ "pl" ], "device:os" : [ "Linux", "Windows" ] } } | 900     | 1576147247 |
       | 5c17a5ac163a745c917de252 | 1542882034 | tt5ts00oAIxNaEyKtt5ts00oAIxNaEyK | 14131211109076 | 1000    | { "exclude" : { "user:lang" : [ "it" ], "site:domain" : [ "coinmarketcap.com", "icoalert.com" ] }, "require" : { "site:lang" : [ "pl", "en", "it", "jp" ], "user:gender" : [ "pl" ], "device:os" : [ "Linux", "Windows" ] } } | 1000    | 1576147247 |
-
     And Banners
       | _id                      | banner_id                        | campaign_id                      |
       | 5c1753a0163a745c915a0ce0 | 0402cd91762c4002aa6df8c00e5483cb | 77dbe8457ef2494683297a59e0bd6a7b |
@@ -41,7 +36,6 @@ Feature: Campaign functionality
       | 5c177d3d163a745c916c079b | 47a013d9ec51497a86c4bab32b321855 | 77f93c6478da478aa9bd0d645087455c |
       | 5c177d3d163a745c916c07a0 | 33651ab0ab56441c908abcedee66e8c9 | 6b6a26df73e94ab09e6339360b26a6b2 |
       | 5c177d3d163a745c916c07a2 | a571d22706c043f098017a1ef25d179a | 6b6a26df73e94ab09e6339360b26a6b2 |
-
     And Events
       | _id                      | banner_id                        | user_id                          | event_type | event_id                         | timestamp  | their_keywords         | campaign_id                      | our_keywords                                                                                                                                 | human_score | keywords                                                                                                                                     | publisher_id                     | event_value |
       | 5c177e3a163a745c916c77ea | QgN5fTeteH1HZv3JgsTZNHKsGflJfJKR | TAOiMe2AhfvFXgNdYOFNUwSKIunA57jY | click      | 726RlxFbWwhjM828BB4NjLj12RhSmWj3 | 1544778000 | { "accio:200142" : 1 } | dGlxjZZHtUh4lJsM                 | {  }                                                                                                                                         | 0           | {  }                                                                                                                                         | LTPg6Mh2XFborAbZXf55pD5d5wKfHaoT | null        |
@@ -64,3 +58,6 @@ Feature: Campaign functionality
       | 5c17a85f163a745c917f1532 | d2fd3621b4144d759cf4a58b7e2e883c | 29e5348da1e8cf952c5b7567a508d26c | view       | 45738f71ec57e1d793fd0c3f7bf5f468 | 1544698800 | { "accio:200142" : 1 } | b9b5e20a40c741f3945b2b4be284dd7e | {  }                                                                                                                                         | 0           | {  }                                                                                                                                         | 6e17518ade454593ba5a3d5467039908 | null        |
       | 5c17a860163a745c917f1573 | G0QXavPr5DUqfLZAJLJsa1oJe8va52pp | 9SWAe0fkAGOo3mkdBpUNfyS9X9LH1FEN | click      | 6j7qmnruMdZHiFCQF0rg8jV7sbAoAme9 | 1544778000 | { "accio:200142" : 1 } | jyxXtYGYXeVnxb23                 | {  }                                                                                                                                         | 0           | {  }                                                                                                                                         | mA4MOp5na4A6k1EjGhZQiu0v4h4z21ci | null        |
       | 5c17a860163a745c917f1583 | kJL6J4djTzJvgFMfzLFsZOBNoPRKYl8M | nRkY1KHSVBDMglbu6wUR1FvZ5vaETXw5 | view       | mzSnzidwArtcotsXo8p5zIHqcNh1721B | 1544778000 | { "accio:200142" : 1 } | EG0fOFhhzcGxvlFt                 | {  }                                                                                                                                         | 0           | {  }                                                                                                                                         | o29FAgE1XfauOZrjrwX5HRi8cgLd1FCI | null        |
+    When I execute payment calculation for timestamp "1545166536"
+    Then I have a payment round in DB timestamp "1545166536"
+    And I have "0" payments for timestamp "1545166500" and "a36"

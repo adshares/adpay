@@ -33,16 +33,9 @@ def create_or_update_campaign(cmpobj):
     yield logger.info("Updating campaign: {0}".format(cmpobj.campaign_id))
     yield logger.debug("Updating campaign: {0}".format(cmpobj))
 
-    # Save changes only to database
-    yield db_utils.update_campaign(
-            campaign_id=cmpobj.campaign_id,
-            time_start=cmpobj.time_start,
-            time_end=cmpobj.time_end,
-            max_cpc=cmpobj.max_cpc,
-            max_cpm=cmpobj.max_cpm,
-            budget=cmpobj.budget,
-            filters=cmpobj.to_json()['filters']
-        )
+    campaign_doc = cmpobj.to_json()
+    del campaign_doc['banners']
+    yield db_utils.update_campaign(campaign_doc)
 
     # Delete previous banners
     yield logger.info("Removing campaign banners for: {0}".format(cmpobj.campaign_id))
@@ -52,8 +45,10 @@ def create_or_update_campaign(cmpobj):
     yield logger.info("Updating banners for campaign: {0}".format(cmpobj.campaign_id))
 
     for banner in cmpobj.banners:
+        banner_doc = banner.to_json()
+        banner_doc['campaign_id'] = cmpobj.campaign_id
         yield logger.debug("Updating banner: {0}".format(banner))
-        yield db_utils.update_banner(banner.banner_id, cmpobj.campaign_id)
+        yield db_utils.update_banner(banner_doc)
 
 
 @defer.inlineCallbacks
@@ -118,11 +113,11 @@ def add_event(eventobj):
     #    yield logger.warning("Ignoring event update - Keywords not validated.")
     #    defer.returnValue(None)
 
-    new_event_obj = copy.copy(eventobj)
-    new_event_obj.campaign_id = campaign_doc['campaign_id']
-    new_event_obj.keywords = eventobj.to_json()['our_keywords']
+    event_doc = eventobj.to_json()
+    event_doc['campaign_id'] = campaign_doc['campaign_id']
+    event_doc['keywords'] = event_doc['our_keywords']
 
-    inserted = yield db_utils.update_event(new_event_obj)
+    inserted = yield db_utils.update_event(event_doc)
 
     # Update global keywords cache and user keyword stats.
     view_view_keywords = []
