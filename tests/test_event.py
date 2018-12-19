@@ -43,8 +43,15 @@ class InterfaceEventTestCase(tests.WebTestCase):
         self.assertEqual(pre_banner_events, post_banner_events)
 
         # Add campaign for banner_1
-        yield db_utils.update_campaign("campaign_id", 123, 234, 100, 100, 1000, {})
-        yield db_utils.update_banner("banner_1", "campaign_id")
+        cmp_doc = {"campaign_id": "campaign_id",
+                   "time_start": 123,
+                   "time_end": 234,
+                   "max_cpc": 100,
+                   "max_cpm": 100,
+                   "budget": 1000,
+                   "filters": {}}
+        yield db_utils.update_campaign(cmp_doc)
+        yield db_utils.update_banner({'banner_id': 'banner_1', 'campaign_id': 'campaign_id'})
 
         # Test event additon with existing campaign
         response = yield self.get_response("add_events", [event_data])
@@ -67,11 +74,19 @@ class InterfaceEventTestCase(tests.WebTestCase):
     @defer.inlineCallbacks
     def test_campaign_filters_add_event(self):
         # Add campaign with filters
-        yield db_utils.update_campaign("campaign_filter_id", 123, 234, 12, 34, 1000, {
-            'require': {'testkey': [10]},
-            'exclude': {'testkey': ["0--5"]}
-            })
-        yield db_utils.update_banner("banner_filter_id", "campaign_filter_id")
+        # campaign_id, time_start, time_end, max_cpc, max_cpm, budget, filters
+        cmp_doc = {"campaign_id": "campaign_filter_id",
+                   "time_start": 123,
+                   "time_end": 234,
+                   "max_cpc": 12,
+                   "max_cpm": 34,
+                   "budget": 1000,
+                   "filters": {
+                       'require': {'testkey': [10]},
+                       'exclude': {'testkey': ["0--5"]}
+                       }}
+        yield db_utils.update_campaign(cmp_doc)
+        yield db_utils.update_banner({'banner_id': 'banner_filter_id', 'campaign_id': 'campaign_filter_id'})
 
         event_data = {
             'event_id': 'event_id',
