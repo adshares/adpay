@@ -2,7 +2,7 @@
 Feature: Campaign functionality
 
   Scenario: Adding data
-    Given Campaigns
+    Given A campaign
       | _id                      | time_start | campaign_id                      | budget         | max_cpc | filters                                                                                                                                                                                                                       | max_cpm | time_end   |
       | 5c1753a0163a745c915a0cdd | 1545034020 | 77dbe8457ef2494683297a59e0bd6a7b | 43210          | 100     | { "exclude" : {  }, "require" : {  } }                                                                                                                                                                                        | 100     | 1576568607 |
       | 5c17585d163a745c915c0d39 | 1545034020 | 4a25f30b8d444f8aac0e18f8c7c2c5d1 | 543210         | 200     | { "exclude" : {  }, "require" : {  } }, "max_cpm" : 100000000, "time_end" : 1576569821 }                                                                                                                                      | 200     | 1576568607 |
