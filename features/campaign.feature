@@ -60,4 +60,4 @@ Feature: Campaign functionality
       | 5c17a860163a745c917f1583 | kJL6J4djTzJvgFMfzLFsZOBNoPRKYl8M | nRkY1KHSVBDMglbu6wUR1FvZ5vaETXw5 | view       | mzSnzidwArtcotsXo8p5zIHqcNh1721B | 1544778000 | { "accio:200142" : 1 } | EG0fOFhhzcGxvlFt                 | {  }                                                                                                                                         | 0           | {  }                                                                                                                                         | o29FAgE1XfauOZrjrwX5HRi8cgLd1FCI | null        |
     When I execute payment calculation for timestamp "1545166536"
     Then I have a payment round in DB timestamp "1545166536"
-    And I have "0" payments for timestamp "1545166500" and "a36"
+    And I have "0" payments for timestamp "1545166500" and "726RlxFbWwhjM828BB4NjLj12RhSmWj3"
