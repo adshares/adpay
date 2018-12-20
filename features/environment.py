@@ -26,7 +26,6 @@ def after_scenario(context, scenario):
 
 
 def before_all(context):
-    db.configure_db()
 
     context.txserver = WebTestCase()
     context.txserver.setUp()

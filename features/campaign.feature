@@ -1,4 +1,3 @@
-@fixture.adpay.db
 Feature: Campaign functionality
 
   Background:
@@ -87,8 +86,7 @@ Feature: Campaign functionality
       }
     """
     When I request resource
-    Then the response status code should be 200
-    And the response should contain:
+    Then the response should contain:
     """
       {
          "jsonrpc": "2.0",
@@ -98,7 +96,7 @@ Feature: Campaign functionality
     """
 
   Scenario: Add events
-    Given I want to update campaign
+    Given I want to add events
     When I provide the data:
     """
       {
@@ -123,8 +121,7 @@ Feature: Campaign functionality
       }
     """
     When I request resource
-    Then the response status code should be 200
-    And the response should contain:
+    Then the response should contain:
     """
       {
          "jsonrpc": "2.0",
@@ -145,8 +142,7 @@ Feature: Campaign functionality
       }
     """
     When I request resource
-    Then the response status code should be 200
-    And the response should contain:
+    Then the response should contain:
     """
       {
          "jsonrpc": "2.0",
@@ -169,8 +165,7 @@ Feature: Campaign functionality
       }
     """
     When I request resource
-    Then the response status code should be 200
-    And the response should contain:
+    Then the response should contain:
     """
       {
          "jsonrpc": "2.0",
