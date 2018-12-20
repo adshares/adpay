@@ -1,14 +1,9 @@
 @fixture.adpay.db
 Feature: Campaign functionality
 
-  Scenario: Adding data
-    Given A campaign
+  Background:
+    Given Campaigns
       | _id                      | time_start | campaign_id                      | budget         | max_cpc | filters                                                                                                                                                                                                                       | max_cpm | time_end   |
-      | 5c1753a0163a745c915a0cdd | 1545034020 | 77dbe8457ef2494683297a59e0bd6a7b | 43210          | 100     | { "exclude" : {  }, "require" : {  } }                                                                                                                                                                                        | 100     | 1576568607 |
-      | 5c17585d163a745c915c0d39 | 1545034020 | 4a25f30b8d444f8aac0e18f8c7c2c5d1 | 543210         | 200     | { "exclude" : {  }, "require" : {  } }, "max_cpm" : 100000000, "time_end" : 1576569821 }                                                                                                                                      | 200     | 1576568607 |
-      | 5c177d3d163a745c916c0771 | 1544819106 | 4584a5272200451e99922d175c16d766 | 6543210        | 300     | { "exclude" : {  }, "require" : { "interest" : [ "100" ] } }                                                                                                                                                                  | 300     | 1576579261 |
-      | 5c177d3d163a745c916c077c | 1543729674 | 91357d69d7d14dc39e06a1d646494cfb | 76543210       | 400     | { "exclude" : {  }, "require" : { "interest" : [ "100" ] } }                                                                                                                                                                  | 400     | 1576579261 |
-      | 5c177d3d163a745c916c0787 | 1543486455 | 86dd0aa8e4914ec5b7584fdce3f96272 | 876543210      | 500     | { "exclude" : {  }, "require" : {  } }                                                                                                                                                                                        | 500     | 1576579261 |
       | 5c177e3a163a745c916c76e1 | 1542882034 | dGlxjZZHtUh4lJsMdGlxjZZHtUh4lJsM | 9876543210     | 600     | { "exclude" : { "user:lang" : [ "it" ], "site:domain" : [ "coinmarketcap.com", "icoalert.com" ] }, "require" : { "site:lang" : [ "pl", "en", "it", "jp" ], "user:gender" : [ "pl" ], "device:os" : [ "Linux", "Windows" ] } } | 600     | 1576147247 |
       | 5c177ed5163a745c916cbc5c | 1542882034 | k24vw5A4EmuMuWQSk24vw5A4EmuMuWQS | 11109876543    | 700     | { "exclude" : { "user:lang" : [ "it" ], "site:domain" : [ "coinmarketcap.com", "icoalert.com" ] }, "require" : { "site:lang" : [ "pl", "en", "it", "jp" ], "user:gender" : [ "pl" ], "device:os" : [ "Linux", "Windows" ] } } | 700     | 1576147247 |
       | 5c178372163a745c916ec491 | 1542221703 | de550ed7eefb457ba2129f1f7678d7c8 | 121110987654   | 800     | { "exclude" : {  }, "require" : { "interest" : [ "100" ] } }                                                                                                                                                                  | 800     | 1576244161 |
@@ -21,43 +16,165 @@ Feature: Campaign functionality
       | 5c177d3d163a745c916c0774 | a9e6117efdc84f819c580d41f862cf9d | 4584a5272200451e99922d175c16d766 |
       | 5c177d3d163a745c916c0776 | ee34923d8acf4c4a8ff57fd37d7335ea | 4584a5272200451e99922d175c16d766 |
       | 5c177d3d163a745c916c0778 | fb39d67f09214772a45b4c106c3217d2 | 4584a5272200451e99922d175c16d766 |
-      | 5c177d3d163a745c916c077a | a093b237c6ab4449a47dbe535ec2976c | 4584a5272200451e99922d175c16d766 |
-      | 5c177d3d163a745c916c077f | 11ddc452256e41bfa32ee740c8af2cac | 91357d69d7d14dc39e06a1d646494cfb |
-      | 5c177d3d163a745c916c0781 | 1237fadee0e04116ad24e61bdfe47eb2 | 91357d69d7d14dc39e06a1d646494cfb |
-      | 5c177d3d163a745c916c0783 | 498b564645f2418fbde64f8000aaba5a | 91357d69d7d14dc39e06a1d646494cfb |
-      | 5c177d3d163a745c916c0785 | be26e76f9e0c486bb9686ba8b347803e | 91357d69d7d14dc39e06a1d646494cfb |
-      | 5c177d3d163a745c916c078a | 712685563d824c499f39d5175b4f3376 | 86dd0aa8e4914ec5b7584fdce3f96272 |
-      | 5c177d3d163a745c916c078c | 75f2623bf6894ac0a9e49d22cc196060 | 86dd0aa8e4914ec5b7584fdce3f96272 |
-      | 5c177d3d163a745c916c078e | 2738f823cc2a4024ab66b58fdd537078 | 86dd0aa8e4914ec5b7584fdce3f96272 |
-      | 5c177d3d163a745c916c0790 | a21dd579d30844cd8236edcd2718ba39 | 86dd0aa8e4914ec5b7584fdce3f96272 |
-      | 5c177d3d163a745c916c0795 | 1f871f2354ca41ccab345288f014f483 | 77f93c6478da478aa9bd0d645087455c |
-      | 5c177d3d163a745c916c0797 | 6639be1252d1426e9873b4bd8d59685c | 77f93c6478da478aa9bd0d645087455c |
-      | 5c177d3d163a745c916c0799 | 151cca8d88614ea8be7f4bccb7b1bbec | 77f93c6478da478aa9bd0d645087455c |
-      | 5c177d3d163a745c916c079b | 47a013d9ec51497a86c4bab32b321855 | 77f93c6478da478aa9bd0d645087455c |
-      | 5c177d3d163a745c916c07a0 | 33651ab0ab56441c908abcedee66e8c9 | 6b6a26df73e94ab09e6339360b26a6b2 |
-      | 5c177d3d163a745c916c07a2 | a571d22706c043f098017a1ef25d179a | 6b6a26df73e94ab09e6339360b26a6b2 |
     And Events
       | _id                      | banner_id                        | user_id                          | event_type | event_id                         | timestamp  | their_keywords         | campaign_id                      | our_keywords                                                                                                                                 | human_score | keywords                                                                                                                                     | publisher_id                     | event_value |
-      | 5c177e3a163a745c916c77ea | QgN5fTeteH1HZv3JgsTZNHKsGflJfJKR | TAOiMe2AhfvFXgNdYOFNUwSKIunA57jY | click      | 726RlxFbWwhjM828BB4NjLj12RhSmWj3 | 1544778000 | { "accio:200142" : 1 } | dGlxjZZHtUh4lJsM                 | {  }                                                                                                                                         | 0           | {  }                                                                                                                                         | LTPg6Mh2XFborAbZXf55pD5d5wKfHaoT | null        |
-      | 5c177e86163a745c916c986c | sfBIsUtlQdx21UU7i8UbAgcdu38BsT4N | uvZ4qOkGfqYSNmtDw3Yvg62dkznU4K4A | view       | P4du0fqxMuw1m3nS8onz9WlbIrIxJXTj | 1544698800 | { "accio:200142" : 1 } | ELyBlxcYLOJXMm4R                 | {  }                                                                                                                                         | 0           | {  }                                                                                                                                         | r9IgSItnF2b4CEHAZpIrMU3CraPUwgGU | null        |
-      | 5c177ed2163a745c916cba28 | 2l1mFLVlMNcimAiiGCtPLumkNToEG0De | boFNkmXC1DAyjSAicnTf9KAgfJmQtq66 | view       | 9T2IwaXNCCvbnAXoQYJ5L7woyi7z8Isj | 1544698800 | { "accio:200142" : 1 } | KjHraabVNZp6lmOZ                 | {  }                                                                                                                                         | 0           | {  }                                                                                                                                         | vkasLV93Z7QEtXySFCFB8AtOKg0cLnvm | null        |
-      | 5c177ed5163a745c916cbc67 | CvAFTksA9uNt9sDPsNutMA1YyyvP64Vo | 2dhYl2lFksDsTT9eLDPZ4RQK32tciUnk | view       | QNUA1QOYe2TbYV6uBRcxIfLEEBKMnSlC | 1544778000 | { "accio:200142" : 1 } | k24vw5A4EmuMuWQS                 | {  }                                                                                                                                         | 0           | {  }                                                                                                                                         | OPlwVnwfBKQyzJ3nKcxJYzc3qctJeKsk | null        |
-      | 5c17880b163a745c9170cc03 | GQySlgVvcKm1SXCQpuQe7EAWbEZYjaN5 | 4D9T4bnavSGt3QNpwCwlyUiIbdru1rdO | click      | 5iSLsNIdrVFoxW15kKVXE5agFzNmY9en | 1544778000 | { "accio:200142" : 1 } | dcUOVNOMkO902SrF                 | {  }                                                                                                                                         | 0           | {  }                                                                                                                                         | MviOz6dhw9M1fj6BFg4J8inPqTgaWKl7 | null        |
-      | 5c178919163a745c91714458 | a21dd579d30844cd8236edcd2718ba39 | 51a069dc98f19dcf80e2f3918ad4cc5c | click      | 77bb43987655be630e6e6bf8bcf0e0f0 | 1545044400 | { "accio:200417" : 1 } | 86dd0aa8e4914ec5b7584fdce3f96272 | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "device_type" : [ "Desktop" ], "interest" : [ "5072651" ], "browser" : [ "Firefox" ] } | 0.5         | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "interest" : [ "5072651" ], "device_type" : [ "Desktop" ], "browser" : [ "Firefox" ] } | e41006f625d446fb885b3d6d211f28e8 | null        |
-      | 5c178919163a745c91714465 | a21dd579d30844cd8236edcd2718ba39 | 51a069dc98f19dcf80e2f3918ad4cc5c | view       | b79d956de9f301aa45d2ea65d825ad27 | 1545044400 | { "accio:200417" : 1 } | 86dd0aa8e4914ec5b7584fdce3f96272 | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "device_type" : [ "Desktop" ], "interest" : [ "5072651" ], "browser" : [ "Firefox" ] } | 0.5         | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "interest" : [ "5072651" ], "device_type" : [ "Desktop" ], "browser" : [ "Firefox" ] } | e41006f625d446fb885b3d6d211f28e8 | null        |
-      | 5c178bc6163a745c917272a9 | b669dc6316f84c18b7f68e016cf6a382 | 51a069dc98f19dcf80e2f3918ad4cc5c | click      | 31dfbcb15b3bf71e2f3d5339ee07c756 | 1545048000 | { "accio:200417" : 1 } | 5ccf0db64680407c852e5fe34675ebaa | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "device_type" : [ "Desktop" ], "interest" : [ "5072651" ], "browser" : [ "Firefox" ] } | 0.5         | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "interest" : [ "5072651" ], "device_type" : [ "Desktop" ], "browser" : [ "Firefox" ] } | e41006f625d446fb885b3d6d211f28e8 | null        |
-      | 5c178bc6163a745c917272c6 | b669dc6316f84c18b7f68e016cf6a382 | 51a069dc98f19dcf80e2f3918ad4cc5c | view       | 616f81980030b518de8d95d66182fb36 | 1545044400 | { "accio:200417" : 1 } | 5ccf0db64680407c852e5fe34675ebaa | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "device_type" : [ "Desktop" ], "interest" : [ "5072651" ], "browser" : [ "Firefox" ] } | 0.5         | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "interest" : [ "5072651" ], "device_type" : [ "Desktop" ], "browser" : [ "Firefox" ] } | e41006f625d446fb885b3d6d211f28e8 | null        |
-      | 5c17a686163a745c917e42ba | hHcKNrkAXvMXH3wQc4aW3pGk5r0gVGdE | crHyG7bxGSe1ZxrKySJmECid2ffpDduN | view       | e17JNDLeSb2FrnctB9wBTflIMgC0u7Ew | 1544698800 | { "accio:200142" : 1 } | 2M2bndj2hVlfXl6I                 | {  }                                                                                                                                         | 0           | {  }                                                                                                                                         | HOmhrjQJrQsuszNFpOndJDtxIshCF5Q5 | null        |
-      | 5c17a68e163a745c917e4773 | zUNJM0FRiTRt0QJmVyXo0A6Ms9p2Y97B | jPbkpCdpjtu7lN4TRyiMK1FkMoe2zNkN | view       | oIsjmXd7Ai7HZMtUfyTDd238G1m2X14j | 1544698800 | { "accio:200142" : 1 } | ktqadW4D5W7aUUMQ                 | {  }                                                                                                                                         | 0           | {  }                                                                                                                                         | wgc66BYTDR4wAXugwUIttq4tN0HECQHZ | null        |
-      | 5c17a68f163a745c917e478c | aZMrGLI32VRWVnlhaT6GillmU3OxaDmv | AI2DwQ4pDgeOSpWMigl6CM2GmnFJgGuP | view       | rBim3NDEfAYvdk9UHHFve7wb2gdVDjgY | 1544698800 | { "accio:200142" : 1 } | nsqxFzRTsdNZcUiR                 | {  }                                                                                                                                         | 0           | {  }                                                                                                                                         | 3Cxn5gbS8XPMHao1OG5uCYPxRSkOfeNE | null        |
-      | 5c17a697163a745c917e4a75 | woFkBJZ92iQWdCkacLOyT77DNrWFL2Hz | 4ErGhhCbo2yoPaCHDxdXBSs3UpYU5uCz | view       | IVUgrMPOduzUgiBpnAN7AcGbof4yqxxh | 1544698800 | { "accio:200142" : 1 } | suY5Cz87hy4bGziE                 | {  }                                                                                                                                         | 0           | {  }                                                                                                                                         | Qg4iFFuZ6fAPTVdz2mBB5mDMnZG1K52X | null        |
-      | 5c17a698163a745c917e4b1d | XUjm8wLErfGsWpniwmDBRzmqZxJvwmcv | 053ROcFzcitOXsJ7DrZOAs3ssjDmS80a | view       | jtrLI0ZksKBsr31Jz7ROJQMDVi6FlkJQ | 1544698800 | { "accio:200142" : 1 } | 2LXixvJJF9BqrMgI                 | {  }                                                                                                                                         | 0           | {  }                                                                                                                                         | BO58YXBJM5pAid09TkbBQHh5XjvmxdEP | null        |
-      | 5c17a73e163a745c917e9554 | amdc2SIUbsQB8RwGkLbN2a1XxeuUD02v | Ai8lSWScMSdzVPWLBp8UuN38sZkmLiWd | click      | YHtXyvZuDlTkHuhSizLBHzI7M0xnuneU | 1544778000 | { "accio:200142" : 1 } | JtViOa4P7rme3ewn                 | {  }                                                                                                                                         | 0           | {  }                                                                                                                                         | FCnONspLdCNTkAxiTMjdB2mGKXmrWLNp | null        |
-      | c17a764163a745c917ea619  | HjAiHuA8eGMv3rD1TJExGuayFzmwNez1 | WCEfrEnrG2z1CTl6wrdaGKti2lZ75aIV | view       | 8hHgSWSQpwvFeL3lOmfIC54zL4yu9sfl | 1544778000 | { "accio:200142" : 1 } | A0hDOulzVGuvyoc3                 | {  }                                                                                                                                         | 0           | {  }                                                                                                                                         | GdzjjGnH3UuP1G0iqZF3qk1n94dePqnh | null        |
-      | 5c17a85f163a745c917f1525 | XpUyfQGI934ZOWWbLBckvPfMKWVv9m5R | PBm4f9JWYgyfaMqx3xIglgZ7rIeuuMxM | view       | fVxmrY8HV50zIPmQpofu1wTjCExUvFzY | 1544698800 | { "accio:200142" : 1 } | INX8wTBhIplNnE9c                 | {  }                                                                                                                                         | 0           | {  }                                                                                                                                         | yfXdVlBRj8E8eU9FE3gqhZl6IpqVEPsh | null        |
-      | 5c17a85f163a745c917f1532 | d2fd3621b4144d759cf4a58b7e2e883c | 29e5348da1e8cf952c5b7567a508d26c | view       | 45738f71ec57e1d793fd0c3f7bf5f468 | 1544698800 | { "accio:200142" : 1 } | b9b5e20a40c741f3945b2b4be284dd7e | {  }                                                                                                                                         | 0           | {  }                                                                                                                                         | 6e17518ade454593ba5a3d5467039908 | null        |
-      | 5c17a860163a745c917f1573 | G0QXavPr5DUqfLZAJLJsa1oJe8va52pp | 9SWAe0fkAGOo3mkdBpUNfyS9X9LH1FEN | click      | 6j7qmnruMdZHiFCQF0rg8jV7sbAoAme9 | 1544778000 | { "accio:200142" : 1 } | jyxXtYGYXeVnxb23                 | {  }                                                                                                                                         | 0           | {  }                                                                                                                                         | mA4MOp5na4A6k1EjGhZQiu0v4h4z21ci | null        |
-      | 5c17a860163a745c917f1583 | kJL6J4djTzJvgFMfzLFsZOBNoPRKYl8M | nRkY1KHSVBDMglbu6wUR1FvZ5vaETXw5 | view       | mzSnzidwArtcotsXo8p5zIHqcNh1721B | 1544778000 | { "accio:200142" : 1 } | EG0fOFhhzcGxvlFt                 | {  }                                                                                                                                         | 0           | {  }                                                                                                                                         | o29FAgE1XfauOZrjrwX5HRi8cgLd1FCI | null        |
-    When I execute payment calculation for timestamp "1545166536"
-    Then I have a payment round in DB timestamp "1545166536"
-    And I have "0" payments for timestamp "1545166500" and "726RlxFbWwhjM828BB4NjLj12RhSmWj3"
+      | 5c17880b163a745c9170cc03 | GQySlgVvcKm1SXCQpuQe7EAWbEZYjaN5 | 4D9T4bnavSGt3QNpwCwlyUiIbdru1rdO | click      | 5iSLsNIdrVFoxW15kKVXE5agFzNmY9en | 1544778000 | { "accio:200142" : 1 } | 86dd0aa8e4914ec5b7584fdce3f96271 | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "device_type" : [ "Desktop" ], "interest" : [ "5072651" ], "browser" : [ "Firefox" ] } | 0.5         | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "interest" : [ "5072651" ], "device_type" : [ "Desktop" ], "browser" : [ "Firefox" ] } | e41006f625d446fb885b3d6d211f28e1 | null        |
+      | 5c178919163a745c91714458 | a21dd579d30844cd8236edcd2718ba39 | 51a069dc98f19dcf80e2f3918ad4cc5c | click      | 77bb43987655be630e6e6bf8bcf0e0f0 | 1545044400 | { "accio:200417" : 1 } | 86dd0aa8e4914ec5b7584fdce3f96272 | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "device_type" : [ "Desktop" ], "interest" : [ "5072651" ], "browser" : [ "Firefox" ] } | 0.5         | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "interest" : [ "5072651" ], "device_type" : [ "Desktop" ], "browser" : [ "Firefox" ] } | e41006f625d446fb885b3d6d211f28e2 | null        |
+      | 5c178919163a745c91714465 | a21dd579d30844cd8236edcd2718ba39 | 51a069dc98f19dcf80e2f3918ad4cc5c | view       | b79d956de9f301aa45d2ea65d825ad27 | 1545044400 | { "accio:200417" : 1 } | 86dd0aa8e4914ec5b7584fdce3f96273 | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "device_type" : [ "Desktop" ], "interest" : [ "5072651" ], "browser" : [ "Firefox" ] } | 0.5         | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "interest" : [ "5072651" ], "device_type" : [ "Desktop" ], "browser" : [ "Firefox" ] } | e41006f625d446fb885b3d6d211f28e3 | null        |
+      | 5c178bc6163a745c917272a9 | b669dc6316f84c18b7f68e016cf6a382 | 51a069dc98f19dcf80e2f3918ad4cc5c | click      | 31dfbcb15b3bf71e2f3d5339ee07c756 | 1545048000 | { "accio:200417" : 1 } | 5ccf0db64680407c852e5fe34675ebaa | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "device_type" : [ "Desktop" ], "interest" : [ "5072651" ], "browser" : [ "Firefox" ] } | 0.5         | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "interest" : [ "5072651" ], "device_type" : [ "Desktop" ], "browser" : [ "Firefox" ] } | e41006f625d446fb885b3d6d211f28e4 | null        |
+      | 5c178bc6163a745c917272c6 | b669dc6316f84c18b7f68e016cf6a382 | 51a069dc98f19dcf80e2f3918ad4cc5c | view       | 616f81980030b518de8d95d66182fb36 | 1545044400 | { "accio:200417" : 1 } | 5ccf0db64680407c852e5fe34675ebab | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "device_type" : [ "Desktop" ], "interest" : [ "5072651" ], "browser" : [ "Firefox" ] } | 0.5         | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "interest" : [ "5072651" ], "device_type" : [ "Desktop" ], "browser" : [ "Firefox" ] } | e41006f625d446fb885b3d6d211f28e5 | null        |
+
+  Scenario: Campaign update
+    Given I want to campaign update
+    When I provide the data:
+    """
+      {
+        "jsonrpc": "2.0",
+        "id": "317ebce66492479997ee8908b0351306",
+        "method": "campaign_update",
+        "params": [
+          {
+            "campaign_id": "aaf274729d544f4ab1e6754091e75fc4",
+            "advertiser_id": "e265864d4bfd47ccb4196e269cdf5fd3",
+            "budget": 12345678901234,
+            "max_cpc": 1234567890123,
+            "max_cpm": 123456789012,
+            "time_start": 1542420675,
+            "time_end": 1576244160,
+            "banners": [
+              {
+                "banner_id": "664a6ce44f854136b8030a5f0f9244a8",
+                "banner_size": "728x90",
+                "keywords": {
+                  "type": 0
+                }
+              },
+              {
+                "banner_id": "835c45f7786a45b9ab7396531f10ad4b",
+                "banner_size": "750x200",
+                "keywords": {
+                  "type": 0
+                }
+              },
+              {
+                "banner_id": "65fdd13f0c2b45a0b16ba5b31f5a9b51",
+                "banner_size": "120x600",
+                "keywords": {
+                  "type": 0
+                }
+              },
+              {
+                "banner_id": "350f2a4fd42d4c3c9d3b351cb86a2a83",
+                "banner_size": "160x600",
+                "keywords": {
+                  "type": 0
+                }
+              }
+            ],
+              "filters": {
+                "exclude": {},
+                "require": {
+                  "interest": [
+                    "100"
+                      ]
+                    }
+              },
+              "keywords": {
+                  "open source": 1
+              }
+          }
+        ]
+      }
+    """
+    When I request resource
+    Then the response status code should be 200
+    And the response should contain:
+    """
+      {
+         "jsonrpc": "2.0",
+         "id": "317ebce66492479997ee8908b0351306",
+         "result": true
+      }
+    """
+
+  Scenario: Add events
+    Given I want to update campaign
+    When I provide the data:
+    """
+      {
+          "jsonrpc": "2.0",
+          "id": "HkEjVJz7ATMItGIs98bUJt8PIXh3zZBa",
+          "method": "add_events",
+          "params": [
+              {
+                  "banner_id": "89Ev9isW66ogH367sZPPy4otfTP66g6s",
+                  "event_type": "view",
+                  "event_id": "607qhEK6RkqegQaDhpG2hRhqMgiSEvLs",
+                  "timestamp": 1544778000,
+                  "their_keywords": {
+                      "accio:200142": 1
+                  },
+                  "our_keywords": {},
+                  "human_score": 0,
+                  "publisher_id": "Al72R1ROTnJAie0zfrAHVyahFTT0GflM",
+                  "user_id": "kqAP8JoRtDRR1X7LSt78uZADCVq2JrW3"
+              }
+          ]
+      }
+    """
+    When I request resource
+    Then the response status code should be 200
+    And the response should contain:
+    """
+      {
+         "jsonrpc": "2.0",
+         "id": "HkEjVJz7ATMItGIs98bUJt8PIXh3zZBa",
+         "result": true
+      }
+    """
+
+  Scenario: Get payments
+    Given I want to get payments
+    When I provide the data:
+    """
+      {
+       "jsonrpc": "2.0",
+       "method": "get_payments",
+       "id": "llj3wWF5Ze3vkQ3zDnB7GO7lA7j4Nda5",
+       "params": [{"timestamp": 1544778000}]
+      }
+    """
+    When I request resource
+    Then the response status code should be 200
+    And the response should contain:
+    """
+      {
+         "jsonrpc": "2.0",
+         "id": "llj3wWF5Ze3vkQ3zDnB7GO7lA7j4Nda5",
+         "result": {"payments": []}
+      }
+    """
+
+  Scenario: Campaign delete
+    Given I want to campaign delete
+    When I provide the data:
+    """
+      {
+          "jsonrpc": "2.0",
+          "id": "ba23cfba9b0e4437b2c333cf6db7d534",
+          "method": "campaign_delete",
+          "params": [
+              ""
+          ]
+      }
+    """
+    When I request resource
+    Then the response status code should be 200
+    And the response should contain:
+    """
+      {
+         "jsonrpc": "2.0",
+         "id": "ba23cfba9b0e4437b2c333cf6db7d534",
+         "result": true
+      }
+    """
