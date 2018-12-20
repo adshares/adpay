@@ -36,12 +36,13 @@ def step_impl(context):
 
 @when('I provide the data')
 def step_impl(context):
+    context.request_data = json.loads(context.text)
     context.request['params'] = json.loads(context.text)
 
 
 @when('I request resource')
 def step_impl(context):
-    context.response = context.txserver.get_response(context.request['method'], context.request['params'])
+    context.response = context.txserver.get_response_raw(context.request_data)
 
 
 @then('The response should be "{code}"')
@@ -58,6 +59,7 @@ def step_impl(context, code):
 def step_impl(context):
 
     def test_code(response, resp_text):
+        print response
         assert response == json.loads(resp_text)
 
     resp_text = context.text

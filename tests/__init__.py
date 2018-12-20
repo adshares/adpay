@@ -291,3 +291,18 @@ class WebTestCase(db_test_case):
         response.deliverBody(ReceiverProtocol(finished))
         data = yield finished
         defer.returnValue(json.loads(data) if data else None)
+
+    @defer.inlineCallbacks
+    def get_response_raw(self, raw_data):
+        post_data = StringProducer(json.dumps(raw_data))
+
+        host = socket.gethostbyname(socket.gethostname())
+
+        response = yield self.client.request('POST',
+                                             'http://{0}:{1}'.format(host, iface_consts.SERVER_PORT),
+                                             Headers({'content-type': ['application/json']}),
+                                             post_data)
+        finished = defer.Deferred()
+        response.deliverBody(ReceiverProtocol(finished))
+        data = yield finished
+        defer.returnValue(json.loads(data) if data else None)
