@@ -1,3 +1,4 @@
+@fixture.adpay.db
 Feature: Campaign functionality
 
   Background:
@@ -23,6 +24,7 @@ Feature: Campaign functionality
       | 5c178bc6163a745c917272a9 | b669dc6316f84c18b7f68e016cf6a382 | 51a069dc98f19dcf80e2f3918ad4cc5c | click      | 31dfbcb15b3bf71e2f3d5339ee07c756 | 1545048000 | { "accio:200417" : 1 } | 5ccf0db64680407c852e5fe34675ebaa | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "device_type" : [ "Desktop" ], "interest" : [ "5072651" ], "browser" : [ "Firefox" ] } | 0.5         | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "interest" : [ "5072651" ], "device_type" : [ "Desktop" ], "browser" : [ "Firefox" ] } | e41006f625d446fb885b3d6d211f28e4 | null        |
       | 5c178bc6163a745c917272c6 | b669dc6316f84c18b7f68e016cf6a382 | 51a069dc98f19dcf80e2f3918ad4cc5c | view       | 616f81980030b518de8d95d66182fb36 | 1545044400 | { "accio:200417" : 1 } | 5ccf0db64680407c852e5fe34675ebab | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "device_type" : [ "Desktop" ], "interest" : [ "5072651" ], "browser" : [ "Firefox" ] } | 0.5         | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "interest" : [ "5072651" ], "device_type" : [ "Desktop" ], "browser" : [ "Firefox" ] } | e41006f625d446fb885b3d6d211f28e5 | null        |
 
+  @update
   Scenario: Campaign update
     Given I want to campaign update
     When I provide the data:
@@ -94,7 +96,7 @@ Feature: Campaign functionality
          "result": true
       }
     """
-
+  @addevents
   Scenario: Add events
     Given I want to add events
     When I provide the data:
@@ -129,7 +131,7 @@ Feature: Campaign functionality
          "result": true
       }
     """
-
+  @no_calculations
   Scenario: Get payments
     Given I want to get payments
     When I provide the data:
@@ -144,13 +146,37 @@ Feature: Campaign functionality
     When I request resource
     Then the response should contain:
     """
+      {"jsonrpc": "2.0",
+       "id": "llj3wWF5Ze3vkQ3zDnB7GO7lA7j4Nda5",
+        "error": {
+                "message": "Payments not calculated yet.",
+                "code": -32000}
+      }
+    """
+  @forced
+  Scenario: Get payments forced
+    Given I want to get payments
+
+    When I provide the data:
+    """
       {
-         "jsonrpc": "2.0",
-         "id": "llj3wWF5Ze3vkQ3zDnB7GO7lA7j4Nda5",
-         "result": {"payments": []}
+       "jsonrpc": "2.0",
+       "method": "get_payments",
+       "id": "llj3wWF5Ze3vkQ3zDnB7GO7lA7j4Nda5",
+       "params": [{"timestamp": 1544778000}]
+      }
+    """
+    And I execute payment calculation for timestamp "1544778000"
+    And I request resource
+    Then the response should contain:
+    """
+      {"jsonrpc": "2.0",
+       "id": "llj3wWF5Ze3vkQ3zDnB7GO7lA7j4Nda5",
+       "result": {"payments": []}
       }
     """
 
+  @delete
   Scenario: Campaign delete
     Given I want to campaign delete
     When I provide the data:
