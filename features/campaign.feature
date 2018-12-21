@@ -118,6 +118,7 @@ Feature: Campaign functionality
               }
           ]
       }
+
     """
     When I request resource
     Then the response should contain:
@@ -157,7 +158,7 @@ Feature: Campaign functionality
        "jsonrpc": "2.0",
        "method": "get_payments",
        "id": "",
-       "params": [{"timestamp": 154477000}]
+       "params": [{"timestamp": 1544770000}]
       }
     """
     When I request resource
@@ -173,16 +174,90 @@ Feature: Campaign functionality
       }
     """
 
+
+
   Scenario: Campaign delete
     Given I want to campaign delete
     When I provide the data:
     """
       {
           "jsonrpc": "2.0",
-          "id": "ba23cfba9b0e4437b2c333cf6db7d534",
+          "id": "CAL75YKS1FLmG1rLdchyOvtVQXLZkbnf",
           "method": "campaign_delete",
           "params": [
-              ""
+              "xDRgl2OXl5Qfm4JS"
+          ]
+      }
+    """
+    When I request resource
+    Then the response should contain:
+    """
+      {
+      "jsonrpc": "2.0",
+      "id": "CAL75YKS1FLmG1rLdchyOvtVQXLZkbnf",
+      "result": true
+      }
+    """
+  Scenario: Campaign delete code -32700
+    Given I want to campaign delete
+    When I provide the data:
+    """
+      {
+          "jsonrpc": "2.0",
+          "id": "${#Project#id}",
+          "method": "campaign_delete",
+          "params": [
+              "${#Project#campaign_id}"
+
+      }
+    """
+    When I request resource
+    Then the response should contain:
+    """
+      {
+         "jsonrpc": "2.0",
+         "id": null,
+         "error":    {
+            "message": "Parse error",
+            "code": -32700
+         }
+      }
+    """
+  Scenario: Campaign delete code -32600
+    Given I want to campaign delete
+    When I provide the data:
+    """
+      {
+          "jsonrpc": "2.0",
+          "id": "VxKeEvXssuvG0Ue300YB8KXwMwho5gA9",
+          "method1": "campaign_delete",
+          "params": [
+              "eDirTrpOrNhhGwSf"
+          ]
+      }
+    """
+    When I request resource
+    Then the response should contain:
+    """
+     {
+         "jsonrpc": "2.0",
+         "id": "VxKeEvXssuvG0Ue300YB8KXwMwho5gA9",
+         "error":    {
+            "message": "Invalid method type",
+            "code": -32600
+         }
+     }
+    """
+   Scenario: Campaign delete code -32601
+    Given I want to campaign delete
+    When I provide the data:
+    """
+      {
+          "jsonrpc": "2.0",
+          "id": "${#Project#id}",
+          "method": "campaign_delete2",
+          "params": [
+              "${#Project#campaign_id}"
           ]
       }
     """
@@ -191,7 +266,11 @@ Feature: Campaign functionality
     """
       {
          "jsonrpc": "2.0",
-         "id": "ba23cfba9b0e4437b2c333cf6db7d534",
-         "result": true
+         "id": "VxKeEvXssuvG0Ue300YB8KXwMwho5gA9",
+         "error":    {
+            "message": "Method campaign_delete2 not found",
+            "code": -32601
+         }
       }
     """
+
