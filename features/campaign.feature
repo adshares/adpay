@@ -401,6 +401,7 @@ Feature: Campaign functionality
                 "code": -32000}
       }
     """
+
   @forced
   Scenario: Get payments forced
     Given I want to get payments
