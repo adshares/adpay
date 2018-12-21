@@ -95,6 +95,216 @@ Feature: Campaign functionality
          "result": true
       }
     """
+  Scenario: Campaign update code -32700
+    Given I want to campaign update
+    When I provide the data:
+    """
+      {
+          "jsonrpc": "2.0",
+          "id": "xkaWsa2f8Mtq8QKAiWP0fEs5Zc566Dqd",
+          "method": "campaign_update",
+          "params": [
+              {
+                  "campaign_id": "Ioma0EwaYqqnPunX",
+                  "advertiser_id": "WCxzAyHo3Cm8BXfD1hKHSa3wmFPaW6k6",
+                  "budget": 10000000000000,
+                  "max_cpc": 1000,
+                  "max_cpm": 1000,
+                  "time_start": 1542882034,
+                  "time_end": 1576147247,
+                  "banners": [
+                      {
+                          "banner_id": "68O9646jdsxdpFprMf8XmiGjQOflg7p3",
+                          "banner_size": "728x90",
+                          "keywords": {
+                              "type": 0
+                          }
+                      }
+                      {
+                          "banner_id": "WOzZAwA8mnXW0q1Vvm8FBvrhqDNhela0",
+                          "banner_size": "750x200",
+                          "keywords": {
+                              "type": 0
+                          }
+                      }
+                      }
+                  ],
+                  "filters": {
+                      "exclude": {
+                          "site:domain": [
+                              "coinmarketcap.com",
+                              "icoalert.com"
+                          ],
+                          "user:lang": [
+                              "it"
+                          ]
+                      },
+                      "require": {
+                          "site:lang": [
+                              "jp"
+                          ],
+                          "user:gender": [
+                              "pl"
+                          ],
+                          "device:os": [
+                              "Windows"
+                          ]
+                      }
+                  },
+                  "keywords": {
+                      "open source": 1
+                  }
+              }
+          ]
+      }
+    """
+    When I request resource
+    Then the response should contain:
+    """
+      {
+         "jsonrpc": "2.0",
+         "id": null,
+         "error":    {
+            "message": "Parse error",
+            "code": -32700
+         }
+      }
+    """
+   Scenario: Campaign update code -32600
+    Given I want to campaign update
+    When I provide the data:
+    """
+     {
+            "jsonrpc": "2.0",
+            "id": "PW4ungvlh2DnuRRZh0Emdir9Z1gzKlZ5",
+            "method1": "campaign_update",
+            "params": [
+                {
+                    "campaign_id": "6scUNqDN48mz0kV5",
+                    "advertiser_id": "V1dBxWYu7Iq2vtBP7tQANmvn6IdIFd61",
+                    "budget": 10000000000000,
+                    "max_cpc": 1000,
+                    "max_cpm": 1000,
+                    "time_start": 1542882034,
+                    "time_end": 1576147247,
+                    "banners": [
+                        {
+                            "banner_id": "t5ci0EE6TNVM4gCQwp2XPm5ZwTx9x2lA",
+                            "banner_size": "728x90",
+                            "keywords": {
+                                "type": 0
+                            }
+                        }
+                    ],
+                    "filters": {
+                        "exclude": {
+                            "site:domain": [
+                                "coinmarketcap.com",
+                                "icoalert.com"
+                            ],
+                            "user:lang": [
+                                "it"
+                            ]
+                        },
+                        "require": {
+                            "site:lang": [
+                                "pl"
+                            ],
+                            "user:gender": [
+                                "pl"
+                            ],
+                            "device:os": [
+                                "Linux"
+                            ]
+                        }
+                    },
+                    "keywords": {
+                        "open source": 1
+                    }
+                }
+            ]
+        }
+    """
+    When I request resource
+    Then the response should contain:
+    """
+      {
+         "jsonrpc": "2.0",
+         "id": "PW4ungvlh2DnuRRZh0Emdir9Z1gzKlZ5",
+         "error":    {
+            "message": "Invalid method type",
+            "code": -32600
+         }
+      }
+    """
+   Scenario: Campaign update code -32601
+    Given I want to campaign update
+    When I provide the data:
+    """
+      {
+        "jsonrpc": "2.0",
+        "id": "ckf7bpsHoqfSSvyuRdK8Ez8pA49uJedB",
+        "method1": "campaign_update2",
+        "params": [
+            {
+                "campaign_id": "Zwrgq6qPdBjrP6lz",
+                "advertiser_id": "TSCgd2b4u26YRY9nLKvcpwACvB1YkLyN",
+                "budget": 10000000000000,
+                "max_cpc": 1000,
+                "max_cpm": 1000,
+                "time_start": 1542882034,
+                "time_end": 1576147247,
+                "banners": [
+                    {
+                        "banner_id": "cxgHoFZe9oVPOGgmKT4I5mHDqHh5Xzxc",
+                        "banner_size": "728x90",
+                        "keywords": {
+                            "type": 0
+                        }
+                    }
+                ],
+                "filters": {
+                    "exclude": {
+                        "site:domain": [
+                            "coinmarketcap.com",
+                            "icoalert.com"
+                        ],
+                        "user:lang": [
+                            "it"
+                        ]
+                    },
+                    "require": {
+                        "site:lang": [
+                            "pl"
+                        ],
+                        "user:gender": [
+                            "pl"
+                        ],
+                        "device:os": [
+                            "Linux"
+                        ]
+                    }
+                },
+                "keywords": {
+                    "open source": 1
+                }
+            }
+        ]
+    }
+    """
+    When I request resource
+    Then the response should contain:
+    """
+      {
+         "jsonrpc": "2.0",
+         "id": "ckf7bpsHoqfSSvyuRdK8Ez8pA49uJedB",
+         "error":    {
+            "message": "Method campaign_update2 not found",
+            "code": -32601
+         }
+      }
+    """
+
   @addevents
   Scenario: Add events
     Given I want to add events
@@ -131,6 +341,44 @@ Feature: Campaign functionality
          "result": true
       }
     """
+  Scenario: Add events code -32700
+    Given I want to add events
+    When I provide the data:
+    """
+      {
+          "jsonrpc": "2.0",
+          "id": "hRe54TQ9oUWq4q7FzxG8NhJbT3Rrfnqs",
+          "method": "add_events",
+          "params": [
+              {
+                  "banner_id": "76DV2JJl8EhcyuLb3gSQeSXLSTINEpfF",
+                  "event_type": "click",
+                  "event_id": "uRiCHgd3zGQ3ADmKwlH4WmU0VFItIban",
+                  "timestamp": 1544778000,
+                  "their_keywords": {
+                      "accio:200142": 1
+                  }
+                  "our_keywords": {},
+                  "human_score": 0,
+                  "publisher_id": "uapqGoguUYmUWE7bWuL7aJ3X9YmC7M5n",
+                  "user_id": "bqINQy1Nag45iM4Z5u6CHQ9K075MEqFH"
+              }
+          ]
+      }
+    """
+    When I request resource
+    Then the response should contain:
+    """
+        {
+           "jsonrpc": "2.0",
+           "id": null,
+           "error":    {
+              "message": "Parse error",
+              "code": -32700
+           }
+        }
+    """
+
   @no_calculations
   Scenario: Get payments
     Given I want to get payments
@@ -234,7 +482,6 @@ Feature: Campaign functionality
           "method": "campaign_delete",
           "params": [
               "${#Project#campaign_id}"
-
       }
     """
     When I request resource
@@ -298,5 +545,23 @@ Feature: Campaign functionality
             "code": -32601
          }
       }
+    """
+  Scenario: Campaign delete code -32602
+    Given I want to campaign delete
+    When I provide the data:
+    """
+      {
+          "jsonrpc": "2.0",
+          "method": "campaign_delete",
+          "params": [
+              1,
+              2
+          ],
+          "id": 1
+      }
+    """
+    When I request resource
+    Then the response should contain:
+    """
     """
 
