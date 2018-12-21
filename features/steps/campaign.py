@@ -1,7 +1,7 @@
 from behave import *
 
 from adpay.db import utils
-from adpay.stats.tasks import _adpay_task
+from adpay.stats.tasks import force_payment_recalculation
 from adpay.utils.utils import timestamp2hour
 
 
@@ -31,7 +31,7 @@ def step_impl(context):
 
 @when('I execute payment calculation for timestamp "{timestamp}"')
 def step_impl(context, timestamp):
-    _adpay_task(timestamp, int(timestamp))
+    force_payment_recalculation(timestamp)
 
 
 @then('I have a payment round in DB timestamp "{timestamp}"')

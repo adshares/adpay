@@ -59,8 +59,10 @@ def step_impl(context, code):
 def step_impl(context):
 
     def test_code(response, resp_text):
-        print response
-        assert response == json.loads(resp_text)
+        try:
+            assert response == json.loads(resp_text)
+        except AssertionError as e:
+            raise
 
     resp_text = context.text
     context.response.addCallback(test_code, resp_text)
