@@ -294,7 +294,7 @@ class WebTestCase(db_test_case):
 
     @defer.inlineCallbacks
     def get_response_raw(self, raw_data):
-        post_data = StringProducer(json.dumps(raw_data))
+        post_data = StringProducer(bytes(raw_data))
 
         host = socket.gethostbyname(socket.gethostname())
 
