@@ -36,8 +36,7 @@ def step_impl(context):
 
 @when('I provide the data')
 def step_impl(context):
-    context.request_data = json.loads(context.text)
-    context.request['params'] = json.loads(context.text)
+    context.request_data = context.text
 
 
 @when('I request resource')
