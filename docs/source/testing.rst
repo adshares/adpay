@@ -5,7 +5,7 @@ For testing you'll need additional libraries (mock, mongomock, behave). Install 
 
     ``pipenv install --dev``
 
-You might neeed to set PYTHONPATH. If you're in the checkout directory, you can:
+You might need to set PYTHONPATH. If you're in the checkout directory, you can:
 
     ``export PYTHONPATH=`pwd```
 
