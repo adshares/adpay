@@ -286,6 +286,14 @@ def get_best_user_payments_and_humanity(campaign_id, timestamp, uid, campaign_cp
 
 @defer.inlineCallbacks
 def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=0.5):
+    if stats_consts.CALCULATION_METHOD == 'default':
+        yield calculate_events_payments_default(campaign_id, timestamp)
+    elif stats_consts.CALCULATION_METHOD == 'user_value':
+        yield calculate_events_payments_using_user_value(campaign_id, timestamp, payment_percentage_cutoff)
+
+
+@defer.inlineCallbacks
+def calculate_events_payments_using_user_value(campaign_id, timestamp, payment_percentage_cutoff=0.5):
     """
     For new users:
     1. Assign them max_human_score from the database and CPM value (per campaign)
@@ -343,14 +351,62 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
         for event_type in total_user_payments:
             if total_user_payments[event_type] > 0:
                 user_budget[event_type]['share'] = 1.0 * user_budget_score[event_type]/total_user_payments[event_type]
-        yield update_events_payments(campaign_id, timestamp, uid, user_budget, campaign_cpc, campaign_cpm)
+
+        yield update_events_payments(campaign_id, timestamp, uid, user_budget)
 
     # Delete user scores
     yield db_utils.delete_user_scores(campaign_id, timestamp)
 
 
 @defer.inlineCallbacks
-def update_events_payments(campaign_id, timestamp, uid, user_budget, campaign_cpc, campaign_cpm):
+def calculate_events_payments_default(campaign_id, timestamp):
+    """
+    For new users:
+    1. Assign them max_human_score from the database and CPM value (per campaign)
+    2. Assign payment score based on average of other users.
+    3.
+
+    :param campaign_id:
+    :param timestamp:
+    :return:
+    """
+    logger = logging.getLogger(__name__)
+
+    campaign_doc = yield db_utils.get_campaign(campaign_id)
+    campaign_cpc = campaign_doc['max_cpc']  # click
+    campaign_cpm = campaign_doc['max_cpm']  # impression/view
+
+    # Check if campaign exists
+    if campaign_doc is None:
+        logger.warning("Campaign not found: {0}".format(campaign_id))
+        return
+
+    uids = yield db_utils.get_distinct_users_from_events(campaign_id, timestamp)
+
+    total_payments = 0.0
+    user_data = {}
+
+    for uid in uids:
+        user_data[uid] = {'total': 0.0,
+                          'budget': {}}
+        user_data[uid]['budget'] = yield create_user_budget(campaign_id, timestamp, uid, campaign_cpc, campaign_cpm)
+
+        for event_type in user_data[uid]['budget']:
+            user_data[uid]['total'] += user_data[uid]['budget'][event_type]['default_value']
+
+        total_payments += user_data[uid]['total']
+
+    for uid in uids:
+        if total_payments > 0:
+
+            for event_type in user_data[uid]['budget']:
+                user_data[uid]['budget'][event_type]['share'] = user_data[uid]['total'] / total_payments
+
+        yield update_events_payments(campaign_id, timestamp, uid, user_data[uid]['budget'])
+
+
+@defer.inlineCallbacks
+def update_events_payments(campaign_id, timestamp, uid, user_budget):
     """
     Update or create event payments by dividing user budget among events.
 
