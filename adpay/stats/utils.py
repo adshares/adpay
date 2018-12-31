@@ -8,6 +8,9 @@ from adpay.stats import cache as stats_cache, consts as stats_consts
 #: Deferred lock for updating events
 ADD_EVENT_LOCK = defer.DeferredLock()
 
+#: Filter separator, used in range filters (see protocol or api documentation).
+FILTER_SEPARATOR = '--'
+
 
 @defer.inlineCallbacks
 def get_user_profile_keywords(user_id):
@@ -165,6 +168,28 @@ def get_user_payment_score(campaign_id, user_id, amount=5):
 
 
 @defer.inlineCallbacks
+def filter_event(event_doc):
+    logger = logging.getLogger(__name__)
+
+    campaign_doc = yield db_utils.get_campaign(event_doc['campaign_id'])
+
+    # Check if campaign exists
+    if campaign_doc is None:
+        logger.warning("Campaign not found: {0}".format(event_doc['campaign_id']))
+        defer.returnValue(False)
+
+    if stats_consts.VALIDATE_EVENT_KEYWORD_EQUALITY:
+        if event_doc['our_keywords'] != event_doc['their_keywords']:
+            defer.returnValue(False)
+
+    if stats_consts.VALIDATE_CAMPAIGN_FILTERS:
+        if not validate_keywords(campaign_doc['filters'], event_doc['our_keywords']):
+            defer.returnValue(False)
+
+    defer.returnValue(True)
+
+
+@defer.inlineCallbacks
 def calculate_payments_for_new_users(campaign_id, timestamp, campaign_cpm):
     """
     Calculate payments for new uses. Use CPM as default payment.
@@ -190,7 +215,8 @@ def calculate_payments_for_new_users(campaign_id, timestamp, campaign_cpm):
             if not event_doc:
                 break
 
-            max_human_score = max([max_human_score, event_doc['human_score']])
+            if filter_event(event_doc):
+                max_human_score = max([max_human_score, event_doc['human_score']])
 
         user_value_doc = yield db_utils.get_user_value_in_campaign(campaign_id, uid)
 
@@ -212,9 +238,10 @@ def create_user_budget(campaign_id, timestamp, uid, max_cpc, max_cpm):
         if not event_doc:
             break
 
-        event_type = event_doc['event_type']
-        user_budget[event_type]['num'] += 1
-        user_budget[event_type]['default_value'] += get_default_event_payment(event_doc, max_cpc, max_cpm)
+        if filter_event(event_doc):
+            event_type = event_doc['event_type']
+            user_budget[event_type]['num'] += 1
+            user_budget[event_type]['default_value'] += get_default_event_payment(event_doc, max_cpc, max_cpm)
 
     for event_type in user_budget:
         if user_budget[event_type]['num'] > 0:
@@ -273,13 +300,15 @@ def get_best_user_payments_and_humanity(campaign_id, timestamp, uid, campaign_cp
         if not event_doc:
             break
 
-        event_payment = get_default_event_payment(event_doc, campaign_cpc, campaign_cpm)
-        event_type = event_doc['event_type']
+        if filter_event(event_doc):
+            event_payment = get_default_event_payment(event_doc, campaign_cpc, campaign_cpm)
+            event_type = event_doc['event_type']
 
-        total_user_payments[event_type] += float(event_payment)
+            total_user_payments[event_type] += float(event_payment)
 
-        max_user_payment = max([max_user_payment, event_payment])
-        max_human_score = max([max_human_score, event_doc['human_score']])
+            max_user_payment = max([max_user_payment, event_payment])
+            max_human_score = max([max_human_score, event_doc['human_score']])
+
     yield logger.info("User {0} max_user_payment, max_human_score, total_user_payments: {1}".format(uid, (max_user_payment, max_human_score, total_user_payments)))
     defer.returnValue((max_user_payment, max_human_score, total_user_payments))
 
@@ -414,27 +443,25 @@ def update_events_payments(campaign_id, timestamp, uid, user_budget):
     :param timestamp:
     :param uid:
     :param user_budget:
-    :param campaign_cpc:
-    :param campaign_cpm:
     :return:
     """
     logger = logging.getLogger(__name__)
-    user_events_iter = yield db_utils.get_events_per_user_iter(campaign_id, timestamp, uid)
 
     for event_type in user_budget:
         if user_budget[event_type]['share'] > 0:
             user_budget[event_type]['event_value'] = min([user_budget[event_type]['default_value'],
                                                           user_budget[event_type]['share'] * user_budget[event_type]['default_value']])
 
+    user_events_iter = yield db_utils.get_events_per_user_iter(campaign_id, timestamp, uid)
     while True:
         event_doc = yield user_events_iter.next()
         if event_doc is None:
             break
+        if filter_event(event_doc):
+            event_type = event_doc['event_type']
 
-        event_type = event_doc['event_type']
-
-        yield logger.debug("campaign_id, timestamp, event_doc['event_id'], event_payment: {0}".format((campaign_id, timestamp, event_doc['event_id'], user_budget[event_type]['event_value'])))
-        yield db_utils.update_event_payment(campaign_id, timestamp, event_doc['event_id'], user_budget[event_type]['event_value'])
+            yield logger.debug("campaign_id, timestamp, event_doc['event_id'], event_payment: {0}".format((campaign_id, timestamp, event_doc['event_id'], user_budget[event_type]['event_value'])))
+            yield db_utils.update_event_payment(campaign_id, timestamp, event_doc['event_id'], user_budget[event_type]['event_value'])
 
 
 @defer.inlineCallbacks
@@ -642,3 +669,65 @@ def delete_campaign(campaign_id):
     yield logger.info("Removing campaigns and banners.")
     yield db_utils.delete_campaign(campaign_id)
     yield db_utils.delete_campaign_banners(campaign_id)
+
+
+
+def validate_keywords(filters_dict, keywords):
+    """
+    Validate required and excluded keywords.
+
+    :param filters_dict: Required and excluded keywords
+    :param keywords: Keywords being tested.
+    :return: True or False
+    """
+    return validate_require_keywords(filters_dict, keywords) and validate_exclude_keywords(filters_dict, keywords)
+
+
+def validate_bounds(bounds, keyword_values):
+    for kv in keyword_values:
+        if (len(bounds) == 2 and bounds[0] < kv < bounds[1]) \
+                or (bounds[0] == kv):
+            return True
+    return False
+
+
+def validate_require_keywords(filters_dict, keywords):
+    """
+    Validate required and excluded keywords.
+
+    :param filters_dict: Required and excluded keywords
+    :param keywords: Keywords being tested.
+    :return: True or False
+    """
+    for category_keyword, ckvs in filters_dict.get('require').items():
+        if category_keyword not in keywords:
+            return False
+
+        for category_keyword_value in ckvs:
+            bounds = category_keyword_value.split(FILTER_SEPARATOR)
+            if validate_bounds(bounds, keywords.get(category_keyword)):
+                break
+        else:
+            return False
+
+    return True
+
+
+def validate_exclude_keywords(filters_dict, keywords):
+    """
+    Validate required and excluded keywords.
+
+    :param filters_dict: Required and excluded keywords
+    :param keywords: Keywords being tested.
+    :return: True or False
+    """
+    for category_keyword, ckvs in filters_dict.get('exclude').items():
+        if category_keyword not in keywords:
+            continue
+
+        for category_keyword_value in ckvs:
+            bounds = category_keyword_value.split(FILTER_SEPARATOR)
+            if validate_bounds(bounds, keywords.get(category_keyword)):
+                return False
+
+    return True
