@@ -23,7 +23,8 @@ class DBTestCase(tests.db_test_case):
                    "max_cpc": cpc,
                    "max_cpm": cpv,
                    "budget": 1000,
-                   "filters": {}}
+                   "filters": {'require': {},
+                               'exclude': {}}}
         yield db_utils.update_campaign(cmp_doc)
 
         yield db_utils.update_banner({'banner_id': 'banner_id1', 'campaign_id': 'campaign_id'})
@@ -40,6 +41,7 @@ class DBTestCase(tests.db_test_case):
             "campaign_id": "campaign_id",
             "event_value": 0.1,
             "our_keywords": {},
+            "their_keywords": {},
             "human_score": 1})
 
         yield stats_utils.calculate_events_payments_using_user_value("campaign_id", 3600,
@@ -59,6 +61,7 @@ class DBTestCase(tests.db_test_case):
             "campaign_id": "campaign_id",
             "event_value": 0.2,
             "our_keywords": {},
+            "their_keywords": {},
             "human_score": 1})
 
         yield db_utils.update_event({
@@ -70,6 +73,7 @@ class DBTestCase(tests.db_test_case):
             "campaign_id": "campaign_id",
             "event_value": 0.5,
             "our_keywords": {},
+            "their_keywords": {},
             "human_score": 1})
 
         yield stats_utils.calculate_events_payments_using_user_value("campaign_id", 3600,
@@ -95,7 +99,8 @@ class DBTestCase(tests.db_test_case):
                    "max_cpc": cpc,
                    "max_cpm": cpv,
                    "budget": 1000,
-                   "filters": {}}
+                   "filters": {'require': {},
+                               'exclude': {}}}
 
         yield db_utils.update_campaign(cmp_doc)
 
@@ -113,6 +118,7 @@ class DBTestCase(tests.db_test_case):
             "campaign_id": "campaign_id",
             "event_value": 0.2,
             "our_keywords": {},
+            "their_keywords": {},
             "human_score": 1})
 
         yield db_utils.update_event({
@@ -124,6 +130,7 @@ class DBTestCase(tests.db_test_case):
             "campaign_id": "campaign_id",
             "event_value": 0.5,
             "our_keywords": {},
+            "their_keywords": {},
             "human_score": 1})
 
         yield stats_utils.calculate_events_payments_using_user_value("campaign_id", 3600,

@@ -5,6 +5,7 @@ from twisted.internet import defer, reactor
 
 from adpay.db import utils as db_utils
 from adpay.stats import utils as stats_utils
+from adpay.stats import consts as stats_consts
 from adpay.utils import utils as common_utils
 
 
@@ -71,10 +72,11 @@ def adpay_task(interval_seconds=60):
     Recalculate payments and schedule them again in interval_seconds.
     :param interval_seconds: time after which the task will rerun.
     """
-    logger = logging.getLogger(__name__)
-    yield logger.info("Running payment recalculation task.")
-    yield _adpay_task()
-    yield reactor.callLater(interval_seconds, adpay_task)
+    if stats_consts.CALCULATE_PAYMENTS_PERIODICALLY:
+        logger = logging.getLogger(__name__)
+        yield logger.info("Running payment recalculation task.")
+        yield _adpay_task()
+        yield reactor.callLater(interval_seconds, adpay_task)
 
 
 def configure_tasks(interval_seconds=2):

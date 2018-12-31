@@ -1,4 +1,3 @@
-import copy
 import logging
 
 from twisted.internet import defer
@@ -7,9 +6,6 @@ from adpay.db import consts as db_consts, utils as db_utils
 from adpay.iface import proto as iface_proto
 from adpay.stats import utils as stats_utils
 from adpay.utils import utils as common_utils
-
-#: Filter separator, used in range filters (see protocol or api documentation).
-FILTER_SEPARATOR = '--'
 
 
 class PaymentsNotCalculatedException(Exception):
@@ -160,64 +156,3 @@ def get_payments(payreq):
 
     yield logger.debug(events_payments)
     defer.returnValue(iface_proto.PaymentsResponse(payments=events_payments))
-
-
-def validate_keywords(filters_dict, keywords):
-    """
-    Validate required and excluded keywords.
-
-    :param filters_dict: Required and excluded keywords
-    :param keywords: Keywords being tested.
-    :return: True or False
-    """
-    return validate_require_keywords(filters_dict, keywords) and validate_exclude_keywords(filters_dict, keywords)
-
-
-def validate_bounds(bounds, keyword_values):
-    for kv in keyword_values:
-        if (len(bounds) == 2 and bounds[0] < kv < bounds[1]) \
-                or (bounds[0] == kv):
-            return True
-    return False
-
-
-def validate_require_keywords(filters_dict, keywords):
-    """
-    Validate required and excluded keywords.
-
-    :param filters_dict: Required and excluded keywords
-    :param keywords: Keywords being tested.
-    :return: True or False
-    """
-    for category_keyword, ckvs in filters_dict.get('require').items():
-        if category_keyword not in keywords:
-            return False
-
-        for category_keyword_value in ckvs:
-            bounds = category_keyword_value.split(FILTER_SEPARATOR)
-            if validate_bounds(bounds, keywords.get(category_keyword)):
-                break
-        else:
-            return False
-
-    return True
-
-
-def validate_exclude_keywords(filters_dict, keywords):
-    """
-    Validate required and excluded keywords.
-
-    :param filters_dict: Required and excluded keywords
-    :param keywords: Keywords being tested.
-    :return: True or False
-    """
-    for category_keyword, ckvs in filters_dict.get('exclude').items():
-        if category_keyword not in keywords:
-            continue
-
-        for category_keyword_value in ckvs:
-            bounds = category_keyword_value.split(FILTER_SEPARATOR)
-            if validate_bounds(bounds, keywords.get(category_keyword)):
-                return False
-
-    return True
