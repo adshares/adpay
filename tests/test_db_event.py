@@ -24,7 +24,7 @@ class DBTestCase(tests.db_test_case):
 
         # Test event select.
         counter = 0
-        event_iter = yield db_utils.get_user_events_iter(campaign_id="campaign_id", timestamp=0, uid=u'0')
+        event_iter = yield db_utils.get_events_per_user_iter(campaign_id="campaign_id", timestamp=0, uid=u'0')
         while True:
             event_doc = yield event_iter.next()
             if not event_doc:
@@ -37,7 +37,7 @@ class DBTestCase(tests.db_test_case):
 
         self.assertEqual(counter, 15)
 
-        unique_uids = yield db_utils.get_events_distinct_uids("campaign_id", timestamp=0)
+        unique_uids = yield db_utils.get_distinct_users_from_events("campaign_id", timestamp=0)
         self.assertEqual(set(unique_uids), set([str(x) for x in range(20)]))
 
         # Test event deletion.
@@ -45,7 +45,7 @@ class DBTestCase(tests.db_test_case):
             yield db_utils.delete_event(str(i))
 
         counter = 0
-        event_iter = yield db_utils.get_user_events_iter("campaign_id", timestamp=0, uid=u'0')
+        event_iter = yield db_utils.get_events_per_user_iter("campaign_id", timestamp=0, uid=u'0')
         while True:
             event_doc = yield event_iter.next()
             if not event_doc:
