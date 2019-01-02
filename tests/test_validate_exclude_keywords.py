@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from adpay.iface.utils import validate_exclude_keywords
+from adpay.stats.utils import validate_exclude_keywords
 
 
 class TestValidate_exclude_keywords(TestCase):

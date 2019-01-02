@@ -4,13 +4,14 @@ Welcome to AdPay's documentation!
 What is AdPay?
 ---------------
 
-AdPay is an element in the Adshares network. It calculates payments based on:
+AdPay is an element in the Adshares network. It calculates payments for individual events, based on:
 
     * campaign budget,
-    * total events for this campaign,
-    * individual event worth, which is calculated based on:
+    * total events for this campaign in given period of time,
+    * individual event worth, which can be calculated based on:
         * event type,
-        * user value.
+        * user value,
+        * human score.
 
 User Guide
 ==========
@@ -18,7 +19,7 @@ User Guide
 Goal of AdPay
 --------------
 
-Inform AdServer about payment calculations. Payments are calculated based on campaign budget, total events and user values.
+Provide AdServer with payment calculations, ie. answer the question: how much to pay for those events?
 
 Architecture
 ------------
@@ -38,7 +39,7 @@ Development
 Extending functionality
 -----------------------
 
-All the payment calculations happen in the :py:mod:`adpay.stats` module, so if you want to change the algorithms, you'll need to rewrite that part of the code. Some configuration is possible through the config files.
+All the payment calculations happen in the :py:mod:`adpay.stats` module, so if you want to change the algorithms, you'll need to rewrite that part of the code.
 
 The calculations are run periodically. The main function for each run is the :py:func:`adpay.stats.tasks._adpay_task`. Calculation functions can be found in :py:mod:`adpay.stasts.utils`.
 

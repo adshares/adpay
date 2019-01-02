@@ -209,7 +209,7 @@ def get_banner_events_iter(banner_id, timestamp):
 
 
 @defer.inlineCallbacks
-def get_user_events_iter(campaign_id, timestamp, uid):
+def get_events_per_user_iter(campaign_id, timestamp, uid, human_score=0.0):
     """
 
     :param campaign_id: Campaign identifier.
@@ -223,23 +223,27 @@ def get_user_events_iter(campaign_id, timestamp, uid):
     defer.returnValue(QueryIterator(collection.find({
         'user_id': uid,
         'campaign_id': campaign_id,
-        'timestamp': timestamp
+        'timestamp': timestamp,
+        'human_score': {"$gt": human_score}
         }, cursor=True)))
 
 
 @defer.inlineCallbacks
-def get_events_distinct_uids(campaign_id, timestamp):
+def get_distinct_users_from_events(campaign_id, timestamp, human_score=0.0):
     """
 
     :param campaign_id: Campaign identifier.
     :param timestamp: Time in seconds since the epoch, used for getting the full hour timestamp.
+    :param human_score: Filter out events with human_score below this value.
     :return: Return list of distinct users ids for the given campaign timestamp.
     """
     timestamp = common_utils.timestamp2hour(timestamp)
     collection = yield db.get_event_collection()
 
     return_values = yield collection.distinct(key='user_id',
-                                              filter={'timestamp': timestamp, 'campaign_id': campaign_id})
+                                              filter={'timestamp': timestamp,
+                                                      'campaign_id': campaign_id,
+                                                      'human_score': {"$gt": human_score}})
     defer.returnValue(return_values)
 
 
@@ -364,7 +368,7 @@ def get_user_value_iter(campaign_id):
 
 
 @defer.inlineCallbacks
-def get_user_value(campaign_id, user_id):
+def get_user_value_in_campaign(campaign_id, user_id):
     """
 
     :param campaign_id:
@@ -381,7 +385,7 @@ def get_user_value(campaign_id, user_id):
 
 
 @defer.inlineCallbacks
-def update_user_value(campaign_id, user_id, payment, human_score):
+def update_user_value_in_campaign(campaign_id, user_id, payment, human_score):
     """
     Create or update the user value document.
 
