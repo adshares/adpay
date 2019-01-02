@@ -29,3 +29,8 @@ VALIDATE_EVENT_KEYWORD_EQUALITY = bool(os.getenv('ADPAY_VALIDATE_EVENT_KEYWORD_E
 #:
 #: `Environmental variable override: ADPAY_VALIDATE_CAMPAIGN_FILTERS`
 VALIDATE_CAMPAIGN_FILTERS = bool(os.getenv('ADPAY_VALIDATE_CAMPAIGN_FILTERS', 1))
+
+#: Filter out events by users with threshold value and below. This value should be between [0.0, 1.0].
+#:
+#: `Environmental variable override: ADPAY_HUMAN_SCORE_THRESHOLD`
+HUMAN_SCORE_THRESHOLD = float(os.getenv('ADPAY_HUMAN_SCORE_THRESHOLD', 0.0))

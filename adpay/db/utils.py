@@ -209,7 +209,7 @@ def get_banner_events_iter(banner_id, timestamp):
 
 
 @defer.inlineCallbacks
-def get_events_per_user_iter(campaign_id, timestamp, uid):
+def get_events_per_user_iter(campaign_id, timestamp, uid, human_score=0.0):
     """
 
     :param campaign_id: Campaign identifier.
@@ -223,7 +223,8 @@ def get_events_per_user_iter(campaign_id, timestamp, uid):
     defer.returnValue(QueryIterator(collection.find({
         'user_id': uid,
         'campaign_id': campaign_id,
-        'timestamp': timestamp
+        'timestamp': timestamp,
+        'human_score': {"$gt": human_score}
         }, cursor=True)))
 
 

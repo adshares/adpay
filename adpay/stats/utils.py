@@ -203,13 +203,13 @@ def calculate_payments_for_new_users(campaign_id, timestamp, campaign_cpm):
     yield logger.info("Calculating payment score for new user.")
 
     # For new users add payments as cpv
-    uids = yield db_utils.get_distinct_users_from_events(campaign_id, timestamp)
+    uids = yield db_utils.get_distinct_users_from_events(campaign_id, timestamp, stats_consts.HUMAN_SCORE_THRESHOLD)
     yield logger.debug("Found {0} distinct user ids".format(len(uids)))
 
     for uid in uids:
         max_human_score = 0
 
-        user_events_iter = yield db_utils.get_events_per_user_iter(campaign_id, timestamp, uid)
+        user_events_iter = yield db_utils.get_events_per_user_iter(campaign_id, timestamp, uid, stats_consts.HUMAN_SCORE_THRESHOLD)
         while True:
             event_doc = yield user_events_iter.next()
             if not event_doc:
@@ -232,7 +232,7 @@ def create_user_budget(campaign_id, timestamp, uid, max_cpc, max_cpm):
                    db_consts.EVENT_TYPE_CLICK: {'num': 0, 'default_value': 0.0, 'share': 0.0, 'event_value': 0.0},
                    db_consts.EVENT_TYPE_VIEW: {'num': 0, 'default_value': 0.0, 'share': 0.0, 'event_value': 0.0}}
 
-    user_events_iter = yield db_utils.get_events_per_user_iter(campaign_id, timestamp, uid)
+    user_events_iter = yield db_utils.get_events_per_user_iter(campaign_id, timestamp, uid, stats_consts.HUMAN_SCORE_THRESHOLD)
     while True:
         event_doc = yield user_events_iter.next()
         if not event_doc:
@@ -294,7 +294,7 @@ def get_best_user_payments_and_humanity(campaign_id, timestamp, uid, campaign_cp
     if user_value_doc:
         max_user_payment = float(user_value_doc['payment'])
 
-    user_events_iter = yield db_utils.get_events_per_user_iter(campaign_id, timestamp, uid)
+    user_events_iter = yield db_utils.get_events_per_user_iter(campaign_id, timestamp, uid, stats_consts.HUMAN_SCORE_THRESHOLD)
     while True:
         event_doc = yield user_events_iter.next()
         if not event_doc:
@@ -410,7 +410,7 @@ def calculate_events_payments_default(campaign_id, timestamp):
         logger.warning("Campaign not found: {0}".format(campaign_id))
         return
 
-    uids = yield db_utils.get_distinct_users_from_events(campaign_id, timestamp)
+    uids = yield db_utils.get_distinct_users_from_events(campaign_id, timestamp, stats_consts.HUMAN_SCORE_THRESHOLD)
 
     total_payments = 0.0
     user_data = {}
@@ -452,7 +452,7 @@ def update_events_payments(campaign_id, timestamp, uid, user_budget):
             user_budget[event_type]['event_value'] = min([user_budget[event_type]['default_value'],
                                                           user_budget[event_type]['share'] * user_budget[event_type]['default_value']])
 
-    user_events_iter = yield db_utils.get_events_per_user_iter(campaign_id, timestamp, uid)
+    user_events_iter = yield db_utils.get_events_per_user_iter(campaign_id, timestamp, uid, stats_consts.HUMAN_SCORE_THRESHOLD)
     while True:
         event_doc = yield user_events_iter.next()
         if event_doc is None:
@@ -474,7 +474,7 @@ def update_users_score_and_payments(campaign_id, timestamp):
     :return:
     """
     logger = logging.getLogger(__name__)
-    uids = yield db_utils.get_distinct_users_from_events(campaign_id, timestamp)
+    uids = yield db_utils.get_distinct_users_from_events(campaign_id, timestamp, stats_consts.HUMAN_SCORE_THRESHOLD)
     for uid in uids:
         payment_score = yield get_user_payment_score(campaign_id, uid)
         yield logger.debug(payment_score)
