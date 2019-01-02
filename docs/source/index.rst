@@ -8,7 +8,7 @@ AdPay is an element in the Adshares network. It calculates payments for individu
 
     * campaign budget,
     * total events for this campaign in given period of time,
-    * individual event worth, which can calculated based on:
+    * individual event worth, which can be calculated based on:
         * event type,
         * user value,
         * human score.
