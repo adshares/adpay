@@ -1,7 +1,8 @@
 from behave import *
 
 from adpay.db import utils
-from adpay.stats.tasks import _adpay_task
+from adpay.stats.tasks import force_payment_recalculation
+from adpay.utils.utils import timestamp2hour
 
 
 def write_to_db(table, update_function):
@@ -30,7 +31,7 @@ def step_impl(context):
 
 @when('I execute payment calculation for timestamp "{timestamp}"')
 def step_impl(context, timestamp):
-    _adpay_task(timestamp, int(timestamp))
+    force_payment_recalculation(timestamp)
 
 
 @then('I have a payment round in DB timestamp "{timestamp}"')
@@ -41,6 +42,7 @@ def step_impl(context, timestamp):
         assert 'timestamp' in doc
         assert doc['timestamp'] <= timestamp
 
+    timestamp = timestamp2hour(timestamp)
     last_round_doc = utils.get_payment_round(timestamp)
     last_round_doc.addCallback(test_doc)
 
@@ -65,5 +67,6 @@ def step_impl(context, number, timestamp, event_id):
                     self.finished = True
                 self.length += 1
 
+    timestamp = timestamp2hour(timestamp)
     qa = QueryAnalyzer(utils.get_payments_iter(timestamp))
     assert qa.length == int(number)

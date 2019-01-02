@@ -153,7 +153,7 @@ def get_user_payment_score(campaign_id, user_id, amount=5):
         user_stat = yield db_utils.get_user_value(campaign_id, uid)
         if user_stat:
             yield logger.info("Getting user value from user: {0}".format(uid))
-            score_components.append(user_stat['payment'] * user_stat['human_score'])
+            score_components.append(float(user_stat['payment']) * float(user_stat['human_score']))
 
     if not score_components:
         yield logger.warning("No similar users or no scores for similar users. User score value: 0")
@@ -234,11 +234,11 @@ def get_best_user_payments_and_humanity(campaign_id, timestamp, uid, campaign_cp
     :return: Tuple: max_user_payment, max_human_score, total_user_payments
     """
     logger = logging.getLogger(__name__)
-    max_user_payment, max_human_score, total_user_payments = 0, 0, 0
+    max_user_payment, max_human_score, total_user_payments = 0.0, 0.0, 0.0
 
     user_value_doc = yield db_utils.get_user_value(campaign_id, uid)
     if user_value_doc:
-        max_user_payment = user_value_doc['payment']
+        max_user_payment = float(user_value_doc['payment'])
 
     user_events_iter = yield db_utils.get_user_events_iter(campaign_id, timestamp, uid)
     while True:
@@ -248,7 +248,7 @@ def get_best_user_payments_and_humanity(campaign_id, timestamp, uid, campaign_cp
 
         event_payment = get_event_max_payment(event_doc, campaign_cpc, campaign_cpm)
 
-        total_user_payments += event_payment
+        total_user_payments += float(event_payment)
         max_user_payment = max([max_user_payment, event_payment])
         max_human_score = max([max_human_score, event_doc['human_score']])
     yield logger.info("User {0} max_user_payment, max_human_score, total_user_payments: {1}".format(uid, (max_user_payment, max_human_score, total_user_payments)))
@@ -332,11 +332,11 @@ def update_events_payments(campaign_id, timestamp, uid, user_budget, campaign_cp
         if event_doc is None:
             break
 
-        max_event_payment = get_event_max_payment(event_doc, campaign_cpc, campaign_cpm)
+        max_event_payment = float(get_event_max_payment(event_doc, campaign_cpc, campaign_cpm))
         if total_user_payments > 0:
             event_payment = min([max_event_payment * user_budget / total_user_payments, max_event_payment])
         else:
-            event_payment = 0
+            event_payment = 0.0
         yield logger.debug("campaign_id, timestamp, event_doc['event_id'], event_payment: {0}".format((campaign_id, timestamp, event_doc['event_id'], event_payment)))
         yield db_utils.update_event_payment(campaign_id, timestamp, event_doc['event_id'], event_payment)
 
@@ -354,6 +354,9 @@ def update_users_score_and_payments(campaign_id, timestamp):
     uids = yield db_utils.get_events_distinct_uids(campaign_id, timestamp)
     for uid in uids:
         payment_score = yield get_user_payment_score(campaign_id, uid)
+        yield logger.debug(payment_score)
+        yield logger.debug(campaign_id, timestamp, uid, payment_score)
+
         yield db_utils.update_user_score(campaign_id, timestamp, uid, payment_score)
     yield logger.info("Updates {0} user scores.".format(len(uids)))
     defer.returnValue(len(uids))

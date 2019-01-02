@@ -1,22 +1,24 @@
 # -- FILE: features/environment.py
-from behave import use_fixture
-from features.fixtures import *
-from twisted.internet import reactor
+from twisted.internet import reactor, defer
 from tests import DBTestCase
+from adpay.iface.server import configure_iface
+from adpay import db
+from tests import WebTestCase
 
 
 def before_tag(context, tag):
-    if tag == "fixture.adpay.server":
-        use_fixture(adpay_server, context)
+    if tag == "fixture.adpay.db":
+        context.apday_db_direct = True
 
 
-def before_scenario(context, scenario):
+def before_all(context):
 
-    context.dtc = DBTestCase()
-    context.dtc.setUp()
+    context.txserver = WebTestCase()
+    context.txserver.setUp()
+
+    context.apday_db_direct = False
 
 
-def after_scenario(context, scenario):
-    reactor.callLater(1, reactor.stop)
+def after_all(context):
+    reactor.callLater(2, reactor.stop)
     reactor.run()
-    # context.dtc.tearDown()
