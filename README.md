@@ -7,67 +7,22 @@ AdPay is fully implemented in python.
 
 ### Dependencies
 
-All dependenies are listed in requirements.txt file.
+All dependencies are in Pipfile, which is managed by [Pipenv](https://pipenv.readthedocs.io/en/latest/).
 
-#### Linux
+Ubuntu 18.04 dependencies can be found in [pre-build](scripts/pre-build.sh) and [pre-install](scripts/pre-install.sh) scripts.
 
-Exmaple for Debian based systems:
-```
-$ sudo apt-get install python-virtualenv mongodb python-pip virtualenv
-```
+### Installation
 
-Create virtualenv environment for adpay.
-```
-$ cd ~
-$ virtualenv adpay
-$ source ~/adpay/bin/activate
+Installation instructions can be found in the [documentation](https://adshares-adpay.readthedocs.io/en/latest/).
 
-$ export VIRTUALENV_ROOT=$HOME/adpay
-$ export PYTHONPATH=$HOME/adpay:$PYTHONPATH
-```
+Please note, that you'll want to configure AdPay. Read the [configuration documentation](https://adshares-adpay.readthedocs.io/en/latest/config.html).
 
-Create folder for MONGO database.
-```
-$ mkdir -p ~/adpay/db/mongo
-```
-
-
-Create folders for supervisor.
-```
-$ mkdir -p ~/adpay/log
-$ mkdir -p ~/adpay/run/supervisor ~/adpay/run/adpay ~/adpay/run/mongo
-```
-
-Download source code and install dependencies.
-```
-$ git clone https://github.com/adshares/adpay.git ~/adpay/adpay
-$ pip install -r ~/adpay/adpay/requirements.txt
-```
-
-Run adpay daemon.
-```
-$ supervisord -c ~/adpay/adpay/config/supervisord.conf
-```
-
-## Build
-```
-$ cd ~/adpay/adpay
-$ trial db iface stats
-```
 ## TL;DR  
 ```
-#adpay
-apt-get install python-virtualenv mongodb python-pip virtualenv
-screen -S adpay
-cd ~
-virtualenv adpay
-export VIRTUALENV_ROOT=$HOME/adpay
-export PYTHONPATH=$HOME/adpay:$PYTHONPATH
-source ./adpay/bin/activate
-mkdir -p ./adpay/db/mongo
-mkdir -p ./adpay/log
-mkdir -p ./adpay/run/supervisor ./adpay/run/adpay ./adpay/run/mongo
-git clone https://github.com/adshares/adpay.git ./adpay/adpay
-pip install -r ./adpay/adpay/requirements.txt
-supervisord -c ./adpay/adpay/config/supervisord.conf
+git clone https://github.com/adshares/adpay
+cd adpay
+bash scripts/pre-build.sh
+bash scripts/pre-install.sh
+pipenv install
+pipenv run daemon
 ```
