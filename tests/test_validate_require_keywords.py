@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from adpay.iface.utils import validate_require_keywords
+from adpay.stats.utils import validate_require_keywords
 
 
 class TestValidate_require_keywords(TestCase):

@@ -13,10 +13,9 @@ class DBTestCase(tests.db_test_case):
     def test_campaign_payments(self):
         payment_percentage_cutoff = 0.5
         cpv, cpc = 10, 20
-
-        payments = yield stats_utils.calculate_events_payments("campaign_id",
-                                                               3600,
-                                                               payment_percentage_cutoff=payment_percentage_cutoff)
+        payments = yield stats_utils.calculate_events_payments_using_user_value("campaign_id",
+                                                                                3600,
+                                                                                payment_percentage_cutoff=payment_percentage_cutoff)
         self.assertIsNone(payments)
         cmp_doc = {"campaign_id": "campaign_id",
                    "time_start": 1234,
@@ -24,7 +23,8 @@ class DBTestCase(tests.db_test_case):
                    "max_cpc": cpc,
                    "max_cpm": cpv,
                    "budget": 1000,
-                   "filters": {}}
+                   "filters": {'require': {},
+                               'exclude': {}}}
         yield db_utils.update_campaign(cmp_doc)
 
         yield db_utils.update_banner({'banner_id': 'banner_id1', 'campaign_id': 'campaign_id'})
@@ -41,13 +41,14 @@ class DBTestCase(tests.db_test_case):
             "campaign_id": "campaign_id",
             "event_value": 0.1,
             "our_keywords": {},
+            "their_keywords": {},
             "human_score": 1})
 
-        yield stats_utils.calculate_events_payments("campaign_id", 3600,
-                                                    payment_percentage_cutoff=payment_percentage_cutoff)
+        yield stats_utils.calculate_events_payments_using_user_value("campaign_id", 3600,
+                                                                     payment_percentage_cutoff=payment_percentage_cutoff)
 
         # Check user values
-        user_value_doc = yield db_utils.get_user_value("campaign_id", "user_id1")
+        user_value_doc = yield db_utils.get_user_value_in_campaign("campaign_id", "user_id1")
         self.assertEqual(user_value_doc['payment'], 20)
         self.assertEqual(user_value_doc['human_score'], 1)
 
@@ -60,6 +61,7 @@ class DBTestCase(tests.db_test_case):
             "campaign_id": "campaign_id",
             "event_value": 0.2,
             "our_keywords": {},
+            "their_keywords": {},
             "human_score": 1})
 
         yield db_utils.update_event({
@@ -71,13 +73,14 @@ class DBTestCase(tests.db_test_case):
             "campaign_id": "campaign_id",
             "event_value": 0.5,
             "our_keywords": {},
+            "their_keywords": {},
             "human_score": 1})
 
-        yield stats_utils.calculate_events_payments("campaign_id", 3600,
-                                                    payment_percentage_cutoff=payment_percentage_cutoff)
+        yield stats_utils.calculate_events_payments_using_user_value("campaign_id", 3600,
+                                                                     payment_percentage_cutoff=payment_percentage_cutoff)
 
         # Check user values
-        user2_value_doc = yield db_utils.get_user_value("campaign_id", "user_id2")
+        user2_value_doc = yield db_utils.get_user_value_in_campaign("campaign_id", "user_id2")
         self.assertEqual(user2_value_doc['payment'], 10)
         self.assertEqual(user2_value_doc['human_score'], 1)
 
@@ -86,9 +89,9 @@ class DBTestCase(tests.db_test_case):
         payment_percentage_cutoff = 0.5
         cpv, cpc = 10, 20
 
-        payments = yield stats_utils.calculate_events_payments("campaign_id",
-                                                               3600,
-                                                               payment_percentage_cutoff=payment_percentage_cutoff)
+        payments = yield stats_utils.calculate_events_payments_using_user_value("campaign_id",
+                                                                                3600,
+                                                                                payment_percentage_cutoff=payment_percentage_cutoff)
         self.assertIsNone(payments)
         cmp_doc = {"campaign_id": "campaign_id",
                    "time_start": 1234,
@@ -96,7 +99,9 @@ class DBTestCase(tests.db_test_case):
                    "max_cpc": cpc,
                    "max_cpm": cpv,
                    "budget": 1000,
-                   "filters": {}}
+                   "filters": {'require': {},
+                               'exclude': {}}}
+
         yield db_utils.update_campaign(cmp_doc)
 
         yield db_utils.update_banner({'banner_id': 'banner_id1', 'campaign_id': 'campaign_id'})
@@ -113,6 +118,7 @@ class DBTestCase(tests.db_test_case):
             "campaign_id": "campaign_id",
             "event_value": 0.2,
             "our_keywords": {},
+            "their_keywords": {},
             "human_score": 1})
 
         yield db_utils.update_event({
@@ -124,13 +130,14 @@ class DBTestCase(tests.db_test_case):
             "campaign_id": "campaign_id",
             "event_value": 0.5,
             "our_keywords": {},
+            "their_keywords": {},
             "human_score": 1})
 
-        yield stats_utils.calculate_events_payments("campaign_id", 3600,
-                                                    payment_percentage_cutoff=payment_percentage_cutoff)
+        yield stats_utils.calculate_events_payments_using_user_value("campaign_id", 3600,
+                                                                     payment_percentage_cutoff=payment_percentage_cutoff)
 
         # Check user values
-        user2_value_doc = yield db_utils.get_user_value("campaign_id", "user_id2")
+        user2_value_doc = yield db_utils.get_user_value_in_campaign("campaign_id", "user_id2")
         self.assertEqual(user2_value_doc['payment'], 10)
         self.assertEqual(user2_value_doc['human_score'], 1)
 

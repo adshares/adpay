@@ -14,7 +14,7 @@ class DBTestCase(tests.db_test_case):
         self.assertEqual(user_payment_score, 0)
 
         # Only user_id in stats.
-        yield db_utils.update_user_value("campaign_id", "user_id1", payment=20, human_score=0.5)
+        yield db_utils.update_user_value_in_campaign("campaign_id", "user_id1", payment=20, human_score=0.5)
 
         user_payment_score = yield stats_utils.get_user_payment_score("campaign_id", "user_id1")
         self.assertEqual(user_payment_score, 20 * 0.5)
@@ -26,7 +26,7 @@ class DBTestCase(tests.db_test_case):
         user_similarity = yield stats_utils.get_users_similarity("user_id1", "user_id2")
         self.assertEqual(user_similarity, 1.0 / stats_consts.MAX_USER_KEYWORDS_IN_PROFILE)
 
-        yield db_utils.update_user_value("campaign_id", "user_id2", payment=50, human_score=0.8)
+        yield db_utils.update_user_value_in_campaign("campaign_id", "user_id2", payment=50, human_score=0.8)
 
         user_payment_score1 = yield stats_utils.get_user_payment_score("campaign_id", "user_id1")
         user_payment_score2 = yield stats_utils.get_user_payment_score("campaign_id", "user_id2")
