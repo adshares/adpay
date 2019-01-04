@@ -77,7 +77,7 @@ class CampaignObject(jsonobject.JsonObject):
     time_end = jsonobject.IntegerProperty(required=True)
     filters = jsonobject.ObjectProperty(RequireExcludeObject, required=True)
     keywords = jsonobject.DictProperty()
-    banners = jsonobject.ListProperty(BannerObject, required=True)
+    banners = jsonobject.ListProperty(BannerObject)
     max_cpc = jsonobject.FloatProperty()  # max cost per click
     max_cpm = jsonobject.FloatProperty()  # max cost per view
     budget = jsonobject.FloatProperty()  # hourly budget
