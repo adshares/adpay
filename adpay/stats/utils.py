@@ -228,6 +228,8 @@ def calculate_payments_for_new_users(campaign_id, timestamp, campaign_cpm):
 @defer.inlineCallbacks
 def create_user_budget(campaign_id, timestamp, uid, max_cpc, max_cpm):
 
+    logger = logging.getLogger(__name__)
+
     user_budget = {db_consts.EVENT_TYPE_CONVERSION: {'num': 0, 'default_value': 0.0, 'share': 0.0, 'event_value': 0.0},
                    db_consts.EVENT_TYPE_CLICK: {'num': 0, 'default_value': 0.0, 'share': 0.0, 'event_value': 0.0},
                    db_consts.EVENT_TYPE_VIEW: {'num': 0, 'default_value': 0.0, 'share': 0.0, 'event_value': 0.0}}
@@ -238,8 +240,12 @@ def create_user_budget(campaign_id, timestamp, uid, max_cpc, max_cpm):
         if not event_doc:
             break
 
+        event_type = event_doc['event_type']
+        if event_type not in user_budget:
+            logger.warning('Unknown event type for event_id: ' + event_doc['event_id'])
+            continue
+
         if filter_event(event_doc):
-            event_type = event_doc['event_type']
             user_budget[event_type]['num'] += 1
             user_budget[event_type]['default_value'] += get_default_event_payment(event_doc, max_cpc, max_cpm)
 
@@ -457,8 +463,13 @@ def update_events_payments(campaign_id, timestamp, uid, user_budget):
         event_doc = yield user_events_iter.next()
         if event_doc is None:
             break
+
+        event_type = event_doc['event_type']
+
+        if event_type not in user_budget:
+            continue
+
         if filter_event(event_doc):
-            event_type = event_doc['event_type']
 
             yield logger.debug("campaign_id, timestamp, event_doc['event_id'], event_payment: {0}".format((campaign_id, timestamp, event_doc['event_id'], user_budget[event_type]['event_value'])))
             yield db_utils.update_event_payment(campaign_id, timestamp, event_doc['event_id'], user_budget[event_type]['event_value'])
@@ -669,7 +680,6 @@ def delete_campaign(campaign_id):
     yield logger.info("Removing campaigns and banners.")
     yield db_utils.delete_campaign(campaign_id)
     yield db_utils.delete_campaign_banners(campaign_id)
-
 
 
 def validate_keywords(filters_dict, keywords):

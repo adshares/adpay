@@ -33,8 +33,9 @@ def _adpay_task(timestamp=None, check_payment_round_exists=True):
             yield logger.warning("Payment already calculated for {0}".format(nice_time))
             defer.returnValue(None)
 
-    # User keywords profiles update
-    yield stats_utils.update_user_keywords_profiles()
+    if stats_consts.CALCULATION_METHOD == 'user_value':
+        # User keywords profiles update
+        yield stats_utils.update_user_keywords_profiles()
 
     # Calculate payments for every campaign in the round
     yield logger.info("Calculating payments for campaigns.")
