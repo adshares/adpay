@@ -78,7 +78,6 @@ class AdPayIfaceServer(JSONRPCServer):
         :param req_data:
         :return: Response in JSON.
         """
-        self.logger.debug(req_data)
         try:
             response = yield iface_utils.get_payments(iface_proto.PaymentsRequest(req_data))
             yield self.logger.info("Payments calculated and returned.")
@@ -95,7 +94,6 @@ class AdPayIfaceServer(JSONRPCServer):
 
         :return: True or False (if disabled)
         """
-        self.logger.debug(req_data)
         if iface_consts.DEBUG_ENDPOINT:
             pay_request = iface_proto.PaymentsRequest(req_data)
             yield stats_tasks.force_payment_recalculation(pay_request.timestamp)
