@@ -11,4 +11,4 @@ PAYMENTS_NOT_CALCULATED_YET = -32000
 #: Enable an endpoint, which allows to force payment recalculation. 1 for enable, 0 for disable. For development use only!
 #:
 #: `Environmental variable override: ADPAY_DEBUG_ENDPOINT`
-DEBUG_ENDPOINT = bool(os.getenv('ADPAY_DEBUG_ENDPOINT', 0))
+DEBUG_ENDPOINT = bool(int(os.getenv('ADPAY_DEBUG_ENDPOINT', 0)))

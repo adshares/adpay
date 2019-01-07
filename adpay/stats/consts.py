@@ -18,17 +18,17 @@ CALCULATION_METHOD = os.getenv('ADPAY_CALCULATION_METHOD', 'default')
 #: Enable/disable periodical payment calculation. 1 for enable, 0 for disable.
 #:
 #: `Environmental variable override: ADPAY_CALCULATE_TASKS`
-CALCULATE_PAYMENTS_PERIODICALLY = bool(os.getenv('ADPAY_CALCULATE_TASKS', 1))
+CALCULATE_PAYMENTS_PERIODICALLY = bool(int(os.getenv('ADPAY_CALCULATE_TASKS', 1)))
 
 #: Enable/disable checking if keywords from publisher are the same as ours. 1 for enable, 0 for disable.
 #:
 #: `Environmental variable override: ADPAY_VALIDATE_EVENT_KEYWORD_EQUALITY`
-VALIDATE_EVENT_KEYWORD_EQUALITY = bool(os.getenv('ADPAY_VALIDATE_EVENT_KEYWORD_EQUALITY', 1))
+VALIDATE_EVENT_KEYWORD_EQUALITY = bool(int(os.getenv('ADPAY_VALIDATE_EVENT_KEYWORD_EQUALITY', 1)))
 
 #: Enable/disable checking if event keywords are appriopriate for campaign filters. 1 for enable, 0 for disable.
 #:
 #: `Environmental variable override: ADPAY_VALIDATE_CAMPAIGN_FILTERS`
-VALIDATE_CAMPAIGN_FILTERS = bool(os.getenv('ADPAY_VALIDATE_CAMPAIGN_FILTERS', 1))
+VALIDATE_CAMPAIGN_FILTERS = bool(int(os.getenv('ADPAY_VALIDATE_CAMPAIGN_FILTERS', 1)))
 
 #: Filter out events by users with threshold value and below. This value should be between [0.0, 1.0].
 #:

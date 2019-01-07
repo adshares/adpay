@@ -108,7 +108,7 @@ class EventObject(jsonobject.JsonObject):
     human_score = jsonobject.FloatProperty()  # determine if user is bot (value = 0) or human (value = 1)
     publisher_id = jsonobject.StringProperty()
     timestamp = jsonobject.IntegerProperty(required=True)
-    banner_id = jsonobject.StringProperty()
+    banner_id = jsonobject.StringProperty(required=True)
     our_keywords = jsonobject.DictProperty()  # adshares keywords
     their_keywords = jsonobject.DictProperty()  # publisher keywords
     event_value = jsonobject.FloatProperty()
