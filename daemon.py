@@ -13,7 +13,7 @@ if __name__ == "__main__":
 
     logging.basicConfig()
 
-    logfile_path = os.path.join(os.getenv('ADPAY_LOG_CONFIG_FILE'))
+    logfile_path = os.path.join(os.getenv('ADPAY_LOG_CONFIG_FILE', 'config/log_config.json'))
 
     with open(logfile_path, "r") as fd:
         logging.config.dictConfig(json.load(fd))
