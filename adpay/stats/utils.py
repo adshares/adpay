@@ -171,6 +171,9 @@ def get_user_payment_score(campaign_id, user_id, amount=5):
 def filter_event(event_doc):
     logger = logging.getLogger(__name__)
 
+    if event_doc['event_type'] not in stats_consts.PAID_EVENT_TYPES:
+        defer.returnValue(False)
+
     campaign_doc = yield db_utils.get_campaign(event_doc['campaign_id'])
 
     # Check if campaign exists
@@ -230,9 +233,12 @@ def create_user_budget(campaign_id, timestamp, uid, max_cpc, max_cpm):
 
     logger = logging.getLogger(__name__)
 
-    user_budget = {stats_consts.EVENT_TYPE_CONVERSION: {'num': 0, 'default_value': 0.0, 'share': 0.0, 'event_value': 0.0},
-                   stats_consts.EVENT_TYPE_CLICK: {'num': 0, 'default_value': 0.0, 'share': 0.0, 'event_value': 0.0},
-                   stats_consts.EVENT_TYPE_VIEW: {'num': 0, 'default_value': 0.0, 'share': 0.0, 'event_value': 0.0}}
+    user_budget = {}
+    for event_type in stats_consts.PAID_EVENT_TYPES:
+        user_budget[event_type] = {'default_value': 0.0,
+                                   'event_value': 0.0,
+                                   'num': 0,
+                                   'share': 0.0}
 
     user_events_iter = yield db_utils.get_events_per_user_iter(campaign_id, timestamp, uid, stats_consts.HUMAN_SCORE_THRESHOLD)
     while True:
@@ -241,15 +247,14 @@ def create_user_budget(campaign_id, timestamp, uid, max_cpc, max_cpm):
             break
 
         event_type = event_doc['event_type']
-        if event_type not in user_budget:
-            logger.warning('Unknown event type for event_id: ' + event_doc['event_id'])
-            continue
 
         if filter_event(event_doc):
             user_budget[event_type]['num'] += 1
             user_budget[event_type]['default_value'] += get_default_event_payment(event_doc, max_cpc, max_cpm)
+        else:
+            logger.warning('Event type for event_id: ' + event_doc['event_id'] + ' not included in payment calculation.')
 
-    for event_type in user_budget:
+    for event_type in stats_consts.PAID_EVENT_TYPES:
         if user_budget[event_type]['num'] > 0:
             user_budget[event_type]['default_value'] = user_budget[event_type]['default_value'] / user_budget[event_type]['num']
 
@@ -465,9 +470,6 @@ def update_events_payments(campaign_id, timestamp, uid, user_budget):
             break
 
         event_type = event_doc['event_type']
-
-        if event_type not in user_budget:
-            continue
 
         if filter_event(event_doc):
 
