@@ -2,8 +2,7 @@ from twisted.internet import defer
 
 import tests
 from adpay.db import utils as db_utils
-from adpay.db import consts as db_consts
-from adpay.iface import proto as iface_proto
+from adpay.stats import consts as stats_consts
 
 
 class DBTestCase(tests.db_test_case):
@@ -13,7 +12,7 @@ class DBTestCase(tests.db_test_case):
         for i in range(300):
             yield db_utils.update_event({
                 "event_id": str(i),
-                "event_type": db_consts.EVENT_TYPE_CLICK,
+                "event_type": stats_consts.EVENT_TYPE_CLICK,
                 "timestamp": 0,
                 "user_id": str(i % 20),
                 "banner_id": '1',
