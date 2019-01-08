@@ -2,9 +2,9 @@ import logging
 
 from twisted.internet import defer
 
-from adpay.db import consts as db_consts, utils as db_utils
+from adpay.db import utils as db_utils
 from adpay.iface import proto as iface_proto
-from adpay.stats import utils as stats_utils
+from adpay.stats import consts as stats_consts, utils as stats_utils
 from adpay.utils import utils as common_utils
 
 
@@ -90,7 +90,7 @@ def add_event(eventobj):
         defer.returnValue(None)
 
     # Conversion event must send max paid amount
-    if eventobj.event_type == db_consts.EVENT_TYPE_CONVERSION and not eventobj.event_value:
+    if eventobj.event_type == stats_consts.EVENT_TYPE_CONVERSION and not eventobj.event_value:
         yield logger.warning("Ignoring event update - No event value for conversion event.")
         defer.returnValue(None)
 

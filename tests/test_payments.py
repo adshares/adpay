@@ -2,9 +2,8 @@ from twisted.internet import defer
 
 import tests
 from adpay.db import utils as db_utils
-from adpay.db import consts as db_consts
+from adpay.stats import consts as stats_consts
 from adpay.stats import utils as stats_utils
-from adpay.iface.proto import EventObject
 
 
 class DBTestCase(tests.db_test_case):
@@ -34,7 +33,7 @@ class DBTestCase(tests.db_test_case):
         # Add events for users
         yield db_utils.update_event({
             "event_id": "event1_user_id1",
-            "event_type": db_consts.EVENT_TYPE_CLICK,
+            "event_type": stats_consts.EVENT_TYPE_CLICK,
             "timestamp": 3601,
             "user_id": 'user_id1',
             "banner_id": 'banner_id1',
@@ -54,7 +53,7 @@ class DBTestCase(tests.db_test_case):
 
         yield db_utils.update_event({
             "event_id": "event2_user_id1",
-            "event_type": db_consts.EVENT_TYPE_VIEW,
+            "event_type": stats_consts.EVENT_TYPE_VIEW,
             "timestamp": 3600,
             "user_id": 'user_id1',
             "banner_id": 'banner_id1',
@@ -66,7 +65,7 @@ class DBTestCase(tests.db_test_case):
 
         yield db_utils.update_event({
             "event_id": "event2_user_id2",
-            "event_type": db_consts.EVENT_TYPE_CONVERSION,
+            "event_type": stats_consts.EVENT_TYPE_CONVERSION,
             "timestamp": 3602,
             "user_id": 'user_id2',
             "banner_id": 'banner_id1',
@@ -111,7 +110,7 @@ class DBTestCase(tests.db_test_case):
         # Add events for users
         yield db_utils.update_event({
             "event_id": "event2_user_id1",
-            "event_type": db_consts.EVENT_TYPE_VIEW,
+            "event_type": stats_consts.EVENT_TYPE_VIEW,
             "timestamp": 3600,
             "user_id": 'user_id1',
             "banner_id": 'banner_id1',
@@ -123,7 +122,7 @@ class DBTestCase(tests.db_test_case):
 
         yield db_utils.update_event({
             "event_id": "event2_user_id2",
-            "event_type": db_consts.EVENT_TYPE_CONVERSION,
+            "event_type": stats_consts.EVENT_TYPE_CONVERSION,
             "timestamp": 3602,
             "user_id": 'user_id2',
             "banner_id": 'banner_id1',
