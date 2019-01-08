@@ -34,3 +34,21 @@ VALIDATE_CAMPAIGN_FILTERS = bool(int(os.getenv('ADPAY_VALIDATE_CAMPAIGN_FILTERS'
 #:
 #: `Environmental variable override: ADPAY_HUMAN_SCORE_THRESHOLD`
 HUMAN_SCORE_THRESHOLD = float(os.getenv('ADPAY_HUMAN_SCORE_THRESHOLD', 0.0))
+
+#: Click event name
+#:
+#: `Environmental variable override: ADPAY_EVENT_TYPE_CLICK`
+EVENT_TYPE_CLICK = os.getenv('ADPAY_EVENT_TYPE_CLICK', 'click')
+
+#: View/Impression event name
+#:
+#: `Environmental variable override: ADPAY_EVENT_TYPE_VIEW`
+EVENT_TYPE_VIEW = os.getenv('ADPAY_EVENT_TYPE_VIEW', 'view')
+
+#: Conversion event name
+#:
+#: `Environmental variable override: ADPAY_EVENT_TYPE_CONVERSION`
+EVENT_TYPE_CONVERSION = os.getenv('ADPAY_EVENT_TYPE_CONVERSION', 'conversion')
+
+#: AdPay will pay only for those event types.
+PAID_EVENT_TYPES = [EVENT_TYPE_CLICK, EVENT_TYPE_VIEW, EVENT_TYPE_CONVERSION]

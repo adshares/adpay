@@ -2,7 +2,7 @@ import logging
 from collections import defaultdict
 from twisted.internet import defer
 
-from adpay.db import consts as db_consts, utils as db_utils
+from adpay.db import utils as db_utils
 from adpay.stats import cache as stats_cache, consts as stats_consts
 
 #: Deferred lock for updating events
@@ -107,11 +107,11 @@ def get_default_event_payment(event_doc, max_cpc, max_cpm):
     :return: Payment per event
     """
     event_type, event_payment = event_doc['event_type'], 0
-    if event_type == db_consts.EVENT_TYPE_CONVERSION:
+    if event_type == stats_consts.EVENT_TYPE_CONVERSION:
         event_payment = event_doc['event_value']
-    elif event_type == db_consts.EVENT_TYPE_CLICK:
+    elif event_type == stats_consts.EVENT_TYPE_CLICK:
         event_payment = max_cpc
-    elif event_type == db_consts.EVENT_TYPE_VIEW:
+    elif event_type == stats_consts.EVENT_TYPE_VIEW:
         event_payment = max_cpm
 
     logger = logging.getLogger(__name__)
@@ -230,9 +230,9 @@ def create_user_budget(campaign_id, timestamp, uid, max_cpc, max_cpm):
 
     logger = logging.getLogger(__name__)
 
-    user_budget = {db_consts.EVENT_TYPE_CONVERSION: {'num': 0, 'default_value': 0.0, 'share': 0.0, 'event_value': 0.0},
-                   db_consts.EVENT_TYPE_CLICK: {'num': 0, 'default_value': 0.0, 'share': 0.0, 'event_value': 0.0},
-                   db_consts.EVENT_TYPE_VIEW: {'num': 0, 'default_value': 0.0, 'share': 0.0, 'event_value': 0.0}}
+    user_budget = {stats_consts.EVENT_TYPE_CONVERSION: {'num': 0, 'default_value': 0.0, 'share': 0.0, 'event_value': 0.0},
+                   stats_consts.EVENT_TYPE_CLICK: {'num': 0, 'default_value': 0.0, 'share': 0.0, 'event_value': 0.0},
+                   stats_consts.EVENT_TYPE_VIEW: {'num': 0, 'default_value': 0.0, 'share': 0.0, 'event_value': 0.0}}
 
     user_events_iter = yield db_utils.get_events_per_user_iter(campaign_id, timestamp, uid, stats_consts.HUMAN_SCORE_THRESHOLD)
     while True:
