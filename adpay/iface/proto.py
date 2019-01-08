@@ -14,16 +14,15 @@ class RequireExcludeObject(jsonobject.JsonObject):
        * "interest": ["cars"]
        * "movies": ["action", "horror", "thriller"]
 
-       :property DictProperty require: Dicitonary of required keywords
        :property DictProperty exclude: Dictionary of excluded keywords
+       :property DictProperty require: Dictionary of required keywords
 
     """
+    exclude = jsonobject.DictProperty()
+    """Dictionary of excluded keywords"""
 
     require = jsonobject.DictProperty()
     """Dictionary of required keywords"""
-
-    exclude = jsonobject.DictProperty()
-    """Dictionary of excluded keywords"""
 
 
 class BannerObject(jsonobject.JsonObject):
@@ -32,9 +31,9 @@ class BannerObject(jsonobject.JsonObject):
        :showexample:
 
        :property string banner_id: Unique banner identifier
-       :property JSONObject keywords: Key-value map of keywords
        :property string banner_size: Banner size, eg. 100x400
        :propexample banner_size: 100x400
+       :property JSONObject keywords: Key-value map of keywords
 
     """
     banner_id = jsonobject.StringProperty(required=True)
@@ -52,35 +51,36 @@ class CampaignObject(jsonobject.JsonObject):
     .. json:object:: CampaignObject
        :showexample:
 
-       :property string campaign_id: Unique campaign identifier
-       :propexample campaign_id: BXfmBKBdsQdDOdNbCtxd
        :property string advertiser_id: Unique advertiser identifier
        :propexample advertiser_id: QdDOdNbCtxdAXfmBKBds
-       :property integer time_start: Campaign start time (epoch time, in seconds)
-       :propexample time_start: 1543326642
-       :property integer time_end: Campaign end time (epoch time, in seconds)
-       :propexample time_end: 1643326642
+       :property [BannerObject] banners: List of banner objects
+       :property float budget: Hourly budget
+       :propexample budget: 0.75
+       :property string campaign_id: Unique campaign identifier
+       :propexample campaign_id: BXfmBKBdsQdDOdNbCtxd
        :property RequireExcludeObject filters: Filters for campaign
        :property JSONObject keywords: Key-value map of keywords
-       :property [BannerObject] banners: List of banner objects
        :property float max_cpc: Max cost per click
        :propexample max_cpc: 0.010
        :property float max_cpm: Max cost per view
        :propexample max_cpm: 0.005
-       :property float budget: Hourly budget
-       :propexample budget: 0.75
+       :property integer time_end: Campaign end time (epoch time, in seconds)
+       :propexample time_end: 1643326642
+       :property integer time_start: Campaign start time (epoch time, in seconds)
+       :propexample time_start: 1543326642
+
 
     """
-    campaign_id = jsonobject.StringProperty(required=True)
     advertiser_id = jsonobject.StringProperty()
-    time_start = jsonobject.IntegerProperty(required=True)
-    time_end = jsonobject.IntegerProperty(required=True)
+    banners = jsonobject.ListProperty(BannerObject)
+    budget = jsonobject.FloatProperty()  # hourly budget
+    campaign_id = jsonobject.StringProperty(required=True)
     filters = jsonobject.ObjectProperty(RequireExcludeObject, required=True)
     keywords = jsonobject.DictProperty()
-    banners = jsonobject.ListProperty(BannerObject)
     max_cpc = jsonobject.FloatProperty()  # max cost per click
     max_cpm = jsonobject.FloatProperty()  # max cost per view
-    budget = jsonobject.FloatProperty()  # hourly budget
+    time_end = jsonobject.IntegerProperty(required=True)
+    time_start = jsonobject.IntegerProperty(required=True)
 
 
 class EventObject(jsonobject.JsonObject):
@@ -88,30 +88,32 @@ class EventObject(jsonobject.JsonObject):
     .. json:object:: EventObject
        :showexample:
 
+       :property string banner_id: Unique banner identifier
+       :property string case_id: Unique case identifier for a set of events
        :property string event_id: Unique event identifier
        :property string event_type: Event type: click, view or conversion
+       :property float event_value: Custom value for event
+       :propexample event_value: 0.50
        :property float human_score: Human score (0.0 for bot to 1.0 for human)
        :propexample human_score: 1.0
+       :property JSONObject our_keywords: Key-value map of keywords
        :property string publisher_id: Unique publisher identifier
        :property integer timestamp: Event time (epoch time, in seconds)
        :propexample timestamp: 1543326642
-       :property string banner_id: Unique banner identifier
-       :property JSONObject our_keywords: Key-value map of keywords
        :property JSONObject their_keywords: Key-value map of keywords
-       :property float event_value: Custom value for event
-       :propexample event_value: 0.50
 
     """
+    banner_id = jsonobject.StringProperty(required=True)
+    case_id = jsonobject.StringProperty()
     event_id = jsonobject.StringProperty(required=True)
     event_type = jsonobject.StringProperty(required=True)  # define either event is click, view or conversion
-    user_id = jsonobject.StringProperty()
+    event_value = jsonobject.FloatProperty()
     human_score = jsonobject.FloatProperty()  # determine if user is bot (value = 0) or human (value = 1)
+    our_keywords = jsonobject.DictProperty()  # adshares keywords
     publisher_id = jsonobject.StringProperty()
     timestamp = jsonobject.IntegerProperty(required=True)
-    banner_id = jsonobject.StringProperty(required=True)
-    our_keywords = jsonobject.DictProperty()  # adshares keywords
     their_keywords = jsonobject.DictProperty()  # publisher keywords
-    event_value = jsonobject.FloatProperty()
+    user_id = jsonobject.StringProperty()
 
 
 class PaymentsRequest(jsonobject.JsonObject):
@@ -132,16 +134,16 @@ class SinglePaymentResponse(jsonobject.JsonObject):
     .. json:object:: SinglePaymentResponse
        :showexample:
 
-       :property string event_id: Unique event identifier
        :property float amount: Amount to be paid for event
        :propexample amount: 0.15498
+       :property string event_id: Unique event identifier
 
     """
-    event_id = jsonobject.StringProperty(required=True)
-    """Event identifier"""
-
     amount = jsonobject.FloatProperty(required=True)
     """Amount to be paid for that event"""
+
+    event_id = jsonobject.StringProperty(required=True)
+    """Event identifier"""
 
 
 class PaymentsResponse(jsonobject.JsonObject):
