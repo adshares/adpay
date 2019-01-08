@@ -2,6 +2,7 @@ from twisted.internet import defer
 
 import tests
 from adpay.db import utils as db_utils
+from adpay.iface.consts import INVALID_OBJECT
 
 
 class InterfaceEventTestCase(tests.WebTestCase):
@@ -31,7 +32,7 @@ class InterfaceEventTestCase(tests.WebTestCase):
             'our_keywords': {},
             'their_keywords': {},
             'event_value': None
-        }
+            }
 
         pre_banner_events = yield self.get_banner_events('banner_1')
 
@@ -61,7 +62,7 @@ class InterfaceEventTestCase(tests.WebTestCase):
         banner_events = yield self.get_banner_events('banner_1')
         self.assertEqual(len(banner_events), len(pre_banner_events) + 1)
 
-        # Test event addition without userid
+        # Test event addition without user_id
         pre_banner_events = banner_events
         del event_data['user_id']
         response = yield self.get_response("add_events", [event_data])
@@ -99,7 +100,7 @@ class InterfaceEventTestCase(tests.WebTestCase):
             'our_keywords': {'testkey': 5},
             'their_keywords': {},
             'event_value': None
-        }
+            }
         pre_banner_events = yield self.get_banner_events('banner_filter_id')
 
         # Test validation false.
@@ -124,3 +125,11 @@ class InterfaceEventTestCase(tests.WebTestCase):
         response = yield self.get_response("add_events", [])
         self.assertIsNotNone(response)
         self.assertTrue(response['result'])
+
+    @defer.inlineCallbacks
+    def test_invalid_request(self):
+
+        response = yield self.get_response("add_events", [{'dummy_field': 0}])
+        self.assertIsNotNone(response)
+        self.assertTrue(response['error'])
+        self.assertEqual(INVALID_OBJECT, response['error']['code'])
