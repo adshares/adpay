@@ -29,8 +29,7 @@ def _adpay_task(timestamp=None, check_payment_round_exists=True):
         yield logger.info('Checking if payment round exists')
         last_round_doc = yield db_utils.get_payment_round(timestamp)
         if last_round_doc is not None:
-            yield logger.warning("Payment already calculated for {0}".format(timestamp))
-            yield logger.warning("Payment already calculated for {0}".format(nice_time))
+            yield logger.warning("Payment already calculated for {0} ({1})".format(nice_time, timestamp))
             defer.returnValue(None)
 
     if stats_consts.CALCULATION_METHOD == 'user_value':
