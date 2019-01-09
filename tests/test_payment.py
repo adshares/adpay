@@ -2,7 +2,7 @@ from twisted.internet import defer
 
 import tests
 from adpay.db import utils as db_utils
-from adpay.iface.consts import PAYMENTS_NOT_CALCULATED_YET
+from adpay.iface.consts import PAYMENTS_NOT_CALCULATED_YET, INVALID_OBJECT
 
 
 class InterfacePaymentTestCase(tests.WebTestCase):
@@ -36,3 +36,11 @@ class InterfacePaymentTestCase(tests.WebTestCase):
         response = yield self.get_response("get_payments", [{'timestamp': 7210}])
         self.assertIsNotNone(response)
         self.assertEqual(len(response['result']['payments']), 100)
+
+    @defer.inlineCallbacks
+    def test_invalid_request(self):
+
+        response = yield self.get_response("get_payments", [{'dummy_field': 0}])
+        self.assertIsNotNone(response)
+        self.assertTrue(response['error'])
+        self.assertEqual(INVALID_OBJECT, response['error']['code'])

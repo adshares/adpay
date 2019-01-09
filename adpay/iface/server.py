@@ -2,6 +2,7 @@ import logging
 
 from fastjsonrpc.jsonrpc import JSONRPCError
 from fastjsonrpc.server import JSONRPCServer
+from jsonobject.exceptions import BadValueError
 from twisted.internet import defer, reactor
 from twisted.web.server import Site
 
@@ -31,7 +32,11 @@ class AdPayIfaceServer(JSONRPCServer):
         else:
             for campaign_data in campaign_data_list:
                 yield self.logger.debug("Campaign update: {0}".format(campaign_data))
-                yield iface_utils.create_or_update_campaign(iface_proto.CampaignObject(campaign_data))
+                try:
+                    yield iface_utils.create_or_update_campaign(iface_proto.CampaignObject(campaign_data))
+                except BadValueError as e:
+                    raise JSONRPCError(e, iface_consts.INVALID_OBJECT)
+
         defer.returnValue(True)
 
     @defer.inlineCallbacks
@@ -64,7 +69,10 @@ class AdPayIfaceServer(JSONRPCServer):
         else:
             for event_data in event_data_list:
                 yield self.logger.debug("Adding event data: {0}".format(event_data))
-                yield iface_utils.add_event(iface_proto.EventObject(event_data))
+                try:
+                    yield iface_utils.add_event(iface_proto.EventObject(event_data))
+                except BadValueError as e:
+                    raise JSONRPCError(e, iface_consts.INVALID_OBJECT)
         defer.returnValue(True)
 
     # payment interface
@@ -84,6 +92,8 @@ class AdPayIfaceServer(JSONRPCServer):
         except iface_utils.PaymentsNotCalculatedException:
             yield self.logger.error("Payments not calculated yet.")
             raise JSONRPCError("Payments not calculated yet.", iface_consts.PAYMENTS_NOT_CALCULATED_YET)
+        except BadValueError as e:
+            raise JSONRPCError(e, iface_consts.INVALID_OBJECT)
         defer.returnValue(response.to_json())
 
     # test interface
@@ -95,9 +105,12 @@ class AdPayIfaceServer(JSONRPCServer):
         :return: True or False (if disabled)
         """
         if iface_consts.DEBUG_ENDPOINT:
-            pay_request = iface_proto.PaymentsRequest(req_data)
-            yield stats_tasks.force_payment_recalculation(pay_request.timestamp)
-            defer.returnValue(True)
+            try:
+                pay_request = iface_proto.PaymentsRequest(req_data)
+                yield stats_tasks.force_payment_recalculation(pay_request.timestamp)
+                defer.returnValue(True)
+            except BadValueError as e:
+                raise JSONRPCError(e, iface_consts.INVALID_OBJECT)
         else:
             defer.returnValue(False)
 
