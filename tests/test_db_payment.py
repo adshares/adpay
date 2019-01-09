@@ -5,15 +5,17 @@ from adpay.db import utils as db_utils
 
 
 class DBTestCase(tests.db_test_case):
+
     @defer.inlineCallbacks
     def test_payment(self):
         for i in range(200):
             yield db_utils.update_event_payment(
-                campaign_id="campaign_id",
-                timestamp=0,
-                event_id=i,
-                payment=i * 20
-            )
+                    campaign_id="campaign_id",
+                    timestamp=0,
+                    event_id=i,
+                    payment=i * 20,
+                    reason=0
+                    )
 
         counter = 0
         payments_iter = yield db_utils.get_payments_iter(0)

@@ -2,10 +2,11 @@ from twisted.internet import defer
 
 import tests
 from adpay.db import utils as db_utils
-from adpay.iface.consts import PAYMENTS_NOT_CALCULATED_YET, INVALID_OBJECT
+from adpay.iface.consts import INVALID_OBJECT, PAYMENTS_NOT_CALCULATED_YET
 
 
 class InterfacePaymentTestCase(tests.WebTestCase):
+
     @defer.inlineCallbacks
     def test_get_payments(self):
         response = yield self.get_response("get_payments", [{'timestamp': 0}])
@@ -15,7 +16,7 @@ class InterfacePaymentTestCase(tests.WebTestCase):
         # Add some dummy payments.
         yield db_utils.update_payment_round(7200)
         for i in range(100):
-            yield db_utils.update_event_payment("campaign_id", 7200, "event_%s" % i, 100)
+            yield db_utils.update_event_payment("campaign_id", 7200, "event_%s" % i, 100, 0)
 
         response = yield self.get_response("get_payments", [{'timestamp': 7200}])
         self.assertIsNotNone(response)
@@ -24,6 +25,7 @@ class InterfacePaymentTestCase(tests.WebTestCase):
         for index, payment in enumerate(response['result']['payments']):
             self.assertEqual(payment['amount'], 100)
             self.assertEqual(payment['event_id'], 'event_%s' % index)
+            self.assertEqual(payment['reason'], 0)
 
         response = yield self.get_response("get_payments", [{'timestamp': 3600}])
         self.assertIsNotNone(response)

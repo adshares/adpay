@@ -262,7 +262,7 @@ def delete_event(event_id):
 
 # Event payments
 @defer.inlineCallbacks
-def update_event_payment(campaign_id, timestamp, event_id, payment):
+def update_event_payment(campaign_id, timestamp, event_id, payment, reason):
     """
     Create or update payment information for event.
 
@@ -270,6 +270,7 @@ def update_event_payment(campaign_id, timestamp, event_id, payment):
     :param timestamp:
     :param event_id:
     :param payment:
+    :param reason:
     :return:
     """
     timestamp = common_utils.timestamp2hour(timestamp)
@@ -279,7 +280,8 @@ def update_event_payment(campaign_id, timestamp, event_id, payment):
         'timestamp': timestamp,
         'event_id': event_id,
         'payment': payment,
-        'campaign_id': campaign_id
+        'campaign_id': campaign_id,
+        'reason': reason
         }, upsert=True)
     defer.returnValue(return_value)
 

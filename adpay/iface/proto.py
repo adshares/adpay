@@ -137,6 +137,8 @@ class SinglePaymentResponse(jsonobject.JsonObject):
        :property float amount: Amount to be paid for event
        :propexample amount: 0.15498
        :property string event_id: Unique event identifier
+       :property integer reason: Reason for payment rejection. This will correlate with amount, ie. `amount` > 0 when `reason` == 0.
+       :propexample reason: 0
 
     """
     amount = jsonobject.FloatProperty(required=True)
@@ -144,6 +146,9 @@ class SinglePaymentResponse(jsonobject.JsonObject):
 
     event_id = jsonobject.StringProperty(required=True)
     """Event identifier"""
+
+    reason = jsonobject.IntegerProperty(required=True)
+    """Payment rejection reason"""
 
 
 class PaymentsResponse(jsonobject.JsonObject):
