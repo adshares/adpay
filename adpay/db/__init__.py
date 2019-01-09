@@ -1,3 +1,5 @@
+import logging
+
 import txmongo
 from twisted.internet import defer
 from txmongo import filter
@@ -12,6 +14,7 @@ def configure_db():
 
     :return:
     """
+    logger = logging.getLogger(__name__)
     yield get_mongo_db()
 
     campaign_idx = filter.sort(filter.ASCENDING("campaign_id"))
@@ -60,6 +63,7 @@ def configure_db():
     keyword_frequency_collection = yield get_keyword_frequency_collection()
     yield keyword_frequency_collection.create_index(updated_idx)
     yield keyword_frequency_collection.create_index(keyowrd_idx)
+    yield logger.debug('Database configured successfully.')
 
 
 @defer.inlineCallbacks

@@ -1,5 +1,6 @@
 import logging
 from collections import defaultdict
+
 from twisted.internet import defer
 
 from adpay.db import utils as db_utils
@@ -25,7 +26,8 @@ def get_user_profile_keywords(user_id):
         yield logger.warning("User profile keywords not found.")
         defer.returnValue(None)
 
-    yield logger.debug("User keyword profile for {0} limited to: {1}".format(user_id, stats_consts.MAX_USER_KEYWORDS_IN_PROFILE))
+    yield logger.debug("User keyword profile for {0} limited to: {1}".format(user_id,
+                                                                             stats_consts.MAX_USER_KEYWORDS_IN_PROFILE))
     yield logger.debug(list(set(user_profile_doc['profile'].keys()))[:stats_consts.MAX_USER_KEYWORDS_IN_PROFILE])
 
     defer.returnValue(list(set(user_profile_doc['profile'].keys()))[:stats_consts.MAX_USER_KEYWORDS_IN_PROFILE])
@@ -43,9 +45,9 @@ def get_users_similarity(user1_id, user2_id):
     :return: User similarity value [0, 1]
     """
     logger = logging.getLogger(__name__)
-    yield logger.info("Measuring user similarity.")
+
     if user1_id == user2_id:
-        yield logger.warning("It's the same user!")
+        yield logger.warning("It's the same user. User similarity score value: 1.0")
         defer.returnValue(1.0)
 
     user1_profile_keywords = yield get_user_profile_keywords(user1_id)
@@ -56,10 +58,11 @@ def get_users_similarity(user1_id, user2_id):
 
     len_common_keywords = len(set(user1_profile_keywords).intersection(set(user2_profile_keywords)))
 
-    yield logger.debug("{0} common keywords found".format(len_common_keywords))
-    yield logger.debug("Similarity score value: {0}".format(1.0 * len_common_keywords / stats_consts.MAX_USER_KEYWORDS_IN_PROFILE))
+    similarity_score = 1.0 * len_common_keywords / stats_consts.MAX_USER_KEYWORDS_IN_PROFILE
+    yield logger.debug("{0} common keywords found. User similarity score value: {1}".format(len_common_keywords,
+                                                                                            similarity_score))
 
-    defer.returnValue(1.0 * len_common_keywords / stats_consts.MAX_USER_KEYWORDS_IN_PROFILE)
+    defer.returnValue(similarity_score)
 
 
 def reverse_insort(a, x, lo=0, hi=None):
@@ -115,7 +118,7 @@ def get_default_event_payment(event_doc, max_cpc, max_cpm):
         event_payment = max_cpm
 
     logger = logging.getLogger(__name__)
-    logger.debug("Event type {0}, value: {1}".format(event_type, event_payment))
+    logger.debug("Event type {0}, default value: {1}".format(event_type, event_payment))
 
     return event_payment
 
@@ -169,6 +172,13 @@ def get_user_payment_score(campaign_id, user_id, amount=5):
 
 @defer.inlineCallbacks
 def filter_event(event_doc):
+    """
+    Filter out events that don't pass our validation conditions.
+    See adpay,stats.consts module for more details.
+
+    :param event_doc: Event document under consideration.
+    :return: True for passing, False for rejected.
+    """
     logger = logging.getLogger(__name__)
 
     if event_doc['event_type'] not in stats_consts.PAID_EVENT_TYPES:
@@ -181,13 +191,11 @@ def filter_event(event_doc):
         logger.warning("Campaign not found: {0}".format(event_doc['campaign_id']))
         defer.returnValue(False)
 
-    if stats_consts.VALIDATE_EVENT_KEYWORD_EQUALITY:
-        if event_doc['our_keywords'] != event_doc['their_keywords']:
-            defer.returnValue(False)
+    if stats_consts.VALIDATE_EVENT_KEYWORD_EQUALITY and event_doc['our_keywords'] != event_doc['their_keywords']:
+        defer.returnValue(False)
 
-    if stats_consts.VALIDATE_CAMPAIGN_FILTERS:
-        if not validate_keywords(campaign_doc['filters'], event_doc['our_keywords']):
-            defer.returnValue(False)
+    if stats_consts.VALIDATE_CAMPAIGN_FILTERS and not validate_keywords(campaign_doc['filters'], event_doc['our_keywords']):
+        defer.returnValue(False)
 
     defer.returnValue(True)
 
@@ -230,7 +238,25 @@ def calculate_payments_for_new_users(campaign_id, timestamp, campaign_cpm):
 
 @defer.inlineCallbacks
 def create_user_budget(campaign_id, timestamp, uid, max_cpc, max_cpm):
+    """
+    Calculate individual user budgets.
 
+    User budget dictionary default values for each event type are:
+
+        {
+        'default_value': 0.0,  # Default value for this event type
+        'event_value': 0.0,    # Calculated event value (used later on)
+        'num': 0,              # Number of events of this time in the time period
+        'share': 0.0           # Share of this user for this event type in the time period
+        }
+
+    :param campaign_id: Campaign identifier.
+    :param timestamp: Timestamp (last hour)
+    :param uid:
+    :param max_cpc:
+    :param max_cpm:
+    :return: User budget dictionary
+    """
     logger = logging.getLogger(__name__)
 
     user_budget = {}
@@ -326,6 +352,14 @@ def get_best_user_payments_and_humanity(campaign_id, timestamp, uid, campaign_cp
 
 @defer.inlineCallbacks
 def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=0.5):
+    """
+    Routing function for different algorithms. Controlled by adpay.stats.consts constant values.
+
+    :param campaign_id:
+    :param timestamp:
+    :param payment_percentage_cutoff:
+    :return:
+    """
     if stats_consts.CALCULATION_METHOD == 'default':
         yield calculate_events_payments_default(campaign_id, timestamp)
     elif stats_consts.CALCULATION_METHOD == 'user_value':
@@ -345,12 +379,12 @@ def calculate_events_payments_using_user_value(campaign_id, timestamp, payment_p
     :param payment_percentage_cutoff:
     :return:
     """
-    logger = logging.getLogger(__name__)
 
     campaign_doc = yield db_utils.get_campaign(campaign_id)
 
     # Check if campaign exists
     if campaign_doc is None:
+        logger = logging.getLogger(__name__)
         logger.warning("Campaign not found: {0}".format(campaign_id))
         return
 
@@ -410,16 +444,17 @@ def calculate_events_payments_default(campaign_id, timestamp):
     :param timestamp:
     :return:
     """
-    logger = logging.getLogger(__name__)
 
     campaign_doc = yield db_utils.get_campaign(campaign_id)
-    campaign_cpc = campaign_doc['max_cpc']  # click
-    campaign_cpm = campaign_doc['max_cpm']  # impression/view
 
     # Check if campaign exists
     if campaign_doc is None:
+        logger = logging.getLogger(__name__)
         logger.warning("Campaign not found: {0}".format(campaign_id))
         return
+
+    campaign_cpc = campaign_doc['max_cpc']  # click
+    campaign_cpm = campaign_doc['max_cpm']  # impression/view
 
     uids = yield db_utils.get_distinct_users_from_events(campaign_id, timestamp, stats_consts.HUMAN_SCORE_THRESHOLD)
 
@@ -490,11 +525,10 @@ def update_users_score_and_payments(campaign_id, timestamp):
     uids = yield db_utils.get_distinct_users_from_events(campaign_id, timestamp, stats_consts.HUMAN_SCORE_THRESHOLD)
     for uid in uids:
         payment_score = yield get_user_payment_score(campaign_id, uid)
-        yield logger.debug(payment_score)
         yield logger.debug(campaign_id, timestamp, uid, payment_score)
 
         yield db_utils.update_user_score(campaign_id, timestamp, uid, payment_score)
-    yield logger.info("Updates {0} user scores.".format(len(uids)))
+    yield logger.info("Updated {0} user scores.".format(len(uids)))
     defer.returnValue(len(uids))
 
 
@@ -557,10 +591,8 @@ def update_user_keywords_stats(user_id, keywords_list, cutoff=0.001, decay=0.01)
     :param decay:
     :return:
     """
-    logger = logging.getLogger(__name__)
     # Update new keyword to database.
     for keyword in keywords_list:
-        yield logger.debug("Adding new keyowrd: {0}".format(keyword))
         frequency = decay
 
         user_keyword_doc = yield db_utils.get_user_keyword_frequency(user_id, keyword)
@@ -607,9 +639,9 @@ def update_user_keywords_profiles(global_freq_cutoff=0.1):
     :return:
     """
     logger = logging.getLogger(__name__)
-    yield logger.info("Remove old keyword profile.")
     # Remove old keywords
     yield db_utils.delete_user_profiles()
+    yield logger.info("Removed old keyword profiles.")
 
     # Create new user profiles based on keyword user frequency.
     _iter_list = yield db_utils.get_user_keyword_frequency_distinct_userids()
@@ -649,7 +681,6 @@ def add_view_keywords(user_id, keywords_list):
     :param keywords_list:
     :return:
     """
-    logger = logging.getLogger(__name__)
     try:
         yield ADD_EVENT_LOCK.acquire()
 
@@ -658,7 +689,6 @@ def add_view_keywords(user_id, keywords_list):
 
         # Update global keywords stats.
         for keyword in keywords_list:
-            yield logger.info("Incrementing views.")
             stats_cache.EVENTS_STATS_KEYWORDS[keyword] += 1
             stats_cache.EVENTS_STATS_VIEWS += 1
 
@@ -677,11 +707,10 @@ def delete_campaign(campaign_id):
     :param campaign_id:
     :return:
     """
-    # TODO: add deleting events and other objects related to campaign.
     logger = logging.getLogger(__name__)
-    yield logger.info("Removing campaigns and banners.")
     yield db_utils.delete_campaign(campaign_id)
     yield db_utils.delete_campaign_banners(campaign_id)
+    yield logger.info("Removed campaign {0} with banners.".format(campaign_id))
 
 
 def validate_keywords(filters_dict, keywords):
@@ -696,6 +725,17 @@ def validate_keywords(filters_dict, keywords):
 
 
 def validate_bounds(bounds, keyword_values):
+    """
+    Validate if keyword value is correct.
+
+    Value is between bounds (bounds has two elements)
+     or
+    Value is equal to bounds (default, bounds is assumed to have one element)
+
+    :param bounds: Iterable (1 or 2 elements)
+    :param keyword_values: Keyword value being tested.
+    :return: True or False
+    """
     for kv in keyword_values:
         if (len(bounds) == 2 and bounds[0] < kv < bounds[1]) \
                 or (bounds[0] == kv):
