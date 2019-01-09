@@ -710,7 +710,7 @@ def delete_campaign(campaign_id):
     logger = logging.getLogger(__name__)
     yield db_utils.delete_campaign(campaign_id)
     yield db_utils.delete_campaign_banners(campaign_id)
-    yield logger.info("Removed campaign [0} with banners.".format(campaign_id))
+    yield logger.info("Removed campaign {0} with banners.".format(campaign_id))
 
 
 def validate_keywords(filters_dict, keywords):
