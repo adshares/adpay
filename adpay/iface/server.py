@@ -31,7 +31,7 @@ class AdPayIfaceServer(JSONRPCServer):
             yield self.logger.warning("No campaign data to update.")
         else:
             for campaign_data in campaign_data_list:
-                yield self.logger.debug("Campaign update: {0}".format(campaign_data))
+                yield self.logger.debug("Received campaign update: {0}".format(campaign_data))
                 try:
                     yield iface_utils.create_or_update_campaign(iface_proto.CampaignObject(campaign_data))
                 except BadValueError as e:
@@ -51,7 +51,7 @@ class AdPayIfaceServer(JSONRPCServer):
             yield self.logger.warning("No campaign id to remove.")
         else:
             for campaign_id in campaign_id_list:
-                yield self.logger.info("Campaign removal: {0}".format(campaign_id))
+                yield self.logger.info("Received campaign removal request: {0}".format(campaign_id))
                 yield iface_utils.delete_campaign(campaign_id)
         defer.returnValue(True)
 
@@ -68,7 +68,7 @@ class AdPayIfaceServer(JSONRPCServer):
             yield self.logger.warning("No event data to add.")
         else:
             for event_data in event_data_list:
-                yield self.logger.debug("Adding event data: {0}".format(event_data))
+                yield self.logger.debug("Received event data: {0}".format(event_data))
                 try:
                     yield iface_utils.add_event(iface_proto.EventObject(event_data))
                 except BadValueError as e:
@@ -88,9 +88,9 @@ class AdPayIfaceServer(JSONRPCServer):
         """
         try:
             response = yield iface_utils.get_payments(iface_proto.PaymentsRequest(req_data))
-            yield self.logger.info("Payments calculated and returned.")
+            yield self.logger.info("Payments request received and responded with {0} elements.".format(len(response.payments)))
         except iface_utils.PaymentsNotCalculatedException:
-            yield self.logger.error("Payments not calculated yet.")
+            yield self.logger.error("Payments request received, but payments not calculated yet.")
             raise JSONRPCError("Payments not calculated yet.", iface_consts.PAYMENTS_NOT_CALCULATED_YET)
         except BadValueError as e:
             raise JSONRPCError(e, iface_consts.INVALID_OBJECT)
@@ -123,6 +123,6 @@ def configure_iface(port=iface_consts.SERVER_PORT):
     :return: Listening reactor.
     """
     logger = logging.getLogger(__name__)
-    logger.info("Initializing interface server.")
+    logger.info("Initializing AdPay interface server on port: {0}.".format(port))
     site = Site(AdPayIfaceServer())
     return reactor.listenTCP(port, site)
