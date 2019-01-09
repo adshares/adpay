@@ -209,12 +209,13 @@ def get_banner_events_iter(banner_id, timestamp):
 
 
 @defer.inlineCallbacks
-def get_events_per_user_iter(campaign_id, timestamp, uid, human_score=0.0):
+def get_events_per_user_iter(campaign_id, timestamp, uid):
     """
 
     :param campaign_id: Campaign identifier.
     :param timestamp: Time in seconds since the epoch, used for getting the full hour timestamp.
     :param uid: User identifier.
+
     :return: Iterable events for the user.
     """
     timestamp = common_utils.timestamp2hour(timestamp)
@@ -223,8 +224,7 @@ def get_events_per_user_iter(campaign_id, timestamp, uid, human_score=0.0):
     defer.returnValue(QueryIterator(collection.find({
         'user_id': uid,
         'campaign_id': campaign_id,
-        'timestamp': timestamp,
-        'human_score': {"$gt": human_score}
+        'timestamp': timestamp
         }, cursor=True)))
 
 
