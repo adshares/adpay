@@ -1,6 +1,6 @@
-import datetime
 import logging
 import time
+from datetime import datetime, timedelta
 
 from twisted.internet import defer, reactor
 
@@ -24,12 +24,15 @@ def _adpay_task(timestamp=None, ignore_existing_payment_calculations=False):
         timestamp = int(time.time())
 
     timestamp = common_utils.timestamp2hour(timestamp)
-    nice_time = datetime.datetime.fromtimestamp(timestamp)
+    nice_period_end = datetime.fromtimestamp(timestamp)
+    nice_period_start = nice_period_end - timedelta(hour=1)
 
     if not ignore_existing_payment_calculations:
         last_round_doc = yield db_utils.get_payment_round(timestamp)
         if last_round_doc is not None:
-            yield logger.warning("Payment already calculated for {0} ({1})".format(nice_time, timestamp))
+            yield logger.warning("Payment already calculated for {0} - {1} (timestamp: {2})".format(nice_period_start,
+                                                                                                    nice_period_end,
+                                                                                                    timestamp))
             defer.returnValue(None)
 
     if stats_consts.CALCULATION_METHOD == 'user_value':
@@ -51,7 +54,9 @@ def _adpay_task(timestamp=None, ignore_existing_payment_calculations=False):
             continue
 
         yield stats_utils.calculate_events_payments(campaign_doc, timestamp)
-        yield logger.info("Calculated payments for {0} ({1})".format(nice_time, timestamp))
+        yield logger.info("Calculated payments for {0} - {1} (timestamp: {2})".format(nice_period_start,
+                                                                                      nice_period_end,
+                                                                                      timestamp))
 
     yield db_utils.update_payment_round(timestamp)
 
