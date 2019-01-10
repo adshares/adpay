@@ -41,7 +41,7 @@ class InterfaceEventTestCase(tests.WebTestCase):
         self.assertTrue(response['result'])
 
         post_banner_events = yield self.get_banner_events('banner_1')
-        self.assertEqual(pre_banner_events, post_banner_events)
+        self.assertNotEqual(pre_banner_events, post_banner_events)
 
         # Add campaign for banner_1
         cmp_doc = {"campaign_id": "campaign_id",
