@@ -80,7 +80,7 @@ def add_event(eventobj):
     logger = logging.getLogger(__name__)
 
     event_doc = eventobj.to_json()
-    event_doc['campaign_id'] = None
+    event_doc['campaign_id'] = 'not_found'
 
     # Events are filtered by the campaign filters
     if 'banner_id' in event_doc:
@@ -95,7 +95,7 @@ def add_event(eventobj):
                 event_doc['campaign_id'] = campaign_doc['campaign_id']
     else:
         yield logger.warning("Event update: No banner found.")
-        event_doc['banner_id'] = None
+        event_doc['banner_id'] = 'not_found'
 
     inserted = yield db_utils.update_event(event_doc)
 
