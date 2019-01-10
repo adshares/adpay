@@ -324,11 +324,9 @@ def get_best_user_payments_and_humanity(campaign_doc, timestamp, uid):
     """
     Return user information: best payment, total payment and max human score.
 
-    :param campaign_id:
+    :param campaign_doc:
     :param timestamp:
     :param uid:
-    :param campaign_cpc:
-    :param campaign_cpm:
     :return: Tuple: max_user_payment, max_human_score, total_user_payments
     """
     logger = logging.getLogger(__name__)
@@ -340,7 +338,6 @@ def get_best_user_payments_and_humanity(campaign_doc, timestamp, uid):
     if user_value_doc:
         max_user_payment = float(user_value_doc['payment'])
 
-    campaign_doc = yield db_utils.get_campaign(campaign_doc['campaign_id'])
     user_events_iter = yield db_utils.get_events_per_user_iter(campaign_doc['campaign_id'], timestamp, uid)
     while True:
         event_doc = yield user_events_iter.next()
@@ -362,7 +359,7 @@ def get_best_user_payments_and_humanity(campaign_doc, timestamp, uid):
 
 
 @defer.inlineCallbacks
-def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=0.5):
+def calculate_events_payments(campaign_doc, timestamp, payment_percentage_cutoff=0.5):
     """
     Routing function for different algorithms. Controlled by adpay.stats.consts constant values.
 
@@ -372,30 +369,26 @@ def calculate_events_payments(campaign_id, timestamp, payment_percentage_cutoff=
     :return:
     """
     if stats_consts.CALCULATION_METHOD == 'default':
-        yield calculate_events_payments_default(campaign_id, timestamp)
+        yield calculate_events_payments_default(campaign_doc, timestamp)
     elif stats_consts.CALCULATION_METHOD == 'user_value':
-        yield calculate_events_payments_using_user_value(campaign_id, timestamp, payment_percentage_cutoff)
+        yield calculate_events_payments_using_user_value(campaign_doc, timestamp, payment_percentage_cutoff)
 
 
 @defer.inlineCallbacks
-def calculate_events_payments_using_user_value(campaign_id, timestamp, payment_percentage_cutoff=0.5):
+def calculate_events_payments_using_user_value(campaign_doc, timestamp, payment_percentage_cutoff=0.5):
     """
     For new users:
     1. Assign them max_human_score from the database and CPM value (per campaign)
     2. Assign payment score based on average of other users.
     3.
 
-    :param campaign_id:
+    :param campaign_doc:
     :param timestamp:
     :param payment_percentage_cutoff:
     :return:
     """
     # Check if campaign exists
-
-    campaign_doc = yield db_utils.get_campaign(campaign_id)
     if campaign_doc is None:
-        logger = logging.getLogger(__name__)
-        logger.warning("Campaign not found: {0}".format(campaign_id))
         return
 
     campaign_budget = campaign_doc['budget']  # hourly budget
@@ -434,45 +427,39 @@ def calculate_events_payments_using_user_value(campaign_id, timestamp, payment_p
             if total_user_payments[event_type] > 0:
                 user_budget[event_type]['share'] = 1.0 * user_budget_score[event_type]/total_user_payments[event_type]
 
-        yield update_events_payments(campaign_doc['campaign_id'], timestamp, uid, user_budget)
+        yield update_events_payments(campaign_doc, timestamp, uid, user_budget)
 
     # Delete user scores
     yield db_utils.delete_user_scores(campaign_doc['campaign_id'], timestamp)
 
 
 @defer.inlineCallbacks
-def calculate_events_payments_default(campaign_id, timestamp):
+def calculate_events_payments_default(campaign_doc, timestamp):
     """
     For new users:
     1. Assign them max_human_score from the database and CPM value (per campaign)
     2. Assign payment score based on average of other users.
     3.
 
-    :param campaign_id:
+    :param campaign_doc:
     :param timestamp:
     :return:
     """
-
-    campaign_doc = yield db_utils.get_campaign(campaign_id)
-
     # Check if campaign exists
     if campaign_doc is None:
         logger = logging.getLogger(__name__)
-        logger.warning("Campaign not found: {0}".format(campaign_id))
+        logger.warning("Campaign not found: {0}".format(campaign_doc['campaign_id']))
         return
-
-    campaign_cpc = campaign_doc['max_cpc']  # click
-    campaign_cpm = campaign_doc['max_cpm']  # impression/view
-
-    uids = yield db_utils.get_distinct_users_from_events(campaign_id, timestamp)
 
     total_payments = 0.0
     user_data = {}
 
+    uids = yield db_utils.get_distinct_users_from_events(campaign_doc['campaign_id'], timestamp)
+
     for uid in uids:
         user_data[uid] = {'total': 0.0,
                           'budget': {}}
-        user_data[uid]['budget'] = yield create_user_budget(campaign_id, timestamp, uid, campaign_cpc, campaign_cpm)
+        user_data[uid]['budget'] = yield create_user_budget(campaign_doc, timestamp, uid)
 
         for event_type in user_data[uid]['budget']:
             user_data[uid]['total'] += user_data[uid]['budget'][event_type]['default_value']
@@ -485,15 +472,15 @@ def calculate_events_payments_default(campaign_id, timestamp):
             for event_type in user_data[uid]['budget']:
                 user_data[uid]['budget'][event_type]['share'] = user_data[uid]['total'] / total_payments
 
-        yield update_events_payments(campaign_id, timestamp, uid, user_data[uid]['budget'])
+        yield update_events_payments(campaign_doc, timestamp, uid, user_data[uid]['budget'])
 
 
 @defer.inlineCallbacks
-def update_events_payments(campaign_id, timestamp, uid, user_budget):
+def update_events_payments(campaign_doc, timestamp, uid, user_budget):
     """
     Update or create event payments by dividing user budget among events.
 
-    :param campaign_id:
+    :param campaign_doc:
     :param timestamp:
     :param uid:
     :param user_budget:
@@ -506,8 +493,7 @@ def update_events_payments(campaign_id, timestamp, uid, user_budget):
             user_budget[event_type]['event_value'] = min([user_budget[event_type]['default_value'],
                                                           user_budget[event_type]['share'] * user_budget[event_type]['default_value']])
 
-    campaign_doc = yield db_utils.get_campaign(campaign_id)
-    user_events_iter = yield db_utils.get_events_per_user_iter(campaign_id, timestamp, uid)
+    user_events_iter = yield db_utils.get_events_per_user_iter(campaign_doc['campaign_id'], timestamp, uid)
     while True:
         event_doc = yield user_events_iter.next()
         if event_doc is None:
@@ -524,8 +510,8 @@ def update_events_payments(campaign_id, timestamp, uid, user_budget):
         else:
             event_value = 0.0
 
-        yield db_utils.update_event_payment(campaign_id, timestamp, event_doc['event_id'], event_value, payment_reason)
-        yield logger.debug("New payment ({0}, {1}): {2}, {3}. {4}, {5}".format(campaign_id,
+        yield db_utils.update_event_payment(campaign_doc['campaign_id'], timestamp, event_doc['event_id'], event_value, payment_reason)
+        yield logger.debug("New payment ({0}, {1}): {2}, {3}. {4}, {5}".format(campaign_doc['campaign_id'],
                                                                                timestamp,
                                                                                event_doc['event_id'],
                                                                                event_type,

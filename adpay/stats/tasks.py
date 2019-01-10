@@ -49,7 +49,7 @@ def _adpay_task(timestamp=None, ignore_existing_payment_calculations=False):
             yield stats_utils.delete_campaign(campaign_doc['campaign_id'])
             continue
 
-        yield stats_utils.calculate_events_payments(campaign_doc['campaign_id'], timestamp)
+        yield stats_utils.calculate_events_payments(campaign_doc, timestamp)
         yield logger.info("Calculated payments for {0} ({1})".format(nice_time, timestamp))
 
     yield db_utils.update_payment_round(timestamp)
