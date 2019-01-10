@@ -492,8 +492,8 @@ def update_events_payments(campaign_doc, timestamp, uid, user_budget):
 
     for event_type in user_budget:
         if user_budget[event_type]['share'] > 0:
-            user_budget[event_type]['event_value'] = min([user_budget[event_type]['default_value'],
-                                                          user_budget[event_type]['share'] * user_budget[event_type]['default_value']])
+            user_budget[event_type]['event_value'] = int(min([user_budget[event_type]['default_value'],
+                                                              user_budget[event_type]['share'] * user_budget[event_type]['default_value']]))
 
     user_events_iter = yield db_utils.get_events_per_user_iter(campaign_doc['campaign_id'], timestamp, uid)
     while True:
@@ -510,7 +510,7 @@ def update_events_payments(campaign_doc, timestamp, uid, user_budget):
         if not payment_reason:
             event_value = user_budget[event_type]['event_value']
         else:
-            event_value = 0.0
+            event_value = 0
 
         yield db_utils.update_event_payment(campaign_doc['campaign_id'], timestamp, event_doc['event_id'], event_value, payment_reason)
         yield logger.debug("New payment ({0}, {1}): {2}, {3}. {4}, {5}".format(campaign_doc['campaign_id'],
