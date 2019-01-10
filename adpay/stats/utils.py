@@ -272,6 +272,9 @@ def create_user_budget(campaign_doc, timestamp, uid):
                                    'num': 0,
                                    'share': 0.0}
 
+    if campaign_doc is None:
+        defer.returnValue(user_budget)
+
     user_events_iter = yield db_utils.get_events_per_user_iter(campaign_doc['campaign_id'], timestamp, uid)
     while True:
         event_doc = yield user_events_iter.next()
@@ -446,15 +449,11 @@ def calculate_events_payments_default(campaign_doc, timestamp):
     :return:
     """
     logger = logging.getLogger(__name__)
-
-    # Check if campaign exists
-    if campaign_doc is None:
-        logger.warning("Campaign not found: {0}".format(campaign_doc['campaign_id']))
-        return
-
+    logger.debug(campaign_doc, timestamp)
     total_payments = 0.0
     user_data = {}
 
+    logger.debug('Ger user ids')
     uids = yield db_utils.get_distinct_users_from_events(campaign_doc['campaign_id'], timestamp)
 
     logger.debug(uids)
