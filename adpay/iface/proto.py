@@ -73,12 +73,12 @@ class CampaignObject(jsonobject.JsonObject):
     """
     advertiser_id = jsonobject.StringProperty()
     banners = jsonobject.ListProperty(BannerObject)
-    budget = jsonobject.FloatProperty()  # hourly budget
+    budget = jsonobject.IntegerProperty()  # hourly budget
     campaign_id = jsonobject.StringProperty(required=True)
     filters = jsonobject.ObjectProperty(RequireExcludeObject, required=True)
     keywords = jsonobject.DictProperty()
-    max_cpc = jsonobject.FloatProperty()  # max cost per click
-    max_cpm = jsonobject.FloatProperty()  # max cost per view
+    max_cpc = jsonobject.IntegerProperty()  # max cost per click
+    max_cpm = jsonobject.IntegerProperty()  # max cost per view
     time_end = jsonobject.IntegerProperty(required=True)
     time_start = jsonobject.IntegerProperty(required=True)
 
@@ -107,7 +107,7 @@ class EventObject(jsonobject.JsonObject):
     case_id = jsonobject.StringProperty()
     event_id = jsonobject.StringProperty(required=True)
     event_type = jsonobject.StringProperty(required=True)  # define either event is click, view or conversion
-    event_value = jsonobject.FloatProperty()
+    event_value = jsonobject.IntegerProperty()
     human_score = jsonobject.FloatProperty()  # determine if user is bot (value = 0) or human (value = 1)
     our_keywords = jsonobject.DictProperty()  # adshares keywords
     publisher_id = jsonobject.StringProperty()
@@ -141,7 +141,7 @@ class SinglePaymentResponse(jsonobject.JsonObject):
        :propexample reason: 0
 
     """
-    amount = jsonobject.FloatProperty(required=True)
+    amount = jsonobject.IntegerProperty(required=True)
     """Amount to be paid for that event"""
 
     event_id = jsonobject.StringProperty(required=True)
