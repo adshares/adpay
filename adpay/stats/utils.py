@@ -426,7 +426,7 @@ def calculate_events_payments_using_user_value(campaign_doc, timestamp, payment_
         # Update User Values
         yield db_utils.update_user_value_in_campaign(campaign_doc['campaign_id'], uid, max_user_payment, max_human_score)
 
-        for event_type in total_user_payments:
+        for event_type in stats_consts.PAID_EVENT_TYPES:
             if total_user_payments[event_type] > 0:
                 user_budget[event_type]['share'] = 1.0 * user_budget_score[event_type]/total_user_payments[event_type]
 
