@@ -152,7 +152,8 @@ def get_payments(payreq):
 
         events_payments.append(
             iface_proto.SinglePaymentResponse(event_id=payment_doc['event_id'],
-                                              amount=payment_doc['payment']))
+                                              amount=payment_doc['payment'],
+                                              reason=payment_doc['reason']))
 
     yield logger.debug(events_payments)
     defer.returnValue(iface_proto.PaymentsResponse(payments=events_payments))

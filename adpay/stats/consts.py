@@ -20,11 +20,6 @@ CALCULATION_METHOD = os.getenv('ADPAY_CALCULATION_METHOD', 'default')
 #: `Environmental variable override: ADPAY_CALCULATE_TASKS`
 CALCULATE_PAYMENTS_PERIODICALLY = bool(int(os.getenv('ADPAY_CALCULATE_TASKS', 1)))
 
-#: Enable/disable checking if keywords from publisher are the same as ours. 1 for enable, 0 for disable.
-#:
-#: `Environmental variable override: ADPAY_VALIDATE_EVENT_KEYWORD_EQUALITY`
-VALIDATE_EVENT_KEYWORD_EQUALITY = bool(int(os.getenv('ADPAY_VALIDATE_EVENT_KEYWORD_EQUALITY', 1)))
-
 #: Enable/disable checking if event keywords are appriopriate for campaign filters. 1 for enable, 0 for disable.
 #:
 #: `Environmental variable override: ADPAY_VALIDATE_CAMPAIGN_FILTERS`
@@ -52,3 +47,9 @@ EVENT_TYPE_CONVERSION = os.getenv('ADPAY_EVENT_TYPE_CONVERSION', 'conversion')
 
 #: AdPay will pay only for those event types.
 PAID_EVENT_TYPES = [EVENT_TYPE_CLICK, EVENT_TYPE_VIEW, EVENT_TYPE_CONVERSION]
+
+
+EVENT_PAYMENT_ACCEPTED = 0
+EVENT_PAYMENT_REJECTED_CAMPAIGN_NOT_FOUND = 1
+EVENT_PAYMENT_REJECTED_HUMAN_SCORE_TOO_LOW = 2
+EVENT_PAYMENT_REJECTED_INVALID_TARGETING = 3

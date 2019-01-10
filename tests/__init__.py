@@ -1,25 +1,25 @@
 import json
+import logging
 import socket
-
-from mock import MagicMock
 from copy import deepcopy
 
 import txmongo
-
-from twisted.trial import unittest
+from mock import MagicMock
 from twisted.internet import defer, reactor
-from twisted.internet.protocol import Protocol
-from twisted.web.client import Agent
 from twisted.internet.defer import succeed
-from twisted.web.iweb import IBodyProducer
+from twisted.internet.protocol import Protocol
+from twisted.trial import unittest
+from twisted.web.client import Agent
 from twisted.web.http_headers import Headers
-
+from twisted.web.iweb import IBodyProducer
 from zope.interface import implements
 
-from adpay.iface import server as iface_server
-from adpay.iface import consts as iface_consts
 from adpay import db
 from adpay.db import utils as db_utils
+from adpay.iface import consts as iface_consts, server as iface_server
+
+logging.basicConfig()
+logging.disable(logging.ERROR)
 
 
 class StringProducer(object):

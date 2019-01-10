@@ -209,12 +209,13 @@ def get_banner_events_iter(banner_id, timestamp):
 
 
 @defer.inlineCallbacks
-def get_events_per_user_iter(campaign_id, timestamp, uid, human_score=0.0):
+def get_events_per_user_iter(campaign_id, timestamp, uid):
     """
 
     :param campaign_id: Campaign identifier.
     :param timestamp: Time in seconds since the epoch, used for getting the full hour timestamp.
     :param uid: User identifier.
+
     :return: Iterable events for the user.
     """
     timestamp = common_utils.timestamp2hour(timestamp)
@@ -223,8 +224,7 @@ def get_events_per_user_iter(campaign_id, timestamp, uid, human_score=0.0):
     defer.returnValue(QueryIterator(collection.find({
         'user_id': uid,
         'campaign_id': campaign_id,
-        'timestamp': timestamp,
-        'human_score': {"$gt": human_score}
+        'timestamp': timestamp
         }, cursor=True)))
 
 
@@ -262,7 +262,7 @@ def delete_event(event_id):
 
 # Event payments
 @defer.inlineCallbacks
-def update_event_payment(campaign_id, timestamp, event_id, payment):
+def update_event_payment(campaign_id, timestamp, event_id, payment, reason):
     """
     Create or update payment information for event.
 
@@ -270,6 +270,7 @@ def update_event_payment(campaign_id, timestamp, event_id, payment):
     :param timestamp:
     :param event_id:
     :param payment:
+    :param reason:
     :return:
     """
     timestamp = common_utils.timestamp2hour(timestamp)
@@ -279,7 +280,8 @@ def update_event_payment(campaign_id, timestamp, event_id, payment):
         'timestamp': timestamp,
         'event_id': event_id,
         'payment': payment,
-        'campaign_id': campaign_id
+        'campaign_id': campaign_id,
+        'reason': reason
         }, upsert=True)
     defer.returnValue(return_value)
 
