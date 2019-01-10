@@ -449,15 +449,16 @@ def calculate_events_payments_default(campaign_doc, timestamp):
     :return:
     """
     logger = logging.getLogger(__name__)
-    logger.debug(campaign_doc, timestamp)
+    logger.debug(campaign_doc)
+    logger.debug(timestamp)
     total_payments = 0.0
     user_data = {}
 
-    logger.debug('Ger user ids')
+    logger.debug('Get user ids')
     uids = yield db_utils.get_distinct_users_from_events(campaign_doc['campaign_id'], timestamp)
 
-    logger.debug(uids)
     for uid in uids:
+        logger.debug(uid)
         user_data[uid] = {'total': 0.0,
                           'budget': {}}
         user_data[uid]['budget'] = yield create_user_budget(campaign_doc, timestamp, uid)

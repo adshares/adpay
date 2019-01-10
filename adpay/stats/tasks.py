@@ -40,6 +40,7 @@ def _adpay_task(timestamp=None, ignore_existing_payment_calculations=False):
     _iter = yield db_utils.get_campaign_iter()
     while True:
         campaign_doc = yield _iter.next()
+        logger.debug(campaign_doc)
         if not campaign_doc:
             break
 
