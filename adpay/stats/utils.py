@@ -363,7 +363,7 @@ def calculate_events_payments(campaign_doc, timestamp, payment_percentage_cutoff
     """
     Routing function for different algorithms. Controlled by adpay.stats.consts constant values.
 
-    :param campaign_id:
+    :param campaign_doc:
     :param timestamp:
     :param payment_percentage_cutoff:
     :return:
@@ -445,9 +445,10 @@ def calculate_events_payments_default(campaign_doc, timestamp):
     :param timestamp:
     :return:
     """
+    logger = logging.getLogger(__name__)
+
     # Check if campaign exists
     if campaign_doc is None:
-        logger = logging.getLogger(__name__)
         logger.warning("Campaign not found: {0}".format(campaign_doc['campaign_id']))
         return
 
@@ -456,6 +457,7 @@ def calculate_events_payments_default(campaign_doc, timestamp):
 
     uids = yield db_utils.get_distinct_users_from_events(campaign_doc['campaign_id'], timestamp)
 
+    logger.debug(uids)
     for uid in uids:
         user_data[uid] = {'total': 0.0,
                           'budget': {}}

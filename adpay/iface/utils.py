@@ -113,14 +113,13 @@ def add_event(eventobj):
 def get_payments(payreq):
     """
     1. Check if payment calculation for last round is done.
-    2. Get payment interations per event
+    2. Get payment iterations per event
 
     :param payreq:
     :return:
     """
     logger = logging.getLogger(__name__)
-    yield logger.info("Calculating payments.")
-    events_payments = []
+    yield logger.info("Checking for payments for {0}.".format(payreq.timestamp))
 
     # Check if payments calculation is done
     round_doc = yield db_utils.get_payment_round(payreq.timestamp)
@@ -129,6 +128,8 @@ def get_payments(payreq):
         raise PaymentsNotCalculatedException()
 
     # Collect events and theirs payment and respond to request
+    events_payments = []
+
     _iter = yield db_utils.get_payments_iter(payreq.timestamp)
     while True:
         payment_doc = yield _iter.next()
