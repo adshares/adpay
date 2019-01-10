@@ -101,6 +101,7 @@ class InterfaceEventTestCase(tests.WebTestCase):
             'their_keywords': {},
             'event_value': None
             }
+
         pre_banner_events = yield self.get_banner_events('banner_filter_id')
 
         # Test validation false.

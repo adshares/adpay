@@ -70,9 +70,9 @@ class AdPayIfaceServer(JSONRPCServer):
         else:
             for event_data in event_data_list:
                 yield self.logger.debug("Received event data: {0}".format(event_data))
-                yield self.logger.debug("Received event time: {0}".format(datetime.fromtimestamp(event_data.timestamp)))
                 try:
                     yield iface_utils.add_event(iface_proto.EventObject(event_data))
+                    yield self.logger.debug("Received event time: {0}".format(datetime.fromtimestamp(event_data['timestamp'])))
                 except BadValueError as e:
                     raise JSONRPCError(e, iface_consts.INVALID_OBJECT)
         defer.returnValue(True)
