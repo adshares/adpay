@@ -113,6 +113,8 @@ class AdPayIfaceServer(JSONRPCServer):
                 defer.returnValue(True)
             except BadValueError as e:
                 raise JSONRPCError(e, iface_consts.INVALID_OBJECT)
+            except KeyError as e:
+                raise JSONRPCError(e, iface_consts.INVALID_OBJECT)
         else:
             defer.returnValue(False)
 
