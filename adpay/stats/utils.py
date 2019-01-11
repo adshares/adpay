@@ -181,7 +181,7 @@ def filter_event(event_doc, campaign_doc, banner_doc):
     :return: Reason status for rejection (0 - not rejected). See `adpay.stats.consts`.
     """
     logger = logging.getLogger(__name__)
-
+    logger.debug(event_doc)
     # Accepted, but don't pay for this event
     if event_doc['event_type'] not in stats_consts.PAID_EVENT_TYPES:
         return stats_consts.EVENT_PAYMENT_ACCEPTED
