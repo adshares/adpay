@@ -463,7 +463,7 @@ def calculate_events_payments_default(campaign_doc, timestamp):
                           'budget': {}}
         user_data[uid]['budget'] = yield create_user_budget(campaign_doc, timestamp, uid)
 
-        for event_type in user_data[uid]['budget']:
+        for event_type in stats_consts.PAID_EVENT_TYPES:
             user_data[uid]['total'] += user_data[uid]['budget'][event_type]['default_value']
 
         total_payments += user_data[uid]['total']
@@ -471,7 +471,7 @@ def calculate_events_payments_default(campaign_doc, timestamp):
     for uid in uids:
         if total_payments > 0:
 
-            for event_type in user_data[uid]['budget']:
+            for event_type in stats_consts.PAID_EVENT_TYPES:
                 user_data[uid]['budget'][event_type]['share'] = user_data[uid]['total'] / total_payments
 
         yield update_events_payments(campaign_doc, timestamp, uid, user_data[uid]['budget'])
