@@ -267,7 +267,7 @@ def create_user_budget(campaign_doc, timestamp, uid):
 
     user_budget = {}
     for event_type in stats_consts.PAID_EVENT_TYPES:
-        user_budget[event_type] = {'default_value': 0.0,
+        user_budget[event_type] = {'default_value': 0,
                                    'event_value': 0.0,
                                    'num': 0,
                                    'share': 0.0}
@@ -514,7 +514,7 @@ def update_events_payments(campaign_doc, timestamp, uid, user_budget):
         payment_reason = filter_event(event_doc, campaign_doc, banner_doc)
 
         if not payment_reason and event_type in stats_consts.PAID_EVENT_TYPES:
-            event_value = user_budget[event_type]['event_value']
+            event_value = int(user_budget[event_type]['event_value'])
         else:
             event_value = 0
 
