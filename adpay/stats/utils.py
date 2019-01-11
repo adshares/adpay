@@ -284,7 +284,8 @@ def create_user_budget(campaign_doc, timestamp, uid):
         event_type = event_doc['event_type']
 
         banner_doc = yield db_utils.get_banner(event_doc['banner_id'])
-        if not filter_event(event_doc, campaign_doc, banner_doc):
+        if not filter_event(event_doc, campaign_doc, banner_doc) and event_type in stats_consts.PAID_EVENT_TYPES:
+
             user_budget[event_type]['num'] += 1
             user_budget[event_type]['default_value'] += get_default_event_payment(event_doc,
                                                                                   campaign_doc['max_cpc'],
@@ -349,7 +350,7 @@ def get_best_user_payments_and_humanity(campaign_doc, timestamp, uid):
             break
 
         banner_doc = yield db_utils.get_banner(event_doc['banner_id'])
-        if not filter_event(event_doc, campaign_doc, banner_doc):
+        if not filter_event(event_doc, campaign_doc, banner_doc) and event_type in stats_consts.PAID_EVENT_TYPES:
             event_payment = get_default_event_payment(event_doc, campaign_doc['max_cpc'], campaign_doc['max_cpm'])
             event_type = event_doc['event_type']
 
@@ -512,7 +513,7 @@ def update_events_payments(campaign_doc, timestamp, uid, user_budget):
 
         payment_reason = filter_event(event_doc, campaign_doc, banner_doc)
 
-        if not payment_reason:
+        if not payment_reason and event_type in stats_consts.PAID_EVENT_TYPES:
             event_value = user_budget[event_type]['event_value']
         else:
             event_value = 0

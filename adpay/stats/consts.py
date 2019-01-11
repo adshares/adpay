@@ -62,3 +62,6 @@ EVENT_PAYMENT_REJECTED_INVALID_TARGETING = 3
 
 #: Event is rejected, because banner can't be found.
 EVENT_PAYMENT_REJECTED_BANNER_NOT_FOUND = 4
+
+#: We don't pay for this event.
+EVENT_NOT_PAYABLE = 99
