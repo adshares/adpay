@@ -490,7 +490,7 @@ def update_events_payments(campaign_doc, timestamp, uid, user_budget):
     """
     logger = logging.getLogger(__name__)
 
-    for event_type in user_budget:
+    for event_type in stats_consts.PAID_EVENT_TYPES:
         if user_budget[event_type]['share'] > 0:
             user_budget[event_type]['event_value'] = int(min([user_budget[event_type]['default_value'],
                                                               user_budget[event_type]['share'] * user_budget[event_type]['default_value']]))
