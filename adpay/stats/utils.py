@@ -296,6 +296,7 @@ def create_user_budget(campaign_doc, timestamp, uid):
         if user_budget[event_type]['num'] > 0:
             user_budget[event_type]['default_value'] = user_budget[event_type]['default_value'] / user_budget[event_type]['num']
 
+    logger.debug(user_budget)
     defer.returnValue(user_budget)
 
 
@@ -456,6 +457,10 @@ def calculate_events_payments_default(campaign_doc, timestamp):
 
     logger.debug('Get user ids')
     uids = yield db_utils.get_distinct_users_from_events(campaign_doc['campaign_id'], timestamp)
+    if uids is None:
+        logger.debug("No uids!")
+
+    logger.debug(uids)
 
     for uid in uids:
         logger.debug(uid)

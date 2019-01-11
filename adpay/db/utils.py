@@ -229,12 +229,11 @@ def get_events_per_user_iter(campaign_id, timestamp, uid):
 
 
 @defer.inlineCallbacks
-def get_distinct_users_from_events(campaign_id, timestamp, human_score=0.0):
+def get_distinct_users_from_events(campaign_id, timestamp):
     """
 
     :param campaign_id: Campaign identifier.
     :param timestamp: Time in seconds since the epoch, used for getting the full hour timestamp.
-    :param human_score: Filter out events with human_score below this value.
     :return: Return list of distinct users ids for the given campaign timestamp.
     """
     timestamp = common_utils.timestamp2hour(timestamp)
@@ -242,8 +241,7 @@ def get_distinct_users_from_events(campaign_id, timestamp, human_score=0.0):
 
     return_values = yield collection.distinct(key='user_id',
                                               filter={'timestamp': timestamp,
-                                                      'campaign_id': campaign_id,
-                                                      'human_score': {"$gt": human_score}})
+                                                      'campaign_id': campaign_id})
     defer.returnValue(return_values)
 
 
