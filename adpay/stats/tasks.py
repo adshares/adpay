@@ -21,7 +21,7 @@ def _adpay_task(timestamp=None, ignore_existing_payment_calculations=False):
     # As recalculate only finished hours, take timestamp from an hour before now.
     if timestamp is None:
         yield logger.warning("No timestamp found for recalculation, using current time.")
-        timestamp = int(time.time())
+        timestamp = int(time.time()) - 3600
 
     timestamp = common_utils.timestamp2hour(timestamp)
     nice_period_end = datetime.fromtimestamp(timestamp)
