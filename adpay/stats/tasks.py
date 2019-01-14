@@ -24,8 +24,8 @@ def _adpay_task(timestamp=None, ignore_existing_payment_calculations=False):
         timestamp = int(time.time()) - 3600
 
     timestamp = common_utils.timestamp2hour(timestamp)
-    nice_period_end = datetime.fromtimestamp(timestamp)
-    nice_period_start = nice_period_end - timedelta(hours=1)
+    nice_period_start = datetime.fromtimestamp(timestamp)
+    nice_period_end = datetime.fromtimestamp(timestamp) + timedelta(hours=1)
 
     if not ignore_existing_payment_calculations:
         last_round_doc = yield db_utils.get_payment_round(timestamp)
