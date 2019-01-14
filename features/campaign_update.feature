@@ -416,3 +416,42 @@ Feature: Campaign functionality
          "result": true
       }
     """
+
+  Scenario: Campaign update code -32010
+    Given I want to campaign update
+    When I provide the data:
+    """
+      {
+          "jsonrpc": "2.0",
+          "id": "jqZOU0bzSvf3xS2Z9VpwqnULlKrqNv1J",
+          "method": "campaign_update",
+          "params": [
+              {
+                  "advertiser_id": "Buf8Fe4Z7HF5M3G1kHczWbIKdQfCz8ZD",
+                  "budget": 1000000000,
+                  "max_cpc": 100,
+                  "max_cpm": 100,
+                  "time_start": 1542882034,
+                  "time_end": 1676147247,
+                  "banners": [],
+                  "filters": {
+                      "exclude": {},
+                      "require": {}
+                  },
+                  "keywords": {}
+              }
+          ]
+      }
+    """
+    When I request resource
+    Then the response should contain:
+    """
+      {
+         "jsonrpc": "2.0",
+         "id": "jqZOU0bzSvf3xS2Z9VpwqnULlKrqNv1J",
+         "error":    {
+            "message": "Property campaign_id is required.",
+            "code": -32010
+         }
+      }
+    """

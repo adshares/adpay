@@ -237,3 +237,37 @@ Feature: Campaign functionality
        "result": true
     }
     """
+  Scenario: Add events -32010
+    Given I want to add events
+    When I provide the data:
+    """
+      {
+          "jsonrpc": "2.0",
+          "id": "jqZOU0bzSvf3xS2Z9VpwqnULlKrqNv1J",
+          "method": "add_events",
+          "params": [
+              {
+                  "event_type": "click",
+                  "event_id": "7oPvkaFLYRbHy8TPwETE1ifWdMHaIR3e",
+                  "timestamp": 1544778000,
+                  "their_keywords": {},
+                  "our_keywords": {},
+                  "human_score": 1.0,
+                  "publisher_id": "3thnm97ruzIOA34riaSpJosZdwfMIWzH",
+                  "user_id": "3qJjQW8befAMMCgFHkweEa4LCSVkOTf7"
+              }
+          ]
+      }
+    """
+    When I request resource
+    Then the response should contain:
+    """
+    {
+       "jsonrpc": "2.0",
+       "id": "jqZOU0bzSvf3xS2Z9VpwqnULlKrqNv1J",
+       "error":    {
+          "message": "Property banner_id is required.",
+          "code": -32010
+       }
+    }
+    """

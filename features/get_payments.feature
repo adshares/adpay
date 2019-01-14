@@ -8,7 +8,7 @@ Feature: Campaign functionality
       {
        "jsonrpc": "2.0",
        "method": "get_payments",
-       "id": "llj3wWF5Ze3vkQ3zDnB7GO7lA7j4Nda5",
+       "id": "jqZOU0bzSvf3xS2Z9VpwqnULlKrqNv1J",
        "params": [{"timestamp": 1544778000}]
       }
     """
@@ -16,9 +16,14 @@ Feature: Campaign functionality
     And I request resource
     Then the response should contain:
     """
-      {"jsonrpc": "2.0",
-       "id": "llj3wWF5Ze3vkQ3zDnB7GO7lA7j4Nda5",
-       "result": {"payments": []}
+      {
+         "jsonrpc": "2.0",
+         "id": "jqZOU0bzSvf3xS2Z9VpwqnULlKrqNv1J",
+         "result": {"payments": [   {
+            "event_id": "7oPvkaFLYRbHy8TPwETE1ifWdMHaIR3e",
+            "reason": 3,
+            "amount": 0
+         }]}
       }
     """
   Scenario: Get payments -32700
