@@ -22,10 +22,13 @@ def _adpay_task(timestamp=None, ignore_existing_payment_calculations=False):
     if timestamp is None:
         yield logger.warning("No timestamp found for recalculation, using current time.")
         timestamp = int(time.time()) - 3600
+        seconds_to_add = 3600
+    else:
+        seconds_to_add = timestamp - common_utils.timestamp2hour(timestamp)
 
     timestamp = common_utils.timestamp2hour(timestamp)
     nice_period_start = datetime.fromtimestamp(timestamp)
-    nice_period_end = datetime.fromtimestamp(timestamp) + timedelta(hours=1)
+    nice_period_end = datetime.fromtimestamp(timestamp) + timedelta(seconds=seconds_to_add)
 
     if not ignore_existing_payment_calculations:
         last_round_doc = yield db_utils.get_payment_round(timestamp)
