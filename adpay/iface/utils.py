@@ -24,7 +24,7 @@ def create_or_update_campaign(cmpobj):
     logger = logging.getLogger(__name__)
 
     if cmpobj.max_cpm is not None:
-        cmpobj.max_cpm = cmpobj.max_cpm/1000.0
+        cmpobj.max_cpm = cmpobj.max_cpm/1000
 
     yield logger.info("Updating campaign: {0}".format(cmpobj.campaign_id))
     yield logger.debug("Updating campaign: {0}".format(cmpobj))
@@ -70,56 +70,41 @@ def delete_campaign(campaign_id):
 @defer.inlineCallbacks
 def add_event(eventobj):
     """
-    Insert event object into the database, if conditions are met:
-    * user_id must be provided
-    * if event is a conversion, event_value must be provided
-    * banner must be in the database
-    * campaign must be in the database
-    * campaign filters must match our keywords
+    Insert event object into the database.
 
-    Update keywords and view statistics.
+    Update keywords and view statistics (for user value method)
 
-    :param eventobj:
+    :param eventobj: Event object
     :return:
     """
     logger = logging.getLogger(__name__)
 
-    # Do not take into account events without user_id
-    if not eventobj.user_id:
-        yield logger.warning("Ignoring event update - No user identifier found.")
-        defer.returnValue(None)
-
-    # Conversion event must send max paid amount
-    if eventobj.event_type == stats_consts.EVENT_TYPE_CONVERSION and not eventobj.event_value:
-        yield logger.warning("Ignoring event update - No event value for conversion event.")
-        defer.returnValue(None)
+    event_doc = eventobj.to_json()
+    event_doc['campaign_id'] = 'not_found'
 
     # Events are filtered by the campaign filters
-    banner_doc = yield db_utils.get_banner(eventobj.banner_id)
-    if not banner_doc:
-        yield logger.warning("Ignoring event update - No banner found.")
-        defer.returnValue(None)
-
-    campaign_doc = yield db_utils.get_campaign(banner_doc['campaign_id'])
-    if not campaign_doc:
-        yield logger.warning("Ignoring event update - No campaign found.")
-        defer.returnValue(None)
-
-    #if not iface_filters.validate_filters(campaign_doc['filters'], eventobj.our_keywords):
-    #    yield logger.warning("Ignoring event update - Keywords not validated.")
-    #    defer.returnValue(None)
-
-    event_doc = eventobj.to_json()
-    event_doc['campaign_id'] = campaign_doc['campaign_id']
-    event_doc['keywords'] = event_doc['our_keywords']
+    if 'banner_id' in event_doc:
+        banner_doc = yield db_utils.get_banner(eventobj.banner_id)
+        if not banner_doc:
+            yield logger.warning("Event update: No banner found.")
+        else:
+            campaign_doc = yield db_utils.get_campaign(banner_doc['campaign_id'])
+            if not campaign_doc:
+                yield logger.warning("Event update: No campaign found.")
+            else:
+                event_doc['campaign_id'] = campaign_doc['campaign_id']
+    else:
+        yield logger.warning("Event update: No banner found.")
+        event_doc['banner_id'] = 'not_found'
 
     inserted = yield db_utils.update_event(event_doc)
 
-    # Update global keywords cache and user keyword stats.
-    view_view_keywords = []
-    for user_keyword, user_val in eventobj.our_keywords.items():
-        view_view_keywords.append(common_utils.genkey(user_keyword, user_val))
-    yield stats_utils.add_view_keywords(eventobj.user_id, view_view_keywords)
+    if stats_consts.CALCULATION_METHOD == 'user_value':
+        # Update global keywords cache and user keyword stats.
+        view_view_keywords = []
+        for user_keyword, user_val in eventobj.our_keywords.items():
+            view_view_keywords.append(common_utils.genkey(user_keyword, user_val))
+        yield stats_utils.add_view_keywords(eventobj.user_id, view_view_keywords)
 
     defer.returnValue(inserted)
 
@@ -128,14 +113,13 @@ def add_event(eventobj):
 def get_payments(payreq):
     """
     1. Check if payment calculation for last round is done.
-    2. Get payment interations per event
+    2. Get payment iterations per event
 
     :param payreq:
     :return:
     """
     logger = logging.getLogger(__name__)
-    yield logger.info("Calculating payments.")
-    events_payments = []
+    yield logger.info("Checking for payments for {0}.".format(payreq.timestamp))
 
     # Check if payments calculation is done
     round_doc = yield db_utils.get_payment_round(payreq.timestamp)
@@ -144,6 +128,8 @@ def get_payments(payreq):
         raise PaymentsNotCalculatedException()
 
     # Collect events and theirs payment and respond to request
+    events_payments = []
+
     _iter = yield db_utils.get_payments_iter(payreq.timestamp)
     while True:
         payment_doc = yield _iter.next()

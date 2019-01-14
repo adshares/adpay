@@ -45,11 +45,23 @@ EVENT_TYPE_VIEW = os.getenv('ADPAY_EVENT_TYPE_VIEW', 'view')
 #: `Environmental variable override: ADPAY_EVENT_TYPE_CONVERSION`
 EVENT_TYPE_CONVERSION = os.getenv('ADPAY_EVENT_TYPE_CONVERSION', 'conversion')
 
-#: AdPay will pay only for those event types.
+#: AdPay will pay only for these event types.
 PAID_EVENT_TYPES = [EVENT_TYPE_CLICK, EVENT_TYPE_VIEW, EVENT_TYPE_CONVERSION]
 
-
+#: Event is ok, but payment can still be 0.
 EVENT_PAYMENT_ACCEPTED = 0
+
+#: Event is rejected, because campaign can't be found.
 EVENT_PAYMENT_REJECTED_CAMPAIGN_NOT_FOUND = 1
+
+#: Event is rejected, because human score value is too low, probably a bot.
 EVENT_PAYMENT_REJECTED_HUMAN_SCORE_TOO_LOW = 2
+
+#: Event is rejected, because user profile doesn't pass campaign filters.
 EVENT_PAYMENT_REJECTED_INVALID_TARGETING = 3
+
+#: Event is rejected, because banner can't be found.
+EVENT_PAYMENT_REJECTED_BANNER_NOT_FOUND = 4
+
+#: We don't pay for this event.
+EVENT_NOT_PAYABLE = 99

@@ -1,6 +1,6 @@
-import datetime
 import logging
 import time
+from datetime import datetime, timedelta
 
 from twisted.internet import defer, reactor
 
@@ -21,16 +21,24 @@ def _adpay_task(timestamp=None, ignore_existing_payment_calculations=False):
     # As recalculate only finished hours, take timestamp from an hour before now.
     if timestamp is None:
         yield logger.warning("No timestamp found for recalculation, using current time.")
-        timestamp = int(time.time())
+        timestamp = int(time.time()) - 3600
 
     timestamp = common_utils.timestamp2hour(timestamp)
-    nice_time = datetime.datetime.fromtimestamp(timestamp)
+    nice_period_start = datetime.fromtimestamp(timestamp)
+    nice_period_end = datetime.fromtimestamp(timestamp) + timedelta(seconds=3600)
 
     if not ignore_existing_payment_calculations:
         last_round_doc = yield db_utils.get_payment_round(timestamp)
         if last_round_doc is not None:
-            yield logger.warning("Payment already calculated for {0} ({1})".format(nice_time, timestamp))
+            yield logger.warning("Payment already calculated for {0} - {1} (timestamp: {2})".format(nice_period_start,
+                                                                                                    nice_period_end,
+                                                                                                    timestamp))
             defer.returnValue(None)
+
+    yield logger.info("Calculating payments for {0} - {1} (timestamp: {2}) Forced: {3}".format(nice_period_start,
+                                                                                               nice_period_end,
+                                                                                               timestamp,
+                                                                                               ignore_existing_payment_calculations))
 
     if stats_consts.CALCULATION_METHOD == 'user_value':
         # User keywords profiles update
@@ -40,6 +48,7 @@ def _adpay_task(timestamp=None, ignore_existing_payment_calculations=False):
     _iter = yield db_utils.get_campaign_iter()
     while True:
         campaign_doc = yield _iter.next()
+        logger.debug(campaign_doc)
         if not campaign_doc:
             break
 
@@ -49,8 +58,10 @@ def _adpay_task(timestamp=None, ignore_existing_payment_calculations=False):
             yield stats_utils.delete_campaign(campaign_doc['campaign_id'])
             continue
 
-        yield stats_utils.calculate_events_payments(campaign_doc['campaign_id'], timestamp)
-        yield logger.info("Calculated payments for {0} ({1})".format(nice_time, timestamp))
+        yield stats_utils.calculate_events_payments(campaign_doc, timestamp)
+        yield logger.info("Calculated payments for {0} - {1} (timestamp: {2})".format(nice_period_start,
+                                                                                      nice_period_end,
+                                                                                      timestamp))
 
     yield db_utils.update_payment_round(timestamp)
 

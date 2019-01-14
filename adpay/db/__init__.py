@@ -65,6 +65,21 @@ def configure_db():
     yield keyword_frequency_collection.create_index(keyowrd_idx)
     yield logger.debug('Database configured successfully.')
 
+    # Add default campaign
+    yield campaign_collection.replace_one({'campaign_id': 'not_found'},
+                                          {
+                                              'campaign_id': 'not_found',
+                                              'time_start': 0,
+                                              'time_end': 1899999999,
+                                              'filters': {'require': {}, 'exclude': {}},
+                                              'keywords': {},
+                                              'banners': [],
+                                              'max_cpc': 0,
+                                              'max_cpm': 0,
+                                              'budget': 0
+                                              },
+                                          upsert=True)
+
 
 @defer.inlineCallbacks
 def get_mongo_db():

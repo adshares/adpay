@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 from fastjsonrpc.jsonrpc import JSONRPCError
 from fastjsonrpc.server import JSONRPCServer
@@ -71,6 +72,7 @@ class AdPayIfaceServer(JSONRPCServer):
                 yield self.logger.debug("Received event data: {0}".format(event_data))
                 try:
                     yield iface_utils.add_event(iface_proto.EventObject(event_data))
+                    yield self.logger.debug("Received event time: {0}".format(datetime.fromtimestamp(event_data['timestamp'])))
                 except BadValueError as e:
                     raise JSONRPCError(e, iface_consts.INVALID_OBJECT)
         defer.returnValue(True)
