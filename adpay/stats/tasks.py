@@ -35,6 +35,11 @@ def _adpay_task(timestamp=None, ignore_existing_payment_calculations=False):
                                                                                                     timestamp))
             defer.returnValue(None)
 
+    yield logger.info("Calculating payments for {0} - {1} (timestamp: {2}) Forced: {3}".format(nice_period_start,
+                                                                                               nice_period_end,
+                                                                                               timestamp,
+                                                                                               ignore_existing_payment_calculations))
+
     if stats_consts.CALCULATION_METHOD == 'user_value':
         # User keywords profiles update
         yield stats_utils.update_user_keywords_profiles()
