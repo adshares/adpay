@@ -3,6 +3,7 @@ from twisted.internet import defer
 import tests
 from adpay.db import utils as db_utils
 from adpay.stats import utils as stats_utils
+from adpay.stats import cache as stats_cache, legacy as stats_legacy
 
 
 class DBTestCase(tests.db_test_case):
@@ -13,7 +14,7 @@ class DBTestCase(tests.db_test_case):
         # Check stats increasing.
         key1_freq_doc, key2_freq_doc = None, None
         for i in range(100):
-            yield stats_utils.update_user_keywords_stats("user_id", ["keyword_1", 'keyword_2'],
+            yield stats_legacy.update_user_keywords_stats("user_id", ["keyword_1", 'keyword_2'],
                                                          cutoff=cutoff, decay=decay)
 
             _key1_freq_doc = yield db_utils.get_user_keyword_frequency("user_id", "keyword_1")
@@ -31,11 +32,11 @@ class DBTestCase(tests.db_test_case):
             key1_freq_doc, key2_freq_doc = _key1_freq_doc, _key2_freq_doc
 
         # Check keyword frequency decay.
-        yield stats_utils.update_user_keywords_stats("user_id", ["keyword_3"], cutoff=cutoff, decay=decay)
+        yield stats_legacy.update_user_keywords_stats("user_id", ["keyword_3"], cutoff=cutoff, decay=decay)
         key3_freq_doc = yield db_utils.get_user_keyword_frequency("user_id", "keyword_3")
 
         while True:
-            yield stats_utils.update_user_keywords_stats("user_id", ["keyword_1", 'keyword_2'],
+            yield stats_legacy.update_user_keywords_stats("user_id", ["keyword_1", 'keyword_2'],
                                                          cutoff=cutoff, decay=decay)
 
             _key3_freq_doc = yield db_utils.get_user_keyword_frequency("user_id", "keyword_3")
@@ -46,7 +47,7 @@ class DBTestCase(tests.db_test_case):
 
             key3_freq_doc = _key3_freq_doc
 
-        yield stats_utils.update_user_keywords_stats("user_id", ["keyword_1", 'keyword_2'],
+        yield stats_legacy.update_user_keywords_stats("user_id", ["keyword_1", 'keyword_2'],
                                                      cutoff=cutoff, decay=decay)
         key3_freq_doc = yield db_utils.get_user_keyword_frequency("user_id", "keyword_3")
         self.assertIsNone(key3_freq_doc)

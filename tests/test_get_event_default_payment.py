@@ -19,4 +19,4 @@ class TestGetEventDefaultPayment(TestCase):
         pay = stats_utils.get_default_event_payment({'event_type': stats_consts.EVENT_TYPE_VIEW,
                                                      'event_value': 5},
                                                     10, 20)
-        self.assertEqual(pay, 20)
+        self.assertEqual(pay, 20/1000)

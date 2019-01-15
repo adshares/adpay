@@ -2,6 +2,8 @@ from unittest import TestCase
 import re
 from adpay.utils import utils as common_utils
 from adpay.stats import utils as stats_utils
+from adpay.stats import legacy as stats_legacy
+
 import time
 
 
@@ -21,4 +23,4 @@ class TestGenkey(TestCase):
 
     def test_reverse_insort(self):
         with self.assertRaises(ValueError):
-            stats_utils.reverse_insort(0, range(20), -5)
+            stats_legacy.reverse_insort(0, range(20), -5)

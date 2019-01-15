@@ -3,7 +3,8 @@ from twisted.internet import defer
 import tests
 from adpay.db import utils as db_utils
 from adpay.stats import consts as stats_consts
-from adpay.stats import utils as stats_utils
+from adpay.stats import legacy as stats_legacy
+from adpay.stats import main as stats_default
 
 
 class DBTestCase(tests.db_test_case):
@@ -12,7 +13,7 @@ class DBTestCase(tests.db_test_case):
     def test_campaign_payments(self):
         payment_percentage_cutoff = 0.5
         cpv, cpc = 10, 20
-        payments = yield stats_utils.calculate_events_payments_using_user_value(None,
+        payments = yield stats_legacy.calculate_events_payments(None,
                                                                                 3600,
                                                                                 payment_percentage_cutoff=payment_percentage_cutoff)
         self.assertIsNone(payments)
@@ -47,14 +48,14 @@ class DBTestCase(tests.db_test_case):
         timestamp = 3600
 
         if stats_consts.CALCULATION_METHOD == 'user_value':
-            yield stats_utils.calculate_events_payments_using_user_value(cmp_doc, timestamp,
+            yield stats_legacy.calculate_events_payments(cmp_doc, timestamp,
                                                                          payment_percentage_cutoff=payment_percentage_cutoff)
             # Check user values
             user_value_doc = yield db_utils.get_user_value_in_campaign(cmp_doc, "user_id1")
             self.assertEqual(user_value_doc['payment'], 20)
             self.assertEqual(user_value_doc['human_score'], 1)
         else:
-            yield stats_utils.calculate_events_payments_default(cmp_doc, timestamp)
+            yield stats_default.calculate_events_payments(cmp_doc, timestamp)
             _iter = yield db_utils.get_payments_iter(timestamp)
             while True:
                 payment_doc = yield _iter.next()
@@ -87,7 +88,7 @@ class DBTestCase(tests.db_test_case):
             "human_score": 1})
 
         if stats_consts.CALCULATION_METHOD == 'user_value':
-            yield stats_utils.calculate_events_payments_using_user_value(cmp_doc, 3600,
+            yield stats_legacy.calculate_events_payments(cmp_doc, 3600,
                                                                          payment_percentage_cutoff=payment_percentage_cutoff)
 
             # Check user values
@@ -95,7 +96,7 @@ class DBTestCase(tests.db_test_case):
             self.assertEqual(user2_value_doc['payment'], 10)
             self.assertEqual(user2_value_doc['human_score'], 1)
         else:
-            yield stats_utils.calculate_events_payments_default(cmp_doc, timestamp)
+            yield stats_default.calculate_events_payments(cmp_doc, timestamp)
             _iter = yield db_utils.get_payments_iter(timestamp)
             while True:
                 payment_doc = yield _iter.next()
@@ -112,7 +113,7 @@ class DBTestCase(tests.db_test_case):
         cpv, cpc = 10, 20
         timestamp = 3600
 
-        payments = yield stats_utils.calculate_events_payments_using_user_value(None,
+        payments = yield stats_legacy.calculate_events_payments(None,
                                                                                 3600,
                                                                                 payment_percentage_cutoff=payment_percentage_cutoff)
         self.assertIsNone(payments)
@@ -157,7 +158,7 @@ class DBTestCase(tests.db_test_case):
             "human_score": 1})
 
         if stats_consts.CALCULATION_METHOD == 'user_value':
-            yield stats_utils.calculate_events_payments_using_user_value(cmp_doc, 3600,
+            yield stats_legacy.calculate_events_payments(cmp_doc, 3600,
                                                                          payment_percentage_cutoff=payment_percentage_cutoff)
 
             # Check user values
@@ -165,7 +166,7 @@ class DBTestCase(tests.db_test_case):
             self.assertEqual(user2_value_doc['payment'], 10)
             self.assertEqual(user2_value_doc['human_score'], 1)
         else:
-            yield stats_utils.calculate_events_payments_default(cmp_doc, timestamp)
+            yield stats_default.calculate_events_payments(cmp_doc, timestamp)
             _iter = yield db_utils.get_payments_iter(timestamp)
             while True:
                 payment_doc = yield _iter.next()
