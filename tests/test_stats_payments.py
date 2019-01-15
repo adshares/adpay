@@ -1,3 +1,4 @@
+import random
 from twisted.internet import defer
 
 import tests
@@ -179,3 +180,112 @@ class DBTestCase(tests.db_test_case):
         _iter = yield db_utils.get_sorted_user_score_iter("campaign_id", 3600, limit=1)
         user_score_doc = yield _iter.next()
         self.assertIsNone(user_score_doc)
+
+    @defer.inlineCallbacks
+    def test_budget(self):
+        """
+        Test for hourly budget constraint. Total payments can't be higher than the campaign budget.
+        """
+
+        timestamp = 3600
+
+        # Add campaign with one banner
+        cmp_doc = {"campaign_id": "campaign_id",
+                   "time_start": timestamp - 100,
+                   "time_end": timestamp + 100,
+                   "max_cpc": 5,
+                   "max_cpm": 5000,
+                   "budget": 10,
+                   "filters": {'require': {},
+                               'exclude': {}}}
+
+        yield db_utils.update_campaign(cmp_doc)
+        yield db_utils.update_banner({'banner_id': 'banner_id',
+                                      'campaign_id': 'campaign_id'})
+
+        # Add all kind of paid events
+        event = {
+            "event_id": "event_id",         # This will be modified
+            "event_type": "click",          # This will be modified
+            "timestamp": timestamp + 2,
+            "user_id": 'test_user',
+            "banner_id": 'banner_id',
+            "campaign_id": "campaign_id",
+            "event_value": 5,
+            "our_keywords": {},
+            "their_keywords": {},
+            "human_score": 1.0}
+
+        for i, type in enumerate(stats_consts.PAID_EVENT_TYPES):
+            event['event_id'] = 'event_id_' + str(i)
+            event['event_type'] = type
+            yield db_utils.update_event(event)
+
+        # Calculate payments
+        yield stats_default.calculate_events_payments(cmp_doc, timestamp)
+
+        # Check payments
+        total_payments = 0
+        _iter = yield db_utils.get_payments_iter(timestamp)
+        while True:
+            payment_doc = yield _iter.next()
+            if not payment_doc:
+                break
+            total_payments += payment_doc['payment']
+
+        self.assertLessEqual(total_payments, cmp_doc['budget'])
+
+    @defer.inlineCallbacks
+    def test_non_payable_events(self):
+        """
+        Test for non payable events.
+        """
+
+        timestamp = 3600
+
+        # Add campaign with one banner
+        cmp_doc = {"campaign_id": "campaign_id",
+                   "time_start": timestamp - 100,
+                   "time_end": timestamp + 100,
+                   "max_cpc": 5,
+                   "max_cpm": 5000,
+                   "budget": 10,
+                   "filters": {'require': {},
+                               'exclude': {}}}
+
+        yield db_utils.update_campaign(cmp_doc)
+        yield db_utils.update_banner({'banner_id': 'banner_id',
+                                      'campaign_id': 'campaign_id'})
+
+        # Add 5 events
+        event = {
+            "event_id": "event_id",         # This will be modified
+            "event_type": "click",          # This will be modified
+            "timestamp": timestamp + 2,
+            "user_id": 'test_user',
+            "banner_id": 'banner_id',
+            "campaign_id": "campaign_id",
+            "event_value": 5,
+            "our_keywords": {},
+            "their_keywords": {},
+            "human_score": 1.0}
+
+        for i in xrange(5):
+            event['event_id'] = 'event_id_' + str(i)
+            event['event_type'] = str(random.randint(1000, 1001))
+            yield db_utils.update_event(event)
+
+        # Calculate payments
+        yield stats_default.calculate_events_payments(cmp_doc, timestamp)
+
+        # Check payments
+        _iter = yield db_utils.get_payments_iter(timestamp)
+        while True:
+            payment_doc = yield _iter.next()
+            if not payment_doc:
+                break
+
+            # Check payment reason is accepted
+            self.assertEqual(0, payment_doc['reason'])
+            # But payment is 0
+            self.assertEqual(0, payment_doc['payment'])
