@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from twisted.internet import defer, reactor
 
 from adpay.db import utils as db_utils
-from adpay.stats import consts as stats_consts, utils as stats_utils
+from adpay.stats import consts as stats_consts, legacy as stats_legacy, main as stats_main, utils as stats_utils
 from adpay.utils import utils as common_utils
 
 
@@ -40,10 +40,6 @@ def _adpay_task(timestamp=None, ignore_existing_payment_calculations=False):
                                                                                                timestamp,
                                                                                                ignore_existing_payment_calculations))
 
-    if stats_consts.CALCULATION_METHOD == 'user_value':
-        # User keywords profiles update
-        yield stats_utils.update_user_keywords_profiles()
-
     # Calculate payments for every campaign in the round
     _iter = yield db_utils.get_campaign_iter()
     while True:
@@ -58,7 +54,7 @@ def _adpay_task(timestamp=None, ignore_existing_payment_calculations=False):
             yield stats_utils.delete_campaign(campaign_doc['campaign_id'])
             continue
 
-        yield stats_utils.calculate_events_payments(campaign_doc, timestamp)
+        yield calculate_events_payments(campaign_doc, timestamp)
         yield logger.info("Calculated payments for {0} - {1} (timestamp: {2})".format(nice_period_start,
                                                                                       nice_period_end,
                                                                                       timestamp))
@@ -93,10 +89,27 @@ def adpay_task(interval_seconds=60):
         yield logger.info('Periodical recalculation disabled.')
 
 
+@defer.inlineCallbacks
+def calculate_events_payments(campaign_doc, timestamp, payment_percentage_cutoff=0.5):
+    """
+    Routing function for different algorithms. Controlled by adpay.stats.consts constant values.
+
+    :param campaign_doc:
+    :param timestamp:
+    :param payment_percentage_cutoff:
+    :return:
+    """
+    if stats_consts.CALCULATION_METHOD == 'default':
+        yield stats_main.calculate_events_payments(campaign_doc, timestamp)
+    elif stats_consts.CALCULATION_METHOD == 'user_value':
+        # User keywords profiles update
+        yield stats_utils.update_user_keywords_profiles()
+        yield stats_legacy.calculate_events_payments(campaign_doc, timestamp, payment_percentage_cutoff)
+
+
 def configure_tasks(interval_seconds=2):
     """
     Schedule payment calculation.
     :param interval_seconds:
     """
-    logger = logging.getLogger(__name__)
     reactor.callLater(interval_seconds, adpay_task)
