@@ -1,3 +1,4 @@
+from mock import patch
 from twisted.internet import defer
 
 import tests
@@ -5,7 +6,7 @@ from adpay.db import utils as db_utils
 from adpay.iface.consts import INVALID_OBJECT, PAYMENTS_NOT_CALCULATED_YET
 
 
-class InterfacePaymentTestCase(tests.WebTestCase):
+class TestPaymentRequest(tests.WebTestCase):
 
     @defer.inlineCallbacks
     def test_get_payments(self):
@@ -39,10 +40,33 @@ class InterfacePaymentTestCase(tests.WebTestCase):
         self.assertIsNotNone(response)
         self.assertEqual(len(response['result']['payments']), 100)
 
-    @defer.inlineCallbacks
-    def test_invalid_request(self):
-
+        # Invalid request
         response = yield self.get_response("get_payments", [{'dummy_field': 0}])
         self.assertIsNotNone(response)
         self.assertTrue(response['error'])
         self.assertEqual(INVALID_OBJECT, response['error']['code'])
+
+
+class TestDebugPaymentRequest(tests.WebTestCase):
+
+    @defer.inlineCallbacks
+    def test_interface(self):
+
+        # Interface is disabled
+        with patch('adpay.iface.consts.DEBUG_ENDPOINT', 0):
+            response = yield self.get_response("debug_force_payment_recalculation", [{'timestamp': 0}])
+            self.assertIsNotNone(response)
+            self.assertFalse(response['result'])
+
+        # Interface is enabled
+        with patch('adpay.iface.consts.DEBUG_ENDPOINT', 1):
+            response = yield self.get_response("debug_force_payment_recalculation", [{'timestamp': 0}])
+            self.assertIsNotNone(response)
+            self.assertTrue(response['result'])
+
+        # Invalid request
+        with patch('adpay.iface.consts.DEBUG_ENDPOINT', 1):
+            response = yield self.get_response("debug_force_payment_recalculation", [{'dummy_field': 0}])
+            self.assertIsNotNone(response)
+            self.assertTrue(response['error'])
+            self.assertEqual(INVALID_OBJECT, response['error']['code'])

@@ -2,8 +2,7 @@ from twisted.internet import defer
 
 import tests
 from adpay.db import utils as db_utils
-from adpay.stats import utils as stats_utils
-from adpay.stats import cache as stats_cache, legacy as stats_legacy
+from adpay.stats import legacy as stats_legacy
 
 
 class DBTestCase(tests.db_test_case):
@@ -15,7 +14,7 @@ class DBTestCase(tests.db_test_case):
         key1_freq_doc, key2_freq_doc = None, None
         for i in range(100):
             yield stats_legacy.update_user_keywords_stats("user_id", ["keyword_1", 'keyword_2'],
-                                                         cutoff=cutoff, decay=decay)
+                                                          cutoff=cutoff, decay=decay)
 
             _key1_freq_doc = yield db_utils.get_user_keyword_frequency("user_id", "keyword_1")
             self.assertIsNotNone(_key1_freq_doc)
@@ -37,7 +36,7 @@ class DBTestCase(tests.db_test_case):
 
         while True:
             yield stats_legacy.update_user_keywords_stats("user_id", ["keyword_1", 'keyword_2'],
-                                                         cutoff=cutoff, decay=decay)
+                                                          cutoff=cutoff, decay=decay)
 
             _key3_freq_doc = yield db_utils.get_user_keyword_frequency("user_id", "keyword_3")
             self.assertEqual(_key3_freq_doc['frequency'], key3_freq_doc['frequency'] * (1 - decay))
@@ -48,6 +47,6 @@ class DBTestCase(tests.db_test_case):
             key3_freq_doc = _key3_freq_doc
 
         yield stats_legacy.update_user_keywords_stats("user_id", ["keyword_1", 'keyword_2'],
-                                                     cutoff=cutoff, decay=decay)
+                                                      cutoff=cutoff, decay=decay)
         key3_freq_doc = yield db_utils.get_user_keyword_frequency("user_id", "keyword_3")
         self.assertIsNone(key3_freq_doc)

@@ -2,8 +2,7 @@ from twisted.internet import defer
 
 import tests
 from adpay.db import utils as db_utils
-from adpay.stats import legacy as stats_legacy
-from adpay.stats import consts as stats_consts
+from adpay.stats import consts as stats_consts, legacy as stats_legacy
 
 
 class DBTestCase(tests.DataTestCase):

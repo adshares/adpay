@@ -1,13 +1,12 @@
-from unittest import TestCase
 import re
-from adpay.utils import utils as common_utils
-from adpay.stats import utils as stats_utils
-from adpay.stats import legacy as stats_legacy
-
 import time
+from unittest import TestCase
+
+from adpay.stats import legacy as stats_legacy
+from adpay.utils import utils as common_utils
 
 
-class TestGenkey(TestCase):
+class TestUtils(TestCase):
 
     def test_genkey(self):
         # Test for no '.'

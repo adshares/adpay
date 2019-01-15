@@ -2,9 +2,7 @@ from twisted.internet import defer
 
 import tests
 from adpay.db import utils as db_utils
-from adpay.stats import consts as stats_consts
-from adpay.stats import legacy as stats_legacy
-from adpay.stats import main as stats_default
+from adpay.stats import consts as stats_consts, legacy as stats_legacy, main as stats_default
 
 
 class DBTestCase(tests.db_test_case):
@@ -14,8 +12,8 @@ class DBTestCase(tests.db_test_case):
         payment_percentage_cutoff = 0.5
         cpv, cpc = 10, 20
         payments = yield stats_legacy.calculate_events_payments(None,
-                                                                                3600,
-                                                                                payment_percentage_cutoff=payment_percentage_cutoff)
+                                                                3600,
+                                                                payment_percentage_cutoff=payment_percentage_cutoff)
         self.assertIsNone(payments)
 
         cmp_doc = {"campaign_id": "campaign_id",
@@ -49,7 +47,7 @@ class DBTestCase(tests.db_test_case):
 
         if stats_consts.CALCULATION_METHOD == 'user_value':
             yield stats_legacy.calculate_events_payments(cmp_doc, timestamp,
-                                                                         payment_percentage_cutoff=payment_percentage_cutoff)
+                                                         payment_percentage_cutoff=payment_percentage_cutoff)
             # Check user values
             user_value_doc = yield db_utils.get_user_value_in_campaign(cmp_doc, "user_id1")
             self.assertEqual(user_value_doc['payment'], 20)
@@ -89,7 +87,7 @@ class DBTestCase(tests.db_test_case):
 
         if stats_consts.CALCULATION_METHOD == 'user_value':
             yield stats_legacy.calculate_events_payments(cmp_doc, 3600,
-                                                                         payment_percentage_cutoff=payment_percentage_cutoff)
+                                                         payment_percentage_cutoff=payment_percentage_cutoff)
 
             # Check user values
             user2_value_doc = yield db_utils.get_user_value_in_campaign("campaign_id", "user_id2")
@@ -114,8 +112,8 @@ class DBTestCase(tests.db_test_case):
         timestamp = 3600
 
         payments = yield stats_legacy.calculate_events_payments(None,
-                                                                                3600,
-                                                                                payment_percentage_cutoff=payment_percentage_cutoff)
+                                                                3600,
+                                                                payment_percentage_cutoff=payment_percentage_cutoff)
         self.assertIsNone(payments)
         cmp_doc = {"campaign_id": "campaign_id",
                    "time_start": 1234,
@@ -159,7 +157,7 @@ class DBTestCase(tests.db_test_case):
 
         if stats_consts.CALCULATION_METHOD == 'user_value':
             yield stats_legacy.calculate_events_payments(cmp_doc, 3600,
-                                                                         payment_percentage_cutoff=payment_percentage_cutoff)
+                                                         payment_percentage_cutoff=payment_percentage_cutoff)
 
             # Check user values
             user2_value_doc = yield db_utils.get_user_value_in_campaign("campaign_id", "user_id2")
