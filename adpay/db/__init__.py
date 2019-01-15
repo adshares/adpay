@@ -22,7 +22,7 @@ def configure_db():
     timestamp_idx = filter.sort(filter.ASCENDING("timestamp"))
     event_idx = filter.sort(filter.ASCENDING("event_id"))
     user_idx = filter.sort(filter.ASCENDING("user_id"))
-    keyowrd_idx = filter.sort(filter.ASCENDING("keyword"))
+    keyword_idx = filter.sort(filter.ASCENDING("keyword"))
     updated_idx = filter.sort(filter.ASCENDING("updated"))
 
     campaign_collection = yield get_campaign_collection()
@@ -55,14 +55,14 @@ def configure_db():
 
     user_keyword_frequency_collection = yield get_user_keyword_frequency_collection()
     yield user_keyword_frequency_collection.create_index(user_idx)
-    yield user_keyword_frequency_collection.create_index(keyowrd_idx)
+    yield user_keyword_frequency_collection.create_index(keyword_idx)
 
     user_profile_collection = yield get_user_profile_collection()
     yield user_profile_collection.create_index(user_idx)
 
     keyword_frequency_collection = yield get_keyword_frequency_collection()
     yield keyword_frequency_collection.create_index(updated_idx)
-    yield keyword_frequency_collection.create_index(keyowrd_idx)
+    yield keyword_frequency_collection.create_index(keyword_idx)
     yield logger.debug('Database configured successfully.')
 
     # Add default campaign
