@@ -1,11 +1,12 @@
-from unittest import TestCase
 import re
-from adpay.utils import utils as common_utils
-from adpay.stats import utils as stats_utils
 import time
+from unittest import TestCase
+
+from adpay.stats import legacy as stats_legacy
+from adpay.utils import utils as common_utils
 
 
-class TestGenkey(TestCase):
+class TestUtils(TestCase):
 
     def test_genkey(self):
         # Test for no '.'
@@ -21,4 +22,4 @@ class TestGenkey(TestCase):
 
     def test_reverse_insort(self):
         with self.assertRaises(ValueError):
-            stats_utils.reverse_insort(0, range(20), -5)
+            stats_legacy.reverse_insort(0, range(20), -5)

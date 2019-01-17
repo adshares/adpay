@@ -1,13 +1,12 @@
+import time
+
+from mock import patch
 from twisted.internet import defer, reactor
 
 import tests
 from adpay.db import utils as db_utils
-from adpay.stats import consts as stats_consts
-from adpay.stats import tasks as stats_tasks
+from adpay.stats import consts as stats_consts, tasks as stats_tasks
 from adpay.utils import utils as common_utils
-
-
-import time
 
 
 class DBTestCase(tests.db_test_case):
@@ -65,13 +64,21 @@ class DBTestCase(tests.db_test_case):
     @defer.inlineCallbacks
     def test_adpay_task_call(self):
 
-        yield stats_tasks.adpay_task()
-        ret = reactor.getDelayedCalls()
-        self.assertEqual(len(ret), 1)
-        call_time = ret[0].getTime()
-        self.assertGreaterEqual(call_time, time.time())
+        # Disabled
+        with patch('adpay.stats.consts.CALCULATE_PAYMENTS_PERIODICALLY', 0):
+            yield stats_tasks.adpay_task()
+            ret = reactor.getDelayedCalls()
+            self.assertEqual(len(ret), 0)
 
-        ret[0].cancel()
+        # Enabled
+        with patch('adpay.stats.consts.CALCULATE_PAYMENTS_PERIODICALLY', 1):
+            yield stats_tasks.adpay_task()
+            ret = reactor.getDelayedCalls()
+            self.assertEqual(len(ret), 1)
+            call_time = ret[0].getTime()
+            self.assertGreaterEqual(call_time, time.time())
+
+            ret[0].cancel()
 
     def test_configure_tasks(self):
 

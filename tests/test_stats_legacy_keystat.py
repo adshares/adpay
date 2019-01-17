@@ -2,8 +2,7 @@ from twisted.internet import defer
 
 import tests
 from adpay.db import utils as db_utils
-from adpay.stats import utils as stats_utils
-from adpay.stats import cache as stats_cache
+from adpay.stats import cache as stats_cache, legacy as stats_legacy
 
 
 class DBTestCase(tests.db_test_case):
@@ -18,9 +17,9 @@ class DBTestCase(tests.db_test_case):
             stats_cache.keyword_inc("keyword_2")
             stats_cache.EVENTS_STATS_VIEWS += 1
 
-            yield stats_utils.update_keywords_stats(recalculate_per_views=recalculate_per_views,
-                                                    cutoff=cutoff,
-                                                    decay=decay)
+            yield stats_legacy.update_keywords_stats(recalculate_per_views=recalculate_per_views,
+                                                     cutoff=cutoff,
+                                                     decay=decay)
 
             _key1_freq_doc = yield db_utils.get_keyword_frequency("keyword_1")
             self.assertIsNotNone(_key1_freq_doc)
@@ -39,9 +38,9 @@ class DBTestCase(tests.db_test_case):
         # Check keyword frequency decay.
         stats_cache.keyword_inc("keyword_3")
         stats_cache.EVENTS_STATS_VIEWS += 1
-        yield stats_utils.update_keywords_stats(recalculate_per_views=recalculate_per_views,
-                                                cutoff=cutoff,
-                                                decay=decay)
+        yield stats_legacy.update_keywords_stats(recalculate_per_views=recalculate_per_views,
+                                                 cutoff=cutoff,
+                                                 decay=decay)
         key3_freq_doc = yield db_utils.get_keyword_frequency("keyword_3")
 
         while True:
@@ -49,9 +48,9 @@ class DBTestCase(tests.db_test_case):
             stats_cache.keyword_inc("keyword_2")
             stats_cache.EVENTS_STATS_VIEWS += 1
 
-            yield stats_utils.update_keywords_stats(recalculate_per_views=recalculate_per_views,
-                                                    cutoff=cutoff,
-                                                    decay=decay)
+            yield stats_legacy.update_keywords_stats(recalculate_per_views=recalculate_per_views,
+                                                     cutoff=cutoff,
+                                                     decay=decay)
 
             _key3_freq_doc = yield db_utils.get_keyword_frequency("keyword_3")
             self.assertEqual(_key3_freq_doc['frequency'], key3_freq_doc['frequency'] * (1 - decay))
@@ -65,8 +64,8 @@ class DBTestCase(tests.db_test_case):
         stats_cache.keyword_inc("keyword_2")
         stats_cache.EVENTS_STATS_VIEWS += 1
 
-        yield stats_utils.update_keywords_stats(recalculate_per_views=recalculate_per_views,
-                                                cutoff=cutoff,
-                                                decay=decay)
+        yield stats_legacy.update_keywords_stats(recalculate_per_views=recalculate_per_views,
+                                                 cutoff=cutoff,
+                                                 decay=decay)
         key3_freq_doc = yield db_utils.get_user_keyword_frequency("user_id", "keyword_3")
         self.assertIsNone(key3_freq_doc)

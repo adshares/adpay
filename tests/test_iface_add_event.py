@@ -11,13 +11,13 @@ class TestAdd_event(db_test_case):
     def test_add_event(self):
 
         value = yield iface_utils.add_event(iface_proto.EventObject(
-            event_id=str(100),
-            event_type=stats_consts.EVENT_TYPE_CONVERSION,
-            timestamp=0,
-            user_id=str(100 % 20),
-            banner_id='1',
-            campaign_id="campaign_id",
-            our_keywords={},
-            human_score=1))
+                event_id=str(100),
+                event_type=stats_consts.EVENT_TYPE_CONVERSION,
+                timestamp=0,
+                user_id=str(100 % 20),
+                banner_id='1',
+                campaign_id="campaign_id",
+                our_keywords={},
+                human_score=1))
 
         self.assertIsNotNone(value)

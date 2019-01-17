@@ -1,9 +1,9 @@
+import random
 from twisted.internet import defer
 
 import tests
 from adpay.db import utils as db_utils
-from adpay.stats import consts as stats_consts
-from adpay.stats import utils as stats_utils
+from adpay.stats import consts as stats_consts, legacy as stats_legacy, main as stats_default
 
 
 class DBTestCase(tests.db_test_case):
@@ -12,9 +12,9 @@ class DBTestCase(tests.db_test_case):
     def test_campaign_payments(self):
         payment_percentage_cutoff = 0.5
         cpv, cpc = 10, 20
-        payments = yield stats_utils.calculate_events_payments_using_user_value(None,
-                                                                                3600,
-                                                                                payment_percentage_cutoff=payment_percentage_cutoff)
+        payments = yield stats_legacy.calculate_events_payments(None,
+                                                                3600,
+                                                                payment_percentage_cutoff=payment_percentage_cutoff)
         self.assertIsNone(payments)
 
         cmp_doc = {"campaign_id": "campaign_id",
@@ -47,14 +47,14 @@ class DBTestCase(tests.db_test_case):
         timestamp = 3600
 
         if stats_consts.CALCULATION_METHOD == 'user_value':
-            yield stats_utils.calculate_events_payments_using_user_value(cmp_doc, timestamp,
-                                                                         payment_percentage_cutoff=payment_percentage_cutoff)
+            yield stats_legacy.calculate_events_payments(cmp_doc, timestamp,
+                                                         payment_percentage_cutoff=payment_percentage_cutoff)
             # Check user values
             user_value_doc = yield db_utils.get_user_value_in_campaign(cmp_doc, "user_id1")
             self.assertEqual(user_value_doc['payment'], 20)
             self.assertEqual(user_value_doc['human_score'], 1)
         else:
-            yield stats_utils.calculate_events_payments_default(cmp_doc, timestamp)
+            yield stats_default.calculate_events_payments(cmp_doc, timestamp)
             _iter = yield db_utils.get_payments_iter(timestamp)
             while True:
                 payment_doc = yield _iter.next()
@@ -87,15 +87,15 @@ class DBTestCase(tests.db_test_case):
             "human_score": 1})
 
         if stats_consts.CALCULATION_METHOD == 'user_value':
-            yield stats_utils.calculate_events_payments_using_user_value(cmp_doc, 3600,
-                                                                         payment_percentage_cutoff=payment_percentage_cutoff)
+            yield stats_legacy.calculate_events_payments(cmp_doc, 3600,
+                                                         payment_percentage_cutoff=payment_percentage_cutoff)
 
             # Check user values
             user2_value_doc = yield db_utils.get_user_value_in_campaign("campaign_id", "user_id2")
             self.assertEqual(user2_value_doc['payment'], 10)
             self.assertEqual(user2_value_doc['human_score'], 1)
         else:
-            yield stats_utils.calculate_events_payments_default(cmp_doc, timestamp)
+            yield stats_default.calculate_events_payments(cmp_doc, timestamp)
             _iter = yield db_utils.get_payments_iter(timestamp)
             while True:
                 payment_doc = yield _iter.next()
@@ -112,9 +112,9 @@ class DBTestCase(tests.db_test_case):
         cpv, cpc = 10, 20
         timestamp = 3600
 
-        payments = yield stats_utils.calculate_events_payments_using_user_value(None,
-                                                                                3600,
-                                                                                payment_percentage_cutoff=payment_percentage_cutoff)
+        payments = yield stats_legacy.calculate_events_payments(None,
+                                                                3600,
+                                                                payment_percentage_cutoff=payment_percentage_cutoff)
         self.assertIsNone(payments)
         cmp_doc = {"campaign_id": "campaign_id",
                    "time_start": 1234,
@@ -157,15 +157,15 @@ class DBTestCase(tests.db_test_case):
             "human_score": 1})
 
         if stats_consts.CALCULATION_METHOD == 'user_value':
-            yield stats_utils.calculate_events_payments_using_user_value(cmp_doc, 3600,
-                                                                         payment_percentage_cutoff=payment_percentage_cutoff)
+            yield stats_legacy.calculate_events_payments(cmp_doc, 3600,
+                                                         payment_percentage_cutoff=payment_percentage_cutoff)
 
             # Check user values
             user2_value_doc = yield db_utils.get_user_value_in_campaign("campaign_id", "user_id2")
             self.assertEqual(user2_value_doc['payment'], 10)
             self.assertEqual(user2_value_doc['human_score'], 1)
         else:
-            yield stats_utils.calculate_events_payments_default(cmp_doc, timestamp)
+            yield stats_default.calculate_events_payments(cmp_doc, timestamp)
             _iter = yield db_utils.get_payments_iter(timestamp)
             while True:
                 payment_doc = yield _iter.next()
@@ -180,3 +180,112 @@ class DBTestCase(tests.db_test_case):
         _iter = yield db_utils.get_sorted_user_score_iter("campaign_id", 3600, limit=1)
         user_score_doc = yield _iter.next()
         self.assertIsNone(user_score_doc)
+
+    @defer.inlineCallbacks
+    def test_budget(self):
+        """
+        Test for hourly budget constraint. Total payments can't be higher than the campaign budget.
+        """
+
+        timestamp = 3600
+
+        # Add campaign with one banner
+        cmp_doc = {"campaign_id": "campaign_id",
+                   "time_start": timestamp - 100,
+                   "time_end": timestamp + 100,
+                   "max_cpc": 5,
+                   "max_cpm": 5000,
+                   "budget": 10,
+                   "filters": {'require': {},
+                               'exclude': {}}}
+
+        yield db_utils.update_campaign(cmp_doc)
+        yield db_utils.update_banner({'banner_id': 'banner_id',
+                                      'campaign_id': 'campaign_id'})
+
+        # Add all kind of paid events
+        event = {
+            "event_id": "event_id",         # This will be modified
+            "event_type": "click",          # This will be modified
+            "timestamp": timestamp + 2,
+            "user_id": 'test_user',
+            "banner_id": 'banner_id',
+            "campaign_id": "campaign_id",
+            "event_value": 5,
+            "our_keywords": {},
+            "their_keywords": {},
+            "human_score": 1.0}
+
+        for i, type in enumerate(stats_consts.PAID_EVENT_TYPES):
+            event['event_id'] = 'event_id_' + str(i)
+            event['event_type'] = type
+            yield db_utils.update_event(event)
+
+        # Calculate payments
+        yield stats_default.calculate_events_payments(cmp_doc, timestamp)
+
+        # Check payments
+        total_payments = 0
+        _iter = yield db_utils.get_payments_iter(timestamp)
+        while True:
+            payment_doc = yield _iter.next()
+            if not payment_doc:
+                break
+            total_payments += payment_doc['payment']
+
+        self.assertLessEqual(total_payments, cmp_doc['budget'])
+
+    @defer.inlineCallbacks
+    def test_non_payable_events(self):
+        """
+        Test for non payable events.
+        """
+
+        timestamp = 3600
+
+        # Add campaign with one banner
+        cmp_doc = {"campaign_id": "campaign_id",
+                   "time_start": timestamp - 100,
+                   "time_end": timestamp + 100,
+                   "max_cpc": 5,
+                   "max_cpm": 5000,
+                   "budget": 10,
+                   "filters": {'require': {},
+                               'exclude': {}}}
+
+        yield db_utils.update_campaign(cmp_doc)
+        yield db_utils.update_banner({'banner_id': 'banner_id',
+                                      'campaign_id': 'campaign_id'})
+
+        # Add 5 events
+        event = {
+            "event_id": "event_id",         # This will be modified
+            "event_type": "click",          # This will be modified
+            "timestamp": timestamp + 2,
+            "user_id": 'test_user',
+            "banner_id": 'banner_id',
+            "campaign_id": "campaign_id",
+            "event_value": 5,
+            "our_keywords": {},
+            "their_keywords": {},
+            "human_score": 1.0}
+
+        for i in xrange(5):
+            event['event_id'] = 'event_id_' + str(i)
+            event['event_type'] = str(random.randint(1000, 1001))
+            yield db_utils.update_event(event)
+
+        # Calculate payments
+        yield stats_default.calculate_events_payments(cmp_doc, timestamp)
+
+        # Check payments
+        _iter = yield db_utils.get_payments_iter(timestamp)
+        while True:
+            payment_doc = yield _iter.next()
+            if not payment_doc:
+                break
+
+            # Check payment reason is accepted
+            self.assertEqual(0, payment_doc['reason'])
+            # But payment is 0
+            self.assertEqual(0, payment_doc['payment'])

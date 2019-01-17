@@ -2,8 +2,7 @@ from twisted.internet import defer
 
 import tests
 from adpay.db import utils as db_utils
-from adpay.stats import utils as stats_utils
-from adpay.stats import consts as stats_consts
+from adpay.stats import consts as stats_consts, legacy as stats_legacy
 
 
 class DBTestCase(tests.db_test_case):
@@ -17,7 +16,7 @@ class DBTestCase(tests.db_test_case):
                 keyword = "keyword_%s" % keyword_id
                 yield db_utils.update_user_keyword_frequency(user, keyword, (user_id+keyword_id)*1.0/100, updated=False)
 
-        yield stats_utils.update_user_keywords_profiles(global_freq_cutoff=global_freq_cutoff)
+        yield stats_legacy.update_user_keywords_profiles(global_freq_cutoff=global_freq_cutoff)
 
         # As global keyword frequencies are empty, profiles should not be constructed.
         for user_id in range(10):
@@ -32,7 +31,7 @@ class DBTestCase(tests.db_test_case):
             frequency = max([(100-3*keyword_id)*1.0/100, 0])
             yield db_utils.update_keyword_frequency(keyword, frequency)
 
-        yield stats_utils.update_user_keywords_profiles(global_freq_cutoff=global_freq_cutoff)
+        yield stats_legacy.update_user_keywords_profiles(global_freq_cutoff=global_freq_cutoff)
 
         for user_id in range(10):
             user = "user_%s" % user_id
