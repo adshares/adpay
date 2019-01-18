@@ -121,7 +121,8 @@ Example `Supervisor <http://supervisord.org/>`_ config file:
 .. code-block:: ini
 
     [program:adpay]
-    command=python %(ENV_ADPAY_ROOT)s/daemon.py
+    directory=%(ENV_ADPAY_ROOT)s
+    command=pipenv run python daemon.py
     pidfile=%(ENV_ADPAY_ROOT)s/adpay.pid
     stdout_logfile=%(ENV_ADPAY_ROOT)s/adpay.log
     stdout_logfile_maxbytes=50MB
