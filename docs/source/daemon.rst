@@ -5,9 +5,9 @@ daemon.py
 
 When run, it does the following (in order):
 
-* sets up logging
-* configures database
-* initializes cache
-* configures periodical tasks
-* sets up the interface
-* starts listening for connections
+1) Sets up logging.
+2) Configures database.
+3) (optional) Initializes cache.
+4) (optional) Sets periodical calculations.
+5) Sets up the server interface.
+6) Starts listening for connections.

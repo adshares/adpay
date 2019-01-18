@@ -13,7 +13,7 @@ Check out code from repo:
 Requirements
 ------------
 
-For tl;dr solution, please check `Quick requirements install`_ for Ubuntu 18.04.
+For a `tl;dr` solution, please check `Quick requirements install`_ for Ubuntu 18.04.
 
 Python
 ~~~~~~
@@ -75,7 +75,7 @@ You can now use pipenv to install project dependencies.
 
     pipenv install
 
-or (for development):
+or for development:
 
 .. code-block:: sh
 
