@@ -14,15 +14,9 @@ env:
     - BUILD_PATH=/build/adpay
     - BUILD_NAME=adpay_build
     - PYTHONPATH=$PYTHONPATH:$BUILD_PATH
-    - ADPAY_LOG_CONFIG_FILE=config/log_config.json
     - ADPAY_MONGO_DB_PORT=27016
     - ADPAY_MONGO_DB_NAME=adpay
-    - ADPAY_MAX_USER_KEYWORDS_IN_PROFILE=50
-    - ADPAY_EVENT_TYPE_CLICK=click
-    - ADPAY_EVENT_TYPE_VIEW=view
-    - ADPAY_EVENT_TYPE_CONVERSION=conversion
     - ADPAY_SERVER_PORT=8090
-    - ADPAY_SECONDS_PER_HOUR=3600
     - PIPENV_DONT_LOAD_ENV=true
   matrix:
     - ADPAY_APP_ENV=dev
@@ -35,7 +29,7 @@ before_script:
   - shopt -s expand_aliases
   # Set alias - please note the missing quote you need to append.
   - alias in_docker='docker exec $BUILD_NAME /bin/bash -c "cd $BUILD_PATH && '
-  # Set aliast for cleanup
+  # Set alias for cleanup
   - alias cleanup_docker='docker stop $BUILD_NAME && docker rm $BUILD_NAME'
 
 jobs:
@@ -73,6 +67,9 @@ jobs:
         - in_docker pipenv run quality"
 
         - in_docker pipenv run coverage report -m"
+
+        # Test documentation building
+        - in_docker pipenv run build_docs -W"
 
         - sonar-scanner
 
