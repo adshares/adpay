@@ -10,7 +10,7 @@ campaign_update
 
         Please note:
 
-        * the params attribute contains a list of :ref:`CampaignObject`.
+        * the params attribute contains a list of adpay.iface.proto.CampaignObject.
 
         **Example request**:
 

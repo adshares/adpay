@@ -11,13 +11,6 @@ adpay.stats.cache module
     :members:
     :show-inheritance:
 
-adpay.stats.consts module
--------------------------
-
-.. automodule:: adpay.stats.consts
-    :members:
-    :show-inheritance:
-
 adpay.stats.tasks module
 ------------------------
 

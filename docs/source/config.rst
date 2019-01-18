@@ -3,18 +3,34 @@ Configuration
 
 Configuration is controlled through environmental variables. Default values are provided below.
 
-Application (adpay.const)
---------------------------
+Calculations (adpay.stats.consts)
+---------------------------------
 
-.. automodule:: adpay.const
+.. automodule:: adpay.stats.consts
     :members:
     :undoc-members:
     :show-inheritance:
 
 Database (adpay.db.const)
---------------------------
+-------------------------
 
-.. automodule:: adpay.db.const
+.. automodule:: adpay.db.consts
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Interface (adpay.iface.consts)
+------------------------------
+
+.. automodule:: adpay.iface.consts
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Utilities (adpay.utils.consts)
+------------------------------
+
+.. automodule:: adpay.utils.consts
     :members:
     :undoc-members:
     :show-inheritance:
@@ -22,11 +38,4 @@ Database (adpay.db.const)
 Logging
 -------
 
-Log messages are sent to stdout/stderr.
-
-*config/log_config.json* contains default Python logging configuration. You can learn more about it `here. <https://docs.python.org/2/library/logging.config.html>`_
-
-Supervisor
-----------
-
-Config for supervisor daemon is in *config/adpay.conf*.
+Log messages are by default sent to stdout/stderr.

@@ -4,12 +4,6 @@ adpay.db package
 Submodules
 ----------
 
-adpay.db.consts module
-----------------------
-
-.. automodule:: adpay.db.consts
-    :members:
-    :show-inheritance:
 
 adpay.db.utils module
 ---------------------

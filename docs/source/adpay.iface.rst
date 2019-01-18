@@ -4,12 +4,6 @@ adpay.iface package
 Submodules
 ----------
 
-adpay.iface.consts module
--------------------------
-
-.. automodule:: adpay.iface.consts
-    :members:
-    :show-inheritance:
 
 adpay.iface.server module
 -------------------------
