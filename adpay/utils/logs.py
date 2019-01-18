@@ -2,16 +2,12 @@ import json
 import logging
 import os
 
-LOG_CONFIG_JSON_FILE = os.getenv('ADPAY_LOG_CONFIG_JSON_FILE', None)
-LOG_LEVEL = os.getenv('ADPAY_LOG_LEVEL', 'DEBUG').upper()
+from adpay.utils import consts as utils_consts
 
 
 def setup():
 
-    if hasattr(logging, LOG_LEVEL):
-        loglevel = getattr(logging, LOG_LEVEL)
-    else:
-        loglevel = logging.DEBUG
+    loglevel = getattr(logging, utils_consts.LOG_LEVEL)
 
     # Default logging config
     logging.basicConfig(format='[%(asctime)s] %(name)-20s %(levelname)-9s %(message)s',
@@ -20,7 +16,7 @@ def setup():
                         level=loglevel)
 
     # Override logging config if provided
-    logfile_path = LOG_CONFIG_JSON_FILE
+    logfile_path = utils_consts.LOG_CONFIG_JSON_FILE
     if logfile_path and os.path.exists(logfile_path):
 
         with open(logfile_path, "r") as fd:
