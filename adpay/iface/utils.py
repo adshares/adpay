@@ -82,20 +82,15 @@ def add_event(eventobj):
     event_doc = eventobj.to_json()
     event_doc['campaign_id'] = 'not_found'
 
-    # Events are filtered by the campaign filters
-    if 'banner_id' in event_doc:
-        banner_doc = yield db_utils.get_banner(eventobj.banner_id)
-        if not banner_doc:
-            yield logger.warning("Event update: No banner found.")
-        else:
-            campaign_doc = yield db_utils.get_campaign(banner_doc['campaign_id'])
-            if not campaign_doc:
-                yield logger.warning("Event update: No campaign found.")
-            else:
-                event_doc['campaign_id'] = campaign_doc['campaign_id']
-    else:
+    banner_doc = yield db_utils.get_banner(eventobj.banner_id)
+    if not banner_doc:
         yield logger.warning("Event update: No banner found.")
-        event_doc['banner_id'] = 'not_found'
+    else:
+        campaign_doc = yield db_utils.get_campaign(banner_doc['campaign_id'])
+        if not campaign_doc:
+            yield logger.warning("Event update: No campaign found.")
+        else:
+            event_doc['campaign_id'] = campaign_doc['campaign_id']
 
     inserted = yield db_utils.update_event(event_doc)
 
