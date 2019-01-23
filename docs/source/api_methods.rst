@@ -8,9 +8,9 @@ campaign_update
 
         Updates (creates, if don't exist) campaign data, including banners.
 
-        Please note:
+        .. NOTE::
 
-        * the params attribute contains a list of adpay.iface.proto.CampaignObject.
+            The `params` attribute contains a list of adpay.iface.proto.CampaignObject.
 
         **Example request**:
 
