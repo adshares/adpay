@@ -1,5 +1,6 @@
 import random
 
+from mock import MagicMock, patch
 from twisted.internet import defer
 
 import tests
@@ -91,6 +92,30 @@ class DBTestCase(tests.db_test_case):
 
         # Check user values
         user2_value_doc = yield db_utils.get_user_value_in_campaign("campaign_id", "user_id2")
+        self.assertEqual(user2_value_doc['payment'], 10)
+        self.assertEqual(user2_value_doc['human_score'], 1)
+
+        # Mock total use score
+
+        yield db_utils.update_event({
+            'campaign_id': cmp_doc['campaign_id'],
+            "event_id": "event2_user_id3",
+            "event_type": stats_consts.EVENT_TYPE_CONVERSION,
+            "timestamp": timestamp + 2,
+            "user_id": 'user_id3',
+            "banner_id": 'banner_id1',
+            "event_value": 0.5,
+            "our_keywords": {},
+            "their_keywords": {},
+            "human_score": 1.0})
+
+        with patch('adpay.stats.legacy.get_total_user_score', MagicMock(return_value=0)):
+
+            yield stats_legacy.calculate_events_payments(cmp_doc, 3600,
+                                                         payment_percentage_cutoff=payment_percentage_cutoff)
+
+        # Check user values
+        user2_value_doc = yield db_utils.get_user_value_in_campaign("campaign_id", "user_id3")
         self.assertEqual(user2_value_doc['payment'], 10)
         self.assertEqual(user2_value_doc['human_score'], 1)
 

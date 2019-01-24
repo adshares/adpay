@@ -4,7 +4,7 @@ from twisted.internet import defer
 
 from adpay.db import utils as db_utils
 from adpay.iface import proto as iface_proto
-from adpay.stats import consts as stats_consts, utils as stats_utils
+from adpay.stats import consts as stats_consts, legacy as stats_legacy
 from adpay.utils import utils as common_utils
 
 
@@ -99,7 +99,7 @@ def add_event(eventobj):
         view_view_keywords = []
         for user_keyword, user_val in eventobj.our_keywords.items():
             view_view_keywords.append(common_utils.genkey(user_keyword, user_val))
-        yield stats_utils.add_view_keywords(eventobj.user_id, view_view_keywords)
+        yield stats_legacy.add_view_keywords(eventobj.user_id, view_view_keywords)
 
     defer.returnValue(inserted)
 

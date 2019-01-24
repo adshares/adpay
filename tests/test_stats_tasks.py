@@ -1,6 +1,6 @@
 import time
 
-from mock import patch
+from mock import MagicMock, patch
 from twisted.internet import defer, reactor
 
 import tests
@@ -79,6 +79,33 @@ class DBTestCase(tests.db_test_case):
             self.assertGreaterEqual(call_time, time.time())
 
             ret[0].cancel()
+
+    def test_calculate_events_payments(self):
+        """
+        Make sure proper calculation functions are called.
+
+        :return:
+        """
+        with patch('adpay.stats.consts.CALCULATION_METHOD', 'default'):
+            calc_function = MagicMock()
+            with patch('adpay.stats.main.calculate_events_payments', calc_function):
+
+                stats_tasks.calculate_events_payments(campaign_doc=None,
+                                                      timestamp=0)
+            calc_function.assert_called_once()
+
+        with patch('adpay.stats.consts.CALCULATION_METHOD', 'user_value'):
+            calc_function = MagicMock()
+            keyword_update_function = MagicMock()
+            with patch('adpay.stats.legacy.calculate_events_payments', calc_function):
+                with patch('adpay.stats.legacy.update_user_keywords_profiles', keyword_update_function):
+
+                    stats_tasks.calculate_events_payments(campaign_doc=None,
+                                                          timestamp=0,
+                                                          payment_percentage_cutoff=0.5)
+
+            calc_function.assert_called_once()
+            keyword_update_function.assert_called_once()
 
     def test_configure_tasks(self):
 
