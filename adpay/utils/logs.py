@@ -1,5 +1,5 @@
 import json
-import logging
+import logging.config
 import os
 
 from adpay.utils import consts as utils_consts
