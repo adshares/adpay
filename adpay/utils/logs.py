@@ -6,6 +6,14 @@ from adpay.utils import consts as utils_consts
 
 
 def setup():
+    """
+    Configure global logging configuration
+    1. Set up log level (DEBUG by default).
+    2. Set up default message format.
+    3. (optional) override the settings.
+
+    :return:
+    """
 
     loglevel = getattr(logging, utils_consts.LOG_LEVEL)
 
