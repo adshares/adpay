@@ -33,11 +33,3 @@ adpay.stats.utils module
 .. automodule:: adpay.stats.utils
     :members:
     :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: adpay.stats
-    :members:
-    :show-inheritance:

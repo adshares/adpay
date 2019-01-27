@@ -23,11 +23,3 @@ adpay.iface.utils module
 .. automodule:: adpay.iface.utils
     :members:
     :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: adpay.iface
-    :members:
-    :show-inheritance:

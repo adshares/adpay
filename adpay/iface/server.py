@@ -25,7 +25,7 @@ class AdPayIfaceServer(JSONRPCServer):
         """
         JSON-RPC campaign_update method handler.
 
-        :param campaigns: Variable number of campaigns. See *args.
+        :param campaigns: Variable number of campaigns.
         :return: True
         """
         if not campaigns:
@@ -45,7 +45,7 @@ class AdPayIfaceServer(JSONRPCServer):
         """
         JSON-RPC campaign_delete method handler.
 
-        :param campaign_ids: Variable number of campaign identifiers. See *args.
+        :param campaign_ids: Variable number of campaign identifiers.
         :return: True
         """
         if not campaign_ids:
@@ -62,7 +62,7 @@ class AdPayIfaceServer(JSONRPCServer):
         """
         JSON-RPC add_events method handler.
 
-        :param events: Variable number of events. See *args.
+        :param events: Variable number of events.
         :return: True
         """
         if not events:
