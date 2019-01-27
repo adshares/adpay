@@ -70,7 +70,7 @@ def delete_campaign(campaign_id):
 @defer.inlineCallbacks
 def add_event(eventobj):
     """
-    Insert event object into the database.
+    Insert (create or update) event object into the database.
 
     Update keywords and view statistics (for user value method)
 
@@ -105,19 +105,20 @@ def add_event(eventobj):
 
 
 @defer.inlineCallbacks
-def get_payments(payreq):
+def get_payments(pay_request):
     """
-    1. Check if payment calculation for last round is done.
-    2. Get payment iterations per event
+    Fetch the payments from the database.
 
-    :param payreq:
-    :return:
+    May raise a PaymentsNotCalculatedException if payments are not ready yet.
+
+    :param pay_request: Payment request.
+    :return: List of payments.
     """
     logger = logging.getLogger(__name__)
-    yield logger.info("Checking for payments for {0}.".format(payreq.timestamp))
+    yield logger.info("Checking for payments for {0}.".format(pay_request.timestamp))
 
     # Check if payments calculation is done
-    round_doc = yield db_utils.get_payment_round(payreq.timestamp)
+    round_doc = yield db_utils.get_payment_round(pay_request.timestamp)
     if not round_doc:
         yield logger.error("Payments not calculated yet.")
         raise PaymentsNotCalculatedException()
@@ -125,7 +126,7 @@ def get_payments(payreq):
     # Collect events and theirs payment and respond to request
     events_payments = []
 
-    _iter = yield db_utils.get_payments_iter(payreq.timestamp)
+    _iter = yield db_utils.get_payments_iter(pay_request.timestamp)
     while True:
         payment_doc = yield _iter.next()
         if not payment_doc:
