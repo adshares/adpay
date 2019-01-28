@@ -6,6 +6,7 @@ from adpay.iface.consts import INVALID_OBJECT
 
 
 class InterfaceEventTestCase(tests.WebTestCase):
+
     @defer.inlineCallbacks
     def get_banner_events(self, banner_id):
         events = []
@@ -54,7 +55,7 @@ class InterfaceEventTestCase(tests.WebTestCase):
         yield db_utils.update_campaign(cmp_doc)
         yield db_utils.update_banner({'banner_id': 'banner_1', 'campaign_id': 'campaign_id'})
 
-        # Test event additon with existing campaign
+        # Test event addition with existing campaign
         response = yield self.get_response("add_events", [event_data])
         self.assertIsNotNone(response)
         self.assertTrue(response['result'])

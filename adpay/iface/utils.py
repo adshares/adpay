@@ -4,7 +4,7 @@ from twisted.internet import defer
 
 from adpay.db import utils as db_utils
 from adpay.iface import proto as iface_proto
-from adpay.stats import consts as stats_consts, utils as stats_utils
+from adpay.stats import consts as stats_consts, legacy as stats_legacy
 from adpay.utils import utils as common_utils
 
 
@@ -70,7 +70,7 @@ def delete_campaign(campaign_id):
 @defer.inlineCallbacks
 def add_event(eventobj):
     """
-    Insert event object into the database.
+    Insert (create or update) event object into the database.
 
     Update keywords and view statistics (for user value method)
 
@@ -82,20 +82,15 @@ def add_event(eventobj):
     event_doc = eventobj.to_json()
     event_doc['campaign_id'] = 'not_found'
 
-    # Events are filtered by the campaign filters
-    if 'banner_id' in event_doc:
-        banner_doc = yield db_utils.get_banner(eventobj.banner_id)
-        if not banner_doc:
-            yield logger.warning("Event update: No banner found.")
-        else:
-            campaign_doc = yield db_utils.get_campaign(banner_doc['campaign_id'])
-            if not campaign_doc:
-                yield logger.warning("Event update: No campaign found.")
-            else:
-                event_doc['campaign_id'] = campaign_doc['campaign_id']
-    else:
+    banner_doc = yield db_utils.get_banner(eventobj.banner_id)
+    if not banner_doc:
         yield logger.warning("Event update: No banner found.")
-        event_doc['banner_id'] = 'not_found'
+    else:
+        campaign_doc = yield db_utils.get_campaign(banner_doc['campaign_id'])
+        if not campaign_doc:
+            yield logger.warning("Event update: No campaign found.")
+        else:
+            event_doc['campaign_id'] = campaign_doc['campaign_id']
 
     inserted = yield db_utils.update_event(event_doc)
 
@@ -104,25 +99,26 @@ def add_event(eventobj):
         view_view_keywords = []
         for user_keyword, user_val in eventobj.our_keywords.items():
             view_view_keywords.append(common_utils.genkey(user_keyword, user_val))
-        yield stats_utils.add_view_keywords(eventobj.user_id, view_view_keywords)
+        yield stats_legacy.add_view_keywords(eventobj.user_id, view_view_keywords)
 
     defer.returnValue(inserted)
 
 
 @defer.inlineCallbacks
-def get_payments(payreq):
+def get_payments(pay_request):
     """
-    1. Check if payment calculation for last round is done.
-    2. Get payment iterations per event
+    Fetch the payments from the database.
 
-    :param payreq:
-    :return:
+    May raise a PaymentsNotCalculatedException if payments are not ready yet.
+
+    :param pay_request: Payment request.
+    :return: List of payments.
     """
     logger = logging.getLogger(__name__)
-    yield logger.info("Checking for payments for {0}.".format(payreq.timestamp))
+    yield logger.info("Checking for payments for {0}.".format(pay_request.timestamp))
 
     # Check if payments calculation is done
-    round_doc = yield db_utils.get_payment_round(payreq.timestamp)
+    round_doc = yield db_utils.get_payment_round(pay_request.timestamp)
     if not round_doc:
         yield logger.error("Payments not calculated yet.")
         raise PaymentsNotCalculatedException()
@@ -130,7 +126,7 @@ def get_payments(payreq):
     # Collect events and theirs payment and respond to request
     events_payments = []
 
-    _iter = yield db_utils.get_payments_iter(payreq.timestamp)
+    _iter = yield db_utils.get_payments_iter(pay_request.timestamp)
     while True:
         payment_doc = yield _iter.next()
         if not payment_doc:

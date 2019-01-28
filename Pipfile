@@ -9,6 +9,10 @@ mock = "~=2.0"
 mongomock = "~=3.13"
 behave = "*"
 requests = "*"
+sphinx = "*"
+sphinx-rtd-theme = "*"
+sphinx-jsondomain = {git = "https://github.com/boolangery/sphinx-jsondomain.git"}
+sphinxcontrib-httpdomain = "*"
 
 [packages]
 jsonobject = "~=0.9.5"

@@ -174,7 +174,7 @@ texinfo_documents = [
 # -- Options for intersphinx extension ---------------------------------------
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None,
+intersphinx_mapping = {'python': ('https://docs.python.org/', None),
                        'twisted': ('https://twisted.readthedocs.io/en/twisted-18.9.0', None)}
 
 # -- Options for todo extension ----------------------------------------------

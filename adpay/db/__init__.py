@@ -10,7 +10,9 @@ from adpay.db import consts as db_const
 @defer.inlineCallbacks
 def configure_db():
     """
-    Initialize the database.
+    Initialize the database, configure indexes.
+
+    Add a dummy campaigns for events without campaigns.
 
     :return:
     """
@@ -70,8 +72,9 @@ def configure_db():
                                           {
                                               'campaign_id': 'not_found',
                                               'time_start': 0,
-                                              'time_end': 1899999999,
-                                              'filters': {'require': {}, 'exclude': {}},
+                                              'time_end':  2147483646,
+                                              'filters': {'require': {},
+                                                          'exclude': {}},
                                               'keywords': {},
                                               'banners': [],
                                               'max_cpc': 0,
@@ -84,6 +87,8 @@ def configure_db():
 @defer.inlineCallbacks
 def get_mongo_db():
     """
+    Return specific, named database for this application.
+
     :return: Database
     """
     conn = yield get_mongo_connection()
@@ -93,6 +98,8 @@ def get_mongo_db():
 @defer.inlineCallbacks
 def get_payment_collection():
     """
+    Return collection for payments.
+
     :return: Payments collection
     """
     mongo_db = yield get_mongo_db()
@@ -102,6 +109,8 @@ def get_payment_collection():
 @defer.inlineCallbacks
 def get_payment_rounds_collection():
     """
+    Return collection for payment rounds.
+
     :return: Payment rounds collection
     """
     mongo_db = yield get_mongo_db()
@@ -111,6 +120,8 @@ def get_payment_rounds_collection():
 @defer.inlineCallbacks
 def get_campaign_collection():
     """
+    Return collection for campaigns.
+
     :return: Campaign collection
     """
     mongo_db = yield get_mongo_db()
@@ -120,6 +131,8 @@ def get_campaign_collection():
 @defer.inlineCallbacks
 def get_banner_collection():
     """
+    Return collection for banners.
+
     :return: Banner collection
     """
     mongo_db = yield get_mongo_db()
@@ -129,6 +142,8 @@ def get_banner_collection():
 @defer.inlineCallbacks
 def get_event_collection():
     """
+    Return collection for events.
+
     :return: Event collection
     """
     mongo_db = yield get_mongo_db()
@@ -138,6 +153,8 @@ def get_event_collection():
 @defer.inlineCallbacks
 def get_user_value_collection():
     """
+    Return collection for user values (legacy).
+
     :return: User values collection
     """
     mongo_db = yield get_mongo_db()
@@ -147,6 +164,8 @@ def get_user_value_collection():
 @defer.inlineCallbacks
 def get_user_score_collection():
     """
+    Return collection for user scores (legacy).
+
     :return: User score collection
     """
     mongo_db = yield get_mongo_db()
@@ -156,6 +175,8 @@ def get_user_score_collection():
 @defer.inlineCallbacks
 def get_user_keyword_frequency_collection():
     """
+    Return collection for keywords frequencies in user profiles (legacy).
+
     :return: User keyword frequency collection
     """
     mongo_db = yield get_mongo_db()
@@ -165,6 +186,8 @@ def get_user_keyword_frequency_collection():
 @defer.inlineCallbacks
 def get_user_profile_collection():
     """
+    Return collection for user profiles (legacy).
+
     :return: User profile collection
     """
     mongo_db = yield get_mongo_db()
@@ -174,7 +197,9 @@ def get_user_profile_collection():
 @defer.inlineCallbacks
 def get_keyword_frequency_collection():
     """
-    :return: Keyword collection
+    Return collection for keyword frequencies (legacy).
+
+    :return: Keyword frequency collection
     """
     mongo_db = yield get_mongo_db()
     defer.returnValue(mongo_db.keyword_frequency)
@@ -187,7 +212,7 @@ MONGO_CONNECTION = None
 @defer.inlineCallbacks
 def get_mongo_connection():
     """
-    :return: Global MongoDB connection (MONGO_CONNECTION)
+    :return: Global MongoDB connection (adpay.db.MONGO_CONNECTION)
     """
     global MONGO_CONNECTION
     if MONGO_CONNECTION is None:
@@ -200,7 +225,7 @@ def disconnect():
     """
     Disconnect the global connection
 
-    :return:
+    :return: None
     """
     global MONGO_CONNECTION
     conn = yield get_mongo_connection()

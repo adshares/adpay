@@ -63,7 +63,6 @@ def calculate_events_payments(campaign_doc, timestamp, payment_percentage_cutoff
             if total_user_payments[event_type] > 0:
                 user_budget[event_type]['share'] = 1.0 * user_budget_score[event_type]/total_user_payments[event_type]
 
-        for event_type in stats_consts.PAID_EVENT_TYPES:
             if user_budget[event_type]['share'] > 0:
                 user_budget[event_type]['event_value'] = int(min([user_budget[event_type]['default_value'],
                                                                   user_budget[event_type]['share'] *
@@ -223,6 +222,7 @@ def calculate_payments_for_new_users(campaign_doc, timestamp):
 
     # For new users add payments as cpv
     uids = yield db_utils.get_distinct_users_from_events(campaign_doc['campaign_id'], timestamp)
+
     yield logger.debug("Found {0} distinct user ids".format(len(uids)))
 
     for uid in uids:
@@ -310,8 +310,6 @@ def get_total_user_score(campaign_id, timestamp, limit):
         total_score += user_score_doc['score']
     yield logger.info("Total user score is: {0}".format(total_score))
     defer.returnValue(total_score)
-
-
 
 
 @defer.inlineCallbacks

@@ -1,4 +1,4 @@
-# This file is still required as readthedocs doesn't yet support Pipfile.
+# This file is still required as readthedocs doesn't support Pipfile yet.
 # See https://github.com/rtfd/readthedocs.org/issues/3181
 
 sphinx

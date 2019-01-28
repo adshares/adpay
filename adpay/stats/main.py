@@ -23,9 +23,6 @@ def calculate_events_payments(campaign_doc, timestamp):
 
     # Get all users for this campaign-period
     uids = yield db_utils.get_distinct_users_from_events(campaign_doc['campaign_id'], timestamp)
-    if uids is None:
-        logger.debug("No users found!")
-        defer.returnValue(None)
 
     for uid in uids:
         user_data[uid] = {'total': 0.0,

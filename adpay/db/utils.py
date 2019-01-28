@@ -7,6 +7,8 @@ from adpay.utils import utils as common_utils
 
 class QueryIterator(object):
     """
+    Helper class for iterating over txmongo cursor queries.
+
     Every query with cursor = True can be iterated with simple way:
 
     _iter = query_iterator(query)
@@ -36,7 +38,7 @@ class QueryIterator(object):
         """
         Generator for items.
 
-        :return: item.
+        :return: Yields a single value from cursor.
         """
         if self.docs is None:
             self.docs, self.dfr = yield self.query
@@ -62,6 +64,7 @@ class QueryIterator(object):
 @defer.inlineCallbacks
 def get_campaign(campaign_id):
     """
+    Fetch the campaign document from the database.
 
     :param campaign_id: Campaign id
     :return: Campaign document
@@ -74,8 +77,9 @@ def get_campaign(campaign_id):
 @defer.inlineCallbacks
 def get_campaign_iter():
     """
+    Fetch all campaign documents from the database.
 
-    :return: Iterable campaign collection as a QueryIterator.
+    :return: Campaign iterable as a QueryIterator.
     """
     collection = yield db.get_campaign_collection()
     defer.returnValue(QueryIterator(collection.find(cursor=True)))
@@ -113,6 +117,7 @@ def delete_campaign(campaign_id):
 @defer.inlineCallbacks
 def get_banner(banner_id):
     """
+    Fetch the banner document from the database.
 
     :param banner_id: Banner identifier.
     :return: Banner document.
@@ -125,6 +130,7 @@ def get_banner(banner_id):
 @defer.inlineCallbacks
 def get_banners_iter():
     """
+    Fetch all banner documents from the database.
 
     :return: Iterable banner collection (QueryIterator)
     """
@@ -135,7 +141,7 @@ def get_banners_iter():
 @defer.inlineCallbacks
 def get_campaign_banners(campaign_id):
     """
-    Get banners for the campaign.
+    Fetch the banner documents from the database for a given campaign.
 
     :param campaign_id: Campaign identifier.
     :return: List of banner documents.
@@ -176,9 +182,9 @@ def delete_campaign_banners(campaign_id):
 @defer.inlineCallbacks
 def update_event(event_doc):
     """
-    Create or update an event
+    Create or update an event if it doesn't exist.
 
-    :param event_obj: event JSONObject
+    :param event_doc: Event document
     :return:
     """
 
@@ -194,10 +200,11 @@ def update_event(event_doc):
 @defer.inlineCallbacks
 def get_banner_events_iter(banner_id, timestamp):
     """
+    Fetch all banner documents from the database.
 
     :param banner_id: Banner identifier.
     :param timestamp: Time in seconds since the epoch, used for getting the full hour timestamp.
-    :return: Iterable events for the banner.
+    :return: Iterable events collection (QueryIterator)
     """
     timestamp = common_utils.timestamp2hour(timestamp)
     collection = yield db.get_event_collection()
@@ -211,6 +218,7 @@ def get_banner_events_iter(banner_id, timestamp):
 @defer.inlineCallbacks
 def get_events_per_user_iter(campaign_id, timestamp, uid):
     """
+    Fetch all events for this campaign, for this timestamp, for this uid.
 
     :param campaign_id: Campaign identifier.
     :param timestamp: Time in seconds since the epoch, used for getting the full hour timestamp.
@@ -231,10 +239,11 @@ def get_events_per_user_iter(campaign_id, timestamp, uid):
 @defer.inlineCallbacks
 def get_distinct_users_from_events(campaign_id, timestamp):
     """
+    Fetch distinct user identifiers for this campaign, for this timestamp.
 
     :param campaign_id: Campaign identifier.
     :param timestamp: Time in seconds since the epoch, used for getting the full hour timestamp.
-    :return: Return list of distinct users ids for the given campaign timestamp.
+    :return: List of distinct users ids.
     """
     timestamp = common_utils.timestamp2hour(timestamp)
     collection = yield db.get_event_collection()
@@ -248,9 +257,9 @@ def get_distinct_users_from_events(campaign_id, timestamp):
 @defer.inlineCallbacks
 def delete_event(event_id):
     """
-    Remove event from collection.
+    Remove event from the database.
 
-    :param event_id:
+    :param event_id: Identifier of the event to remove.
     :return:
     """
     collection = yield db.get_event_collection()
@@ -264,11 +273,11 @@ def update_event_payment(campaign_id, timestamp, event_id, payment, reason):
     """
     Create or update payment information for event.
 
-    :param campaign_id:
-    :param timestamp:
-    :param event_id:
-    :param payment:
-    :param reason:
+    :param campaign_id: Campaign identifier.
+    :param timestamp: Timestamp (epoch, in seconds, full hour)
+    :param event_id: Event identifier
+    :param payment: Payment amount.
+    :param reason: Reason (payment classifier).
     :return:
     """
     timestamp = common_utils.timestamp2hour(timestamp)
@@ -281,14 +290,16 @@ def update_event_payment(campaign_id, timestamp, event_id, payment, reason):
         'campaign_id': campaign_id,
         'reason': reason
         }, upsert=True)
+
     defer.returnValue(return_value)
 
 
 @defer.inlineCallbacks
 def get_payments_iter(timestamp):
     """
+    Fetch all payment documents from the database.
 
-    :param timestamp:
+    :param timestamp: Timestamp (epoch, seconds, full hour) for this request.
     :return: Iterable payment information.
     """
     timestamp = common_utils.timestamp2hour(timestamp)
@@ -303,9 +314,10 @@ def get_payments_iter(timestamp):
 @defer.inlineCallbacks
 def get_payment_round(timestamp):
     """
+    Fetch a payment round document from the database.
 
-    :param timestamp:
-    :return: One payment round.
+    :param timestamp: Timestamp (epoch, seconds, full hour) for this request.
+    :return: Payment round document.
     """
     timestamp = common_utils.timestamp2hour(timestamp)
     collection = yield db.get_payment_rounds_collection()

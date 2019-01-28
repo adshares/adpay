@@ -1,15 +1,13 @@
 adpay.db package
 ================
 
-Submodules
-----------
+This package provides database storage functionality.
 
-adpay.db.consts module
-----------------------
+The responsibility break down is:
 
-.. automodule:: adpay.db.consts
-    :members:
-    :show-inheritance:
+* adpay.db provides database initialization and connection
+* adpay.db.consts is the module hosting database configuration
+* adpay.utils provides read and write tools to storage
 
 adpay.db.utils module
 ---------------------

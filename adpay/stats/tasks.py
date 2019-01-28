@@ -103,7 +103,7 @@ def calculate_events_payments(campaign_doc, timestamp, payment_percentage_cutoff
         yield stats_main.calculate_events_payments(campaign_doc, timestamp)
     elif stats_consts.CALCULATION_METHOD == 'user_value':
         # User keywords profiles update
-        yield stats_utils.update_user_keywords_profiles()
+        yield stats_legacy.update_user_keywords_profiles()
         yield stats_legacy.calculate_events_payments(campaign_doc, timestamp, payment_percentage_cutoff)
 
 

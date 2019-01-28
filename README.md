@@ -26,3 +26,10 @@ bash scripts/pre-install.sh
 pipenv install
 pipenv run daemon
 ```
+
+## Authors
+
+- **Krzysztof Kuchta** - _Python programmer_
+- **[Adam Włodarkiewicz](https://github.com/awlodarkiewicz)** - _Python programmer_
+
+See also the list of [contributors](https://github.com/adshares/adpay/contributors) who participated in this project.

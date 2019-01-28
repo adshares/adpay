@@ -94,9 +94,8 @@ def validate_keywords(filters_dict, keywords):
 def validate_bounds(bounds, keyword_values):
     """
     Validate if keyword value is correct.
-
     Value is between bounds (bounds has two elements)
-     or
+    or
     Value is equal to bounds (default, bounds is assumed to have one element)
 
     :param bounds: Iterable (1 or 2 elements)
