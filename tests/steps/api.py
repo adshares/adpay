@@ -1,5 +1,9 @@
-from behave import *
+from __future__ import print_function
+
 import json
+
+import requests
+from behave import *
 
 
 @given('I want to campaign update')
@@ -41,27 +45,18 @@ def step_impl(context):
 
 @when('I request resource')
 def step_impl(context):
-    context.response = context.txserver.get_response_raw(context.request_data)
 
-
-@then('The response should be "{code}"')
-def step_impl(context, code):
-    pass
-
-    #def test_code(response):
-    #    assert response.code == int(code)
-
-    #context.response.addCallback(test_code)
+    response = requests.post(context.interface_url, context.request_data)
+    context.response = response.content
 
 
 @then('The response should contain')
 def step_impl(context):
+    try:
+        assert json.loads(context.response) == json.loads(context.text)
+    except AssertionError as e:
+        print(e)
+        print("Response received: {0}".format(context.response))
+        raise
 
-    def test_code(response, resp_text):
-        try:
-            assert response == json.loads(resp_text)
-        except AssertionError as e:
-            raise
-
-    resp_text = context.text
-    context.response.addCallback(test_code, resp_text)
+    print("BEHAVE HIDES LAST PRINT")

@@ -1,24 +1,26 @@
-# -- FILE: features/environment.py
-from twisted.internet import reactor, defer
-from tests import DBTestCase
+import socket
+from threading import Thread
+
+from twisted.internet import reactor
+
+from adpay.iface.consts import SERVER_PORT
 from adpay.iface.server import configure_iface
-from adpay import db
-from tests import WebTestCase
-
-
-def before_tag(context, tag):
-    if tag == "fixture.adpay.db":
-        context.apday_db_direct = True
 
 
 def before_all(context):
 
-    context.txserver = WebTestCase()
-    context.txserver.setUp()
+    # Configure our interface url
+    host = socket.gethostbyname(socket.gethostname())
+    port = SERVER_PORT
+    context.interface_url = 'http://{0}:{1}'.format(host, port)
 
-    context.apday_db_direct = False
+    # Start listening
+    context.server = configure_iface(port=port)
+    Thread(target=reactor.run, args=(False,)).start()
 
 
 def after_all(context):
-    reactor.callLater(2, reactor.stop)
-    reactor.run()
+
+    # Shutdown interface
+    context.server.stopListening()
+    reactor.callLater(1, reactor.stop)
