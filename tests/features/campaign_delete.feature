@@ -1,7 +1,5 @@
-@fixture.adpay.db
 Feature: Campaign functionality
 
-  @delete
   Scenario: Campaign delete
     Given I want to campaign delete
     When I provide the data:

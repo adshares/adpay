@@ -1,6 +1,5 @@
-@fixture.adpay.db
 Feature: Campaign functionality
-  @event
+
   Scenario: Add events
     Given I want to add events
     When I provide the data:
@@ -179,7 +178,7 @@ Feature: Campaign functionality
       "id": "gz0qkJJxfoldKaHZAfoXzubvoMqxqvzZ",
       "error":    {
         "message": "Property event_type is required.",
-        "code": -32603
+        "code": -32010
       }
     }
     """

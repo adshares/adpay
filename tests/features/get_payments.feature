@@ -1,6 +1,5 @@
-@fixture.adpay.db
 Feature: Campaign functionality
-  @payments
+
   Scenario: Get payments
     Given I want to get payments
     When I provide the data:
@@ -19,11 +18,7 @@ Feature: Campaign functionality
       {
          "jsonrpc": "2.0",
          "id": "jqZOU0bzSvf3xS2Z9VpwqnULlKrqNv1J",
-         "result": {"payments": [   {
-            "event_id": "7oPvkaFLYRbHy8TPwETE1ifWdMHaIR3e",
-            "reason": 3,
-            "amount": 0
-         }]}
+         "result": {"payments": []}
       }
     """
   Scenario: Get payments -32700
@@ -114,7 +109,7 @@ Feature: Campaign functionality
         "id": "llj3wWF5Ze3vkQ3zDnB7GO7lA7j4Nda5",
         "error":    {
           "message": "Property timestamp is required.",
-          "code": -32603
+          "code": -32010
         }
       }
     """
