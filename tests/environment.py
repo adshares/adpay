@@ -23,4 +23,4 @@ def after_all(context):
 
     # Shutdown interface
     context.server.stopListening()
-    reactor.callLater(1, reactor.stop)
+    reactor.stop()
