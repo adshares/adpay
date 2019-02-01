@@ -61,10 +61,13 @@ def delete_campaign(campaign_id):
     yield logger.info("Removing campaign banners for {0}".format(campaign_id))
     yield db_utils.delete_campaign_banners(campaign_id)
 
-    # Delete campaign object
-
+    # "Delete" campaign
+    # Set time_end to 1 - the campaign will be cleaned up during calculation task.
     yield logger.info("Removing campaign for {0}".format(campaign_id))
-    yield db_utils.delete_campaign(campaign_id)
+
+    campaign_doc = yield db_utils.get_campaign(campaign_id)
+    campaign_doc['time_end'] = 1
+    yield db_utils.update_campaign(campaign_doc)
 
 
 @defer.inlineCallbacks
