@@ -66,8 +66,9 @@ def delete_campaign(campaign_id):
     yield logger.info("Removing campaign for {0}".format(campaign_id))
 
     campaign_doc = yield db_utils.get_campaign(campaign_id)
-    campaign_doc['time_end'] = 1
-    yield db_utils.update_campaign(campaign_doc)
+    if campaign_doc:
+        campaign_doc['time_end'] = 1
+        yield db_utils.update_campaign(campaign_doc)
 
 
 @defer.inlineCallbacks

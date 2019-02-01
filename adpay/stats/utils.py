@@ -58,7 +58,7 @@ def filter_event(event_doc, campaign_doc, banner_doc):
         return stats_consts.EVENT_PAYMENT_ACCEPTED
 
     # Reject, because campaign doesn't exist
-    if campaign_doc is None:
+    if campaign_doc is None or campaign_doc.get('removed', False):
         logger.warning("Campaign not found: {0}".format(event_doc['campaign_id']))
         return stats_consts.EVENT_PAYMENT_REJECTED_CAMPAIGN_NOT_FOUND
 
