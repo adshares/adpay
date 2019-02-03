@@ -11,10 +11,10 @@ class TestUtils(TestCase):
     def test_genkey(self):
         # Test for no '.'
         generated_key = common_utils.genkey('key', 'value')
-        self.assertFalse(re.search('\.', generated_key))
+        self.assertFalse(re.search(r'\.', generated_key))
 
         generated_key = common_utils.genkey('key', '...value..')
-        self.assertFalse(re.search('\.', generated_key))
+        self.assertFalse(re.search(r'\.', generated_key))
 
     def test_timestamp2hour(self):
         ts = common_utils.timestamp2hour(time.time())

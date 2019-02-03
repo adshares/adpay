@@ -247,7 +247,7 @@ def create_user_budget(campaign_doc, timestamp, uid):
 
     for event_type in stats_consts.PAID_EVENT_TYPES:
         if user_budget[event_type]['num'] > 0:
-            user_budget[event_type]['default_value'] = user_budget[event_type]['default_value'] / user_budget[event_type]['num']
+            user_budget[event_type]['default_value'] /= user_budget[event_type]['num']
 
     yield logger.debug(user_budget)
     defer.returnValue(user_budget)

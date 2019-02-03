@@ -24,7 +24,7 @@ def create_or_update_campaign(cmpobj):
     logger = logging.getLogger(__name__)
 
     if cmpobj.max_cpm is not None:
-        cmpobj.max_cpm = cmpobj.max_cpm/1000
+        cmpobj.max_cpm /= 1000
 
     yield logger.info("Updating campaign: {0}".format(cmpobj.campaign_id))
     yield logger.debug("Updating campaign: {0}".format(cmpobj))

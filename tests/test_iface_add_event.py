@@ -3,8 +3,6 @@ from twisted.internet import defer
 
 import tests
 from adpay.db import utils as db_utils
-from adpay.iface import proto as iface_proto, utils as iface_utils
-from adpay.stats import consts as stats_consts
 
 
 class TestAddEvent(tests.WebTestCase):

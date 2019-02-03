@@ -86,7 +86,7 @@ class DBTestCase(tests.db_test_case):
 
     @defer.inlineCallbacks
     def test_campaign_payments_more(self):
-        payment_percentage_cutoff = 0.5
+
         cpv, cpc = 10, 20
         timestamp = 3600
 
@@ -181,9 +181,9 @@ class DBTestCase(tests.db_test_case):
             "their_keywords": {},
             "human_score": 1.0}
 
-        for i, type in enumerate(stats_consts.PAID_EVENT_TYPES):
+        for i, event_type in enumerate(stats_consts.PAID_EVENT_TYPES):
             event['event_id'] = 'event_id_' + str(i)
-            event['event_type'] = type
+            event['event_type'] = event_type
             yield db_utils.update_event(event)
 
         # Calculate payments
@@ -235,7 +235,7 @@ class DBTestCase(tests.db_test_case):
             "their_keywords": {},
             "human_score": 1.0}
 
-        for i in xrange(5):
+        for i in range(5):
             event['event_id'] = 'event_id_' + str(i)
             event['event_type'] = str(random.randint(1000, 1001))
             yield db_utils.update_event(event)

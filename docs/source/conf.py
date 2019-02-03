@@ -53,7 +53,7 @@ extensions = [
     'sphinx.ext.githubpages',
     'sphinxjsondomain',
     'sphinxcontrib.httpdomain'
-]
+    ]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -136,7 +136,7 @@ latex_elements = {
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
-}
+    }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
@@ -144,7 +144,7 @@ latex_elements = {
 latex_documents = [
     (master_doc, 'AdPay.tex', u'AdPay Documentation',
      u'Adshares.net', 'manual'),
-]
+    ]
 
 
 # -- Options for manual page output ------------------------------------------
@@ -154,7 +154,7 @@ latex_documents = [
 man_pages = [
     (master_doc, 'adpay', u'AdPay Documentation',
      [author], 1)
-]
+    ]
 
 
 # -- Options for Texinfo output ----------------------------------------------
@@ -166,7 +166,7 @@ texinfo_documents = [
     (master_doc, 'AdPay', u'AdPay Documentation',
      author, 'AdPay', 'One line description of project.',
      'Miscellaneous'),
-]
+    ]
 
 
 # -- Extension configuration -------------------------------------------------

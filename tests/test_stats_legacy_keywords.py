@@ -14,7 +14,7 @@ class TestAddViewKeywords(tests.db_test_case):
 
         iterations = 3
 
-        for i in xrange(1, iterations+1):
+        for i in range(1, iterations+1):
             yield stats_legacy.add_view_keywords('user', ['keyword1', 'keyword2'])
 
             self.assertEqual(3*i, stats_cache.EVENTS_STATS_VIEWS)
