@@ -20,7 +20,7 @@ CALCULATION_METHOD = os.getenv('ADPAY_CALCULATION_METHOD', 'default')
 #: `Environmental variable override: ADPAY_CALCULATE_TASKS`
 CALCULATE_PAYMENTS_PERIODICALLY = bool(int(os.getenv('ADPAY_CALCULATE_TASKS', 1)))
 
-#: Enable/disable checking if event keywords are appriopriate for campaign filters. 1 for enable, 0 for disable.
+#: Enable/disable checking if event keywords are appropriate for campaign filters. 1 for enable, 0 for disable.
 #:
 #: `Environmental variable override: ADPAY_VALIDATE_CAMPAIGN_FILTERS`
 VALIDATE_CAMPAIGN_FILTERS = bool(int(os.getenv('ADPAY_VALIDATE_CAMPAIGN_FILTERS', 1)))
