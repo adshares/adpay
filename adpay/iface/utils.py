@@ -24,7 +24,7 @@ def create_or_update_campaign(cmpobj):
     logger = logging.getLogger(__name__)
 
     if cmpobj.max_cpm is not None:
-        cmpobj.max_cpm = cmpobj.max_cpm/1000
+        cmpobj.max_cpm /= 1000
 
     yield logger.info("Updating campaign: {0}".format(cmpobj.campaign_id))
     yield logger.debug("Updating campaign: {0}".format(cmpobj))
@@ -61,10 +61,14 @@ def delete_campaign(campaign_id):
     yield logger.info("Removing campaign banners for {0}".format(campaign_id))
     yield db_utils.delete_campaign_banners(campaign_id)
 
-    # Delete campaign object
-
+    # "Delete" campaign
+    # Set time_end to 1 - the campaign will be cleaned up during calculation task.
     yield logger.info("Removing campaign for {0}".format(campaign_id))
-    yield db_utils.delete_campaign(campaign_id)
+
+    campaign_doc = yield db_utils.get_campaign(campaign_id)
+    if campaign_doc:
+        campaign_doc['time_end'] = 1
+        yield db_utils.update_campaign(campaign_doc)
 
 
 @defer.inlineCallbacks

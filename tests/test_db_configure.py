@@ -3,7 +3,7 @@ from adpay import db
 from tests import db_test_case
 
 
-class TestConfigure_db(db_test_case):
+class TestConfigureDB(db_test_case):
 
     def test_configure_db(self):
         dfr = db.configure_db()

@@ -91,8 +91,18 @@ class InterfaceCampaignTestCase(tests.WebTestCase):
         self.assertIsNotNone(response)
         self.assertTrue(response['result'])
 
+        # Add campaign
+        response = yield self.get_response("campaign_update", [self.CAMPAIGN_DATA])
+        self.assertIsNotNone(response)
+        self.assertTrue(response['result'])
+
+        # Mark it as removed
+        response = yield self.get_response("campaign_delete", [self.CAMPAIGN_DATA['campaign_id']])
+        self.assertIsNotNone(response)
+
+        # Verify it's marked
         campaign_doc = yield db_utils.get_campaign(self.CAMPAIGN_DATA['campaign_id'])
-        self.assertIsNone(campaign_doc)
+        self.assertEqual(1, campaign_doc['time_end'])
 
         campaign_banners = yield db_utils.get_campaign_banners(self.CAMPAIGN_DATA['campaign_id'])
         self.assertEqual(len(campaign_banners), 0)

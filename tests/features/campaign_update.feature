@@ -1,4 +1,3 @@
-@fixture.adpay.db
 Feature: Campaign functionality
 
 #  Background:
@@ -23,7 +22,6 @@ Feature: Campaign functionality
 #      | ee34923d8acf4c4a8ff57fd37d7335ea | 51a069dc98f19dcf80e2f3918ad4cc5c | click      | 31dfbcb15b3bf71e2f3d5339ee07c756 | 1545048000 | { "accio:200417" : 1 } | 5ccf0db64680407c852e5fe34675ebaa | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "device_type" : [ "Desktop" ], "interest" : [ "5072651" ], "browser" : [ "Firefox" ] } | 0.5         | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "interest" : [ "5072651" ], "device_type" : [ "Desktop" ], "browser" : [ "Firefox" ] } | e41006f625d446fb885b3d6d211f28e4 | null        |
 #      | fb39d67f09214772a45b4c106c3217d2 | 51a069dc98f19dcf80e2f3918ad4cc5c | view       | 616f81980030b518de8d95d66182fb36 | 1545044400 | { "accio:200417" : 1 } | 5ccf0db64680407c852e5fe34675ebab | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "device_type" : [ "Desktop" ], "interest" : [ "5072651" ], "browser" : [ "Firefox" ] } | 0.5         | { "platform" : [ "Ubuntu" ], "javascript" : [ true ], "interest" : [ "5072651" ], "device_type" : [ "Desktop" ], "browser" : [ "Firefox" ] } | e41006f625d446fb885b3d6d211f28e5 | null        |
 
-  @update
   Scenario: Campaign update
     Given I want to campaign update
     When I provide the data:
@@ -337,8 +335,8 @@ Feature: Campaign functionality
          "jsonrpc": "2.0",
          "id": "317ebce66492479997ee8908b0351306",
          "error":    {
-            "message": "u'' not of type <type 'float'>",
-            "code": -32603
+            "message": "u'' not of type (<type 'int'>, <type 'long'>)",
+            "code": -32010
          }
       }
     """

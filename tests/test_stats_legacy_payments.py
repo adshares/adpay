@@ -38,7 +38,7 @@ class DBTestCase(tests.db_test_case):
         yield db_utils.update_campaign(cmp_doc)
 
         # Add 3 banners for this campaign
-        for i in xrange(3):
+        for i in range(3):
             yield db_utils.update_banner({'banner_id': 'banner_id' + str(i),
                                           'campaign_id': cmp_doc['campaign_id']})
 
@@ -138,7 +138,7 @@ class DBTestCase(tests.db_test_case):
         yield db_utils.update_campaign(cmp_doc)
 
         # Add 3 banners for this campaign
-        for i in xrange(3):
+        for i in range(3):
             yield db_utils.update_banner({'banner_id': 'banner_id' + str(i),
                                           'campaign_id': cmp_doc['campaign_id']})
 
@@ -216,7 +216,7 @@ class DBTestCase(tests.db_test_case):
             "their_keywords": {},
             "human_score": 1.0}
 
-        for i in xrange(5):
+        for i in range(5):
             event['event_id'] = 'event_id_' + str(i)
             event['event_type'] = str(random.randint(1000, 1001))
             yield db_utils.update_event(event)
@@ -268,7 +268,7 @@ class DBTestCase(tests.db_test_case):
             "their_keywords": {},
             "human_score": 1.0}
 
-        for i in xrange(5):
+        for i in range(5):
             event['event_id'] = 'event_id_' + str(i)
             event['event_type'] = str(random.randint(1000, 1001))
             yield db_utils.update_event(event)

@@ -1,11 +1,17 @@
 from behave import *
 
 from adpay.db import utils
-from adpay.stats.tasks import force_payment_recalculation
 from adpay.utils.utils import timestamp2hour
 
 
 def write_to_db(table, update_function):
+    """
+    Convert behave table format to database friendly (dictionary) data
+
+    :param table: Behave table.
+    :param update_function: Function to use to save to database.
+    :return:
+    """
     for row in table:
         doc = {}
         for attr in row.headings:
@@ -27,11 +33,6 @@ def step_impl(context):
 @given('Events')
 def step_impl(context):
     write_to_db(context.table, utils.update_event)
-
-
-@when('I execute payment calculation for timestamp "{timestamp}"')
-def step_impl(context, timestamp):
-    force_payment_recalculation(timestamp)
 
 
 @then('I have a payment round in DB timestamp "{timestamp}"')

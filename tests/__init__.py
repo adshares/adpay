@@ -279,7 +279,7 @@ class WebTestCase(db_test_case):
             "id": "test_hit",
             "method": method,
             "params": params
-        }))
+            }))
 
         host = socket.gethostbyname(socket.gethostname())
 

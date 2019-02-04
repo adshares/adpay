@@ -19,6 +19,7 @@ def calculate_events_payments(campaign_doc, timestamp):
 
     # We don't pay for the campaign-period by default
     total_payments = 0.0
+    budget_modifier = 1.0
     user_data = {}
 
     # Get all users for this campaign-period

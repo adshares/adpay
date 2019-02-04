@@ -41,6 +41,6 @@ To do behavioural tests, run:
 
 .. code-block:: sh
 
-    pipenv run behave
+    pipenv run behave tests
 
 See `Pipfile` for command details.

@@ -69,12 +69,18 @@ class TestFiltering(TestCase):
 
         self.assertEqual(stats_consts.EVENT_PAYMENT_REJECTED_CAMPAIGN_NOT_FOUND, payment_decision)
 
+        payment_decision = stats_utils.filter_event(event_doc=event_doc,
+                                                    campaign_doc={'removed': True},
+                                                    banner_doc=None)
+
+        self.assertEqual(stats_consts.EVENT_PAYMENT_REJECTED_CAMPAIGN_NOT_FOUND, payment_decision)
+
         # 3. Event in paid events is rejected, because the banner doesn't exist.
         event_doc = {'event_type': stats_consts.PAID_EVENT_TYPES[0],
                      'banner_id': "this banner does not exist"}
 
         payment_decision = stats_utils.filter_event(event_doc=event_doc,
-                                                    campaign_doc=True,
+                                                    campaign_doc={},
                                                     banner_doc=None)
 
         self.assertEqual(stats_consts.EVENT_PAYMENT_REJECTED_BANNER_NOT_FOUND, payment_decision)
@@ -84,7 +90,7 @@ class TestFiltering(TestCase):
                      'human_score': -1.0}
 
         payment_decision = stats_utils.filter_event(event_doc=event_doc,
-                                                    campaign_doc=True,
+                                                    campaign_doc={},
                                                     banner_doc=True)
 
         self.assertEqual(stats_consts.EVENT_PAYMENT_REJECTED_HUMAN_SCORE_TOO_LOW, payment_decision)
