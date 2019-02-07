@@ -21,10 +21,10 @@ fi
 
 if [[ ${ADPAY_APP_ENV:-dev} == 'dev' ]]
 then
-    pipenv install --dev pipenv
+    pipenv install --dev
 elif [[ ${ADPAY_APP_ENV} == 'deploy' ]]
 then
-    pipenv install --deploy pipenv
+    pipenv install --deploy
 else
-    pipenv install pipenv
+    pipenv install
 fi

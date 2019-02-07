@@ -18,7 +18,7 @@
     <a href="https://sonarcloud.io/dashboard?id=adshares-adpay" title="Code Quality" target="_blank">
         <img src="https://sonarcloud.io/api/project_badges/measure?project=adshares-adpay&metric=alert_status" alt="Code Quality">
     </a>
-    <a href="http://adshares-adpay.readthedocs.io" title="Docs Status" target="_blank">
+    <a href="http://adshares-adpay.readthedocs.io/en/latest" title="Docs Status" target="_blank">
         <img src="https://readthedocs.org/projects/adshares-adpay/badge/?version=latest" alt="Docs Status">
     </a>
 </p>
@@ -38,13 +38,13 @@ Clone and run
 ```bash
 git clone https://github.com/adshares/adpay.git
 cd adpay
-pipenv install pipenv
+pipenv install
 pipenv run python daemon.py
 ```
 
 ## More Info
 
-- [Documentation](https://adshares-adpay.readthedocs.io)
+- [Documentation](https://adshares-adpay.readthedocs.io/en/latest)
 - [Authors](https://github.com/adshares/adpay/contributors)
 - Available [Versions](https://github.com/adshares/adpay/tags) (we use [Semantic Versioning](http://semver.org/))
 
