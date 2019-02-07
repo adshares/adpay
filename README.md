@@ -26,7 +26,7 @@
 AdPay is a back-end service for valuating events.
 It accepts requests from [AdServer](https://github.com/adshares/adserver) internally.
 
-## Quick Start (on Ubuntu 18.04 LTS)
+## Quick Start (on Ubuntu 18.04)
 
 Install dependencies
 ```bash
