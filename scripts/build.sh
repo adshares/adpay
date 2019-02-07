@@ -2,12 +2,12 @@
 
 set -e
 
-env | sort
+HERE=$(dirname $(readlink -f "$0"))
+TOP=$(dirname ${HERE})
+cd ${TOP}
 
-if [[ ! -v TRAVIS ]]; then
-  # Checkout repo and change directory
-
-  # Install git
+if [[ -v GIT_CLONE ]]
+then
   git --version || apt-get install -y git
 
   git clone \
@@ -19,10 +19,11 @@ if [[ ! -v TRAVIS ]]; then
   cd ${BUILD_PATH}/build
 fi
 
-
-if [[ ${ADPAY_APP_ENV:-dev} == 'dev' ]]; then
+if [[ ${ADPAY_APP_ENV:-dev} == 'dev' ]]
+then
     pipenv install --dev pipenv
-elif [[ ${ADPAY_APP_ENV} == 'deploy' ]]; then
+elif [[ ${ADPAY_APP_ENV} == 'deploy' ]]
+then
     pipenv install --deploy pipenv
 else
     pipenv install pipenv

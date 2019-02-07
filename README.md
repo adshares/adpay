@@ -1,35 +1,61 @@
-# AdPay
-[![Build Status](https://travis-ci.org/adshares/adpay.svg?branch=master)](https://travis-ci.org/adshares/adpay)
-[![Build Status](https://sonarcloud.io/api/project_badges/measure?project=adshares-adpay&metric=alert_status)](https://sonarcloud.io/dashboard?id=adshares-adpay)
-[![Docs Status](https://readthedocs.org/projects/adshares-adpay/badge/?version=latest)](http://adshares-adpay.readthedocs.io/en/latest/)
-## Build
-AdPay is fully implemented in python.
+<p align="center">
+    <a href="https://adshares.net/" title="Adshares sp. z o.o." target="_blank">
+        <img src="https://adshares.net/logos/ads.svg" alt="Adshares" width="100" height="100">
+    </a>
+</p>
+<h3 align="center"><small>Adshares / AdPay</small></h3>
+<p align="center">
+    <a href="https://github.com/adshares/adpay/issues/new?template=bug_report.md&labels=Bug">Report bug</a>
+    ·
+    <a href="https://github.com/adshares/adpay/issues/new?template=feature_request.md&labels=New%20Feature">Request feature</a>
+    ·
+    <a href="https://github.com/adshares/adpay/wiki">Wiki</a>
+</p>
+<p align="center">
+    <a href="https://travis-ci.org/adshares/adpay" title="master" target="_blank">
+        <img src="https://travis-ci.org/adshares/adpay.svg?branch=master" alt="Build Status">
+    </a>
+</p>
 
-### Dependencies
+AdPay is a back-end service for valuating events.
+It accepts requests from [AdServer](https://github.com/adshares/adserver).
 
-All dependencies are in Pipfile, which is managed by [Pipenv](https://pipenv.readthedocs.io/en/latest/).
+## Quick Start (on Ubuntu 18.04 LTS)
 
-Ubuntu 18.04 dependencies can be found in [pre-build](scripts/pre-build.sh) and [pre-install](scripts/pre-install.sh) scripts.
-
-### Installation
-
-Installation instructions can be found in the [documentation](https://adshares-adpay.readthedocs.io/en/latest/).
-
-Please note, that you'll want to configure AdPay. Read the [configuration documentation](https://adshares-adpay.readthedocs.io/en/latest/config.html).
-
-## TL;DR  
+Install dependencies
+```bash
+apt-get -y install --no-install-recommends python python-pip python-dev gcc
+pip install pipenv
 ```
-git clone https://github.com/adshares/adpay
+
+Clone and run
+```bash
+git clone https://github.com/adshares/adpay.git
 cd adpay
-bash scripts/pre-build.sh
-bash scripts/pre-install.sh
-pipenv install
-pipenv run daemon
+pipenv run python daemon.py
 ```
 
-## Authors
+## More Info
 
-- **Krzysztof Kuchta** - _Python programmer_
-- **[Adam Włodarkiewicz](https://github.com/awlodarkiewicz)** - _Python programmer_
+- [Documentation](https://adshares-adpay.readthedocs.io)
+- [Authors](https://github.com/adshares/adpay/contributors)
+- Available [Versions](https://github.com/adshares/adpay/tags) (we use [Semantic Versioning](http://semver.org/))
 
-See also the list of [contributors](https://github.com/adshares/adpay/contributors) who participated in this project.
+### Related projects
+
+- [AdServer](https://github.com/adshares/adserver) - the core logic behind it all
+
+### License
+
+This work is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This work is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+[GNU General Public License](LICENSE) for more details.
+
+You should have received a copy of the License along with this work.
+If not, see <https://www.gnu.org/licenses/gpl.html>.
