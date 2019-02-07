@@ -19,7 +19,7 @@ then
   cd ${BUILD_PATH}/build
 fi
 
-PIPENV_VENV_IN_PROJECT=$(PIPENV_VENV_IN_PROJECT:-1)
+PIPENV_VENV_IN_PROJECT=${PIPENV_VENV_IN_PROJECT:-1}
 
 if [[ ${ADPAY_APP_ENV:-dev} == 'dev' ]]
 then
