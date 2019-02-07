@@ -12,13 +12,19 @@
     <a href="https://github.com/adshares/adpay/wiki">Wiki</a>
 </p>
 <p align="center">
-    <a href="https://travis-ci.org/adshares/adpay" title="master" target="_blank">
+    <a href="https://travis-ci.org/adshares/adpay" title="Build Status" target="_blank">
         <img src="https://travis-ci.org/adshares/adpay.svg?branch=master" alt="Build Status">
+    </a>
+    <a href="https://sonarcloud.io/dashboard?id=adshares-adpay" title="Code Quality" target="_blank">
+        <img src="https://sonarcloud.io/api/project_badges/measure?project=adshares-adpay&metric=alert_status" alt="Code Quality">
+    </a>
+    <a href="http://adshares-adpay.readthedocs.io" title="Docs Status" target="_blank">
+        <img src="https://readthedocs.org/projects/adshares-adpay/badge/?version=latest" alt="Docs Status">
     </a>
 </p>
 
 AdPay is a back-end service for valuating events.
-It accepts requests from [AdServer](https://github.com/adshares/adserver).
+It accepts requests from [AdServer](https://github.com/adshares/adserver) internally.
 
 ## Quick Start (on Ubuntu 18.04 LTS)
 
@@ -32,6 +38,7 @@ Clone and run
 ```bash
 git clone https://github.com/adshares/adpay.git
 cd adpay
+pipenv install pipenv
 pipenv run python daemon.py
 ```
 
