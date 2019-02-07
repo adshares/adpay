@@ -10,6 +10,8 @@ fi
 
 mkdir -p ${INSTALLATION_PATH}
 
+mv .venv ${INSTALLATION_PATH}/
+
 mv Pipfile ${INSTALLATION_PATH}/
 mv Pipfile.lock ${INSTALLATION_PATH}/
 
