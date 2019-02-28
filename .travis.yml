@@ -44,6 +44,7 @@ jobs:
           -e TRAVIS=true
           -e PYTHONPATH=$BUILD_PATH
           -e PIPENV_VENV_IN_PROJECT=1
+          -e ADPAY_SERVER_INTERFACE=""
           -e LC_ALL=C.UTF-8
           --env-file adpay.env
           --name $BUILD_NAME
