@@ -117,7 +117,7 @@ class AdPayIfaceServer(JSONRPCServer):
             defer.returnValue(False)
 
 
-def configure_iface(port=iface_consts.SERVER_PORT):
+def configure_iface(port=iface_consts.SERVER_PORT, interface=iface_consts.SERVER_INTERFACE):
     """
     Set up Twisted reactor to listen on TCP.
 
@@ -127,4 +127,4 @@ def configure_iface(port=iface_consts.SERVER_PORT):
     logger = logging.getLogger(__name__)
     logger.info("Initializing AdPay interface server on port: {0}.".format(port))
     site = Site(AdPayIfaceServer())
-    return reactor.listenTCP(port, site)
+    return reactor.listenTCP(port, site, interface)
