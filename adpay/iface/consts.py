@@ -4,6 +4,7 @@ import os
 #:
 #: `Environmental variable override: ADPAY_SERVER_PORT`
 SERVER_PORT = int(os.getenv('ADPAY_SERVER_PORT', 8012))
+SERVER_INTERFACE = os.getenv('ADPAY_SERVER_INTERFACE', '127.0.0.1')
 
 #: JSONRPC error code returned when payment round is not calculated yet
 PAYMENTS_NOT_CALCULATED_YET = -32000
