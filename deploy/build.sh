@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
-HERE=$(dirname $(dirname $(readlink -f "$0")))
-source ${HERE}/_functions.sh
+source ${1:-$(dirname $(readlink -f "$0"))/bin}/_functions.sh
+[[ -z ${2:-""} ]] || cd $2
+[[ -z ${3:-".env"} ]] || set -a && source .env && set +a
 
 pipenv install
