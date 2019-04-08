@@ -50,7 +50,7 @@ def calculate_events_payments(campaign_doc, timestamp):
 
             for event_type in stats_consts.PAID_EVENT_TYPES:
                 ube = user_data[uid]['budget'][event_type]
-                ube['share'] = budget_modifier * user_data[uid]['total'] / total_payments
+                ube['share'] = budget_modifier * ube['default_value'] / user_data[uid]['total']
 
                 if ube['share'] > 0:
                     ube['event_value'] = int(min([ube['default_value'],
