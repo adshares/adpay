@@ -33,7 +33,10 @@ def calculate_events_payments(campaign_doc, timestamp):
 
         # Calculate maximum amount to be paid to a user
         for event_type in stats_consts.PAID_EVENT_TYPES:
-            user_data[uid]['total'] += user_data[uid]['budget'][event_type]['default_value']
+            ube = user_data[uid]['budget'][event_type]
+
+            if ube['num'] > 0:
+                user_data[uid]['total'] += int(ube['default_value'] / ube['num'])
 
         logger.debug(uid)
 
@@ -43,6 +46,8 @@ def calculate_events_payments(campaign_doc, timestamp):
     # Calculate our modifier for maximum payment for this campaign-period
     if total_payments > 0:
         budget_modifier = min([total_payments, campaign_doc['budget']]) / total_payments
+
+    logger.debug('Budget modifier: {0}'.format(budget_modifier))
 
     for uid in uids:
 
