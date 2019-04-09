@@ -44,6 +44,8 @@ def calculate_events_payments(campaign_doc, timestamp):
     if total_payments > 0:
         budget_modifier = min([total_payments, campaign_doc['budget']]) / total_payments
 
+    logger.debug('Budget modifier: {0}'.format(budget_modifier))
+
     for uid in uids:
 
         if total_payments > 0:
