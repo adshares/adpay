@@ -83,7 +83,10 @@ def adpay_task(interval_seconds=60):
 
     if stats_consts.CALCULATE_PAYMENTS_PERIODICALLY:
         yield logger.info("Running payment recalculation task.")
-        yield _adpay_task()
+        try:
+            yield _adpay_task()
+        except Exception:
+            yield logger.exception('Recalculation error: {0} ')
         yield reactor.callLater(interval_seconds, adpay_task)
     else:
         yield logger.info('Periodical recalculation disabled.')
