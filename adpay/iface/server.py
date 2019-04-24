@@ -28,6 +28,8 @@ class AdPayIfaceServer(JSONRPCServer):
         :param campaigns: Variable number of campaigns.
         :return: True
         """
+        yield self.logger.info("Running update campaigns command.")
+
         if not campaigns:
             yield self.logger.warning("No campaign data to update.")
         else:
@@ -38,6 +40,7 @@ class AdPayIfaceServer(JSONRPCServer):
                 except BadValueError as e:
                     raise JSONRPCError(e, iface_consts.INVALID_OBJECT)
 
+        yield self.logger.info("Campaigns updated.")
         defer.returnValue(True)
 
     @defer.inlineCallbacks
@@ -48,12 +51,16 @@ class AdPayIfaceServer(JSONRPCServer):
         :param campaign_ids: Variable number of campaign identifiers.
         :return: True
         """
+        yield self.logger.info("Running delete campaigns command.")
+
         if not campaign_ids:
             yield self.logger.warning("No campaign id to remove.")
         else:
             for campaign_id in campaign_ids:
                 yield self.logger.info("Received campaign removal request: {0}".format(campaign_id))
                 yield iface_utils.delete_campaign(campaign_id)
+
+        yield self.logger.info("Campaigns deleted.")
         defer.returnValue(True)
 
     # events interface
@@ -65,6 +72,8 @@ class AdPayIfaceServer(JSONRPCServer):
         :param events: Variable number of events.
         :return: True
         """
+        yield self.logger.info("Running add events command.")
+
         if not events:
             yield self.logger.warning("No event data to add.")
         else:
@@ -75,6 +84,8 @@ class AdPayIfaceServer(JSONRPCServer):
                     yield self.logger.debug("Received event time: {0}".format(datetime.fromtimestamp(event_data['timestamp'])))
                 except BadValueError as e:
                     raise JSONRPCError(e, iface_consts.INVALID_OBJECT)
+
+        yield self.logger.info("Events added.")
         defer.returnValue(True)
 
     # payment interface
@@ -88,6 +99,8 @@ class AdPayIfaceServer(JSONRPCServer):
         :param payment_request: Payment request
         :return: Response in JSON.
         """
+        yield self.logger.info("Running get payments command.")
+
         try:
             response = yield iface_utils.get_payments(iface_proto.PaymentsRequest(payment_request))
             yield self.logger.info("Payments request received and responded with {0} elements.".format(len(response.payments)))
@@ -96,6 +109,8 @@ class AdPayIfaceServer(JSONRPCServer):
             raise JSONRPCError("Payments not calculated yet.", iface_consts.PAYMENTS_NOT_CALCULATED_YET)
         except BadValueError as e:
             raise JSONRPCError(e, iface_consts.INVALID_OBJECT)
+
+        yield self.logger.info("Payments returned.")
         defer.returnValue(response.to_json())
 
     # test interface
@@ -106,6 +121,8 @@ class AdPayIfaceServer(JSONRPCServer):
 
         :return: True or False (if disabled)
         """
+        yield self.logger.info("Running force payment recalculation command.")
+
         if iface_consts.DEBUG_ENDPOINT:
             try:
                 pay_request = iface_proto.PaymentsRequest(payment_request)

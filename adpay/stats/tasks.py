@@ -48,14 +48,17 @@ def _adpay_task(timestamp=None, ignore_existing_payment_calculations=False):
         if not campaign_doc:
             break
 
+        yield logger.info("Calculating payments for campaign {0}".format(campaign_doc['campaign_id']))
         # Clear campaign data and do not calculate.
         if campaign_doc['time_end'] < timestamp:
-            yield logger.debug("Removing old campaign: {0}".format(campaign_doc['campaign_id']))
+            yield logger.info("Removing old campaign: {0}".format(campaign_doc['campaign_id']))
             yield stats_utils.delete_campaign(campaign_doc['campaign_id'])
             campaign_doc['removed'] = True
 
         yield calculate_events_payments(campaign_doc, timestamp)
-        yield logger.info("Calculated payments for {0} - {1} (timestamp: {2})".format(nice_period_start,
+        yield logger.info("Calculated payments for campaign {0}".format(campaign_doc['campaign_id']))
+
+    yield logger.info("Calculated payments for {0} - {1} (timestamp: {2})".format(nice_period_start,
                                                                                       nice_period_end,
                                                                                       timestamp))
 
