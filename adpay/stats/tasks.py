@@ -41,7 +41,7 @@ def _adpay_task(timestamp=None, ignore_existing_payment_calculations=False):
                                                                                                     nice_period_start,
                                                                                                     nice_period_end,
                                                                                                     timestamp))
-        defer.returnValue(None)
+            defer.returnValue(None)
 
     yield logger.info("Calculating payments for {0} - {1} (timestamp: {2}) Forced: {3}".format(nice_period_start,
                                                                                                nice_period_end,
