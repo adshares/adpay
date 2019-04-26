@@ -678,3 +678,17 @@ def delete_keyword_frequency(_id):
     collection = yield db.get_keyword_frequency_collection()
     return_value = yield collection.delete_many({'_id': _id})
     defer.returnValue(return_value)
+
+
+@defer.inlineCallbacks
+def delete_payments(timestamp):
+    collection = yield db.get_payment_collection()
+    return_value = yield collection.delete_many({'timestamp': {'$lt': timestamp}})
+    defer.returnValue(return_value)
+
+
+@defer.inlineCallbacks
+def delete_events(timestamp):
+    collection = yield db.get_event_collection()
+    return_value = yield collection.delete_many({'timestamp': {'$lt': timestamp}})
+    defer.returnValue(return_value)

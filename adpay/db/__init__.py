@@ -26,6 +26,7 @@ def configure_db():
     user_idx = filter.sort(filter.ASCENDING("user_id"))
     keyword_idx = filter.sort(filter.ASCENDING("keyword"))
     updated_idx = filter.sort(filter.ASCENDING("updated"))
+    campaign_event_idx = filter.sort(filter.ASCENDING("campaign_id") + filter.ASCENDING("event_id"))
 
     campaign_collection = yield get_campaign_collection()
     yield campaign_collection.create_index(campaign_idx, unique=True)
@@ -42,6 +43,7 @@ def configure_db():
 
     payment_collection = yield get_payment_collection()
     yield payment_collection.create_index(timestamp_idx)
+    yield payment_collection.create_index(campaign_event_idx)
 
     payment_round_collection = yield get_payment_rounds_collection()
     yield payment_round_collection.create_index(timestamp_idx, unique=True)

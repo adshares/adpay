@@ -2,7 +2,7 @@ import logging
 import time
 from datetime import datetime, timedelta
 
-from twisted.internet import defer, reactor
+from twisted.internet import defer, reactor, task
 
 from adpay.db import utils as db_utils
 from adpay.stats import consts as stats_consts, legacy as stats_legacy, main as stats_main, utils as stats_utils
@@ -121,9 +121,25 @@ def calculate_events_payments(campaign_doc, timestamp, payment_percentage_cutoff
         yield stats_legacy.calculate_events_payments(campaign_doc, timestamp, payment_percentage_cutoff)
 
 
+@defer.inlineCallbacks
+def remove_old_task():
+    logger = logging.getLogger(__name__)
+    date = int(time.time()) - 2*3600*24
+    formatted_date = datetime.fromtimestamp(date)
+
+    db_utils.delete_payments(date)
+    yield logger.error('Removed data from payments older than {0}'.format(formatted_date))
+
+    db_utils.delete_events(date)
+    yield logger.error('Removed data from events older than {0}'.format(formatted_date))
+
+
 def configure_tasks(interval_seconds=2):
     """
     Schedule payment calculation.
     :param interval_seconds:
     """
+    remove_old_data_task = task.LoopingCall(remove_old_task)
+    remove_old_data_task.start(3600)
+
     reactor.callLater(interval_seconds, adpay_task)
