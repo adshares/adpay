@@ -17,11 +17,6 @@ def _adpay_task(timestamp=None, ignore_existing_payment_calculations=False):
     :param ignore_existing_payment_calculations: Check first if the payment is already calculated.
     """
     logger = logging.getLogger(__name__)
-    now = datetime.now()
-
-    if now.minute <= 15:
-        logging.error('waiting for proper time ...')
-        defer.returnValue(None)
 
     # As recalculate only finished hours, take timestamp from an hour before now.
     if timestamp is None:
