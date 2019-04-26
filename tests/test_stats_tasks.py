@@ -116,3 +116,5 @@ class DBTestCase(tests.db_test_case):
         self.assertGreaterEqual(call_time, time.time())
 
         ret[0].cancel()
+        ret[1].cancel()
+
