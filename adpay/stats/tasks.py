@@ -40,6 +40,14 @@ def _adpay_task(timestamp=None, ignore_existing_payment_calculations=False):
                                                                                                     timestamp))
             defer.returnValue(None)
 
+        span = int(time.time()) - 3600 - timestamp
+        if span < 900:
+            yield logger.warning("Waiting {0} minutes for calculating {1} - {2} (timestamp: {3})".format(int((900 - span)/60),
+                                                                                                    nice_period_start,
+                                                                                                    nice_period_end,
+                                                                                                    timestamp))
+            defer.returnValue(None)
+
     yield logger.info("Calculating payments for {0} - {1} (timestamp: {2}) Forced: {3}".format(nice_period_start,
                                                                                                nice_period_end,
                                                                                                timestamp,
