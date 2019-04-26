@@ -111,7 +111,7 @@ class DBTestCase(tests.db_test_case):
 
         stats_tasks.configure_tasks()
         ret = reactor.getDelayedCalls()
-        self.assertEqual(len(ret), 1)
+        self.assertEqual(len(ret), 2)
         call_time = ret[0].getTime()
         self.assertGreaterEqual(call_time, time.time())
 
