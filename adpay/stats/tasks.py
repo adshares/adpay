@@ -124,7 +124,7 @@ def calculate_events_payments(campaign_doc, timestamp, payment_percentage_cutoff
 @defer.inlineCallbacks
 def remove_old_task():
     logger = logging.getLogger(__name__)
-    date = int(time.time()) - 3600*24
+    date = int(time.time()) - 2*3600*24
     formatted_date = datetime.fromtimestamp(date)
 
     db_utils.delete_payments(date)
@@ -140,6 +140,6 @@ def configure_tasks(interval_seconds=2):
     :param interval_seconds:
     """
     remove_old_data_task = task.LoopingCall(remove_old_task)
-    remove_old_data_task.start(3600*24)
+    remove_old_data_task.start(3600)
 
     reactor.callLater(interval_seconds, adpay_task)
