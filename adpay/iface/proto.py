@@ -109,10 +109,10 @@ class EventObject(jsonobject.JsonObject):
     event_type = jsonobject.StringProperty(required=True)  # define either event is click, view or conversion
     event_value = jsonobject.IntegerProperty()
     human_score = jsonobject.FloatProperty()  # determine if user is bot (value = 0) or human (value = 1)
-    our_keywords = jsonobject.DictProperty()  # event keywords
+    # our_keywords = jsonobject.DictProperty()  # event keywords
     publisher_id = jsonobject.StringProperty()
     timestamp = jsonobject.IntegerProperty(required=True)
-    their_keywords = jsonobject.DictProperty()  # publisher keywords
+    # their_keywords = jsonobject.DictProperty()  # publisher keywords
     user_id = jsonobject.StringProperty()
 
 
