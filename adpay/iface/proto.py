@@ -46,6 +46,36 @@ class BannerObject(jsonobject.JsonObject):
     """Keywords (Dictionary of Strings)."""
 
 
+class ConversionObject(jsonobject.JsonObject):
+    """
+    .. json:object:: ConversionObject
+       :showexample:
+
+       :property string banner_id: Unique banner identifier
+       :property string banner_size: Banner size, eg. 100x400
+       :propexample banner_size: 100x400
+       :property JSONObject keywords: Key-value map of keywords
+
+    """
+    conversion_id = jsonobject.StringProperty(required=True)
+    """Main banner identifier (String)."""
+
+    budget_type = jsonobject.StringProperty(required=True)
+    """Banner size, in pixels, width x height (String)."""
+
+    value = jsonobject.IntegerProperty(required=True)
+    """Banner size, in pixels, width x height (String)."""
+
+    is_value_mutable = jsonobject.StringProperty(required=True)
+    """Banner size, in pixels, width x height (String)."""
+
+    limit = jsonobject.IntegerProperty(required=True)
+    """Banner size, in pixels, width x height (String)."""
+
+    is_repeatable = jsonobject.StringProperty(required=True)
+    """Banner size, in pixels, width x height (String)."""
+
+
 class CampaignObject(jsonobject.JsonObject):
     """
     .. json:object:: CampaignObject
@@ -68,6 +98,7 @@ class CampaignObject(jsonobject.JsonObject):
        :propexample time_end: 1643326642
        :property integer time_start: Campaign start time (epoch time, in seconds)
        :propexample time_start: 1543326642
+       :property [ConversionObject] conversions: List of conversions objects
 
 
     """
@@ -81,6 +112,7 @@ class CampaignObject(jsonobject.JsonObject):
     max_cpm = jsonobject.IntegerProperty()  # max cost per view
     time_end = jsonobject.IntegerProperty(required=True)
     time_start = jsonobject.IntegerProperty(required=True)
+    conversions = jsonobject.ListProperty(ConversionObject)
 
 
 class EventObject(jsonobject.JsonObject):

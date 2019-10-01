@@ -3,7 +3,7 @@
         <img src="https://adshares.net/logos/ads.svg" alt="Adshares" width="100" height="100">
     </a>
 </p>
-<h3 align="center"><small>Adshares / AdPay</small></h3>
+<h3 align="center"><small>Adshares / Adpay</small></h3>
 <p align="center">
     <a href="https://github.com/adshares/adpay/issues/new?template=bug_report.md&labels=Bug">Report bug</a>
     ·
@@ -11,48 +11,57 @@
     ·
     <a href="https://github.com/adshares/adpay/wiki">Wiki</a>
 </p>
-<p align="center">
-    <a href="https://travis-ci.org/adshares/adpay" title="Build Status" target="_blank">
-        <img src="https://travis-ci.org/adshares/adpay.svg?branch=master" alt="Build Status">
-    </a>
-    <a href="https://sonarcloud.io/dashboard?id=adshares-adpay" title="Code Quality" target="_blank">
-        <img src="https://sonarcloud.io/api/project_badges/measure?project=adshares-adpay&metric=alert_status" alt="Code Quality">
-    </a>
-    <a href="http://adshares-adpay.readthedocs.io/en/latest" title="Docs Status" target="_blank">
-        <img src="https://readthedocs.org/projects/adshares-adpay/badge/?version=latest" alt="Docs Status">
-    </a>
-</p>
 
-AdPay is a back-end service for valuating events.
+
+Adpay is a back-end service for valuating events.
 It accepts requests from [AdServer](https://github.com/adshares/adserver) internally.
 
-## Quick Start (on Ubuntu 18.04)
+## Quick Start
 
-Install dependencies
-```bash
-apt-get -y install --no-install-recommends python python-pip python-dev gcc
-pip install pipenv
+### Development
+
 ```
-
-Clone and run
-```bash
 git clone https://github.com/adshares/adpay.git
 cd adpay
-pipenv install
-pipenv run python daemon.py
+composer install
+composer dump-env dev
+vi .env.local.php
+php bin/console doctrine:migration:migrate
+php bin/console server:run
 ```
 
-## More Info
+### Production
 
-- [Documentation](https://adshares-adpay.readthedocs.io/en/latest)
-- [Authors](https://github.com/adshares/adpay/contributors)
-- Available [Versions](https://github.com/adshares/adpay/tags) (we use [Semantic Versioning](http://semver.org/))
+```
+git clone https://github.com/adshares/adpay.git
+cd adpay
+composer install --no-dev --optimize-autoloader
+composer dump-env prod
+vi .env.local.php
+php bin/console doctrine:migration:migrate
+```
 
-### Related projects
+Nginx configuration:
+https://symfony.com/doc/current/setup/web_server_configuration.html#web-server-nginx
 
-- [AdServer](https://github.com/adshares/adserver) - the core logic behind it all
+## Contributing
 
-### License
+Please follow our [Contributing Guidelines](docs/CONTRIBUTING.md)
+
+## Versioning
+
+We use [SemVer](http://semver.org/) for versioning.
+For the versions available, see the [tags on this repository](https://github.com/adshares/adpay/tags).
+
+## Authors
+
+* **[Adam Włodarkiewicz](https://github.com/m-pilarczyk)** - _Python programmer_
+* **[Maciej Pilarczyk](https://github.com/m-pilarczyk)** - _PHP programmer_
+
+See also the list of [contributors](https://github.com/adshares/adpay/contributors) who participated in this project.
+
+
+## License
 
 This work is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

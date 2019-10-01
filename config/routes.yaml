@@ -1,0 +1,22 @@
+api_requests:
+    path: /api/v{version}/requests
+    controller: Adshares\Adpay\Controller\ApiController::postRequests
+    methods: POST
+    requirements:
+        version:  '0|1'
+
+info:
+    path: /info.{_format}
+    controller: Adshares\Adpay\Controller\AppController::info
+    methods: GET
+    defaults:
+        _format: 'json'
+    requirements:
+        _format:  'json|txt'
+
+index:
+    path: /
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::redirectAction
+    methods: GET
+    defaults:
+        route: 'info'
