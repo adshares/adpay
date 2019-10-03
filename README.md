@@ -3,7 +3,7 @@
         <img src="https://adshares.net/logos/ads.svg" alt="Adshares" width="100" height="100">
     </a>
 </p>
-<h3 align="center"><small>Adshares / Adpay</small></h3>
+<h3 align="center"><small>Adshares / AdPay</small></h3>
 <p align="center">
     <a href="https://github.com/adshares/adpay/issues/new?template=bug_report.md&labels=Bug">Report bug</a>
     ·
@@ -13,7 +13,7 @@
 </p>
 
 
-Adpay is a back-end service for valuating events.
+AdPay is a back-end service for valuating events.
 It accepts requests from [AdServer](https://github.com/adshares/adserver) internally.
 
 ## Quick Start

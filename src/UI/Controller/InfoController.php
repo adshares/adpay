@@ -1,19 +1,13 @@
-<?php
+<?php declare(strict_types = 1);
 
-namespace Adshares\Adpay\Controller;
+namespace Adshares\AdPay\UI\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class AppController extends AbstractController
+class InfoController extends AbstractController
 {
-
-    public function index(): Response
-    {
-        return new RedirectResponse($this->generateUrl('classification'));
-    }
 
     public function info(Request $request): Response
     {
@@ -29,6 +23,7 @@ class AppController extends AbstractController
         );
     }
 
+    /** @param array<string> $data */
     private static function formatTxt(array $data): string
     {
         $response = '';
@@ -46,6 +41,7 @@ class AppController extends AbstractController
         return $response;
     }
 
+    /** @param array<string> $data */
     private static function formatJson(array $data): string
     {
         return json_encode($data);

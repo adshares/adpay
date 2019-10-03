@@ -1,13 +1,37 @@
-api_requests:
-    path: /api/v{version}/requests
-    controller: Adshares\Adpay\Controller\ApiController::postRequests
+api_post_campaigns:
+    path: /api/v{version}/campaigns
+    controller: Adshares\AdPay\UI\Controller\CampaignController::upsert
     methods: POST
     requirements:
-        version:  '0|1'
+        version: '1'
+
+api_delete_campaigns:
+    path: /api/v{version}/campaigns/{id}
+    controller: Adshares\AdPay\UI\Controller\CampaignController::delete
+    methods: DELETE
+    defaults:
+        id: ~
+    requirements:
+        version: '1'
+
+api_post_events:
+    path: /api/v{version}/events
+    controller: Adshares\AdPay\UI\Controller\EventController::upsert
+    methods: POST
+    requirements:
+        version: '1'
+
+api_get_payments:
+    path: /api/v{version}/payments/{timestamp}
+    controller: Adshares\AdPay\UI\Controller\PaymentController::find
+    methods: GET
+    requirements:
+        version: '1'
+        timestamp: '\d+'
 
 info:
     path: /info.{_format}
-    controller: Adshares\Adpay\Controller\AppController::info
+    controller: Adshares\AdPay\UI\Controller\InfoController::info
     methods: GET
     defaults:
         _format: 'json'

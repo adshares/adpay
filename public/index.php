@@ -1,6 +1,6 @@
 <?php
 
-use Adshares\Adpay\Kernel;
+use Adshares\AdPay\Kernel;
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\HttpFoundation\Request;
 

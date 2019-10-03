@@ -11,6 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rewriting from Python to PHP
 
 
-[Unreleased]: https://github.com/adshares/adclassify/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/adshares/adselect/compare/v0.1.0...v1.0.0
-[0.1.0]: https://github.com/adshares/adpanel/releases/tag/v0.1.0
+[Unreleased]: https://github.com/adshares/adpay/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/adshares/adpay/compare/v0.1.0...v1.0.0
+[0.1.0]: https://github.com/adshares/adpay/releases/tag/v0.1.0

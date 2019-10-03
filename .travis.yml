@@ -1,90 +1,34 @@
-sudo: required
-
-language: jvm
-
-jdk: openjdk9
-
-services:
-  - docker
+language: php
+sudo: false
 
 env:
   global:
-    - DOCKER_IMAGE=awlodarkiewicz/devops:python
-    - HOST_PATH=/home/travis/build/adshares/adpay
-    - BUILD_PATH=/build/adpay
-    - BUILD_NAME=adpay_build
-    - PYTHONPATH=$PYTHONPATH:$BUILD_PATH
-    - PIPENV_DONT_LOAD_ENV=true
-  matrix:
-    - ADPAY_APP_ENV=dev
+    - MIN_PHP=7.2
 
-stages:
-  - Test build, test code, test quality
-
-before_script:
-  # Enable aliases for non-interactive shells
-  - shopt -s expand_aliases
-  # Set alias - please note the missing quote you need to append.
-  - alias in_docker='docker exec $BUILD_NAME /bin/bash -c "cd $BUILD_PATH && '
-  # Set alias for cleanup
-  - alias cleanup_docker='docker stop $BUILD_NAME && docker rm $BUILD_NAME'
-
-jobs:
+matrix:
   include:
-    # Coverage generation and Sonar Qube
-    - stage: Test build, test code, test quality
-      script:
-        ## Setup test environment
-        # Run docker container
-        - docker pull $DOCKER_IMAGE
-        - env | grep ADPAY > adpay.env
-        - >
-          docker run -d
-          --mount type=bind,src=$HOST_PATH,dst=$BUILD_PATH
-          -e TRAVIS=true
-          -e PYTHONPATH=$BUILD_PATH
-          -e PIPENV_VENV_IN_PROJECT=1
-          -e ADPAY_SERVER_INTERFACE=""
-          -e LC_ALL=C.UTF-8
-          --env-file adpay.env
-          --name $BUILD_NAME
-          $DOCKER_IMAGE
-          sleep infinity
+    - php: "7.2"
+    - php: "7.3"
+  fast_finish: true
 
-        - in_docker apt-get -qq update"
-        # Run pre-build script
-        - in_docker ./scripts/pre-build.sh"
+cache:
+  directories:
+    - $HOME/.composer/cache/files
 
-        # Run build script
-        - in_docker ./scripts/build.sh"
+before_install:
+  - composer self-update
 
-        - in_docker /bin/bash scripts/pre-install.sh"
+install:
+  - composer install
 
-        - in_docker pipenv run tests"
+script:
+  - composer qa-check
+  - composer test-coverage
 
-        - in_docker pipenv run quality"
-
-        - in_docker pipenv run coverage report -m"
-
-        # Test documentation building
-        - in_docker pipenv run build_docs -W --keep-going"
-
-        - sonar-scanner
-
-        # Cleanup
-        - cleanup_docker
-
-# After a build, send email notification with the build results
 notifications:
   email: false
   slack:
     rooms:
-      secure: "eSRA9ymsTLvqgDmcyrekeb23g8bfb7HrJF80qZxQSvJA/b5TBfMpOa9HOE/Gm/3PIcWf3odpyybrFTwXpCuQ5OXRWK8wvwe+4WoyPV1iJeJMEU2r8gMSWxcXktgavUYWOBpvzoE0uUUbtt5gP6X+CDoIibls/P1vO81eGOoI3jKPNBaJRita/WwQzltxwRhCDE100rkFbHGX2TQ3UV32zeegUVGGrmCzA87/c7hz1FFsWrCVz5GjTEf6iAoDTfwrVD6ym8XtQKjKN+nVuDFEsiPwA5SmTKg/HDbTYg41xUsbE2hr3iDwhMNkl38XITfw6WzIYVdYPO4OPlBHoR973Ao1FFQWIrzsfINC2ogn4SnexPyk/m/gNG9y3l7ammRO5fVKrXdidXLisdlDQ0NrgyqtQRss0u6Lpk81ksFgI1e/Ffei3/0LJfuvKgtX7/dUnzDxnGmvrJUvUtbaXiqpulOoCTVrTdN8XqV4fB+qnadYhBGmksCQhFERwCF09AS9+dSQElPTHoa/3qo4Ftnud6OCgkdSjK+9d83Gh7u1WezqctQdgc2s5SKmTmkt3cg11qqVtVtYh32qpoUOiJkm2LH0EZMgibsnTbevMYVvPiCrLfUz7SE9asJrNFQfuoX6pDhvCN7tKPFechMnqmJoFWh4o4DKJxE5iFfjPeWzWCg="
+      secure: "fuNJCrimqsz1w3KP77SyxgDQaqAQPtiEClUn4Ne1zAjFXvHRW/xgYshPCCp53EemkF0Zq2bSyw1/OAu+kCbqTeaHWJAzkQIfQIcQgbdffXfYTa3K6249K6EkxmxNKjDgIyoL8WhwSw3ttXqWS/jOmUzRHp/bpk+gf5xp3UdhCPsqvfWfyPcGg512vJuqg0805Y4KwCTHAmA/ZSlWJjf1/zpZMsbog4lRtRmNw/G3Wd+nNP72eHlrKKT91dP+t/cQMed2wcrfuMo0gdmZpL3LNafnh9iA8Du3UULgv1QVZSmQAaGGBOexRY+HQsSyOrR+0ieScI0FRERenuID4+k248c8zAuH6y6IZeytNQIxYkPgOb4HnX1bLk+wggzIiV1yngzfxznuUAJ8Opr13jyfrHIvhQuLUq8mvtXz2KXCF3DPJ8SRpRbmeQeYTrQVoJ3Q6900J+h+wxMYfOepfNRVoZeSLX3VqJXzrthW2c/YoeA9onwuQK4UjKk8pDLt+FvdwJ5+ucZk7Oh+H9dg8HKWS6zg9cqMgwbNH8Dso2U0pporl7e9avlyN4J0Kc1yRlBRXpNXMBcgToruw+hZAsZcR2+9fLwoz1b/g0jm4RoN/yz/krm4RNesVP2rAyEKUSugsPn2z07eCWJHEeuEUFJ4Ue1YLoKV+EIksYQT2GtW91I="
     on_success: change
     on_failure: always
-
-addons:
-  sonarcloud:
-    organization: "adshares-github"
-    token:
-      secure: "LGt/hA4zB/M+3074MlKXDYZdg2u74IKGRURRqTbRuH6baFVvSr3ixCv/H5DvEBNQNGHUvkVJLuVILncBSsc6vyqI9HWUHObTCJPB8qEw35qjbRAfKfysyZ1hV6Ebx5p3ASzfStKp6nZjWy/A4KCr4nh9lceKOm2ERgjNC7GMkYpUx9BVLQSBILwAe+a4SQyYNo42IKO3JfbWuYx9pVyCksK2NEv5K1PBdq0YbJ2ZZthgdCd1+9Dt3Y7fNIvtVSkYTATRGUirTBwIXU/vIVPzTqoq4aeJhumhJ5PJ/eUuD3f/fgFshWkf0kw2mT09HYuZI59a5VcwzVImVKygXPt+6th1cWSXgfvpxc9bI/Yhljerk7LAMO1UWGB3D1fOsW7bbtgI40fdH5YmOFFdWnNzDdb+z6trU/xmmNiR8YwFBgCwmW/OK4vDctIRI3wwIYrnwXkb1ahUF4gJHYgL7PR3vSl3lJXxBTYaWG0Z/Ughi5Rrzws3OagXvs1y/9QewfcZlvJVfDsG3kPt6HDZjPKEaYXZu9TuYBAQQFL534+ULkAtSoYW7N3O4fZbEdvgcEUvZSchkcO4eq3w8y2siXB08C9DlwYapFCEwxhkmLyp9QDnvlILlG2mEzg23UMxSyWFh7IjHpJ2NN+PjkWqKPKVBAKAbd/Q+Zw43sTm675F7m4="
