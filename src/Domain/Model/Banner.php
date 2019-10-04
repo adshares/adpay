@@ -8,25 +8,33 @@ use Adshares\AdPay\Domain\ValueObject\Size;
 final class Banner
 {
     /** @var Id */
-    private $campaignId;
+    private $id;
+
     /** @var Id */
-    private $bannerId;
+    private $campaignId;
+
     /** @var Size */
     private $size;
-    /** @var string */
+
+    /** @var BannerType */
     private $type;
 
-    public function __construct(Id $campaignId, Id $bannerId, Size $size, string $type)
+    public function __construct(Id $id, Id $campaignId, Size $size, BannerType $type)
     {
+        $this->id = $id;
         $this->campaignId = $campaignId;
-        $this->bannerId = $bannerId;
         $this->size = $size;
         $this->type = $type;
     }
 
-    public function getBannerId(): string
+    public function getId(): Id
     {
-        return $this->bannerId->toString();
+        return $this->id;
+    }
+
+    public function getCampaignId(): Id
+    {
+        return $this->campaignId;
     }
 
     public function getSize(): Size
@@ -34,7 +42,7 @@ final class Banner
         return $this->size;
     }
 
-    public function getType(): string
+    public function getType(): BannerType
     {
         return $this->type;
     }

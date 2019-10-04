@@ -23,7 +23,7 @@ final class Size
     public static function fromString(string $size): self
     {
         if (!preg_match('/^\d+x\d+$/', $size)) {
-            throw new InvalidArgumentException('size', $size, 'We support only [WIDTH]x[HEIGHT].');
+            throw InvalidArgumentException::fromArgument('size', $size, 'We support only [WIDTH]x[HEIGHT].');
         }
 
         $size = explode('x', $size);

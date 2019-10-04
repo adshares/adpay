@@ -1,12 +1,13 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\AdPay\Domain\ValueObject;
+namespace Adshares\AdPay\Domain\Model;
 
-use Adshares\AdPay\Domain\Exception\AdPayRuntimeException;
+use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 
 class BannerType
 {
     public const IMAGE = 'image';
+
     public const HTML = 'html';
 
     /** @var string */
@@ -15,7 +16,7 @@ class BannerType
     public function __construct(string $type)
     {
         if ($type !== self::IMAGE && $type !== self::HTML) {
-            throw new AdPayRuntimeException(sprintf('Given banner type (%s) is not valid.', $type));
+            throw InvalidArgumentException::fromArgument('type', $type);
         }
 
         $this->type = $type;

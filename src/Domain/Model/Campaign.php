@@ -2,7 +2,7 @@
 
 namespace Adshares\AdPay\Domain\Model;
 
-use Adshares\AdPay\Domain\Exception\AdPayRuntimeException;
+use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 use Adshares\AdPay\Domain\ValueObject\Budget;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use DateTimeInterface;
@@ -10,46 +10,51 @@ use DateTimeInterface;
 final class Campaign
 {
     /** @var Id */
-    private $campaignId;
+    private $id;
+
+    /** @var Id */
+    private $advertiserId;
+
     /** @var DateTimeInterface */
     private $timeStart;
+
     /** @var DateTimeInterface|null */
     private $timeEnd;
+
     /** @var BannerCollection */
     private $banners;
-    /** @var array<string> */
-    private $keywords;
+
     /** @var array<string> */
     private $filters;
+
     /** @var Budget */
     private $budget;
 
     /**
-     * @param array<string> $keywords
      * @param array<string> $filters
      */
     public function __construct(
-        Id $campaignId,
+        Id $id,
+        Id $advertiserId,
         DateTimeInterface $timeStart,
         ?DateTimeInterface $timeEnd,
         BannerCollection $banners,
-        array $keywords,
         array $filters,
         Budget $budget
     ) {
-        if ($timeEnd && $timeStart > $timeEnd) {
-            throw new AdPayRuntimeException(sprintf(
-                'Time start (%s) must be greater than end date (%s).',
-                $timeStart->toString(),
-                $timeEnd->toString()
-            ));
+        if ($timeEnd !== null && $timeStart > $timeEnd) {
+            throw InvalidArgumentException::fromArgument(
+                'time start',
+                $timeStart->format(DateTimeInterface::ATOM),
+                sprintf('Time start must be greater than end date (%s).', $timeEnd->format(DateTimeInterface::ATOM))
+            );
         }
 
-        $this->campaignId = $campaignId;
+        $this->id = $id;
+        $this->advertiserId = $advertiserId;
         $this->timeStart = $timeStart;
         $this->timeEnd = $timeEnd;
         $this->banners = $banners;
-        $this->keywords = $keywords;
         $this->filters = [
             'exclude' => $filters['exclude'] ?? [],
             'require' => $filters['require'] ?? [],
@@ -57,23 +62,24 @@ final class Campaign
         $this->budget = $budget;
     }
 
-    public function getId(): string
+    public function getId(): Id
     {
-        return $this->campaignId->toString();
+        return $this->id;
     }
 
-    public function getTimeStart(): int
+    public function getAdvertiserId(): Id
     {
-        return $this->timeStart->getTimestamp();
+        return $this->advertiserId;
     }
 
-    public function getTimeEnd(): ?int
+    public function getTimeStart(): DateTimeInterface
     {
-        if (!$this->timeEnd) {
-            return null;
-        }
+        return $this->timeStart;
+    }
 
-        return $this->timeEnd->getTimestamp();
+    public function getTimeEnd(): ?DateTimeInterface
+    {
+        return $this->timeEnd;
     }
 
     public function getBanners(): BannerCollection
@@ -82,11 +88,10 @@ final class Campaign
     }
 
     /** @return array<string> */
-    public function getKeywords(): array
+    public function getFilters(): array
     {
-        return $this->keywords;
+        return $this->filters;
     }
-
 
     /** @return array<string> */
     public function getExcludeFilters(): array
@@ -100,9 +105,14 @@ final class Campaign
         return $this->filters['require'];
     }
 
-    public function getBudget(): int
+    public function getBudget(): Budget
     {
-        return $this->budget->getBudget();
+        return $this->budget;
+    }
+
+    public function getBudgetValue(): int
+    {
+        return $this->budget->getValue();
     }
 
     public function getMaxCpc(): ?int

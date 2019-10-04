@@ -1,0 +1,41 @@
+<?php declare(strict_types = 1);
+
+namespace Adshares\AdPay\Tests\Domain\ValueObject;
+
+use Adshares\AdPay\Domain\ValueObject\Id;
+use Adshares\AdPay\Domain\ValueObject\IdCollection;
+use PHPUnit\Framework\TestCase;
+
+final class IdCollectionTest extends TestCase
+{
+    public function testMultiplyAdding(): void
+    {
+        $id1 = new Id('00000000000000000000000000000001');
+        $id2 = new Id('00000000000000000000000000000002');
+        $id3 = new Id('00000000000000000000000000000003');
+        $id4 = new Id('00000000000000000000000000000004');
+
+        $this->assertCount(4, new IdCollection($id1, $id2, $id3, $id4));
+    }
+
+    public function testEmptyCollection(): void
+    {
+        $collection = new IdCollection();
+
+        $this->assertCount(0, $collection);
+        $this->assertEmpty($collection);
+    }
+
+    public function testAddingTerms(): void
+    {
+        $id1 = new Id('00000000000000000000000000000001');
+        $id2 = new Id('00000000000000000000000000000002');
+        $id3 = new Id('00000000000000000000000000000003');
+        $id4 = new Id('00000000000000000000000000000004');
+
+        $collection = new IdCollection($id1, $id2, $id3);
+
+        $this->assertTrue($collection->shouldBeAdded($id4));
+        $this->assertFalse($collection->shouldBeAdded($id3));
+    }
+}

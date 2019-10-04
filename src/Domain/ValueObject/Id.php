@@ -13,7 +13,7 @@ final class Id
     public function __construct(string $id)
     {
         if (!preg_match('/^[0-9a-fA-F]{32}$/', $id)) {
-            throw new InvalidArgumentException('id', $id);
+            throw InvalidArgumentException::fromArgument('id', $id);
         }
 
         $this->id = $id;

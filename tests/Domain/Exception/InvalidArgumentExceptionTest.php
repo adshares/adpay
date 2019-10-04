@@ -9,13 +9,13 @@ final class SizeTest extends TestCase
 {
     public function testInstanceOfInvalidArgumentException(): void
     {
-        $e = new InvalidArgumentException('input');
+        $e = InvalidArgumentException::fromArgument('input');
         $this->assertEquals('Given input () is invalid.', $e->getMessage());
 
-        $e = new InvalidArgumentException('input', 'abc');
+        $e = InvalidArgumentException::fromArgument('input', 'abc');
         $this->assertEquals('Given input (abc) is invalid.', $e->getMessage());
 
-        $e = new InvalidArgumentException('input', 'abc', 'Must be good.');
+        $e = InvalidArgumentException::fromArgument('input', 'abc', 'Must be good.');
         $this->assertEquals('Given input (abc) is invalid. Must be good.', $e->getMessage());
     }
 }

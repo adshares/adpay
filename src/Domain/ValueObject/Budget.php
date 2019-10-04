@@ -7,7 +7,7 @@ use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 final class Budget
 {
     /** @var int */
-    private $budget;
+    private $value;
 
     /** @var int|null */
     private $maxCpm;
@@ -15,28 +15,36 @@ final class Budget
     /** @var int|null */
     private $maxCpc;
 
-    public function __construct(int $budget, ?int $maxCpm = null, ?int $maxCpc = null)
+    public function __construct(int $value, ?int $maxCpm = null, ?int $maxCpc = null)
     {
-        if ($budget <= 0) {
-            throw new InvalidArgumentException('budget', (string)$budget, 'The value must be greater than 0');
+        if ($value <= 0) {
+            throw InvalidArgumentException::fromArgument('budget', (string)$value, 'The value must be greater than 0');
         }
 
         if ($maxCpm !== null && $maxCpm < 0) {
-            throw new InvalidArgumentException('max CPM', (string)$budget, 'The value must be greater than 0');
+            throw InvalidArgumentException::fromArgument(
+                'max CPM',
+                (string)$maxCpm,
+                'The value must be greater than or equal to 0'
+            );
         }
 
         if ($maxCpc !== null && $maxCpc < 0) {
-            throw new InvalidArgumentException('max CPC', (string)$budget, 'The value must be greater than 0');
+            throw InvalidArgumentException::fromArgument(
+                'max CPC',
+                (string)$maxCpc,
+                'The value must be greater than or equal to 0'
+            );
         }
 
-        $this->budget = $budget;
+        $this->value = $value;
         $this->maxCpm = $maxCpm;
         $this->maxCpc = $maxCpc;
     }
 
-    public function getBudget(): int
+    public function getValue(): int
     {
-        return $this->budget;
+        return $this->value;
     }
 
     public function getMaxCpm(): ?int
@@ -47,5 +55,15 @@ final class Budget
     public function getMaxCpc(): ?int
     {
         return $this->maxCpc;
+    }
+
+    public function toString(): string
+    {
+        return sprintf('%d [%s/%s]', $this->value, $this->maxCpm ?? '-', $this->maxCpc ?? '-');
+    }
+
+    public function __toString(): string
+    {
+        return $this->toString();
     }
 }

@@ -2,7 +2,9 @@
 
 namespace Adshares\AdPay\Domain\Model;
 
-final class CampaignCollection extends Collection
+use Doctrine\Common\Collections\ArrayCollection;
+
+final class CampaignCollection extends ArrayCollection
 {
     public function __construct(Campaign ...$campaigns)
     {

@@ -16,7 +16,7 @@ class EventType
     public function __construct(string $type)
     {
         if ($type !== self::CLICK && $type !== self::CONVERSION && $type !== self::VIEW) {
-            throw new InvalidArgumentException('type', $type);
+            throw InvalidArgumentException::fromArgument('type', $type);
         }
 
         $this->type = $type;

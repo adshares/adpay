@@ -6,5 +6,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 final class BannerCollection extends ArrayCollection
 {
-
+    public function __construct(Banner ...$banners)
+    {
+        parent::__construct($banners);
+    }
 }
