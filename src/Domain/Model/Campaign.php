@@ -21,14 +21,17 @@ final class Campaign
     /** @var DateTimeInterface|null */
     private $timeEnd;
 
+    /** @var Budget */
+    private $budget;
+
     /** @var BannerCollection */
     private $banners;
 
     /** @var array<string> */
     private $filters;
 
-    /** @var Budget */
-    private $budget;
+    /** @var ConversionCollection */
+    private $conversions;
 
     /**
      * @param array<string> $filters
@@ -38,9 +41,10 @@ final class Campaign
         Id $advertiserId,
         DateTimeInterface $timeStart,
         ?DateTimeInterface $timeEnd,
+        Budget $budget,
         BannerCollection $banners,
         array $filters,
-        Budget $budget
+        ConversionCollection $conversions
     ) {
         if ($timeEnd !== null && $timeStart > $timeEnd) {
             throw InvalidArgumentException::fromArgument(
@@ -54,12 +58,13 @@ final class Campaign
         $this->advertiserId = $advertiserId;
         $this->timeStart = $timeStart;
         $this->timeEnd = $timeEnd;
+        $this->budget = $budget;
         $this->banners = $banners;
         $this->filters = [
             'exclude' => $filters['exclude'] ?? [],
             'require' => $filters['require'] ?? [],
         ];
-        $this->budget = $budget;
+        $this->conversions = $conversions;
     }
 
     public function getId(): Id
@@ -80,6 +85,26 @@ final class Campaign
     public function getTimeEnd(): ?DateTimeInterface
     {
         return $this->timeEnd;
+    }
+
+    public function getBudget(): Budget
+    {
+        return $this->budget;
+    }
+
+    public function getBudgetValue(): int
+    {
+        return $this->budget->getValue();
+    }
+
+    public function getMaxCpc(): ?int
+    {
+        return $this->budget->getMaxCpc();
+    }
+
+    public function getMaxCpm(): ?int
+    {
+        return $this->budget->getMaxCpm();
     }
 
     public function getBanners(): BannerCollection
@@ -105,23 +130,8 @@ final class Campaign
         return $this->filters['require'];
     }
 
-    public function getBudget(): Budget
+    public function getConversions(): ConversionCollection
     {
-        return $this->budget;
-    }
-
-    public function getBudgetValue(): int
-    {
-        return $this->budget->getValue();
-    }
-
-    public function getMaxCpc(): ?int
-    {
-        return $this->budget->getMaxCpc();
-    }
-
-    public function getMaxCpm(): ?int
-    {
-        return $this->budget->getMaxCpm();
+        return $this->conversions;
     }
 }

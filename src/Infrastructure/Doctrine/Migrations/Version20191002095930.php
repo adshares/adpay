@@ -52,7 +52,7 @@ final class Version20191002095930 extends AbstractMigration
                 `limit` BIGINT(20) NULL DEFAULT NULL,
                 limit_type VARCHAR(20) NOT NULL,
                 cost BIGINT(20) NOT NULL,
-                value BIGINT(20) NULL DEFAULT NULL,
+                value BIGINT(20) NOT NULL,
                 is_value_mutable TINYINT(4) NOT NULL,
                 is_repeatable TINYINT(4) NOT NULL,
                 PRIMARY KEY (id),

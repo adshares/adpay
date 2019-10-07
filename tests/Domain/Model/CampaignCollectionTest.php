@@ -5,6 +5,7 @@ namespace Adshares\AdPay\Tests\Domain\Model;
 use Adshares\AdPay\Domain\Model\BannerCollection;
 use Adshares\AdPay\Domain\Model\Campaign;
 use Adshares\AdPay\Domain\Model\CampaignCollection;
+use Adshares\AdPay\Domain\Model\ConversionCollection;
 use Adshares\AdPay\Domain\ValueObject\Budget;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use PHPUnit\Framework\TestCase;
@@ -37,9 +38,10 @@ final class CampaignCollectionTest extends TestCase
             new Id('0000000000000000000000000000000' . (string)$bannerId),
             new DateTime(),
             new DateTime(),
+            new Budget(100),
             new BannerCollection(),
             [],
-            new Budget(100)
+            new ConversionCollection()
         );
     }
 }

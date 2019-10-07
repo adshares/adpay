@@ -78,7 +78,7 @@
 			"deptrac --no-ansi"
 		],
 		"test": "@test-coverage --no-coverage",
-		"test-coverage": "php bin/phpunit --testsuite Domain,Lib,Application,Infrastructure",
+		"test-coverage": "php bin/phpunit --testsuite Domain,Lib,Application,Infrastructure,UI",
 		"post-install-cmd": [
 			"@auto-scripts"
 		],

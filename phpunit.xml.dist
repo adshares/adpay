@@ -33,13 +33,17 @@
     <filter>
         <whitelist>
             <directory suffix=".php">./src</directory>
+            <exclude>
+                <file>./src/Kernel.php</file>
+                <directory suffix=".php">./src/Infrastructure/Doctrine/Migrations</directory>
+            </exclude>
         </whitelist>
     </filter>
 
     <logging>
         <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
-        <log type="coverage-clover" target="code-coverage/phpunit/coverage.xml"/>
-        <log type="junit" target="code-coverage/phpunit/logfile.xml"/>
+        <log type="coverage-clover" target=".code-coverage/phpunit/coverage.xml"/>
+        <log type="junit" target=".code-coverage/phpunit/logfile.xml"/>
     </logging>
 
     <listeners>

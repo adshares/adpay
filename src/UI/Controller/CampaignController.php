@@ -2,6 +2,8 @@
 
 namespace Adshares\AdPay\UI\Controller;
 
+use Adshares\AdPay\Application\DTO\CampaignUpdateDTO;
+use Adshares\AdPay\Application\Exception\ValidationDTOException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,34 +36,17 @@ class CampaignController extends AbstractController
             throw new BadRequestHttpException('Incorrect data');
         }
 
-//        try {
-//            $dto = new CampaignUpdateDto($content['campaigns']);
-//        } catch (ValidationDtoException $exception) {
-//            throw new BadRequestHttpException($exception->getMessage());
-//        }
+        try {
+            $dto = new CampaignUpdateDTO($content['campaigns']);
+        } catch (ValidationDTOException $exception) {
+            throw new BadRequestHttpException($exception->getMessage());
+        }
 //
 //        $this->campaignUpdater->update($dto->getCampaignCollection());
 
         $this->logger->debug('Campaigns updated');
 
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
-
-
-
-
-//        if (empty($data)) {
-//            throw new BadRequestHttpException('No campaign data to update.');
-//        }
-//
-//        if (!is_array($data)) {
-//            $data = [$data];
-//        }
-//
-//        foreach ($data as $campaign) {
-//            dump($campaign);
-//            exit;
-//
-//        }
     }
 
     public function delete(?string $id, Request $request): Response

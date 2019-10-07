@@ -31,9 +31,9 @@ final class Conversion
         Id $id,
         Id $campaignId,
         Limit $limit,
-        $value,
-        $valueMutable = false,
-        $repeatable = false
+        int $value,
+        bool $valueMutable = false,
+        bool $repeatable = false
     ) {
         if ($value < 0) {
             throw InvalidArgumentException::fromArgument(
