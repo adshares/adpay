@@ -4,6 +4,7 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
+    api_version: 'v1'
 
 services:
     # default configuration for services in *this* file
@@ -11,12 +12,8 @@ services:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
-    Adshares\AdPay\UI\Command\:
-        resource: '../src/UI/Command'
-
-    Adshares\AdPay\UI\Controller\:
-        resource: '../src/UI/Controller'
-        tags: ['controller.service_arguments']
+#    Adshares\AdPay\UI\Command\:
+#        resource: '../src/UI/Command'
 
 #    Adshares\AdSelect\UI\EventListener\ApiExceptionListenerSubscriber:
 #        arguments:
@@ -28,8 +25,15 @@ services:
 #    Adshares\AdPay\Infrastructure\Doctrine\Client:
 #        resource: '../src/Infrastructure/Doctrine/Client.php'
 
-#    Adshares\AdPay\Infrastructure\Doctrine\Service:
-#        resource: '../src/Infrastructure/Doctrine/Service'
+    Adshares\AdPay\Infrastructure\Doctrine\Service\:
+        resource: '../src/Infrastructure/Doctrine/Service'
 
+    Adshares\AdPay\UI\Controller\:
+        resource: '../src/UI/Controller'
+        tags: ['controller.service_arguments']
 
-#            $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
+    Adshares\AdPay\UI\Controller\CampaignController:
+        public: true
+        arguments:
+            $campaignUpdater: '@Adshares\AdPay\Infrastructure\Doctrine\Service\DoctrineCampaignUpdater'
+            $logger: '@logger'

@@ -211,7 +211,7 @@ final class CampaignUpdateDTO
         return $collection;
     }
 
-    public function getCampaignCollection(): CampaignCollection
+    public function getCampaigns(): CampaignCollection
     {
         return $this->campaigns;
     }

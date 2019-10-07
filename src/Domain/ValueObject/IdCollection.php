@@ -10,12 +10,4 @@ final class IdCollection extends ArrayCollection
     {
         parent::__construct($ids);
     }
-
-    public function shouldBeAdded(Id $id): bool
-    {
-        return !$this->exists(static function ($key, $element) use ($id) {
-            /* @var $element Id */
-            return $id->equals($element);
-        });
-    }
 }

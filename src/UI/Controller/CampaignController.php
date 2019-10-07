@@ -2,27 +2,30 @@
 
 namespace Adshares\AdPay\UI\Controller;
 
+use Adshares\AdPay\Application\DTO\CampaignDeleteDTO;
 use Adshares\AdPay\Application\DTO\CampaignUpdateDTO;
 use Adshares\AdPay\Application\Exception\ValidationDTOException;
+use Adshares\AdPay\Application\Service\CampaignUpdater;
+use Adshares\AdPay\Domain\ValueObject\IdCollection;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class CampaignController extends AbstractController
 {
+    /** @var CampaignUpdater */
+    private $campaignUpdater;
 
-    /** @var LoggerInterface  */
+    /** @var LoggerInterface */
     private $logger;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(CampaignUpdater $campaignUpdater, LoggerInterface $logger)
     {
-        if ($logger === null) {
-            $logger = new NullLogger();
-        }
+        $this->campaignUpdater = $campaignUpdater;
         $this->logger = $logger;
     }
 
@@ -31,26 +34,42 @@ class CampaignController extends AbstractController
         $this->logger->debug('Running post campaigns command');
 
         $content = json_decode($request->getContent(), true);
-
         if ($content === null || !isset($content['campaigns'])) {
-            throw new BadRequestHttpException('Incorrect data');
+            throw new UnprocessableEntityHttpException('Incorrect data');
         }
 
         try {
             $dto = new CampaignUpdateDTO($content['campaigns']);
         } catch (ValidationDTOException $exception) {
-            throw new BadRequestHttpException($exception->getMessage());
+            throw new UnprocessableEntityHttpException($exception->getMessage());
         }
-//
-//        $this->campaignUpdater->update($dto->getCampaignCollection());
+
+        $this->campaignUpdater->update($dto->getCampaigns());
 
         $this->logger->debug('Campaigns updated');
 
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
     }
 
-    public function delete(?string $id, Request $request): Response
+    public function delete(Request $request): Response
     {
-        return new Response('ok ' . $id);
+        $this->logger->debug('Running delete campaigns command');
+
+        $content = json_decode($request->getContent(), true);
+        if ($content === null || !isset($content['campaigns'])) {
+            throw new UnprocessableEntityHttpException('Incorrect data');
+        }
+
+        try {
+            $dto = new CampaignDeleteDTO($content['campaigns']);
+        } catch (ValidationDTOException $exception) {
+            throw new UnprocessableEntityHttpException($exception->getMessage());
+        }
+
+        $this->campaignUpdater->delete($dto->getIds());
+
+        $this->logger->debug('Campaigns deleted');
+
+        return new JsonResponse([], Response::HTTP_NO_CONTENT);
     }
 }

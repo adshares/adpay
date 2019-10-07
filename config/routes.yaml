@@ -6,11 +6,9 @@ api_post_campaigns:
         version: '1'
 
 api_delete_campaigns:
-    path: /api/v{version}/campaigns/{id}
+    path: /api/v{version}/campaigns
     controller: Adshares\AdPay\UI\Controller\CampaignController::delete
     methods: DELETE
-    defaults:
-        id: ~
     requirements:
         version: '1'
 

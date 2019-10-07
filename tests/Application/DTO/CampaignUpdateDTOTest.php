@@ -16,7 +16,7 @@ final class CampaignUpdateDTOTest extends TestCase
     {
         $dto = new CampaignUpdateDTO($data);
 
-        $this->assertCount($count, $dto->getCampaignCollection());
+        $this->assertCount($count, $dto->getCampaigns());
     }
 
     /**
@@ -40,7 +40,7 @@ final class CampaignUpdateDTOTest extends TestCase
             ]
         );
 
-        $this->assertCount($count, $dto->getCampaignCollection()->first()->getBanners());
+        $this->assertCount($count, $dto->getCampaigns()->first()->getBanners());
     }
 
     /**
@@ -68,7 +68,7 @@ final class CampaignUpdateDTOTest extends TestCase
             ]
         );
 
-        $this->assertCount(1, $dto->getCampaignCollection());
+        $this->assertCount(1, $dto->getCampaigns());
     }
 
     /**
@@ -96,7 +96,7 @@ final class CampaignUpdateDTOTest extends TestCase
             ]
         );
 
-        $this->assertCount($count, $dto->getCampaignCollection()->first()->getConversions());
+        $this->assertCount($count, $dto->getCampaigns()->first()->getConversions());
     }
 
     /**
