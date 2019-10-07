@@ -2,7 +2,7 @@
 
 namespace Adshares\AdPay\UI\Controller;
 
-use Adshares\AdPay\Lib\InfoHelper;
+use Adshares\AdPay\UI\Helper\InfoHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

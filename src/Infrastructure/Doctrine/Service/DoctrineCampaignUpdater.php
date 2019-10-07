@@ -65,7 +65,11 @@ class DoctrineCampaignUpdater implements CampaignUpdater
     public function delete(IdCollection $ids): void
     {
         try {
-            $this->db->delete('campaigns', ['id' => $ids->toBinArray()], ['id' => Connection::PARAM_STR_ARRAY]);
+            $this->db->executeQuery(
+                'DELETE FROM campaigns WHERE id IN (?)',
+                [$ids->toBinArray()],
+                [Connection::PARAM_STR_ARRAY]
+            );
         } catch (DBALException $exception) {
             throw new UpdateDataException($exception->getMessage());
         }
@@ -89,10 +93,10 @@ class DoctrineCampaignUpdater implements CampaignUpdater
     private function isModelExists(string $table, Id $id)
     {
         return $this->db->fetchColumn(
-                sprintf('SELECT id FROM %s WHERE id = ?', $table),
-                [$id->toBin()],
-                0,
-                [Type::BINARY]
-            ) !== false;
+            sprintf('SELECT id FROM %s WHERE id = ?', $table),
+            [$id->toBin()],
+            0,
+            [Type::BINARY]
+        ) !== false;
     }
 }

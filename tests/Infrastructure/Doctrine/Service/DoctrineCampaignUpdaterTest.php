@@ -4,7 +4,10 @@ namespace Adshares\AdPay\Tests\Infrastructure\Doctrine\Service;
 
 use PHPUnit\Framework\TestCase;
 
-class DoctrineCampaignUpdaterTest extends TestCase
+final class DoctrineCampaignUpdaterTest extends TestCase
 {
-
+    public function testMock(): void
+    {
+        $this->assertTrue(true);
+    }
 }

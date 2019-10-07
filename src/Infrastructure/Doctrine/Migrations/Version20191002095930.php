@@ -22,7 +22,7 @@ final class Version20191002095930 extends AbstractMigration
                 id VARBINARY(16) NOT NULL,
                 advertiser_id VARBINARY(16) NOT NULL,
                 time_start TIMESTAMP NOT NULL,
-                time_end TIMESTAMP NOT NULL,
+                time_end TIMESTAMP NULL DEFAULT NULL,
                 filters JSON NOT NULL,
                 budget BIGINT(20) NOT NULL,
                 max_cpm BIGINT(20) NULL DEFAULT NULL,

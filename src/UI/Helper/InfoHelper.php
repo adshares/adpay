@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\AdPay\Lib;
+namespace Adshares\AdPay\UI\Helper;
 
 final class InfoHelper
 {
