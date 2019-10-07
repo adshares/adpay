@@ -10,4 +10,14 @@ final class IdCollection extends ArrayCollection
     {
         parent::__construct($ids);
     }
+
+    public function toBinArray(): array
+    {
+        return array_map(
+            function (Id $id) {
+                return $id->toBin();
+            },
+            $this->toArray()
+        );
+    }
 }

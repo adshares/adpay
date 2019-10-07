@@ -24,9 +24,9 @@ final class Version20191002095930 extends AbstractMigration
                 time_start TIMESTAMP NOT NULL,
                 time_end TIMESTAMP NOT NULL,
                 filters JSON NOT NULL,
-                budget INT(11) NOT NULL,
-                max_cpm INT(11) NULL DEFAULT NULL,
-                max_cpc INT(11) NULL DEFAULT NULL,
+                budget BIGINT(20) NOT NULL,
+                max_cpm BIGINT(20) NULL DEFAULT NULL,
+                max_cpc BIGINT(20) NULL DEFAULT NULL,
                 PRIMARY KEY (id),
                 INDEX time_start (time_start),
                 INDEX time_end (time_end)

@@ -24,6 +24,11 @@ final class Id
         return $this->id === $id->id;
     }
 
+    public function toBin(): string
+    {
+        return hex2bin($this->id);
+    }
+
     public function toString(): string
     {
         return $this->id;
