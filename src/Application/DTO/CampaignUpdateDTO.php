@@ -24,35 +24,33 @@ final class CampaignUpdateDTO
 {
     private $campaigns;
 
-    public function __construct(array $campaigns)
+    public function __construct(array $input)
     {
-        $this->validate($campaigns);
+        $this->validate($input);
 
-        $campaignCollection = new CampaignCollection();
-
-        foreach ($campaigns as $campaign) {
-            $campaignCollection->add($this->createCampaignModel($campaign));
+        $collection = new CampaignCollection();
+        foreach ($input['campaigns'] as $campaign) {
+            $collection->add($this->createCampaignModel($campaign));
         }
-
-        $this->campaigns = $campaignCollection;
+        $this->campaigns = $collection;
     }
 
-    private function createCampaignModel(array $campaignData): Campaign
+    private function createCampaignModel(array $input): Campaign
     {
         try {
-            $campaignId = new Id($campaignData['id']);
-            $advertiserId = new Id($campaignData['advertiser_id']);
-            $banners = $this->prepareBannerCollection($campaignId, $campaignData['banners']);
-            $filters = $this->prepareFilters($campaignData['filters'] ?? []);
-            $conversions = $this->prepareConversionCollection($campaignId, $campaignData['conversions'] ?? []);
+            $campaignId = new Id($input['id']);
+            $advertiserId = new Id($input['advertiser_id']);
+            $banners = $this->prepareBannerCollection($campaignId, $input['banners']);
+            $filters = $this->prepareFilters($input['filters'] ?? []);
+            $conversions = $this->prepareConversionCollection($campaignId, $input['conversions'] ?? []);
             $budget =
-                new Budget($campaignData['budget'], $campaignData['max_cpc'] ?? null, $campaignData['max_cpm'] ?? null);
+                new Budget($input['budget'], $input['max_cpc'] ?? null, $input['max_cpm'] ?? null);
 
             return new Campaign(
                 $campaignId,
                 $advertiserId,
-                DateTimeHelper::createFromTimestamp($campaignData['time_start']),
-                isset($campaignData['time_end']) ? DateTimeHelper::createFromTimestamp($campaignData['time_end'])
+                DateTimeHelper::createFromTimestamp($input['time_start']),
+                isset($input['time_end']) ? DateTimeHelper::createFromTimestamp($input['time_end'])
                     : null,
                 $budget,
                 $banners,
@@ -64,9 +62,13 @@ final class CampaignUpdateDTO
         }
     }
 
-    private function validate(array $campaigns): void
+    private function validate(array $input): void
     {
-        foreach ($campaigns as $campaign) {
+        if (!isset($input['campaigns'])) {
+            throw new ValidationDTOException('Field `campaigns` is required.');
+        }
+
+        foreach ($input['campaigns'] as $campaign) {
             if (!isset($campaign['id'])) {
                 throw new ValidationDTOException('Field `id` is required.');
             }
@@ -113,16 +115,16 @@ final class CampaignUpdateDTO
 
     private function validateBanners(array $banners): void
     {
-        foreach ($banners as $banner) {
-            if (!isset($banner['id'])) {
+        foreach ($banners as $input) {
+            if (!isset($input['id'])) {
                 throw new ValidationDTOException('Field `banners[][id]` is required.');
             }
 
-            if (!isset($banner['size'])) {
+            if (!isset($input['size'])) {
                 throw new ValidationDTOException('Field `banners[][size]` is required.');
             }
 
-            if (!isset($banner['type'])) {
+            if (!isset($input['type'])) {
                 throw new ValidationDTOException('Field `banners[][type]` is required.');
             }
         }
@@ -141,28 +143,28 @@ final class CampaignUpdateDTO
 
     private function validateConversions(array $conversions): void
     {
-        foreach ($conversions as $conversion) {
-            if (!isset($conversion['id'])) {
+        foreach ($conversions as $input) {
+            if (!isset($input['id'])) {
                 throw new ValidationDTOException('Field `conversions[][id]` is required.');
             }
 
-            if (!isset($conversion['limit_type'])) {
+            if (!isset($input['limit_type'])) {
                 throw new ValidationDTOException('Field `conversions[][limit_type]` is required.');
             }
 
-            if (!isset($conversion['cost'])) {
+            if (!isset($input['cost'])) {
                 throw new ValidationDTOException('Field `conversions[][cost]` is required.');
             }
 
-            if (!isset($conversion['is_repeatable'])) {
+            if (!isset($input['is_repeatable'])) {
                 throw new ValidationDTOException('Field `conversions[][is_repeatable]` is required.');
             }
 
-            if (!isset($conversion['value'])) {
+            if (!isset($input['value'])) {
                 throw new ValidationDTOException('Field `conversions[][value]` is required.');
             }
 
-            if (!isset($conversion['is_value_mutable'])) {
+            if (!isset($input['is_value_mutable'])) {
                 throw new ValidationDTOException('Field `conversions[][is_value_mutable]` is required.');
             }
         }

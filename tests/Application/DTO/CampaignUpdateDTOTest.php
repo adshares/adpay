@@ -14,9 +14,23 @@ final class CampaignUpdateDTOTest extends TestCase
      */
     public function testValidCampaignsData(array $data, int $count = 1): void
     {
-        $dto = new CampaignUpdateDTO($data);
+        $dto = new CampaignUpdateDTO(['campaigns' => $data]);
 
         $this->assertCount($count, $dto->getCampaigns());
+    }
+
+    public function testEmptyInputData(): void
+    {
+        $this->expectException(ValidationDTOException::class);
+
+        new CampaignUpdateDTO([]);
+    }
+
+    public function testInvalidInputData(): void
+    {
+        $this->expectException(ValidationDTOException::class);
+
+        new CampaignUpdateDTO(['invalid' => []]);
     }
 
     /**
@@ -26,7 +40,7 @@ final class CampaignUpdateDTOTest extends TestCase
     {
         $this->expectException(ValidationDTOException::class);
 
-        new CampaignUpdateDTO($data);
+        new CampaignUpdateDTO(['campaigns' => $data]);
     }
 
     /**
@@ -36,7 +50,9 @@ final class CampaignUpdateDTOTest extends TestCase
     {
         $dto = new CampaignUpdateDTO(
             [
-                self::simpleCampaign(['banners' => $data]),
+                'campaigns' => [
+                    self::simpleCampaign(['banners' => $data]),
+                ],
             ]
         );
 
@@ -52,7 +68,9 @@ final class CampaignUpdateDTOTest extends TestCase
 
         new CampaignUpdateDTO(
             [
-                self::simpleCampaign(['banners' => $data]),
+                'campaigns' => [
+                    self::simpleCampaign(['banners' => $data]),
+                ],
             ]
         );
     }
@@ -64,7 +82,9 @@ final class CampaignUpdateDTOTest extends TestCase
     {
         $dto = new CampaignUpdateDTO(
             [
-                self::simpleCampaign(['filters' => $data]),
+                'campaigns' => [
+                    self::simpleCampaign(['filters' => $data]),
+                ],
             ]
         );
 
@@ -80,7 +100,9 @@ final class CampaignUpdateDTOTest extends TestCase
 
         new CampaignUpdateDTO(
             [
-                self::simpleCampaign(['filters' => $data]),
+                'campaigns' => [
+                    self::simpleCampaign(['filters' => $data]),
+                ],
             ]
         );
     }
@@ -92,7 +114,9 @@ final class CampaignUpdateDTOTest extends TestCase
     {
         $dto = new CampaignUpdateDTO(
             [
-                self::simpleCampaign(['conversions' => $data]),
+                'campaigns' => [
+                    self::simpleCampaign(['conversions' => $data]),
+                ],
             ]
         );
 
@@ -108,7 +132,9 @@ final class CampaignUpdateDTOTest extends TestCase
 
         new CampaignUpdateDTO(
             [
-                self::simpleCampaign(['conversions' => $data]),
+                'campaigns' => [
+                    self::simpleCampaign(['conversions' => $data]),
+                ],
             ]
         );
     }

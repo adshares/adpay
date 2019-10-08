@@ -13,9 +13,16 @@ final class CampaignDeleteDTOTest extends TestCase
      */
     public function testValidIdData(array $data, int $count = 1): void
     {
-        $dto = new CampaignDeleteDTO($data);
+        $dto = new CampaignDeleteDTO(['campaigns' => $data]);
 
         $this->assertCount($count, $dto->getIds());
+    }
+
+    public function testEmptyInputData(): void
+    {
+        $this->expectException(ValidationDTOException::class);
+
+        new CampaignDeleteDTO([]);
     }
 
     /**
@@ -25,7 +32,7 @@ final class CampaignDeleteDTOTest extends TestCase
     {
         $this->expectException(ValidationDTOException::class);
 
-        new CampaignDeleteDTO($data);
+        new CampaignDeleteDTO(['campaigns' => $data]);
     }
 
     public function validIdDataProvider(): array

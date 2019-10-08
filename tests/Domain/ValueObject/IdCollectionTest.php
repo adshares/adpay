@@ -10,12 +10,20 @@ final class IdCollectionTest extends TestCase
 {
     public function testMultiplyAdding(): void
     {
-        $id1 = new Id('00000000000000000000000000000001');
-        $id2 = new Id('00000000000000000000000000000002');
-        $id3 = new Id('00000000000000000000000000000003');
-        $id4 = new Id('00000000000000000000000000000004');
+        $id1 = '00000000000000000000000000000001';
+        $id2 = '00000000000000000000000000000002';
+        $id3 = '00000000000000000000000000000003';
+        $id4 = '00000000000000000000000000000004';
 
-        $this->assertCount(4, new IdCollection($id1, $id2, $id3, $id4));
+        $collection = new IdCollection(
+            new Id($id1),
+            new Id($id2),
+            new Id($id3),
+            new Id($id4)
+        );
+
+        $this->assertCount(4, $collection);
+        $this->assertEquals([hex2bin($id1), hex2bin($id2), hex2bin($id3), hex2bin($id4)], $collection->toBinArray());
     }
 
     public function testEmptyCollection(): void

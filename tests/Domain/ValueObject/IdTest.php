@@ -16,6 +16,7 @@ final class IdTest extends TestCase
 
         $this->assertEquals($value, $id->toString());
         $this->assertEquals($value, (string)$id);
+        $this->assertEquals(hex2bin($value), $id->toBin());
     }
 
     public function testInvalidEmptyId(): void

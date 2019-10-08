@@ -32,8 +32,9 @@ class DoctrineCampaignUpdater implements CampaignUpdater
         $this->logger = $logger;
     }
 
-    public function update(CampaignCollection $campaigns): void
+    public function update(CampaignCollection $campaigns): int
     {
+        $count = 0;
         try {
             foreach ($campaigns as $campaign) {
                 /*  @var $campaign Campaign */
@@ -56,16 +57,19 @@ class DoctrineCampaignUpdater implements CampaignUpdater
                         ConversionMapper::types()
                     );
                 }
+                ++$count;
             }
         } catch (DBALException $exception) {
             throw new UpdateDataException($exception->getMessage());
         }
+
+        return $count;
     }
 
-    public function delete(IdCollection $ids): void
+    public function delete(IdCollection $ids): int
     {
         try {
-            $this->db->executeQuery(
+            $result = $this->db->executeUpdate(
                 'DELETE FROM campaigns WHERE id IN (?)',
                 [$ids->toBinArray()],
                 [Connection::PARAM_STR_ARRAY]
@@ -73,12 +77,14 @@ class DoctrineCampaignUpdater implements CampaignUpdater
         } catch (DBALException $exception) {
             throw new UpdateDataException($exception->getMessage());
         }
+
+        return $result;
     }
 
     /**
      * @throws \Doctrine\DBAL\DBALException
      */
-    private function upsert(string $table, Id $id, array $data, array $types = [])
+    private function upsert(string $table, Id $id, array $data, array $types = []): void
     {
         if ($this->isModelExists($table, $id)) {
             $this->db->update($table, $data, ['id' => $id->toBin()], $types);
@@ -90,13 +96,13 @@ class DoctrineCampaignUpdater implements CampaignUpdater
     /**
      * @throws \Doctrine\DBAL\DBALException
      */
-    private function isModelExists(string $table, Id $id)
+    private function isModelExists(string $table, Id $id): bool
     {
         return $this->db->fetchColumn(
-            sprintf('SELECT id FROM %s WHERE id = ?', $table),
-            [$id->toBin()],
-            0,
-            [Type::BINARY]
-        ) !== false;
+                sprintf('SELECT id FROM %s WHERE id = ?', $table),
+                [$id->toBin()],
+                0,
+                [Type::BINARY]
+            ) !== false;
     }
 }

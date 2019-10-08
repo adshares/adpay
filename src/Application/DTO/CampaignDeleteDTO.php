@@ -12,19 +12,21 @@ final class CampaignDeleteDTO
 {
     private $ids;
 
-    public function __construct(array $ids)
+    public function __construct(array $input)
     {
-        $idCollection = new IdCollection();
+        if (!isset($input['campaigns'])) {
+            throw new ValidationDTOException('Field `campaigns` is required.');
+        }
 
+        $collection = new IdCollection();
         try {
-            foreach ($ids as $item) {
-                $idCollection->add(new Id($item));
+            foreach ($input['campaigns'] as $id) {
+                $collection->add(new Id($id));
             }
         } catch (InvalidArgumentException|TypeError $exception) {
             throw new ValidationDtoException($exception->getMessage());
         }
-
-        $this->ids = $idCollection;
+        $this->ids = $collection;
     }
 
     public function getIds(): IdCollection

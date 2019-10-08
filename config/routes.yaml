@@ -1,20 +1,34 @@
 api_post_campaigns:
     path: /api/v{version}/campaigns
-    controller: Adshares\AdPay\UI\Controller\CampaignController::upsert
+    controller: Adshares\AdPay\UI\Controller\CampaignController::upsertCampaigns
     methods: POST
     requirements:
         version: '1'
 
 api_delete_campaigns:
     path: /api/v{version}/campaigns
-    controller: Adshares\AdPay\UI\Controller\CampaignController::delete
+    controller: Adshares\AdPay\UI\Controller\CampaignController::deleteCampaigns
     methods: DELETE
     requirements:
         version: '1'
 
-api_post_events:
-    path: /api/v{version}/events
-    controller: Adshares\AdPay\UI\Controller\EventController::upsert
+api_post_views:
+    path: /api/v{version}/events/views
+    controller: Adshares\AdPay\UI\Controller\EventController::upsertViews
+    methods: POST
+    requirements:
+        version: '1'
+
+api_post_clicks:
+    path: /api/v{version}/events/clicks
+    controller: Adshares\AdPay\UI\Controller\EventController::upsertClicks
+    methods: POST
+    requirements:
+        version: '1'
+
+api_post_conversions:
+    path: /api/v{version}/events/conversions
+    controller: Adshares\AdPay\UI\Controller\EventController::upsertConversions
     methods: POST
     requirements:
         version: '1'

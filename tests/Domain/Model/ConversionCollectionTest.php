@@ -13,12 +13,12 @@ final class ConversionCollectionTest extends TestCase
 {
     public function testMultiplyAdding(): void
     {
-        $conversion1 = self::createConversion(1, 1);
-        $conversion2 = self::createConversion(1, 2);
-        $conversion3 = self::createConversion(2, 3);
-        $conversion4 = self::createConversion(2, 4);
+        $item1 = self::createConversion(1);
+        $item2 = self::createConversion(2);
+        $item3 = self::createConversion(3);
+        $item4 = self::createConversion(4);
 
-        $this->assertCount(4, new ConversionCollection($conversion1, $conversion2, $conversion3, $conversion4));
+        $this->assertCount(4, new ConversionCollection($item1, $item2, $item3, $item4));
     }
 
     public function testEmptyCollection(): void
@@ -29,11 +29,11 @@ final class ConversionCollectionTest extends TestCase
         $this->assertEmpty($collection);
     }
 
-    private static function createConversion(int $campaignId, int $bannerId): Conversion
+    private static function createConversion(int $id): Conversion
     {
         return new Conversion(
-            new Id('0000000000000000000000000000000'.(string)$campaignId),
-            new Id('0000000000000000000000000000000'.(string)$bannerId),
+            new Id('0000000000000000000000000000000'.(string)$id),
+            new Id('43c567e1396b4cadb52223a51796fd01'),
             new Limit(100, LimitType::createInBudget()),
             100
         );

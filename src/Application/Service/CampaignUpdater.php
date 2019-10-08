@@ -11,10 +11,10 @@ interface CampaignUpdater
     /**
      * @throws UpdateDataException
      */
-    public function update(CampaignCollection $campaigns): void;
+    public function update(CampaignCollection $campaigns): int;
 
     /**
      * @throws UpdateDataException
      */
-    public function delete(IdCollection $ids): void;
+    public function delete(IdCollection $ids): int;
 }

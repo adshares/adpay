@@ -27,46 +27,46 @@ class CampaignController extends AbstractController
         $this->logger = $logger;
     }
 
-    public function upsert(Request $request): Response
+    public function upsertCampaigns(Request $request): Response
     {
         $this->logger->debug('Running post campaigns command');
 
-        $content = json_decode($request->getContent(), true);
-        if ($content === null || !isset($content['campaigns'])) {
-            throw new UnprocessableEntityHttpException('Incorrect data');
+        $input = json_decode($request->getContent(), true);
+        if ($input === null || !is_array($input)) {
+            throw new UnprocessableEntityHttpException('Invalid input data');
         }
 
         try {
-            $dto = new CampaignUpdateDTO($content['campaigns']);
+            $dto = new CampaignUpdateDTO($input);
         } catch (ValidationDTOException $exception) {
             throw new UnprocessableEntityHttpException($exception->getMessage());
         }
 
-        $this->campaignUpdater->update($dto->getCampaigns());
+        $result = $this->campaignUpdater->update($dto->getCampaigns());
 
-        $this->logger->debug('Campaigns updated');
+        $this->logger->info(sprintf('%d campaigns updated', $result));
 
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
     }
 
-    public function delete(Request $request): Response
+    public function deleteCampaigns(Request $request): Response
     {
         $this->logger->debug('Running delete campaigns command');
 
-        $content = json_decode($request->getContent(), true);
-        if ($content === null || !isset($content['campaigns'])) {
-            throw new UnprocessableEntityHttpException('Incorrect data');
+        $input = json_decode($request->getContent(), true);
+        if ($input === null || !is_array($input)) {
+            throw new UnprocessableEntityHttpException('Invalid input data');
         }
 
         try {
-            $dto = new CampaignDeleteDTO($content['campaigns']);
+            $dto = new CampaignDeleteDTO($input);
         } catch (ValidationDTOException $exception) {
             throw new UnprocessableEntityHttpException($exception->getMessage());
         }
 
-        $this->campaignUpdater->delete($dto->getIds());
+        $result = $this->campaignUpdater->delete($dto->getIds());
 
-        $this->logger->debug('Campaigns deleted');
+        $this->logger->info(sprintf('%d campaigns deleted', $result));
 
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
     }

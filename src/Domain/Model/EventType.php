@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\AdPay\Domain\ValueObject;
+namespace Adshares\AdPay\Domain\Model;
 
 use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 

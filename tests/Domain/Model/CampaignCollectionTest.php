@@ -15,12 +15,12 @@ final class CampaignCollectionTest extends TestCase
 {
     public function testMultiplyAdding(): void
     {
-        $banner1 = self::createCampaign(1, 1);
-        $banner2 = self::createCampaign(1, 2);
-        $banner3 = self::createCampaign(2, 3);
-        $banner4 = self::createCampaign(2, 4);
+        $item1 = self::createCampaign(1);
+        $item2 = self::createCampaign(2);
+        $item3 = self::createCampaign(3);
+        $item4 = self::createCampaign(4);
 
-        $this->assertCount(4, new CampaignCollection($banner1, $banner2, $banner3, $banner4));
+        $this->assertCount(4, new CampaignCollection($item1, $item2, $item3, $item4));
     }
 
     public function testEmptyCollection(): void
@@ -31,11 +31,11 @@ final class CampaignCollectionTest extends TestCase
         $this->assertEmpty($collection);
     }
 
-    private static function createCampaign(int $campaignId, int $bannerId): Campaign
+    private static function createCampaign(int $id): Campaign
     {
         return new Campaign(
-            new Id('0000000000000000000000000000000' . (string)$campaignId),
-            new Id('0000000000000000000000000000000' . (string)$bannerId),
+            new Id('0000000000000000000000000000000' . (string)$id),
+            new Id('43c567e1396b4cadb52223a51796fd01'),
             new DateTime(),
             new DateTime(),
             new Budget(100),

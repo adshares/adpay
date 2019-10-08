@@ -2,26 +2,58 @@
 
 namespace Adshares\AdPay\UI\Controller;
 
+use Adshares\AdPay\Application\DTO\ViewEventUpdateDTO;
+use Adshares\AdPay\Application\Exception\ValidationDTOException;
+use Adshares\AdPay\Application\Service\EventUpdater;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class EventController extends AbstractController
 {
+    /** @var EventUpdater */
+    private $eventUpdater;
 
-    /** @var LoggerInterface  */
+    /** @var LoggerInterface */
     private $logger;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(EventUpdater $eventUpdater, LoggerInterface $logger)
     {
+        $this->eventUpdater = $eventUpdater;
         $this->logger = $logger;
     }
 
-    public function upsert(Request $request): Response
+    public function upsertViews(Request $request): Response
+    {
+        $this->logger->debug('Running post views command');
+
+        $input = json_decode($request->getContent(), true);
+        if ($input === null || !is_array($input)) {
+            throw new UnprocessableEntityHttpException('Invalid input data');
+        }
+
+        try {
+            $dto = new ViewEventUpdateDTO($input);
+        } catch (ValidationDTOException $exception) {
+            throw new UnprocessableEntityHttpException($exception->getMessage());
+        }
+
+        $result = $this->eventUpdater->updateViews($dto->getTimeStart(), $dto->getTimeEnd(), $dto->getViewEvents());
+
+        $this->logger->info(sprintf('%d views updated', $result));
+
+        return new JsonResponse([], Response::HTTP_NO_CONTENT);
+    }
+
+    public function upsertClicks(Request $request): Response
+    {
+        return new JsonResponse([], Response::HTTP_NO_CONTENT);
+    }
+
+    public function upsertConversions(Request $request): Response
     {
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
     }

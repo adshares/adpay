@@ -16,7 +16,7 @@ final class Id
             throw InvalidArgumentException::fromArgument('id', $id);
         }
 
-        $this->id = $id;
+        $this->id = hex2bin($id);
     }
 
     public function equals(Id $id): bool
@@ -26,12 +26,12 @@ final class Id
 
     public function toBin(): string
     {
-        return hex2bin($this->id);
+        return $this->id;
     }
 
     public function toString(): string
     {
-        return $this->id;
+        return bin2hex($this->id);
     }
 
     public function __toString(): string

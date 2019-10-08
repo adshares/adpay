@@ -36,10 +36,18 @@ final class CampaignControllerTest extends WebTestCase
         $client = self::createClient();
         $client->request('POST', '/api/v1/campaigns');
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
+
+        $client = self::createClient();
+        $client->request('POST', '/api/v1/campaigns', [], [], [], json_encode([]));
+        $this->assertEquals(422, $client->getResponse()->getStatusCode());
     }
 
     public function testInvalidUpdateCampaign(): void
     {
+        $client = self::createClient();
+        $client->request('POST', '/api/v1/campaigns', [], [], [], 'invalid[]');
+        $this->assertEquals(422, $client->getResponse()->getStatusCode());
+
         $parameters = [
             'campaigns' => [
                 [
@@ -73,10 +81,18 @@ final class CampaignControllerTest extends WebTestCase
         $client = self::createClient();
         $client->request('DELETE', '/api/v1/campaigns');
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
+
+        $client = self::createClient();
+        $client->request('DELETE', '/api/v1/campaigns', [], [], [], json_encode([]));
+        $this->assertEquals(422, $client->getResponse()->getStatusCode());
     }
 
     public function testInvalidDeleteCampaign(): void
     {
+        $client = self::createClient();
+        $client->request('DELETE', '/api/v1/campaigns', [], [], [], 'invalid[]');
+        $this->assertEquals(422, $client->getResponse()->getStatusCode());
+
         $parameters = [
             'campaigns' => [
                 'invalid',

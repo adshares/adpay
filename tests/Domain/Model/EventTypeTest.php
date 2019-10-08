@@ -1,9 +1,9 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\AdPay\Tests\Domain\ValueObject;
+namespace Adshares\AdPay\Tests\Domain\Model;
 
 use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
-use Adshares\AdPay\Domain\ValueObject\EventType;
+use Adshares\AdPay\Domain\Model\EventType;
 use PHPUnit\Framework\TestCase;
 
 final class EventTypeTest extends TestCase
