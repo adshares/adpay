@@ -2,17 +2,17 @@
 
 namespace Adshares\AdPay\Application\DTO;
 
+use Adshares\AdPay\Domain\Model\ClickEvent;
 use Adshares\AdPay\Domain\Model\Event;
-use Adshares\AdPay\Domain\Model\ViewEvent;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
 use Adshares\AdPay\Lib\DateTimeHelper;
 
-final class ViewEventUpdateDTO extends EventUpdateDTO
+final class ClickEventUpdateDTO extends EventUpdateDTO
 {
     protected function createEventModel(array $input): Event
     {
-        return new ViewEvent(
+        return new ClickEvent(
             new Id($input['id']),
             DateTimeHelper::createFromTimestamp($input['time']),
             $this->createImpressionCaseModel($input),

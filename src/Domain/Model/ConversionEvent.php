@@ -2,6 +2,7 @@
 
 namespace Adshares\AdPay\Domain\Model;
 
+use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 use Adshares\AdPay\Domain\ValueObject\EventType;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
@@ -24,6 +25,15 @@ final class ConversionEvent extends Event
         PaymentStatus $paymentStatus = null
     ) {
         parent::__construct($id, EventType::createConversion(), $time, $case, $paymentStatus);
+
+        if ($value !== null && $value < 0) {
+            throw InvalidArgumentException::fromArgument(
+                'value',
+                (string)$value,
+                'The value must be greater than or equal to 0'
+            );
+        }
+
         $this->conversionId = $conversionId;
         $this->value = $value;
     }

@@ -27,39 +27,12 @@ final class CampaignUpdateDTO
     public function __construct(array $input)
     {
         $this->validate($input);
-
-        $collection = new CampaignCollection();
-        foreach ($input['campaigns'] as $campaign) {
-            $collection->add($this->createCampaignModel($campaign));
-        }
-        $this->campaigns = $collection;
+        $this->fill($input);
     }
 
-    private function createCampaignModel(array $input): Campaign
+    public function getCampaigns(): CampaignCollection
     {
-        try {
-            $campaignId = new Id($input['id']);
-            $advertiserId = new Id($input['advertiser_id']);
-            $banners = $this->prepareBannerCollection($campaignId, $input['banners']);
-            $filters = $this->prepareFilters($input['filters'] ?? []);
-            $conversions = $this->prepareConversionCollection($campaignId, $input['conversions'] ?? []);
-            $budget =
-                new Budget($input['budget'], $input['max_cpc'] ?? null, $input['max_cpm'] ?? null);
-
-            return new Campaign(
-                $campaignId,
-                $advertiserId,
-                DateTimeHelper::createFromTimestamp($input['time_start']),
-                isset($input['time_end']) ? DateTimeHelper::createFromTimestamp($input['time_end'])
-                    : null,
-                $budget,
-                $banners,
-                $filters,
-                $conversions
-            );
-        } catch (InvalidArgumentException|DateTimeException|TypeError $exception) {
-            throw new ValidationDtoException($exception->getMessage());
-        }
+        return $this->campaigns;
     }
 
     private function validate(array $input): void
@@ -69,47 +42,52 @@ final class CampaignUpdateDTO
         }
 
         foreach ($input['campaigns'] as $campaign) {
-            if (!isset($campaign['id'])) {
-                throw new ValidationDTOException('Field `id` is required.');
+            $this->validateCampaign($campaign);
+        }
+    }
+
+    private function validateCampaign(array $input): void
+    {
+        if (!isset($input['id'])) {
+            throw new ValidationDTOException('Field `id` is required.');
+        }
+
+        if (!isset($input['advertiser_id'])) {
+            throw new ValidationDTOException('Field `advertiser_id` is required.');
+        }
+
+        if (!isset($input['time_start'])) {
+            throw new ValidationDTOException('Field `time_start` is required.');
+        }
+
+        if (!isset($input['budget'])) {
+            throw new ValidationDTOException('Field `budget` is required.');
+        }
+
+        if (!isset($input['banners']) || empty($input['banners'])) {
+            throw new ValidationDTOException('Field `banners` is required.');
+        }
+
+        if (!is_array($input['banners'])) {
+            throw new ValidationDTOException('Field `banners` must be an array.');
+        }
+
+        $this->validateBanners($input['banners']);
+
+        if (isset($input['filters'])) {
+            if (!is_array($input['filters'])) {
+                throw new ValidationDTOException('Field `filters` must be an array.');
             }
 
-            if (!isset($campaign['advertiser_id'])) {
-                throw new ValidationDTOException('Field `advertiser_id` is required.');
+            $this->validateFilters($input['filters']);
+        }
+
+        if (isset($input['conversions'])) {
+            if (!is_array($input['conversions'])) {
+                throw new ValidationDTOException('Field `conversions` must be an array.');
             }
 
-            if (!isset($campaign['time_start'])) {
-                throw new ValidationDTOException('Field `time_start` is required.');
-            }
-
-            if (!isset($campaign['budget'])) {
-                throw new ValidationDTOException('Field `budget` is required.');
-            }
-
-            if (!isset($campaign['banners']) || empty($campaign['banners'])) {
-                throw new ValidationDTOException('Field `banners` is required.');
-            }
-
-            if (!is_array($campaign['banners'])) {
-                throw new ValidationDTOException('Field `banners` must be an array.');
-            }
-
-            $this->validateBanners($campaign['banners']);
-
-            if (isset($campaign['filters'])) {
-                if (!is_array($campaign['filters'])) {
-                    throw new ValidationDTOException('Field `filters` must be an array.');
-                }
-
-                $this->validateFilters($campaign['filters']);
-            }
-
-            if (isset($campaign['conversions'])) {
-                if (!is_array($campaign['conversions'])) {
-                    throw new ValidationDTOException('Field `conversions` must be an array.');
-                }
-
-                $this->validateConversions($campaign['conversions']);
-            }
+            $this->validateConversions($input['conversions']);
         }
     }
 
@@ -170,6 +148,42 @@ final class CampaignUpdateDTO
         }
     }
 
+    protected function fill(array $input): void
+    {
+        $collection = new CampaignCollection();
+        foreach ($input['campaigns'] as $campaign) {
+            $collection->add($this->createCampaignModel($campaign));
+        }
+        $this->campaigns = $collection;
+    }
+
+    private function createCampaignModel(array $input): Campaign
+    {
+        try {
+            $campaignId = new Id($input['id']);
+            $advertiserId = new Id($input['advertiser_id']);
+            $banners = $this->prepareBannerCollection($campaignId, $input['banners']);
+            $filters = $this->prepareFilters($input['filters'] ?? []);
+            $conversions = $this->prepareConversionCollection($campaignId, $input['conversions'] ?? []);
+            $budget =
+                new Budget($input['budget'], $input['max_cpm'] ?? null, $input['max_cpc'] ?? null);
+
+            return new Campaign(
+                $campaignId,
+                $advertiserId,
+                DateTimeHelper::createFromTimestamp($input['time_start']),
+                isset($input['time_end']) ? DateTimeHelper::createFromTimestamp($input['time_end'])
+                    : null,
+                $budget,
+                $banners,
+                $filters,
+                $conversions
+            );
+        } catch (InvalidArgumentException|DateTimeException|TypeError $exception) {
+            throw new ValidationDtoException($exception->getMessage());
+        }
+    }
+
     private function prepareFilters(array $filters): array
     {
         return $filters;
@@ -211,10 +225,5 @@ final class CampaignUpdateDTO
         }
 
         return $collection;
-    }
-
-    public function getCampaigns(): CampaignCollection
-    {
-        return $this->campaigns;
     }
 }

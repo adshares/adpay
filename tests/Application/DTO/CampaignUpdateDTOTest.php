@@ -1,24 +1,17 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\AdPay\Tests\Application\Dto;
+namespace Adshares\AdPay\Tests\Application\DTO;
 
 use Adshares\AdPay\Application\DTO\CampaignUpdateDTO;
 use Adshares\AdPay\Application\Exception\ValidationDTOException;
+use Adshares\AdPay\Domain\Model\Banner;
+use Adshares\AdPay\Domain\Model\Campaign;
+use Adshares\AdPay\Domain\Model\Conversion;
 use DateTime;
 use PHPUnit\Framework\TestCase;
 
 final class CampaignUpdateDTOTest extends TestCase
 {
-    /**
-     * @dataProvider validCampaignsDataProvider
-     */
-    public function testValidCampaignsData(array $data, int $count = 1): void
-    {
-        $dto = new CampaignUpdateDTO(['campaigns' => $data]);
-
-        $this->assertCount($count, $dto->getCampaigns());
-    }
-
     public function testEmptyInputData(): void
     {
         $this->expectException(ValidationDTOException::class);
@@ -31,6 +24,16 @@ final class CampaignUpdateDTOTest extends TestCase
         $this->expectException(ValidationDTOException::class);
 
         new CampaignUpdateDTO(['invalid' => []]);
+    }
+
+    /**
+     * @dataProvider validCampaignsDataProvider
+     */
+    public function testValidCampaignsData(array $data, int $count = 1): void
+    {
+        $dto = new CampaignUpdateDTO(['campaigns' => $data]);
+
+        $this->assertCount($count, $dto->getCampaigns());
     }
 
     /**
@@ -137,6 +140,54 @@ final class CampaignUpdateDTOTest extends TestCase
                 ],
             ]
         );
+    }
+
+    public function testModel(): void
+    {
+        $bannersInput = self::simpleBanner();
+        $conversionInput = self::simpleConversion(['limit' => 100]);
+
+        $input = self::simpleCampaign(
+            [
+                'time_end' => (new DateTime())->getTimestamp() + 200,
+                'max_cpm' => 100,
+                'max_cpc' => 200,
+                'banners' => [$bannersInput],
+                'filters' => ['require' => ['a'], 'exclude' => ['b']],
+                'conversions' => [$conversionInput],
+            ]
+        );
+        $dto = new CampaignUpdateDTO(['campaigns' => [$input]]);
+
+        /* @var $campaign Campaign */
+        $campaign = $dto->getCampaigns()->first();
+        /* @var $banner Banner */
+        $banner = $campaign->getBanners()->first();
+        /* @var $conversion Conversion */
+        $conversion = $campaign->getConversions()->first();
+
+        $this->assertEquals($input['id'], $campaign->getId());
+        $this->assertEquals($input['advertiser_id'], $campaign->getAdvertiserId());
+        $this->assertEquals($input['time_start'], $campaign->getTimeStart()->getTimestamp());
+        $this->assertEquals($input['time_end'], $campaign->getTimeEnd()->getTimestamp());
+        $this->assertEquals($input['budget'], $campaign->getBudgetValue());
+        $this->assertEquals($input['max_cpm'], $campaign->getMaxCpm());
+        $this->assertEquals($input['max_cpc'], $campaign->getMaxCpc());
+        $this->assertEquals($input['filters'], $campaign->getFilters());
+
+        $this->assertEquals($input['id'], $banner->getCampaignId());
+        $this->assertEquals($bannersInput['id'], $banner->getId());
+        $this->assertEquals($bannersInput['size'], $banner->getSize());
+        $this->assertEquals($bannersInput['type'], $banner->getType());
+
+        $this->assertEquals($input['id'], $conversion->getCampaignId());
+        $this->assertEquals($conversionInput['id'], $conversion->getId());
+        $this->assertEquals($conversionInput['limit'], $conversion->getLimitValue());
+        $this->assertEquals($conversionInput['limit_type'], $conversion->getLimitType());
+        $this->assertEquals($conversionInput['cost'], $conversion->getCost());
+        $this->assertEquals($conversionInput['value'], $conversion->getValue());
+        $this->assertEquals($conversionInput['is_value_mutable'], $conversion->isValueMutable());
+        $this->assertEquals($conversionInput['is_repeatable'], $conversion->isRepeatable());
     }
 
     public function validCampaignsDataProvider(): array

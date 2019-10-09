@@ -80,7 +80,7 @@ final class EventTest extends TestCase
         $this->assertEquals($context, $event->getContext()->all());
         $this->assertEquals($context, $event->getContextData());
         $this->assertEquals($humanScore, $event->getHumanScore());
-        $this->assertEquals(PaymentStatus::UNPROCESSED, $event->getPaymentStatus()->getStatus());
+        $this->assertNull($event->getPaymentStatus()->getStatus());
 
         /* @var $event Event */
         $event = $this->getMockForAbstractClass(

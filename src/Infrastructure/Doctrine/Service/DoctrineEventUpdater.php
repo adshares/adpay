@@ -3,9 +3,7 @@
 namespace Adshares\AdPay\Infrastructure\Doctrine\Service;
 
 use Adshares\AdPay\Application\Service\EventUpdater;
-use Adshares\AdPay\Domain\Model\ClickEventCollection;
-use Adshares\AdPay\Domain\Model\ConversionEventCollection;
-use Adshares\AdPay\Domain\Model\ViewEventCollection;
+use Adshares\AdPay\Domain\Model\EventCollection;
 use DateTimeInterface;
 use Doctrine\DBAL\Connection;
 use Psr\Log\LoggerInterface;
@@ -27,7 +25,7 @@ class DoctrineEventUpdater implements EventUpdater
     public function updateViews(
         DateTimeInterface $timeStart,
         DateTimeInterface $timeEnd,
-        ViewEventCollection $views
+        EventCollection $views
     ): int {
         return 0;
     }
@@ -35,7 +33,7 @@ class DoctrineEventUpdater implements EventUpdater
     public function updateClicks(
         DateTimeInterface $timeStart,
         DateTimeInterface $timeEnd,
-        ClickEventCollection $click
+        EventCollection $click
     ): int {
         return 0;
     }
@@ -43,7 +41,7 @@ class DoctrineEventUpdater implements EventUpdater
     public function updateConversions(
         DateTimeInterface $timeStart,
         DateTimeInterface $timeEnd,
-        ConversionEventCollection $conversions
+        EventCollection $conversions
     ): int {
         return 0;
     }

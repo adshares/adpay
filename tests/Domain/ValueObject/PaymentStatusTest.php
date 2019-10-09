@@ -2,6 +2,7 @@
 
 namespace Adshares\AdPay\Tests\Domain\ValueObject;
 
+use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
 use PHPUnit\Framework\TestCase;
 
@@ -11,7 +12,7 @@ final class PaymentStatusTest extends TestCase
     {
         $status = new PaymentStatus();
 
-        $this->assertEquals(PaymentStatus::UNPROCESSED, $status->getStatus());
+        $this->assertNull($status->getStatus());
         $this->assertFalse($status->isProcessed());
         $this->assertFalse($status->isAccepted());
         $this->assertFalse($status->isRejected());
@@ -40,6 +41,12 @@ final class PaymentStatusTest extends TestCase
         $this->assertEquals('rejected:unknown', $status->toString());
     }
 
+    public function testInvalidStatus(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        new PaymentStatus(-1);
+    }
+
     /**
      * @dataProvider rejectedStatusProvider
      */
@@ -50,7 +57,7 @@ final class PaymentStatusTest extends TestCase
         $this->assertTrue($status->isProcessed());
         $this->assertFalse($status->isAccepted());
         $this->assertTrue($status->isRejected());
-        $this->assertEquals('rejected:' . $label, $status->toString());
+        $this->assertEquals('rejected:'.$label, $status->toString());
     }
 
     public function rejectedStatusProvider(): array

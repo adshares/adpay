@@ -2,6 +2,7 @@
 
 namespace Adshares\AdPay\Domain\Model;
 
+use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 use Adshares\AdPay\Domain\ValueObject\Context;
 use Adshares\AdPay\Domain\ValueObject\Id;
 
@@ -24,6 +25,14 @@ final class Impression
 
     public function __construct(Id $id, Id $trackingId, Id $userId, Context $context, float $humanScore)
     {
+        if ($humanScore < 0 || $humanScore > 1) {
+            throw InvalidArgumentException::fromArgument(
+                'human score',
+                (string)$humanScore,
+                'Must be in the range of <0, 1>.'
+            );
+        }
+
         $this->id = $id;
         $this->trackingId = $trackingId;
         $this->userId = $userId;

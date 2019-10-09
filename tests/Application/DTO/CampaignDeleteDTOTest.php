@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\AdPay\Tests\Application\Dto;
+namespace Adshares\AdPay\Tests\Application\DTO;
 
 use Adshares\AdPay\Application\DTO\CampaignDeleteDTO;
 use Adshares\AdPay\Application\Exception\ValidationDTOException;
@@ -8,6 +8,13 @@ use PHPUnit\Framework\TestCase;
 
 final class CampaignDeleteDTOTest extends TestCase
 {
+    public function testEmptyInputData(): void
+    {
+        $this->expectException(ValidationDTOException::class);
+
+        new CampaignDeleteDTO([]);
+    }
+
     /**
      * @dataProvider validIdDataProvider
      */
@@ -16,13 +23,6 @@ final class CampaignDeleteDTOTest extends TestCase
         $dto = new CampaignDeleteDTO(['campaigns' => $data]);
 
         $this->assertCount($count, $dto->getIds());
-    }
-
-    public function testEmptyInputData(): void
-    {
-        $this->expectException(ValidationDTOException::class);
-
-        new CampaignDeleteDTO([]);
     }
 
     /**

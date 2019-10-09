@@ -23,7 +23,7 @@ install:
 
 script:
   - composer qa-check
-  - composer test-coverage
+  - composer test-ci
 
 notifications:
   email: false

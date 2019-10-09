@@ -2,10 +2,10 @@
 
 namespace Adshares\AdPay\Domain\ValueObject;
 
+use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
+
 final class PaymentStatus
 {
-    public const UNPROCESSED = -1;
-
     public const ACCEPTED = 0;
 
     public const CAMPAIGN_NOT_FOUND = 1;
@@ -19,7 +19,6 @@ final class PaymentStatus
     public const CAMPAIGN_OUTDATED = 5;
 
     private static $labels = [
-        self::UNPROCESSED => 'unprocessed',
         self::ACCEPTED => 'accepted',
         self::CAMPAIGN_NOT_FOUND => 'rejected:campaign_not_found',
         self::HUMAN_SCORE_TOO_LOW => 'rejected:human_score_too_low',
@@ -28,22 +27,26 @@ final class PaymentStatus
         self::CAMPAIGN_OUTDATED => 'rejected:campaign_outdated',
     ];
 
-    /** @var int */
+    /** @var ?int */
     private $status;
 
-    public function __construct(int $status = self::UNPROCESSED)
+    public function __construct(?int $status = null)
     {
+        if ($status !== null && $status < 0) {
+            throw InvalidArgumentException::fromArgument('status', (string)$status);
+        }
+
         $this->status = $status;
     }
 
-    public function getStatus(): int
+    public function getStatus(): ?int
     {
         return $this->status;
     }
 
     public function isProcessed(): bool
     {
-        return $this->status !== self::UNPROCESSED;
+        return $this->status !== null;
     }
 
     public function isAccepted(): bool
@@ -58,6 +61,9 @@ final class PaymentStatus
 
     public function toString(): string
     {
+        if (!$this->isProcessed()) {
+            return 'unprocessed';
+        }
         if (array_key_exists($this->status, self::$labels)) {
             return self::$labels[$this->status];
         }

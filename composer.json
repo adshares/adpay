@@ -77,9 +77,9 @@
 			"phpcs -s config src tests",
 			"deptrac --no-ansi"
 		],
-		"test": "php bin/phpunit --testsuite Domain,Lib,Application,Infrastructure --no-coverage",
-		"test-ui": "php bin/phpunit --testsuite UI --no-coverage",
-		"test-coverage": "php bin/phpunit --testsuite Domain,Lib,Application,Infrastructure,UI",
+		"test": "php bin/phpunit --testsuite Domain,Lib,Application,Infrastructure",
+		"test-coverage": "@test --coverage-text",
+		"test-ci": "php bin/phpunit --configuration phpunit-ci.xml",
 		"post-install-cmd": [
 			"@auto-scripts"
 		],

@@ -19,14 +19,14 @@
         <testsuite name="Application">
             <directory>tests/Application</directory>
         </testsuite>
-        <testsuite name="UI">
-            <directory>tests/UI</directory>
-        </testsuite>
         <testsuite name="Infrastructure">
             <directory>tests/Infrastructure</directory>
         </testsuite>
         <testsuite name="Lib">
             <directory>tests/Lib</directory>
+        </testsuite>
+        <testsuite name="UI">
+            <directory>tests/UI</directory>
         </testsuite>
     </testsuites>
 
@@ -36,15 +36,10 @@
             <exclude>
                 <file>./src/Kernel.php</file>
                 <directory suffix=".php">./src/Infrastructure/Doctrine/Migrations</directory>
+                <directory suffix=".php">./src/UI</directory>
             </exclude>
         </whitelist>
     </filter>
-
-    <logging>
-        <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
-        <log type="coverage-clover" target=".code-coverage/phpunit/coverage.xml"/>
-        <log type="junit" target=".code-coverage/phpunit/logfile.xml"/>
-    </logging>
 
     <listeners>
         <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener"/>

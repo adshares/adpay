@@ -2,9 +2,7 @@
 
 namespace Adshares\AdPay\Application\Service;
 
-use Adshares\AdPay\Domain\Model\ClickEventCollection;
-use Adshares\AdPay\Domain\Model\ConversionEventCollection;
-use Adshares\AdPay\Domain\Model\ViewEventCollection;
+use Adshares\AdPay\Domain\Model\EventCollection;
 use DateTimeInterface;
 
 interface EventUpdater
@@ -12,39 +10,39 @@ interface EventUpdater
     /**
      * @param DateTimeInterface $timeStart
      * @param DateTimeInterface $timeEnd
-     * @param ViewEventCollection $views
+     * @param EventCollection $views
      *
      * @return int
      */
     public function updateViews(
         DateTimeInterface $timeStart,
         DateTimeInterface $timeEnd,
-        ViewEventCollection $views
+        EventCollection $views
     ): int;
 
     /**
      * @param DateTimeInterface $timeStart
      * @param DateTimeInterface $timeEnd
-     * @param ClickEventCollection $click
+     * @param EventCollection $click
      *
      * @return int
      */
     public function updateClicks(
         DateTimeInterface $timeStart,
         DateTimeInterface $timeEnd,
-        ClickEventCollection $click
+        EventCollection $click
     ): int;
 
     /**
      * @param DateTimeInterface $timeStart
      * @param DateTimeInterface $timeEnd
-     * @param ConversionEventCollection $conversions
+     * @param EventCollection $conversions
      *
      * @return int
      */
     public function updateConversions(
         DateTimeInterface $timeStart,
         DateTimeInterface $timeEnd,
-        ConversionEventCollection $conversions
+        EventCollection $conversions
     ): int;
 }
