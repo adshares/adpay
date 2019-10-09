@@ -2,7 +2,7 @@
 
 namespace Adshares\AdPay\Tests\Domain\Model;
 
-use Adshares\AdPay\Domain\Model\ClickEvent;
+use Adshares\AdPay\Domain\Model\Event;
 use Adshares\AdPay\Domain\Model\Impression;
 use Adshares\AdPay\Domain\Model\ImpressionCase;
 use Adshares\AdPay\Domain\ValueObject\Context;
@@ -13,9 +13,9 @@ use Adshares\AdPay\Lib\DateTimeHelper;
 use DateTimeInterface;
 use PHPUnit\Framework\TestCase;
 
-final class ClickEventTest extends TestCase
+final class EventTest extends TestCase
 {
-    public function testInstanceOfClickEvent(): void
+    public function testInstanceOfEvent(): void
     {
         $eventId = '43c567e1396b4cadb52223a51796fd01';
         $time = '2019-01-01T12:00:00+00:00';
@@ -51,18 +51,49 @@ final class ClickEventTest extends TestCase
             $impression
         );
 
-        $event = new ClickEvent(
-            new Id($eventId),
-            DateTimeHelper::createFromString($time),
-            $case,
-            new PaymentStatus(PaymentStatus::ACCEPTED)
+        /* @var $event Event */
+        $event = $this->getMockForAbstractClass(
+            'Adshares\AdPay\Domain\Model\Event',
+            [
+                new Id($eventId),
+                EventType::createView(),
+                DateTimeHelper::createFromString($time),
+                $case,
+            ]
         );
 
-        $this->assertInstanceOf(ClickEvent::class, $event);
+        $this->assertInstanceOf(Event::class, $event);
         $this->assertEquals($eventId, $event->getId());
-        $this->assertEquals(EventType::CLICK, $event->getType());
+        $this->assertEquals(EventType::VIEW, $event->getType());
         $this->assertEquals($time, $event->getTime()->format(DateTimeInterface::ATOM));
         $this->assertEquals($case, $event->getCase());
+        $this->assertEquals($impressionCaseId, $event->getCaseId());
+        $this->assertEquals($publisherId, $event->getPublisherId());
+        $this->assertEquals($zoneId, $event->getZoneId());
+        $this->assertEquals($advertiserId, $event->getAdvertiserId());
+        $this->assertEquals($campaignId, $event->getCampaignId());
+        $this->assertEquals($bannerId, $event->getBannerId());
+        $this->assertEquals($impression, $event->getImpression());
+        $this->assertEquals($impressionId, $event->getImpressionId());
+        $this->assertEquals($trackingId, $event->getTrackingId());
+        $this->assertEquals($userId, $event->getUserId());
+        $this->assertEquals($context, $event->getContext()->all());
+        $this->assertEquals($context, $event->getContextData());
+        $this->assertEquals($humanScore, $event->getHumanScore());
+        $this->assertEquals(PaymentStatus::UNPROCESSED, $event->getPaymentStatus()->getStatus());
+
+        /* @var $event Event */
+        $event = $this->getMockForAbstractClass(
+            'Adshares\AdPay\Domain\Model\Event',
+            [
+                new Id($eventId),
+                EventType::createView(),
+                DateTimeHelper::createFromString($time),
+                $case,
+                new PaymentStatus(PaymentStatus::ACCEPTED),
+            ]
+        );
+
         $this->assertEquals(PaymentStatus::ACCEPTED, $event->getPaymentStatus()->getStatus());
     }
 }

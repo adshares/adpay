@@ -4,7 +4,7 @@ namespace Adshares\AdPay\Domain\ValueObject;
 
 use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 
-final class Limit
+class Limit
 {
     /** @var ?int */
     private $value;

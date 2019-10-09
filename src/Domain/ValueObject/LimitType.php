@@ -4,7 +4,7 @@ namespace Adshares\AdPay\Domain\ValueObject;
 
 use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 
-class LimitType
+final class LimitType
 {
     public const IN_BUDGET = 'in_budget';
 

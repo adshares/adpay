@@ -37,3 +37,9 @@ services:
         arguments:
             $campaignUpdater: '@Adshares\AdPay\Infrastructure\Doctrine\Service\DoctrineCampaignUpdater'
             $logger: '@logger'
+
+    Adshares\AdPay\UI\Controller\EventController:
+        public: true
+        arguments:
+            $eventUpdater: '@Adshares\AdPay\Infrastructure\Doctrine\Service\DoctrineEventUpdater'
+            $logger: '@logger'

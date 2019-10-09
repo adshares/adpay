@@ -99,10 +99,10 @@ class DoctrineCampaignUpdater implements CampaignUpdater
     private function isModelExists(string $table, Id $id): bool
     {
         return $this->db->fetchColumn(
-                sprintf('SELECT id FROM %s WHERE id = ?', $table),
-                [$id->toBin()],
-                0,
-                [Type::BINARY]
-            ) !== false;
+            sprintf('SELECT id FROM %s WHERE id = ?', $table),
+            [$id->toBin()],
+            0,
+            [Type::BINARY]
+        ) !== false;
     }
 }

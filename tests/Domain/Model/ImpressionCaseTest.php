@@ -2,24 +2,16 @@
 
 namespace Adshares\AdPay\Tests\Domain\Model;
 
-use Adshares\AdPay\Domain\Model\ClickEvent;
 use Adshares\AdPay\Domain\Model\Impression;
 use Adshares\AdPay\Domain\Model\ImpressionCase;
 use Adshares\AdPay\Domain\ValueObject\Context;
-use Adshares\AdPay\Domain\ValueObject\EventType;
 use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
-use Adshares\AdPay\Lib\DateTimeHelper;
-use DateTimeInterface;
 use PHPUnit\Framework\TestCase;
 
-final class ClickEventTest extends TestCase
+final class ImpressionCaseTest extends TestCase
 {
-    public function testInstanceOfClickEvent(): void
+    public function testInstanceOfImpressionCase(): void
     {
-        $eventId = '43c567e1396b4cadb52223a51796fd01';
-        $time = '2019-01-01T12:00:00+00:00';
-
         $impressionCaseId = '43c567e1396b4cadb52223a51796fd01';
         $publisherId = 'ffc567e1396b4cadb52223a51796fd02';
         $zoneId = 'aac567e1396b4cadb52223a51796fdbb';
@@ -51,18 +43,19 @@ final class ClickEventTest extends TestCase
             $impression
         );
 
-        $event = new ClickEvent(
-            new Id($eventId),
-            DateTimeHelper::createFromString($time),
-            $case,
-            new PaymentStatus(PaymentStatus::ACCEPTED)
-        );
-
-        $this->assertInstanceOf(ClickEvent::class, $event);
-        $this->assertEquals($eventId, $event->getId());
-        $this->assertEquals(EventType::CLICK, $event->getType());
-        $this->assertEquals($time, $event->getTime()->format(DateTimeInterface::ATOM));
-        $this->assertEquals($case, $event->getCase());
-        $this->assertEquals(PaymentStatus::ACCEPTED, $event->getPaymentStatus()->getStatus());
+        $this->assertInstanceOf(ImpressionCase::class, $case);
+        $this->assertEquals($impressionCaseId, $case->getId());
+        $this->assertEquals($publisherId, $case->getPublisherId());
+        $this->assertEquals($zoneId, $case->getZoneId());
+        $this->assertEquals($advertiserId, $case->getAdvertiserId());
+        $this->assertEquals($campaignId, $case->getCampaignId());
+        $this->assertEquals($bannerId, $case->getBannerId());
+        $this->assertEquals($impression, $case->getImpression());
+        $this->assertEquals($impressionId, $case->getImpressionId());
+        $this->assertEquals($trackingId, $case->getTrackingId());
+        $this->assertEquals($userId, $case->getUserId());
+        $this->assertEquals($context, $case->getContext()->all());
+        $this->assertEquals($context, $case->getContextData());
+        $this->assertEquals($humanScore, $case->getHumanScore());
     }
 }

@@ -6,7 +6,7 @@ use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 use function explode;
 use function preg_match;
 
-final class Size
+class Size
 {
     /** @var int */
     private $width;

@@ -4,7 +4,7 @@ namespace Adshares\AdPay\Domain\ValueObject;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-final class IdCollection extends ArrayCollection
+class IdCollection extends ArrayCollection
 {
     public function __construct(Id ...$ids)
     {

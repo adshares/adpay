@@ -10,22 +10,22 @@ final class LimitTypeTest extends TestCase
 {
     public function testInBudgetType(): void
     {
-        $eventType = LimitType::createInBudget();
+        $type = LimitType::createInBudget();
 
-        $this->assertEquals('in_budget', $eventType->toString());
-        $this->assertEquals('in_budget', (string)$eventType);
-        $this->assertTrue($eventType->isInBudget());
-        $this->assertFalse($eventType->isOutOfBudget());
+        $this->assertEquals('in_budget', $type->toString());
+        $this->assertEquals('in_budget', (string)$type);
+        $this->assertTrue($type->isInBudget());
+        $this->assertFalse($type->isOutOfBudget());
     }
 
     public function testOutOfBudgetType(): void
     {
-        $eventType = LimitType::createOutOfBudget();
+        $type = LimitType::createOutOfBudget();
 
-        $this->assertEquals('out_of_budget', $eventType->toString());
-        $this->assertEquals('out_of_budget', (string)$eventType);
-        $this->assertTrue($eventType->isOutOfBudget());
-        $this->assertFalse($eventType->isInBudget());
+        $this->assertEquals('out_of_budget', $type->toString());
+        $this->assertEquals('out_of_budget', (string)$type);
+        $this->assertTrue($type->isOutOfBudget());
+        $this->assertFalse($type->isInBudget());
     }
 
     public function testInvalidType(): void

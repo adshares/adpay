@@ -4,7 +4,11 @@ namespace Adshares\AdPay\Tests\Domain\Model;
 
 use Adshares\AdPay\Domain\Model\ConversionEvent;
 use Adshares\AdPay\Domain\Model\ConversionEventCollection;
+use Adshares\AdPay\Domain\Model\Impression;
+use Adshares\AdPay\Domain\Model\ImpressionCase;
+use Adshares\AdPay\Domain\ValueObject\Context;
 use Adshares\AdPay\Domain\ValueObject\Id;
+use DateTime;
 use PHPUnit\Framework\TestCase;
 
 final class ConversionEventCollectionTest extends TestCase
@@ -30,7 +34,25 @@ final class ConversionEventCollectionTest extends TestCase
     private static function createConversionEvent(int $id): ConversionEvent
     {
         return new ConversionEvent(
-            new Id('0000000000000000000000000000000'.(string)$id)
+            new Id('0000000000000000000000000000000'.(string)$id),
+            new DateTime(),
+            new ImpressionCase(
+                new Id('13c567e1396b4cadb52223a51796fd01'),
+                new Id('23c567e1396b4cadb52223a51796fd01'),
+                new Id('33c567e1396b4cadb52223a51796fd01'),
+                new Id('43c567e1396b4cadb52223a51796fd01'),
+                new Id('53c567e1396b4cadb52223a51796fd01'),
+                new Id('63c567e1396b4cadb52223a51796fd01'),
+                new Impression(
+                    new Id('a3c567e1396b4cadb52223a51796fd01'),
+                    new Id('b3c567e1396b4cadb52223a51796fd01'),
+                    new Id('c3c567e1396b4cadb52223a51796fd01'),
+                    new Context(),
+                    0.99
+                )
+            ),
+            new Id('aac567e1396b4cadb52223a51796fd01'),
+            1000
         );
     }
 }

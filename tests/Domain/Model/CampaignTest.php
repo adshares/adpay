@@ -10,6 +10,7 @@ use Adshares\AdPay\Domain\ValueObject\Budget;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use Adshares\AdPay\Lib\DateTimeHelper;
 use DateTime;
+use DateTimeInterface;
 use PHPUnit\Framework\TestCase;
 
 final class CampaignTest extends TestCase
@@ -45,8 +46,8 @@ final class CampaignTest extends TestCase
         $this->assertInstanceOf(Campaign::class, $campaign);
         $this->assertEquals($campaignId, $campaign->getId());
         $this->assertEquals($advertiserId, $campaign->getAdvertiserId());
-        $this->assertEquals($timeStart, $campaign->getTimeStart()->format(DateTime::ATOM));
-        $this->assertEquals($timeEnd, $campaign->getTimeEnd()->format(DateTime::ATOM));
+        $this->assertEquals($timeStart, $campaign->getTimeStart()->format(DateTimeInterface::ATOM));
+        $this->assertEquals($timeEnd, $campaign->getTimeEnd()->format(DateTimeInterface::ATOM));
         $this->assertEquals($budget, $campaign->getBudget());
         $this->assertEquals($budgetValue, $campaign->getBudgetValue());
         $this->assertEquals($macCpm, $campaign->getMaxCpm());

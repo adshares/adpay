@@ -1,10 +1,10 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\AdPay\Domain\Model;
+namespace Adshares\AdPay\Domain\ValueObject;
 
 use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 
-class EventType
+final class EventType
 {
     public const CLICK = 'click';
     public const CONVERSION = 'conversion';

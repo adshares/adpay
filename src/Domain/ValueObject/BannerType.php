@@ -1,10 +1,10 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\AdPay\Domain\Model;
+namespace Adshares\AdPay\Domain\ValueObject;
 
 use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 
-class BannerType
+final class BannerType
 {
     public const IMAGE = 'image';
 

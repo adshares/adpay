@@ -5,7 +5,7 @@ namespace Adshares\AdPay\Domain\ValueObject;
 use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 use function preg_match;
 
-final class Id
+class Id
 {
     /** @var string */
     private $id;
