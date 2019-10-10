@@ -2,20 +2,45 @@
 
 namespace Adshares\AdPay\Domain\ValueObject;
 
+use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
+
 class Context
 {
+    /** @var float */
+    private $humanScore;
+
+    /** @var array */
+    private $keywords;
+
     /* @var array */
     private $data;
 
-    public function __construct(array $data = [])
+    public function __construct(float $humanScore, array $keywords = [], array $data = [])
     {
+        if ($humanScore < 0 || $humanScore > 1) {
+            throw InvalidArgumentException::fromArgument(
+                'human score',
+                (string)$humanScore,
+                'Must be in the range of <0, 1>.'
+            );
+        }
+
+        $this->humanScore = $humanScore;
+        $this->keywords = $keywords;
         $this->data = $data;
     }
 
-    /**
-     * @return array
-     */
-    public function all(): array
+    public function getHumanScore(): float
+    {
+        return $this->humanScore;
+    }
+
+    public function getKeywords(): array
+    {
+        return $this->keywords;
+    }
+
+    public function getData(): array
     {
         return $this->data;
     }

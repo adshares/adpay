@@ -7,6 +7,11 @@ use Doctrine\DBAL\Types\Type;
 
 class CampaignMapper
 {
+    public static function table(): string
+    {
+        return 'campaigns';
+    }
+
     public static function map(Campaign $campaign): array
     {
         return [

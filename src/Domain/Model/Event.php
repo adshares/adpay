@@ -122,6 +122,11 @@ abstract class Event
         return $this->case->getContextData();
     }
 
+    public function getKeywords(): array
+    {
+        return $this->case->getKeywords();
+    }
+
     public function getHumanScore(): float
     {
         return $this->case->getHumanScore();

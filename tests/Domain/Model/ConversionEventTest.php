@@ -20,7 +20,7 @@ final class ConversionEventTest extends TestCase
         $eventId = '43c567e1396b4cadb52223a51796fd01';
         $time = '2019-01-01T12:00:00+00:00';
         $conversionId = '53c567e1396b4cadb52223a51796fd05';
-        $value = 123;
+        $conversionValue = 123;
 
         $impressionCaseId = '43c567e1396b4cadb52223a51796fd01';
         $publisherId = 'ffc567e1396b4cadb52223a51796fd02';
@@ -32,6 +32,7 @@ final class ConversionEventTest extends TestCase
         $impressionId = '13c567e1396b4cadb52223a51796fd03';
         $trackingId = '23c567e1396b4cadb52223a51796fd02';
         $userId = '33c567e1396b4cadb52223a51796fd01';
+        $keywords = ['k' => 111];
         $context = ['a' => 123];
         $humanScore = 0.99;
 
@@ -39,8 +40,7 @@ final class ConversionEventTest extends TestCase
             new Id($impressionId),
             new Id($trackingId),
             new Id($userId),
-            new Context($context),
-            $humanScore
+            new Context($humanScore, $keywords, $context)
         );
 
         $case = new ImpressionCase(
@@ -58,7 +58,7 @@ final class ConversionEventTest extends TestCase
             DateTimeHelper::createFromString($time),
             $case,
             new Id($conversionId),
-            $value,
+            $conversionValue,
             new PaymentStatus(PaymentStatus::ACCEPTED)
         );
 
@@ -69,7 +69,7 @@ final class ConversionEventTest extends TestCase
         $this->assertEquals($case, $event->getCase());
         $this->assertEquals(PaymentStatus::ACCEPTED, $event->getPaymentStatus()->getStatus());
         $this->assertEquals($conversionId, $event->getConversionId());
-        $this->assertEquals($value, $event->getValue());
+        $this->assertEquals($conversionValue, $event->getConversionValue());
 
         $event = new ConversionEvent(
             new Id($eventId),
@@ -80,6 +80,6 @@ final class ConversionEventTest extends TestCase
             new PaymentStatus(PaymentStatus::ACCEPTED)
         );
 
-        $this->assertNull($event->getValue());
+        $this->assertNull($event->getConversionValue());
     }
 }

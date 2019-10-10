@@ -13,7 +13,7 @@ final class ImpressionCase
     /** @var Id */
     private $publisherId;
 
-    /** @var Id */
+    /** @var ?Id */
     private $zoneId;
 
     /** @var Id */
@@ -31,7 +31,7 @@ final class ImpressionCase
     public function __construct(
         Id $id,
         Id $publisherId,
-        Id $zoneId,
+        ?Id $zoneId,
         Id $advertiserId,
         Id $campaignId,
         Id $bannerId,
@@ -56,7 +56,7 @@ final class ImpressionCase
         return $this->publisherId;
     }
 
-    public function getZoneId(): Id
+    public function getZoneId(): ?Id
     {
         return $this->zoneId;
     }
@@ -104,6 +104,11 @@ final class ImpressionCase
     public function getContextData(): array
     {
         return $this->impression->getContextData();
+    }
+
+    public function getKeywords(): array
+    {
+        return $this->impression->getKeywords();
     }
 
     public function getHumanScore(): float

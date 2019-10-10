@@ -18,7 +18,7 @@ final class ConversionEventUpdateDTO extends EventUpdateDTO
             DateTimeHelper::createFromTimestamp($input['time']),
             $this->createImpressionCaseModel($input),
             new Id($input['conversion_id']),
-            $input['value'] ?? null,
+            $input['conversion_value'] ?? null,
             new PaymentStatus($input['payment_status'] ?? null)
         );
     }

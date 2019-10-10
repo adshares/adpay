@@ -61,8 +61,7 @@ final class EventCollectionTest extends TestCase
                         new Id('a3c567e1396b4cadb52223a51796fd01'),
                         new Id('b3c567e1396b4cadb52223a51796fd01'),
                         new Id('c3c567e1396b4cadb52223a51796fd01'),
-                        new Context(),
-                        0.99
+                        new Context(0.99)
                     )
                 ),
             ]

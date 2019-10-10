@@ -4,9 +4,22 @@ namespace Adshares\AdPay\Tests\Application\DTO;
 
 use Adshares\AdPay\Application\DTO\ConversionEventUpdateDTO;
 use Adshares\AdPay\Application\DTO\EventUpdateDTO;
+use Adshares\AdPay\Domain\Model\ConversionEvent;
 
 final class ConversionEventUpdateDTOTest extends EventUpdateDTOTest
 {
+    public function testConversionModel(): void
+    {
+        $input = static::simpleEvent(['conversion_value' => 100]);
+        $dto = $this->createDTO(['time_start' => 123123123, 'time_end' => 123123123, 'events' => [$input]]);
+
+        /* @var $event ConversionEvent */
+        $event = $dto->getEvents()->first();
+
+        $this->assertEquals($input['conversion_id'], $event->getConversionId());
+        $this->assertEquals($input['conversion_value'], $event->getConversionValue());
+    }
+
     protected function createDTO(array $data): EventUpdateDTO
     {
         return new ConversionEventUpdateDTO($data);
@@ -31,9 +44,9 @@ final class ConversionEventUpdateDTOTest extends EventUpdateDTOTest
     protected static function validConversionDataProvider(): array
     {
         return [
-            [[static::simpleEvent(['value' => null])]],
-            [[static::simpleEvent(['value' => 0])]],
-            [[static::simpleEvent(['value' => 100])]],
+            [[static::simpleEvent(['conversion_value' => null])]],
+            [[static::simpleEvent(['conversion_value' => 0])]],
+            [[static::simpleEvent(['conversion_value' => 100])]],
         ];
     }
 
@@ -44,8 +57,8 @@ final class ConversionEventUpdateDTOTest extends EventUpdateDTOTest
             [[static::simpleEvent(['conversion_id' => null])]],
             [[static::simpleEvent(['conversion_id' => 0])]],
             [[static::simpleEvent(['conversion_id' => 'invalid_value'])]],
-            [[static::simpleEvent(['value' => -100])]],
-            [[static::simpleEvent(['value' => 'invalid_value'])]],
+            [[static::simpleEvent(['conversion_value' => -100])]],
+            [[static::simpleEvent(['conversion_value' => 'invalid_value'])]],
         ];
     }
 

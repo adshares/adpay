@@ -110,7 +110,10 @@ abstract class EventUpdateDTOTest extends TestCase
 
     public function testModel(): void
     {
-        $input = static::simpleEvent(['payment_status' => 1, 'context' => ['a' => 1]]);
+        $input =
+            static::simpleEvent(
+                ['zone_id' => 'aac567e1396b4cadb52223a51796fdbb', 'payment_status' => 1, 'context' => ['a' => 1]]
+            );
         $dto = $this->createDTO(['time_start' => 123123123, 'time_end' => 123123123, 'events' => [$input],]);
 
         /* @var $event Event */
@@ -148,6 +151,7 @@ abstract class EventUpdateDTOTest extends TestCase
     {
         return array_merge(
             static::validEventsDataProvider(),
+            static::validCaseDataProvider(),
             static::validImpressionDataProvider()
         );
     }
@@ -173,9 +177,20 @@ abstract class EventUpdateDTOTest extends TestCase
         ];
     }
 
+    protected static function validCaseDataProvider(): array
+    {
+        return [
+            [[static::simpleEvent(['zone_id' => null])]],
+            [[static::simpleEvent(['zone_id' => 'aac567e1396b4cadb52223a51796fdbb'])]],
+        ];
+    }
+
     protected static function validImpressionDataProvider(): array
     {
         return [
+            [[static::simpleEvent(['keywords' => null])]],
+            [[static::simpleEvent(['keywords' => []])]],
+            [[static::simpleEvent(['keywords' => ['k' => 333]])]],
             [[static::simpleEvent(['context' => null])]],
             [[static::simpleEvent(['context' => []])]],
             [[static::simpleEvent(['context' => ['a' => 123]])]],
@@ -209,8 +224,6 @@ abstract class EventUpdateDTOTest extends TestCase
             [[static::simpleEvent(['publisher_id' => null])]],
             [[static::simpleEvent(['publisher_id' => 0])]],
             [[static::simpleEvent(['publisher_id' => 'invalid_value'])]],
-            [[static::simpleEvent([], 'zone_id')]],
-            [[static::simpleEvent(['zone_id' => null])]],
             [[static::simpleEvent(['zone_id' => 0])]],
             [[static::simpleEvent(['zone_id' => 'invalid_value'])]],
             [[static::simpleEvent([], 'advertiser_id')]],
@@ -243,6 +256,8 @@ abstract class EventUpdateDTOTest extends TestCase
             [[static::simpleEvent(['user_id' => null])]],
             [[static::simpleEvent(['user_id' => 0])]],
             [[static::simpleEvent(['user_id' => 'invalid_value'])]],
+            [[static::simpleEvent(['keywords' => 0])]],
+            [[static::simpleEvent(['keywords' => 'invalid_value'])]],
             [[static::simpleEvent(['context' => 0])]],
             [[static::simpleEvent(['context' => 'invalid_value'])]],
             [[static::simpleEvent([], 'human_score')]],
@@ -261,7 +276,6 @@ abstract class EventUpdateDTOTest extends TestCase
                 'time' => (new DateTime())->getTimestamp(),
                 'case_id' => '43c567e1396b4cadb52223a51796fd01',
                 'publisher_id' => 'ffc567e1396b4cadb52223a51796fd02',
-                'zone_id' => 'aac567e1396b4cadb52223a51796fdbb',
                 'advertiser_id' => 'ccc567e1396b4cadb52223a51796fdcc',
                 'campaign_id' => 'ddc567e1396b4cadb52223a51796fddd',
                 'banner_id' => 'ddc567e1396b4cadb52223a51796fddd',

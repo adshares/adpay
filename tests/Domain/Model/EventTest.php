@@ -30,6 +30,7 @@ final class EventTest extends TestCase
         $impressionId = '13c567e1396b4cadb52223a51796fd03';
         $trackingId = '23c567e1396b4cadb52223a51796fd02';
         $userId = '33c567e1396b4cadb52223a51796fd01';
+        $keywords = ['k' => 111];
         $context = ['a' => 123];
         $humanScore = 0.99;
 
@@ -37,8 +38,7 @@ final class EventTest extends TestCase
             new Id($impressionId),
             new Id($trackingId),
             new Id($userId),
-            new Context($context),
-            $humanScore
+            new Context($humanScore, $keywords, $context)
         );
 
         $case = new ImpressionCase(
@@ -77,9 +77,10 @@ final class EventTest extends TestCase
         $this->assertEquals($impressionId, $event->getImpressionId());
         $this->assertEquals($trackingId, $event->getTrackingId());
         $this->assertEquals($userId, $event->getUserId());
-        $this->assertEquals($context, $event->getContext()->all());
-        $this->assertEquals($context, $event->getContextData());
+        $this->assertEquals($keywords, $event->getKeywords());
         $this->assertEquals($humanScore, $event->getHumanScore());
+        $this->assertEquals($context, $event->getContext()->getData());
+        $this->assertEquals($context, $event->getContextData());
         $this->assertNull($event->getPaymentStatus()->getStatus());
 
         /* @var $event Event */

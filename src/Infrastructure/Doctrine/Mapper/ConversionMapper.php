@@ -7,6 +7,11 @@ use Doctrine\DBAL\Types\Type;
 
 class ConversionMapper
 {
+    public static function table(): string
+    {
+        return 'conversions';
+    }
+
     public static function map(Conversion $conversion): array
     {
         return [

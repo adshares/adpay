@@ -23,14 +23,14 @@ interface EventUpdater
     /**
      * @param DateTimeInterface $timeStart
      * @param DateTimeInterface $timeEnd
-     * @param EventCollection $click
+     * @param EventCollection $clicks
      *
      * @return int
      */
     public function updateClicks(
         DateTimeInterface $timeStart,
         DateTimeInterface $timeEnd,
-        EventCollection $click
+        EventCollection $clicks
     ): int;
 
     /**

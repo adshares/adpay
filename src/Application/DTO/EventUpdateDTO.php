@@ -86,9 +86,6 @@ abstract class EventUpdateDTO
         if (!isset($input['publisher_id'])) {
             throw new ValidationDTOException('Field `publisher_id` is required.');
         }
-        if (!isset($input['zone_id'])) {
-            throw new ValidationDTOException('Field `zone_id` is required.');
-        }
         if (!isset($input['advertiser_id'])) {
             throw new ValidationDTOException('Field `advertiser_id` is required.');
         }
@@ -143,7 +140,7 @@ abstract class EventUpdateDTO
         return new ImpressionCase(
             new Id($input['case_id']),
             new Id($input['publisher_id']),
-            new Id($input['zone_id']),
+            isset($input['zone_id']) ? new Id($input['zone_id']) : null,
             new Id($input['advertiser_id']),
             new Id($input['campaign_id']),
             new Id($input['banner_id']),
@@ -157,8 +154,7 @@ abstract class EventUpdateDTO
             new Id($input['impression_id']),
             new Id($input['tracking_id']),
             new Id($input['user_id']),
-            new Context($input['context'] ?? []),
-            $input['human_score']
+            new Context($input['human_score'], $input['keywords'] ?? [], $input['context'] ?? [])
         );
     }
 }

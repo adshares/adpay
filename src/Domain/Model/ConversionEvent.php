@@ -14,7 +14,7 @@ final class ConversionEvent extends Event
     private $conversionId;
 
     /** @var ?int */
-    private $value;
+    private $conversionValue;
 
     public function __construct(
         Id $id,
@@ -35,7 +35,7 @@ final class ConversionEvent extends Event
         }
 
         $this->conversionId = $conversionId;
-        $this->value = $value;
+        $this->conversionValue = $value;
     }
 
     public function getConversionId(): Id
@@ -43,8 +43,8 @@ final class ConversionEvent extends Event
         return $this->conversionId;
     }
 
-    public function getValue(): ?int
+    public function getConversionValue(): ?int
     {
-        return $this->value;
+        return $this->conversionValue;
     }
 }

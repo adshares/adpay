@@ -8,30 +8,15 @@ use Adshares\AdPay\Domain\Model\Banner;
 use Adshares\AdPay\Domain\Model\Campaign;
 use Adshares\AdPay\Domain\Model\CampaignCollection;
 use Adshares\AdPay\Domain\Model\Conversion;
-use Adshares\AdPay\Domain\ValueObject\Id;
 use Adshares\AdPay\Domain\ValueObject\IdCollection;
 use Adshares\AdPay\Infrastructure\Doctrine\Mapper\BannerMapper;
 use Adshares\AdPay\Infrastructure\Doctrine\Mapper\CampaignMapper;
 use Adshares\AdPay\Infrastructure\Doctrine\Mapper\ConversionMapper;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Types\Type;
-use Psr\Log\LoggerInterface;
 
-class DoctrineCampaignUpdater implements CampaignUpdater
+class DoctrineCampaignUpdater extends DoctrineModelUpdater implements CampaignUpdater
 {
-    /*  @var Connection */
-    private $db;
-
-    /* @var LoggerInterface */
-    private $logger;
-
-    public function __construct(Connection $db, LoggerInterface $logger)
-    {
-        $this->db = $db;
-        $this->logger = $logger;
-    }
-
     public function update(CampaignCollection $campaigns): int
     {
         $count = 0;
@@ -39,19 +24,24 @@ class DoctrineCampaignUpdater implements CampaignUpdater
             foreach ($campaigns as $campaign) {
                 /*  @var $campaign Campaign */
                 $this->upsert(
-                    'campaigns',
+                    CampaignMapper::table(),
                     $campaign->getId(),
                     CampaignMapper::map($campaign),
                     CampaignMapper::types()
                 );
                 foreach ($campaign->getBanners() as $banner) {
                     /*  @var $banner Banner */
-                    $this->upsert('banners', $banner->getId(), BannerMapper::map($banner), BannerMapper::types());
+                    $this->upsert(
+                        BannerMapper::table(),
+                        $banner->getId(),
+                        BannerMapper::map($banner),
+                        BannerMapper::types()
+                    );
                 }
                 foreach ($campaign->getConversions() as $conversion) {
                     /*  @var $conversion Conversion */
                     $this->upsert(
-                        'conversions',
+                        ConversionMapper::table(),
                         $conversion->getId(),
                         ConversionMapper::map($conversion),
                         ConversionMapper::types()
@@ -79,30 +69,5 @@ class DoctrineCampaignUpdater implements CampaignUpdater
         }
 
         return $result;
-    }
-
-    /**
-     * @throws \Doctrine\DBAL\DBALException
-     */
-    private function upsert(string $table, Id $id, array $data, array $types = []): void
-    {
-        if ($this->isModelExists($table, $id)) {
-            $this->db->update($table, $data, ['id' => $id->toBin()], $types);
-        } else {
-            $this->db->insert($table, $data, $types);
-        }
-    }
-
-    /**
-     * @throws \Doctrine\DBAL\DBALException
-     */
-    private function isModelExists(string $table, Id $id): bool
-    {
-        return $this->db->fetchColumn(
-            sprintf('SELECT id FROM %s WHERE id = ?', $table),
-            [$id->toBin()],
-            0,
-            [Type::BINARY]
-        ) !== false;
     }
 }

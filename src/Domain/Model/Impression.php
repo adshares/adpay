@@ -2,7 +2,6 @@
 
 namespace Adshares\AdPay\Domain\Model;
 
-use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 use Adshares\AdPay\Domain\ValueObject\Context;
 use Adshares\AdPay\Domain\ValueObject\Id;
 
@@ -20,24 +19,16 @@ final class Impression
     /** @var Context */
     private $context;
 
-    /** @var float */
-    private $humanScore;
-
-    public function __construct(Id $id, Id $trackingId, Id $userId, Context $context, float $humanScore)
-    {
-        if ($humanScore < 0 || $humanScore > 1) {
-            throw InvalidArgumentException::fromArgument(
-                'human score',
-                (string)$humanScore,
-                'Must be in the range of <0, 1>.'
-            );
-        }
-
+    public function __construct(
+        Id $id,
+        Id $trackingId,
+        Id $userId,
+        Context $context
+    ) {
         $this->id = $id;
         $this->trackingId = $trackingId;
         $this->userId = $userId;
         $this->context = $context;
-        $this->humanScore = $humanScore;
     }
 
     public function getId(): Id
@@ -62,11 +53,16 @@ final class Impression
 
     public function getContextData(): array
     {
-        return $this->context->all();
+        return $this->context->getData();
+    }
+
+    public function getKeywords(): array
+    {
+        return $this->context->getKeywords();
     }
 
     public function getHumanScore(): float
     {
-        return $this->humanScore;
+        return $this->context->getHumanScore();
     }
 }

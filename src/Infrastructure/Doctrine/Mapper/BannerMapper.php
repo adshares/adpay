@@ -7,6 +7,11 @@ use Doctrine\DBAL\Types\Type;
 
 class BannerMapper
 {
+    public static function table(): string
+    {
+        return 'banners';
+    }
+
     public static function map(Banner $banner): array
     {
         return [

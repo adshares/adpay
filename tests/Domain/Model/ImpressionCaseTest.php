@@ -22,6 +22,7 @@ final class ImpressionCaseTest extends TestCase
         $impressionId = '13c567e1396b4cadb52223a51796fd03';
         $trackingId = '23c567e1396b4cadb52223a51796fd02';
         $userId = '33c567e1396b4cadb52223a51796fd01';
+        $keywords = ['k' => 111];
         $context = ['a' => 123];
         $humanScore = 0.99;
 
@@ -29,8 +30,7 @@ final class ImpressionCaseTest extends TestCase
             new Id($impressionId),
             new Id($trackingId),
             new Id($userId),
-            new Context($context),
-            $humanScore
+            new Context($humanScore, $keywords, $context)
         );
 
         $case = new ImpressionCase(
@@ -54,8 +54,9 @@ final class ImpressionCaseTest extends TestCase
         $this->assertEquals($impressionId, $case->getImpressionId());
         $this->assertEquals($trackingId, $case->getTrackingId());
         $this->assertEquals($userId, $case->getUserId());
-        $this->assertEquals($context, $case->getContext()->all());
-        $this->assertEquals($context, $case->getContextData());
         $this->assertEquals($humanScore, $case->getHumanScore());
+        $this->assertEquals($keywords, $case->getKeywords());
+        $this->assertEquals($context, $case->getContext()->getData());
+        $this->assertEquals($context, $case->getContextData());
     }
 }

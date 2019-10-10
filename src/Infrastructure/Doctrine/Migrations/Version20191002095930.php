@@ -17,8 +17,8 @@ final class Version20191002095930 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql('
-            CREATE TABLE campaigns (
+        $this->addSql(
+            'CREATE TABLE campaigns (
                 id VARBINARY(16) NOT NULL,
                 advertiser_id VARBINARY(16) NOT NULL,
                 time_start TIMESTAMP NOT NULL,
@@ -30,11 +30,11 @@ final class Version20191002095930 extends AbstractMigration
                 PRIMARY KEY (id),
                 INDEX time_start (time_start),
                 INDEX time_end (time_end)
-            )
-        ');
+            )'
+        );
 
-        $this->addSql('
-            CREATE TABLE banners (
+        $this->addSql(
+            'CREATE TABLE banners (
                 id VARBINARY(16) NOT NULL,
                 campaign_id VARBINARY(16) NOT NULL,
                 size VARCHAR(32) NOT NULL,
@@ -42,11 +42,11 @@ final class Version20191002095930 extends AbstractMigration
                 PRIMARY KEY (id),
                 INDEX campaign_id (campaign_id),
                 CONSTRAINT banners_campaigns FOREIGN KEY (campaign_id) REFERENCES campaigns (id) ON DELETE CASCADE
-            )
-        ');
+            )'
+        );
 
-        $this->addSql('
-            CREATE TABLE conversions (
+        $this->addSql(
+            'CREATE TABLE conversions (
                 id VARBINARY(16) NOT NULL,
                 campaign_id VARBINARY(16) NOT NULL,
                 `limit` BIGINT(20) NULL DEFAULT NULL,
@@ -58,8 +58,76 @@ final class Version20191002095930 extends AbstractMigration
                 PRIMARY KEY (id),
                 INDEX campaign_id (campaign_id),
                 CONSTRAINT conversions_campaigns FOREIGN KEY (campaign_id) REFERENCES campaigns (id) ON DELETE CASCADE
-            )
-        ');
+            )'
+        );
+
+        $this->addSql(
+            'CREATE TABLE view_events (
+                id VARBINARY(16) NOT NULL,
+                time TIMESTAMP NOT NULL,
+                case_id VARBINARY(16) NOT NULL,
+                publisher_id VARBINARY(16) NOT NULL,
+                zone_id VARBINARY(16) NULL DEFAULT NULL,
+                advertiser_id VARBINARY(16) NOT NULL,
+                campaign_id VARBINARY(16) NOT NULL,
+                banner_id VARBINARY(16) NOT NULL,
+                impression_id VARBINARY(16) NOT NULL,
+                tracking_id VARBINARY(16) NOT NULL,
+                user_id VARBINARY(16) NOT NULL,
+                human_score DECIMAL(3,2) NOT NULL,
+                keywords JSON NOT NULL,
+                context JSON NOT NULL,
+                payment_status TINYINT(3) NULL DEFAULT NULL,
+                PRIMARY KEY (id),
+                INDEX time (time)
+            )'
+        );
+
+        $this->addSql(
+            'CREATE TABLE click_events (
+                id VARBINARY(16) NOT NULL,
+                time TIMESTAMP NOT NULL,
+                case_id VARBINARY(16) NOT NULL,
+                publisher_id VARBINARY(16) NOT NULL,
+                zone_id VARBINARY(16) NULL DEFAULT NULL,
+                advertiser_id VARBINARY(16) NOT NULL,
+                campaign_id VARBINARY(16) NOT NULL,
+                banner_id VARBINARY(16) NOT NULL,
+                impression_id VARBINARY(16) NOT NULL,
+                tracking_id VARBINARY(16) NOT NULL,
+                user_id VARBINARY(16) NOT NULL,
+                human_score DECIMAL(3,2) NOT NULL,
+                keywords JSON NOT NULL,
+                context JSON NOT NULL,
+                payment_status TINYINT(3) NULL DEFAULT NULL,
+                PRIMARY KEY (id),
+                INDEX time (time)
+            )'
+        );
+
+        $this->addSql(
+            'CREATE TABLE conversion_events (
+                id VARBINARY(16) NOT NULL,
+                time TIMESTAMP NOT NULL,
+                case_id VARBINARY(16) NOT NULL,
+                publisher_id VARBINARY(16) NOT NULL,
+                zone_id VARBINARY(16) NULL DEFAULT NULL,
+                advertiser_id VARBINARY(16) NOT NULL,
+                campaign_id VARBINARY(16) NOT NULL,
+                banner_id VARBINARY(16) NOT NULL,
+                impression_id VARBINARY(16) NOT NULL,
+                tracking_id VARBINARY(16) NOT NULL,
+                user_id VARBINARY(16) NOT NULL,
+                human_score DECIMAL(3,2) NOT NULL,
+                keywords JSON NOT NULL,
+                context JSON NOT NULL,
+                conversion_id VARBINARY(16) NOT NULL,
+                conversion_value BIGINT(20) NULL DEFAULT NULL,
+                payment_status TINYINT(3) NULL DEFAULT NULL,
+                PRIMARY KEY (id),
+                INDEX time (time)
+            )'
+        );
     }
 
     public function down(Schema $schema): void
@@ -67,5 +135,8 @@ final class Version20191002095930 extends AbstractMigration
         $this->addSql('DROP TABLE conversions');
         $this->addSql('DROP TABLE banners');
         $this->addSql('DROP TABLE campaigns');
+//        $this->addSql('DROP TABLE view_events');
+//        $this->addSql('DROP TABLE click_events');
+//        $this->addSql('DROP TABLE conversion_events');
     }
 }
