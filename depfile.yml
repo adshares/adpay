@@ -1,4 +1,3 @@
-cache_file: test
 paths:
   - ./src
 exclude_files:
