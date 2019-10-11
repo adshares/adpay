@@ -3,7 +3,6 @@
 ##> QA ##
 .scannerwork
 .deptrac.cache
-.code-coverage
 ##< QA ##
 
 ###> symfony/framework-bundle ###

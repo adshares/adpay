@@ -30,8 +30,8 @@
 
     <logging>
         <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
-        <log type="coverage-clover" target=".code-coverage/phpunit/coverage.xml"/>
-        <log type="junit" target=".code-coverage/phpunit/logfile.xml"/>
+        <log type="coverage-clover" target="var/phpunit/coverage.xml"/>
+        <log type="junit" target="var/phpunit/logfile.xml"/>
     </logging>
 
     <listeners>

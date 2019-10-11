@@ -1,9 +1,11 @@
 language: php
 sudo: false
+services: mysql
 
 env:
   global:
     - MIN_PHP=7.2
+    - DATABASE_URL=mysql://travis@127.0.0.1:3306/adpay_test
 
 matrix:
   include:
@@ -20,15 +22,24 @@ before_install:
 
 install:
   - composer install
+  - php bin/console doctrine:database:create --env=test
+  - php bin/console doctrine:migrations:migrate --env=test
 
 script:
   - composer qa-check
   - composer test-ci
+  - sonar-scanner
 
 notifications:
   email: false
   slack:
     rooms:
-      secure: "fuNJCrimqsz1w3KP77SyxgDQaqAQPtiEClUn4Ne1zAjFXvHRW/xgYshPCCp53EemkF0Zq2bSyw1/OAu+kCbqTeaHWJAzkQIfQIcQgbdffXfYTa3K6249K6EkxmxNKjDgIyoL8WhwSw3ttXqWS/jOmUzRHp/bpk+gf5xp3UdhCPsqvfWfyPcGg512vJuqg0805Y4KwCTHAmA/ZSlWJjf1/zpZMsbog4lRtRmNw/G3Wd+nNP72eHlrKKT91dP+t/cQMed2wcrfuMo0gdmZpL3LNafnh9iA8Du3UULgv1QVZSmQAaGGBOexRY+HQsSyOrR+0ieScI0FRERenuID4+k248c8zAuH6y6IZeytNQIxYkPgOb4HnX1bLk+wggzIiV1yngzfxznuUAJ8Opr13jyfrHIvhQuLUq8mvtXz2KXCF3DPJ8SRpRbmeQeYTrQVoJ3Q6900J+h+wxMYfOepfNRVoZeSLX3VqJXzrthW2c/YoeA9onwuQK4UjKk8pDLt+FvdwJ5+ucZk7Oh+H9dg8HKWS6zg9cqMgwbNH8Dso2U0pporl7e9avlyN4J0Kc1yRlBRXpNXMBcgToruw+hZAsZcR2+9fLwoz1b/g0jm4RoN/yz/krm4RNesVP2rAyEKUSugsPn2z07eCWJHEeuEUFJ4Ue1YLoKV+EIksYQT2GtW91I="
+      - secure: "eSRA9ymsTLvqgDmcyrekeb23g8bfb7HrJF80qZxQSvJA/b5TBfMpOa9HOE/Gm/3PIcWf3odpyybrFTwXpCuQ5OXRWK8wvwe+4WoyPV1iJeJMEU2r8gMSWxcXktgavUYWOBpvzoE0uUUbtt5gP6X+CDoIibls/P1vO81eGOoI3jKPNBaJRita/WwQzltxwRhCDE100rkFbHGX2TQ3UV32zeegUVGGrmCzA87/c7hz1FFsWrCVz5GjTEf6iAoDTfwrVD6ym8XtQKjKN+nVuDFEsiPwA5SmTKg/HDbTYg41xUsbE2hr3iDwhMNkl38XITfw6WzIYVdYPO4OPlBHoR973Ao1FFQWIrzsfINC2ogn4SnexPyk/m/gNG9y3l7ammRO5fVKrXdidXLisdlDQ0NrgyqtQRss0u6Lpk81ksFgI1e/Ffei3/0LJfuvKgtX7/dUnzDxnGmvrJUvUtbaXiqpulOoCTVrTdN8XqV4fB+qnadYhBGmksCQhFERwCF09AS9+dSQElPTHoa/3qo4Ftnud6OCgkdSjK+9d83Gh7u1WezqctQdgc2s5SKmTmkt3cg11qqVtVtYh32qpoUOiJkm2LH0EZMgibsnTbevMYVvPiCrLfUz7SE9asJrNFQfuoX6pDhvCN7tKPFechMnqmJoFWh4o4DKJxE5iFfjPeWzWCg="
     on_success: change
     on_failure: always
+
+addons:
+  sonarcloud:
+    organization: "adshares-github"
+    token:
+      secure: "LGt/hA4zB/M+3074MlKXDYZdg2u74IKGRURRqTbRuH6baFVvSr3ixCv/H5DvEBNQNGHUvkVJLuVILncBSsc6vyqI9HWUHObTCJPB8qEw35qjbRAfKfysyZ1hV6Ebx5p3ASzfStKp6nZjWy/A4KCr4nh9lceKOm2ERgjNC7GMkYpUx9BVLQSBILwAe+a4SQyYNo42IKO3JfbWuYx9pVyCksK2NEv5K1PBdq0YbJ2ZZthgdCd1+9Dt3Y7fNIvtVSkYTATRGUirTBwIXU/vIVPzTqoq4aeJhumhJ5PJ/eUuD3f/fgFshWkf0kw2mT09HYuZI59a5VcwzVImVKygXPt+6th1cWSXgfvpxc9bI/Yhljerk7LAMO1UWGB3D1fOsW7bbtgI40fdH5YmOFFdWnNzDdb+z6trU/xmmNiR8YwFBgCwmW/OK4vDctIRI3wwIYrnwXkb1ahUF4gJHYgL7PR3vSl3lJXxBTYaWG0Z/Ughi5Rrzws3OagXvs1y/9QewfcZlvJVfDsG3kPt6HDZjPKEaYXZu9TuYBAQQFL534+ULkAtSoYW7N3O4fZbEdvgcEUvZSchkcO4eq3w8y2siXB08C9DlwYapFCEwxhkmLyp9QDnvlILlG2mEzg23UMxSyWFh7IjHpJ2NN+PjkWqKPKVBAKAbd/Q+Zw43sTm675F7m4="
