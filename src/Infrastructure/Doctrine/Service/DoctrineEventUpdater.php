@@ -2,17 +2,18 @@
 
 namespace Adshares\AdPay\Infrastructure\Doctrine\Service;
 
+use Adshares\AdPay\Application\Exception\InvalidDataException;
 use Adshares\AdPay\Application\Exception\UpdateDataException;
 use Adshares\AdPay\Application\Service\EventUpdater;
-use Adshares\AdPay\Domain\Model\ClickEvent;
-use Adshares\AdPay\Domain\Model\ConversionEvent;
+use Adshares\AdPay\Domain\Model\Event;
 use Adshares\AdPay\Domain\Model\EventCollection;
-use Adshares\AdPay\Domain\Model\ViewEvent;
 use Adshares\AdPay\Infrastructure\Doctrine\Mapper\ClickEventMapper;
 use Adshares\AdPay\Infrastructure\Doctrine\Mapper\ConversionEventMapper;
+use Adshares\AdPay\Infrastructure\Doctrine\Mapper\EventMapper;
 use Adshares\AdPay\Infrastructure\Doctrine\Mapper\ViewEventMapper;
 use DateTimeInterface;
 use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 class DoctrineEventUpdater extends DoctrineModelUpdater implements EventUpdater
 {
@@ -21,23 +22,7 @@ class DoctrineEventUpdater extends DoctrineModelUpdater implements EventUpdater
         DateTimeInterface $timeEnd,
         EventCollection $views
     ): int {
-        $count = 0;
-        try {
-            foreach ($views as $event) {
-                /*  @var $event ViewEvent */
-                $this->upsert(
-                    ViewEventMapper::table(),
-                    $event->getId(),
-                    ViewEventMapper::map($event),
-                    ViewEventMapper::types()
-                );
-                ++$count;
-            }
-        } catch (DBALException $exception) {
-            throw new UpdateDataException($exception->getMessage());
-        }
-
-        return $count;
+        return $this->insertEvents($timeStart, $timeEnd, $views, ViewEventMapper::class);
     }
 
     public function updateClicks(
@@ -45,23 +30,7 @@ class DoctrineEventUpdater extends DoctrineModelUpdater implements EventUpdater
         DateTimeInterface $timeEnd,
         EventCollection $clicks
     ): int {
-        $count = 0;
-        try {
-            foreach ($clicks as $event) {
-                /*  @var $event ClickEvent */
-                $this->upsert(
-                    ClickEventMapper::table(),
-                    $event->getId(),
-                    ClickEventMapper::map($event),
-                    ClickEventMapper::types()
-                );
-                ++$count;
-            }
-        } catch (DBALException $exception) {
-            throw new UpdateDataException($exception->getMessage());
-        }
-
-        return $count;
+        return $this->insertEvents($timeStart, $timeEnd, $clicks, ClickEventMapper::class);
     }
 
     public function updateConversions(
@@ -69,16 +38,30 @@ class DoctrineEventUpdater extends DoctrineModelUpdater implements EventUpdater
         DateTimeInterface $timeEnd,
         EventCollection $conversions
     ): int {
+        return $this->insertEvents($timeStart, $timeEnd, $conversions, ConversionEventMapper::class);
+    }
+
+    private function insertEvents(
+        DateTimeInterface $timeStart,
+        DateTimeInterface $timeEnd,
+        EventCollection $events,
+        string $mapper
+    ): int {
+        /*  @var $mapper EventMapper */
         $count = 0;
         try {
-            foreach ($conversions as $event) {
-                /*  @var $event ConversionEvent */
-                $this->upsert(
-                    ConversionEventMapper::table(),
-                    $event->getId(),
-                    ConversionEventMapper::map($event),
-                    ConversionEventMapper::types()
-                );
+            $this->clearInterval($mapper::table(), $timeStart, $timeEnd);
+            foreach ($events as $event) {
+                /*  @var $event Event */
+                try {
+                    $this->db->insert(
+                        $mapper::table(),
+                        $mapper::map($event),
+                        $mapper::types()
+                    );
+                } catch (UniqueConstraintViolationException $exception) {
+                    throw new InvalidDataException(sprintf('Duplicate event id [%s]', $event->getId()));
+                }
                 ++$count;
             }
         } catch (DBALException $exception) {

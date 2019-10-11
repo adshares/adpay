@@ -5,6 +5,7 @@ namespace Adshares\AdPay\UI\Controller;
 use Adshares\AdPay\Application\DTO\ClickEventUpdateDTO;
 use Adshares\AdPay\Application\DTO\ConversionEventUpdateDTO;
 use Adshares\AdPay\Application\DTO\ViewEventUpdateDTO;
+use Adshares\AdPay\Application\Exception\InvalidDataException;
 use Adshares\AdPay\Application\Exception\ValidationDTOException;
 use Adshares\AdPay\Application\Service\EventUpdater;
 use Psr\Log\LoggerInterface;
@@ -43,7 +44,11 @@ class EventController extends AbstractController
             throw new UnprocessableEntityHttpException($exception->getMessage());
         }
 
-        $result = $this->eventUpdater->updateViews($dto->getTimeStart(), $dto->getTimeEnd(), $dto->getEvents());
+        try {
+            $result = $this->eventUpdater->updateViews($dto->getTimeStart(), $dto->getTimeEnd(), $dto->getEvents());
+        } catch (InvalidDataException $exception) {
+            throw new UnprocessableEntityHttpException($exception->getMessage());
+        }
 
         $this->logger->info(sprintf('%d views updated', $result));
 
@@ -65,7 +70,11 @@ class EventController extends AbstractController
             throw new UnprocessableEntityHttpException($exception->getMessage());
         }
 
-        $result = $this->eventUpdater->updateClicks($dto->getTimeStart(), $dto->getTimeEnd(), $dto->getEvents());
+        try {
+            $result = $this->eventUpdater->updateClicks($dto->getTimeStart(), $dto->getTimeEnd(), $dto->getEvents());
+        } catch (InvalidDataException $exception) {
+            throw new UnprocessableEntityHttpException($exception->getMessage());
+        }
 
         $this->logger->info(sprintf('%d clicks updated', $result));
 
@@ -87,7 +96,12 @@ class EventController extends AbstractController
             throw new UnprocessableEntityHttpException($exception->getMessage());
         }
 
-        $result = $this->eventUpdater->updateConversions($dto->getTimeStart(), $dto->getTimeEnd(), $dto->getEvents());
+        try {
+            $result =
+                $this->eventUpdater->updateConversions($dto->getTimeStart(), $dto->getTimeEnd(), $dto->getEvents());
+        } catch (InvalidDataException $exception) {
+            throw new UnprocessableEntityHttpException($exception->getMessage());
+        }
 
         $this->logger->info(sprintf('%d conversions updated', $result));
         $this->logger->info(sprintf('%d conversions updated', $result));

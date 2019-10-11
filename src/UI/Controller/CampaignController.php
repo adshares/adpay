@@ -4,6 +4,7 @@ namespace Adshares\AdPay\UI\Controller;
 
 use Adshares\AdPay\Application\DTO\CampaignDeleteDTO;
 use Adshares\AdPay\Application\DTO\CampaignUpdateDTO;
+use Adshares\AdPay\Application\Exception\InvalidDataException;
 use Adshares\AdPay\Application\Exception\ValidationDTOException;
 use Adshares\AdPay\Application\Service\CampaignUpdater;
 use Psr\Log\LoggerInterface;
@@ -42,7 +43,11 @@ class CampaignController extends AbstractController
             throw new UnprocessableEntityHttpException($exception->getMessage());
         }
 
-        $result = $this->campaignUpdater->update($dto->getCampaigns());
+        try {
+            $result = $this->campaignUpdater->update($dto->getCampaigns());
+        } catch (InvalidDataException $exception) {
+            throw new UnprocessableEntityHttpException($exception->getMessage());
+        }
 
         $this->logger->info(sprintf('%d campaigns updated', $result));
 
@@ -64,7 +69,11 @@ class CampaignController extends AbstractController
             throw new UnprocessableEntityHttpException($exception->getMessage());
         }
 
-        $result = $this->campaignUpdater->delete($dto->getIds());
+        try {
+            $result = $this->campaignUpdater->delete($dto->getIds());
+        } catch (InvalidDataException $exception) {
+            throw new UnprocessableEntityHttpException($exception->getMessage());
+        }
 
         $this->logger->info(sprintf('%d campaigns deleted', $result));
 

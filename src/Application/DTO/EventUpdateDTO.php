@@ -124,8 +124,12 @@ abstract class EventUpdateDTO
             }
 
             $collection = new EventCollection();
-            foreach ($input['events'] as $event) {
-                $collection->add($this->createEventModel($event));
+            foreach ($input['events'] as $item) {
+                $event = $this->createEventModel($item);
+                if ($event->getTime() < $this->timeStart || $event->getTime() > $this->timeEnd) {
+                    throw new ValidationDtoException(sprintf('Event [%s] is out of time range', $event->getId()));
+                }
+                $collection->add($event);
             }
             $this->viewEvents = $collection;
         } catch (InvalidArgumentException|DateTimeException|TypeError $exception) {

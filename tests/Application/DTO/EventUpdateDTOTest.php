@@ -5,7 +5,6 @@ namespace Adshares\AdPay\Tests\Application\DTO;
 use Adshares\AdPay\Application\DTO\EventUpdateDTO;
 use Adshares\AdPay\Application\Exception\ValidationDTOException;
 use Adshares\AdPay\Domain\Model\Event;
-use DateTime;
 use PHPUnit\Framework\TestCase;
 
 abstract class EventUpdateDTOTest extends TestCase
@@ -76,6 +75,36 @@ abstract class EventUpdateDTOTest extends TestCase
         $this->createDTO(array_merge(['events' => []], $data));
     }
 
+    public function testEventTimeOutOfRangeLeft(): void
+    {
+        $this->expectException(ValidationDTOException::class);
+
+        $this->createDTO(
+            [
+                'time_start' => 123123123,
+                'time_end' => 123123133,
+                'events' => [
+                    static::simpleEvent(['time' => 123123120]),
+                ],
+            ]
+        );
+    }
+
+    public function testEventTimeOutOfRangeRight(): void
+    {
+        $this->expectException(ValidationDTOException::class);
+
+        $this->createDTO(
+            [
+                'time_start' => 123123123,
+                'time_end' => 123123133,
+                'events' => [
+                    static::simpleEvent(['time' => 123123135]),
+                ],
+            ]
+        );
+    }
+
     /**
      * @dataProvider validDataProvider
      */
@@ -84,7 +113,7 @@ abstract class EventUpdateDTOTest extends TestCase
         $dto = $this->createDTO(
             [
                 'time_start' => 123123123,
-                'time_end' => 123123123,
+                'time_end' => 123123133,
                 'events' => $data,
             ]
         );
@@ -102,7 +131,7 @@ abstract class EventUpdateDTOTest extends TestCase
         $this->createDTO(
             [
                 'time_start' => 123123123,
-                'time_end' => 123123123,
+                'time_end' => 123123133,
                 'events' => $data,
             ]
         );
@@ -114,7 +143,7 @@ abstract class EventUpdateDTOTest extends TestCase
             static::simpleEvent(
                 ['zone_id' => 'aac567e1396b4cadb52223a51796fdbb', 'payment_status' => 1, 'context' => ['a' => 1]]
             );
-        $dto = $this->createDTO(['time_start' => 123123123, 'time_end' => 123123123, 'events' => [$input],]);
+        $dto = $this->createDTO(['time_start' => 123123123, 'time_end' => 123123133, 'events' => [$input],]);
 
         /* @var $event Event */
         $event = $dto->getEvents()->first();
@@ -273,7 +302,7 @@ abstract class EventUpdateDTOTest extends TestCase
         $event = array_merge(
             [
                 'id' => '43c567e1396b4cadb52223a51796fd01',
-                'time' => (new DateTime())->getTimestamp(),
+                'time' => 123123124,
                 'case_id' => '43c567e1396b4cadb52223a51796fd01',
                 'publisher_id' => 'ffc567e1396b4cadb52223a51796fd02',
                 'advertiser_id' => 'ccc567e1396b4cadb52223a51796fdcc',
