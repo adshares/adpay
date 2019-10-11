@@ -1,10 +1,10 @@
-<p align="center">
+<p style="text-align: center">
     <a href="https://adshares.net/" title="Adshares sp. z o.o." target="_blank">
         <img src="https://adshares.net/logos/ads.svg" alt="Adshares" width="100" height="100">
     </a>
 </p>
-<h3 align="center"><small>Adshares / AdPay</small></h3>
-<p align="center">
+<h3 style="text-align: center"><small>Adshares / AdPay</small></h3>
+<p style="text-align: center">
     <a href="https://github.com/adshares/adpay/issues/new?template=bug_report.md&labels=Bug">Report bug</a>
     ·
     <a href="https://github.com/adshares/adpay/issues/new?template=feature_request.md&labels=New%20Feature">Request feature</a>
@@ -16,6 +16,12 @@
 AdPay is a back-end service for valuating events.
 It accepts requests from [AdServer](https://github.com/adshares/adserver) internally.
 
+[![Quality Status](https://sonarcloud.io/api/project_badges/measure?project=adshares-adpay&metric=alert_status)](https://sonarcloud.io/dashboard?id=adshares-adpay)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=adshares-adpay&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=adshares-adpay)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=adshares-adpay&metric=security_rating)](https://sonarcloud.io/dashboard?id=adshares-adpay)
+[![Build Status](https://travis-ci.org/adshares/adpay.svg?branch=master)](https://travis-ci.org/adshares/adpay)
+
+
 ## Quick Start
 
 ### Development
@@ -26,6 +32,7 @@ cd adpay
 composer install
 composer dump-env dev
 vi .env.local.php
+php bin/console doctrine:database:create
 php bin/console doctrine:migration:migrate
 php bin/console server:run
 ```
@@ -38,11 +45,12 @@ cd adpay
 composer install --no-dev --optimize-autoloader
 composer dump-env prod
 vi .env.local.php
+php bin/console doctrine:database:create
 php bin/console doctrine:migration:migrate
 ```
 
 Nginx configuration:
-https://symfony.com/doc/current/setup/web_server_configuration.html#web-server-nginx
+<https://symfony.com/doc/current/setup/web_server_configuration.html#web-server-nginx>
 
 ## Contributing
 
