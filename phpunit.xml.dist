@@ -35,7 +35,7 @@
             <directory suffix=".php">./src</directory>
             <exclude>
                 <file>./src/Kernel.php</file>
-                <directory suffix=".php">./src/Infrastructure/Doctrine/Migrations</directory>
+                <directory suffix=".php">./src/Infrastructure/Migrations</directory>
                 <directory suffix=".php">./src/UI</directory>
             </exclude>
         </whitelist>

@@ -2,7 +2,7 @@
 
 namespace Adshares\AdPay\Application\DTO;
 
-use Adshares\AdPay\Application\Exception\ValidationDTOException;
+use Adshares\AdPay\Application\Exception\ValidationException;
 use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 use Adshares\AdPay\Domain\Model\Event;
 use Adshares\AdPay\Domain\Model\EventCollection;
@@ -17,12 +17,6 @@ use TypeError;
 
 abstract class EventUpdateDTO
 {
-    /* @var DateTimeInterface */
-    protected $timeStart;
-
-    /* @var DateTimeInterface */
-    protected $timeEnd;
-
     /* @var EventCollection */
     protected $viewEvents;
 
@@ -30,16 +24,6 @@ abstract class EventUpdateDTO
     {
         $this->validate($input);
         $this->fill($input);
-    }
-
-    public function getTimeStart(): DateTimeInterface
-    {
-        return $this->timeStart;
-    }
-
-    public function getTimeEnd(): DateTimeInterface
-    {
-        return $this->timeEnd;
     }
 
     public function getEvents(): EventCollection
@@ -50,15 +34,15 @@ abstract class EventUpdateDTO
     protected function validate(array $input): void
     {
         if (!isset($input['time_start'])) {
-            throw new ValidationDTOException('Field `events` is required.');
+            throw new ValidationException('Field `events` is required.');
         }
 
         if (!isset($input['time_end'])) {
-            throw new ValidationDTOException('Field `events` is required.');
+            throw new ValidationException('Field `events` is required.');
         }
 
         if (!isset($input['events'])) {
-            throw new ValidationDTOException('Field `events` is required.');
+            throw new ValidationException('Field `events` is required.');
         }
 
         foreach ($input['events'] as $event) {
@@ -71,73 +55,76 @@ abstract class EventUpdateDTO
     protected function validateEvent(array $input): void
     {
         if (!isset($input['id'])) {
-            throw new ValidationDTOException('Field `id` is required.');
+            throw new ValidationException('Field `id` is required.');
         }
         if (!isset($input['time'])) {
-            throw new ValidationDTOException('Field `time` is required.');
+            throw new ValidationException('Field `time` is required.');
         }
     }
 
     protected function validateImpressionCase(array $input): void
     {
         if (!isset($input['case_id'])) {
-            throw new ValidationDTOException('Field `case_id` is required.');
+            throw new ValidationException('Field `case_id` is required.');
         }
         if (!isset($input['publisher_id'])) {
-            throw new ValidationDTOException('Field `publisher_id` is required.');
+            throw new ValidationException('Field `publisher_id` is required.');
         }
         if (!isset($input['advertiser_id'])) {
-            throw new ValidationDTOException('Field `advertiser_id` is required.');
+            throw new ValidationException('Field `advertiser_id` is required.');
         }
         if (!isset($input['campaign_id'])) {
-            throw new ValidationDTOException('Field `campaign_id` is required.');
+            throw new ValidationException('Field `campaign_id` is required.');
         }
         if (!isset($input['banner_id'])) {
-            throw new ValidationDTOException('Field `banner_id` is required.');
+            throw new ValidationException('Field `banner_id` is required.');
         }
     }
 
     protected function validateImpression(array $input): void
     {
         if (!isset($input['impression_id'])) {
-            throw new ValidationDTOException('Field `impression_id` is required.');
+            throw new ValidationException('Field `impression_id` is required.');
         }
         if (!isset($input['tracking_id'])) {
-            throw new ValidationDTOException('Field `tracking_id` is required.');
+            throw new ValidationException('Field `tracking_id` is required.');
         }
         if (!isset($input['user_id'])) {
-            throw new ValidationDTOException('Field `user_id` is required.');
+            throw new ValidationException('Field `user_id` is required.');
         }
         if (!isset($input['human_score'])) {
-            throw new ValidationDTOException('Field `human_score` is required.');
+            throw new ValidationException('Field `human_score` is required.');
         }
     }
 
     protected function fill(array $input): void
     {
         try {
-            $this->timeStart = DateTimeHelper::createFromTimestamp($input['time_start']);
-            $this->timeEnd = DateTimeHelper::createFromTimestamp($input['time_end']);
+            $timeStart = DateTimeHelper::createFromTimestamp($input['time_start']);
+            $timeEnd = DateTimeHelper::createFromTimestamp($input['time_end']);
 
-            if ($this->timeStart > $this->timeEnd) {
-                throw new ValidationDtoException('Start time cannot be greater than end time');
+            if ($timeStart > $timeEnd) {
+                throw new ValidationException('Start time cannot be greater than end time');
             }
 
-            $collection = $this->createEventCollection();
+            $collection = $this->createEventCollection($timeStart, $timeEnd);
             foreach ($input['events'] as $item) {
                 $event = $this->createEventModel($item);
-                if ($event->getTime() < $this->timeStart || $event->getTime() > $this->timeEnd) {
-                    throw new ValidationDtoException(sprintf('Event [%s] is out of time range', $event->getId()));
+                if ($event->getTime() < $timeStart || $event->getTime() > $timeEnd) {
+                    throw new ValidationException(sprintf('Event [%s] is out of time range', $event->getId()));
                 }
                 $collection->add($event);
             }
             $this->viewEvents = $collection;
         } catch (InvalidArgumentException|DateTimeException|TypeError $exception) {
-            throw new ValidationDTOException($exception->getMessage());
+            throw new ValidationException($exception->getMessage());
         }
     }
 
-    abstract protected function createEventCollection(): EventCollection;
+    abstract protected function createEventCollection(
+        DateTimeInterface $timeStart,
+        DateTimeInterface $timeEnd
+    ): EventCollection;
 
     abstract protected function createEventModel(array $input): Event;
 

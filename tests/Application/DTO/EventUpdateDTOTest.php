@@ -3,7 +3,7 @@
 namespace Adshares\AdPay\Tests\Application\DTO;
 
 use Adshares\AdPay\Application\DTO\EventUpdateDTO;
-use Adshares\AdPay\Application\Exception\ValidationDTOException;
+use Adshares\AdPay\Application\Exception\ValidationException;
 use Adshares\AdPay\Domain\Model\Event;
 use PHPUnit\Framework\TestCase;
 
@@ -13,21 +13,21 @@ abstract class EventUpdateDTOTest extends TestCase
 
     public function testEmptyInputData(): void
     {
-        $this->expectException(ValidationDTOException::class);
+        $this->expectException(ValidationException::class);
 
         $this->createDTO([]);
     }
 
     public function testInvalidInputData(): void
     {
-        $this->expectException(ValidationDTOException::class);
+        $this->expectException(ValidationException::class);
 
         $this->createDTO(['invalid' => []]);
     }
 
     public function testNoEventsInputData(): void
     {
-        $this->expectException(ValidationDTOException::class);
+        $this->expectException(ValidationException::class);
 
         $this->createDTO(
             [
@@ -50,8 +50,8 @@ abstract class EventUpdateDTOTest extends TestCase
             ]
         );
 
-        $this->assertEquals($time_start, $dto->getTimeStart()->getTimestamp());
-        $this->assertEquals($time_end, $dto->getTimeEnd()->getTimestamp());
+        $this->assertEquals($time_start, $dto->getEvents()->getTimeStart()->getTimestamp());
+        $this->assertEquals($time_end, $dto->getEvents()->getTimeEnd()->getTimestamp());
 
         $dto = $this->createDTO(
             [
@@ -61,8 +61,8 @@ abstract class EventUpdateDTOTest extends TestCase
             ]
         );
 
-        $this->assertEquals($time_start, $dto->getTimeStart()->getTimestamp());
-        $this->assertEquals($time_start, $dto->getTimeEnd()->getTimestamp());
+        $this->assertEquals($time_start, $dto->getEvents()->getTimeStart()->getTimestamp());
+        $this->assertEquals($time_start, $dto->getEvents()->getTimeEnd()->getTimestamp());
     }
 
     /**
@@ -70,14 +70,14 @@ abstract class EventUpdateDTOTest extends TestCase
      */
     public function testInvalidTimespanData($data): void
     {
-        $this->expectException(ValidationDTOException::class);
+        $this->expectException(ValidationException::class);
 
         $this->createDTO(array_merge(['events' => []], $data));
     }
 
     public function testEventTimeOutOfRangeLeft(): void
     {
-        $this->expectException(ValidationDTOException::class);
+        $this->expectException(ValidationException::class);
 
         $this->createDTO(
             [
@@ -92,7 +92,7 @@ abstract class EventUpdateDTOTest extends TestCase
 
     public function testEventTimeOutOfRangeRight(): void
     {
-        $this->expectException(ValidationDTOException::class);
+        $this->expectException(ValidationException::class);
 
         $this->createDTO(
             [
@@ -126,7 +126,7 @@ abstract class EventUpdateDTOTest extends TestCase
      */
     public function testInvalidData(array $data): void
     {
-        $this->expectException(ValidationDTOException::class);
+        $this->expectException(ValidationException::class);
 
         $this->createDTO(
             [

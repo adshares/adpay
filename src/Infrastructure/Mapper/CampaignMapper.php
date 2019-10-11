@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\AdPay\Infrastructure\Doctrine\Mapper;
+namespace Adshares\AdPay\Infrastructure\Mapper;
 
 use Adshares\AdPay\Domain\Model\Campaign;
 use Doctrine\DBAL\Types\Type;

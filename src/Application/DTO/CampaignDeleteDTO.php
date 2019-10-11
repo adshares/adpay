@@ -2,7 +2,7 @@
 
 namespace Adshares\AdPay\Application\DTO;
 
-use Adshares\AdPay\Application\Exception\ValidationDTOException;
+use Adshares\AdPay\Application\Exception\ValidationException;
 use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use Adshares\AdPay\Domain\ValueObject\IdCollection;
@@ -15,7 +15,7 @@ final class CampaignDeleteDTO
     public function __construct(array $input)
     {
         if (!isset($input['campaigns'])) {
-            throw new ValidationDTOException('Field `campaigns` is required.');
+            throw new ValidationException('Field `campaigns` is required.');
         }
 
         $collection = new IdCollection();
@@ -24,7 +24,7 @@ final class CampaignDeleteDTO
                 $collection->add(new Id($id));
             }
         } catch (InvalidArgumentException|TypeError $exception) {
-            throw new ValidationDtoException($exception->getMessage());
+            throw new ValidationException($exception->getMessage());
         }
         $this->ids = $collection;
     }

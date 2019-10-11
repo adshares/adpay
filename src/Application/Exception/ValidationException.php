@@ -4,7 +4,7 @@ namespace Adshares\AdPay\Application\Exception;
 
 use RuntimeException;
 
-class ValidationDTOException extends RuntimeException
+class ValidationException extends RuntimeException
 {
 
 }

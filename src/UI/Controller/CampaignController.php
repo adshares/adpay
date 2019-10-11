@@ -2,11 +2,11 @@
 
 namespace Adshares\AdPay\UI\Controller;
 
+use Adshares\AdPay\Application\Command\CampaignDeleteCommand;
+use Adshares\AdPay\Application\Command\CampaignUpdateCommand;
 use Adshares\AdPay\Application\DTO\CampaignDeleteDTO;
 use Adshares\AdPay\Application\DTO\CampaignUpdateDTO;
-use Adshares\AdPay\Application\Exception\InvalidDataException;
-use Adshares\AdPay\Application\Exception\ValidationDTOException;
-use Adshares\AdPay\Application\Service\CampaignUpdater;
+use Adshares\AdPay\Application\Exception\ValidationException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,15 +16,22 @@ use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class CampaignController extends AbstractController
 {
-    /** @var CampaignUpdater */
-    private $campaignUpdater;
+    /** @var CampaignUpdateCommand */
+    private $updateCommand;
+
+    /** @var CampaignDeleteCommand */
+    private $deleteCommand;
 
     /** @var LoggerInterface */
     private $logger;
 
-    public function __construct(CampaignUpdater $campaignUpdater, LoggerInterface $logger)
-    {
-        $this->campaignUpdater = $campaignUpdater;
+    public function __construct(
+        CampaignUpdateCommand $updateCommand,
+        CampaignDeleteCommand $deleteCommand,
+        LoggerInterface $logger
+    ) {
+        $this->updateCommand = $updateCommand;
+        $this->deleteCommand = $deleteCommand;
         $this->logger = $logger;
     }
 
@@ -39,13 +46,13 @@ class CampaignController extends AbstractController
 
         try {
             $dto = new CampaignUpdateDTO($input);
-        } catch (ValidationDTOException $exception) {
+        } catch (ValidationException $exception) {
             throw new UnprocessableEntityHttpException($exception->getMessage());
         }
 
         try {
-            $result = $this->campaignUpdater->update($dto->getCampaigns());
-        } catch (InvalidDataException $exception) {
+            $result = $this->updateCommand->execute($dto);
+        } catch (ValidationException $exception) {
             throw new UnprocessableEntityHttpException($exception->getMessage());
         }
 
@@ -65,13 +72,13 @@ class CampaignController extends AbstractController
 
         try {
             $dto = new CampaignDeleteDTO($input);
-        } catch (ValidationDTOException $exception) {
+        } catch (ValidationException $exception) {
             throw new UnprocessableEntityHttpException($exception->getMessage());
         }
 
         try {
-            $result = $this->campaignUpdater->delete($dto->getIds());
-        } catch (InvalidDataException $exception) {
+            $result = $this->deleteCommand->execute($dto);
+        } catch (ValidationException $exception) {
             throw new UnprocessableEntityHttpException($exception->getMessage());
         }
 

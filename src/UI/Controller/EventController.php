@@ -2,14 +2,12 @@
 
 namespace Adshares\AdPay\UI\Controller;
 
+use Adshares\AdPay\Application\Command\EventUpdateCommand;
 use Adshares\AdPay\Application\DTO\ClickEventUpdateDTO;
 use Adshares\AdPay\Application\DTO\ConversionEventUpdateDTO;
 use Adshares\AdPay\Application\DTO\EventUpdateDTO;
 use Adshares\AdPay\Application\DTO\ViewEventUpdateDTO;
-use Adshares\AdPay\Application\Exception\InvalidDataException;
-use Adshares\AdPay\Application\Exception\ValidationDTOException;
-use Adshares\AdPay\Application\Service\EventUpdater;
-use Adshares\AdPay\Application\Service\ReportUpdater;
+use Adshares\AdPay\Application\Exception\ValidationException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,19 +17,15 @@ use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class EventController extends AbstractController
 {
-    /** @var EventUpdater */
-    private $eventUpdater;
-
-    /** @var ReportUpdater */
-    private $reportUpdater;
+    /** @var EventUpdateCommand */
+    private $eventUpdateCommand;
 
     /** @var LoggerInterface */
     private $logger;
 
-    public function __construct(EventUpdater $eventUpdater, ReportUpdater $reportUpdater, LoggerInterface $logger)
+    public function __construct(EventUpdateCommand $eventUpdateCommand, LoggerInterface $logger)
     {
-        $this->eventUpdater = $eventUpdater;
-        $this->reportUpdater = $reportUpdater;
+        $this->eventUpdateCommand = $eventUpdateCommand;
         $this->logger = $logger;
     }
 
@@ -44,7 +38,7 @@ class EventController extends AbstractController
 
         try {
             $dto = new $dto($input);
-        } catch (ValidationDTOException $exception) {
+        } catch (ValidationException $exception) {
             throw new UnprocessableEntityHttpException($exception->getMessage());
         }
 
@@ -54,9 +48,8 @@ class EventController extends AbstractController
     private function updateEvents(EventUpdateDTO $dto): int
     {
         try {
-            $result = $this->eventUpdater->update($dto->getTimeStart(), $dto->getTimeEnd(), $dto->getEvents());
-            $this->reportUpdater->noticeEvents($dto->getEvents()->getType(), $dto->getTimeStart(), $dto->getTimeEnd());
-        } catch (InvalidDataException $exception) {
+            $result = $this->eventUpdateCommand->execute($dto);
+        } catch (ValidationException $exception) {
             throw new UnprocessableEntityHttpException($exception->getMessage());
         }
 

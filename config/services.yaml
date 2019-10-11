@@ -22,25 +22,41 @@ services:
 #        tags:
 #            - { name: kernel.event_subscriber }
 
-#    Adshares\AdPay\Infrastructure\Doctrine\Client:
-#        resource: '../src/Infrastructure/Doctrine/Client.php'
 
-    Adshares\AdPay\Infrastructure\Doctrine\Service\:
-        resource: '../src/Infrastructure/Doctrine/Service'
+    Adshares\AdPay\Infrastructure\Repository\:
+        resource: '../src/Infrastructure/Repository'
+
+    Adshares\AdPay\Application\Command\CampaignUpdateCommand:
+        public: true
+        arguments:
+            $campaignRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineCampaignRepository'
+            $logger: '@logger'
+
+    Adshares\AdPay\Application\Command\CampaignDeleteCommand:
+        public: true
+        arguments:
+            $campaignRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineCampaignRepository'
+            $logger: '@logger'
+
+    Adshares\AdPay\Application\Command\EventUpdateCommand:
+        public: true
+        arguments:
+            $eventRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineEventRepository'
+            $paymentReportRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository'
+            $logger: '@logger'
 
     Adshares\AdPay\UI\Controller\:
         resource: '../src/UI/Controller'
         tags: ['controller.service_arguments']
 
-    Adshares\AdPay\UI\Controller\CampaignController:
-        public: true
-        arguments:
-            $campaignUpdater: '@Adshares\AdPay\Infrastructure\Doctrine\Service\DoctrineCampaignUpdater'
-            $logger: '@logger'
-
-    Adshares\AdPay\UI\Controller\EventController:
-        public: true
-        arguments:
-            $eventUpdater: '@Adshares\AdPay\Infrastructure\Doctrine\Service\DoctrineEventUpdater'
-            $reportUpdater: '@Adshares\AdPay\Infrastructure\Doctrine\Service\DoctrineReportUpdater'
-            $logger: '@logger'
+#    Adshares\AdPay\UI\Controller\CampaignController:
+#        public: true
+#        arguments:
+#            $campaignRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineCampaignRepository'
+#            $logger: '@logger'
+#
+#    Adshares\AdPay\UI\Controller\EventController:
+#        public: true
+#        arguments:
+#            $eventUpdater: '@Adshares\AdPay\Application\Service\EventUpdater'
+#            $logger: '@logger'

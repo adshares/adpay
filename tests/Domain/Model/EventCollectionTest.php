@@ -2,6 +2,7 @@
 
 namespace Adshares\AdPay\Tests\Domain\Model;
 
+use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 use Adshares\AdPay\Domain\Model\Event;
 use Adshares\AdPay\Domain\Model\EventCollection;
 use Adshares\AdPay\Domain\Model\Impression;
@@ -24,7 +25,10 @@ final class EventCollectionTest extends TestCase
         $item3 = $this->createEvent(3);
         $item4 = $this->createEvent(4);
 
-        $this->assertCount(4, new EventCollection(EventType::createView(), $item1, $item2, $item3, $item4));
+        $this->assertCount(
+            4,
+            new EventCollection(EventType::createView(), null, null, $item1, $item2, $item3, $item4)
+        );
     }
 
     public function testEmptyCollection(): void
@@ -34,6 +38,36 @@ final class EventCollectionTest extends TestCase
         $this->assertEquals(EventType::VIEW, $collection->getType());
         $this->assertCount(0, $collection);
         $this->assertEmpty($collection);
+        $this->assertNull($collection->getTimeStart());
+        $this->assertNull($collection->getTimeEnd());
+    }
+
+    public function testTimeInterval(): void
+    {
+        $timeStart = new DateTime('@123123123');
+        $timeEnd = new DateTime('@123123133');
+
+        $collection = new EventCollection(EventType::createView(), $timeStart, $timeEnd);
+        $this->assertEquals(EventType::VIEW, $collection->getType());
+        $this->assertEquals($timeStart, $collection->getTimeStart());
+        $this->assertEquals($timeEnd, $collection->getTimeEnd());
+
+        $collection = new EventCollection(EventType::createView(), $timeStart);
+        $this->assertEquals(EventType::VIEW, $collection->getType());
+        $this->assertEquals($timeStart, $collection->getTimeStart());
+        $this->assertNull($collection->getTimeEnd());
+
+        $collection = new EventCollection(EventType::createView(), null, $timeEnd);
+        $this->assertEquals(EventType::VIEW, $collection->getType());
+        $this->assertNull($collection->getTimeStart());
+        $this->assertEquals($timeEnd, $collection->getTimeEnd());
+    }
+
+    public function testInvalidInterval(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        new EventCollection(EventType::createView(), new DateTime('@123123123'), new DateTime('@123123113'));
     }
 
     /**

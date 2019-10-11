@@ -9,12 +9,13 @@ use Adshares\AdPay\Domain\ValueObject\EventType;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
 use Adshares\AdPay\Lib\DateTimeHelper;
+use DateTimeInterface;
 
 final class ClickEventUpdateDTO extends EventUpdateDTO
 {
-    protected function createEventCollection(): EventCollection
+    protected function createEventCollection(DateTimeInterface $timeStart, DateTimeInterface $timeEnd): EventCollection
     {
-        return new EventCollection(EventType::createClick());
+        return new EventCollection(EventType::createClick(), $timeStart, $timeEnd);
     }
 
     protected function createEventModel(array $input): Event

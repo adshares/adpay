@@ -2,7 +2,7 @@
 
 namespace Adshares\AdPay\Application\DTO;
 
-use Adshares\AdPay\Application\Exception\ValidationDTOException;
+use Adshares\AdPay\Application\Exception\ValidationException;
 use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 use Adshares\AdPay\Domain\Model\Banner;
 use Adshares\AdPay\Domain\Model\BannerCollection;
@@ -38,7 +38,7 @@ final class CampaignUpdateDTO
     private function validate(array $input): void
     {
         if (!isset($input['campaigns'])) {
-            throw new ValidationDTOException('Field `campaigns` is required.');
+            throw new ValidationException('Field `campaigns` is required.');
         }
 
         foreach ($input['campaigns'] as $campaign) {
@@ -49,34 +49,34 @@ final class CampaignUpdateDTO
     private function validateCampaign(array $input): void
     {
         if (!isset($input['id'])) {
-            throw new ValidationDTOException('Field `id` is required.');
+            throw new ValidationException('Field `id` is required.');
         }
 
         if (!isset($input['advertiser_id'])) {
-            throw new ValidationDTOException('Field `advertiser_id` is required.');
+            throw new ValidationException('Field `advertiser_id` is required.');
         }
 
         if (!isset($input['time_start'])) {
-            throw new ValidationDTOException('Field `time_start` is required.');
+            throw new ValidationException('Field `time_start` is required.');
         }
 
         if (!isset($input['budget'])) {
-            throw new ValidationDTOException('Field `budget` is required.');
+            throw new ValidationException('Field `budget` is required.');
         }
 
         if (!isset($input['banners']) || empty($input['banners'])) {
-            throw new ValidationDTOException('Field `banners` is required.');
+            throw new ValidationException('Field `banners` is required.');
         }
 
         if (!is_array($input['banners'])) {
-            throw new ValidationDTOException('Field `banners` must be an array.');
+            throw new ValidationException('Field `banners` must be an array.');
         }
 
         $this->validateBanners($input['banners']);
 
         if (isset($input['filters'])) {
             if (!is_array($input['filters'])) {
-                throw new ValidationDTOException('Field `filters` must be an array.');
+                throw new ValidationException('Field `filters` must be an array.');
             }
 
             $this->validateFilters($input['filters']);
@@ -84,7 +84,7 @@ final class CampaignUpdateDTO
 
         if (isset($input['conversions'])) {
             if (!is_array($input['conversions'])) {
-                throw new ValidationDTOException('Field `conversions` must be an array.');
+                throw new ValidationException('Field `conversions` must be an array.');
             }
 
             $this->validateConversions($input['conversions']);
@@ -95,15 +95,15 @@ final class CampaignUpdateDTO
     {
         foreach ($banners as $input) {
             if (!isset($input['id'])) {
-                throw new ValidationDTOException('Field `banners[][id]` is required.');
+                throw new ValidationException('Field `banners[][id]` is required.');
             }
 
             if (!isset($input['size'])) {
-                throw new ValidationDTOException('Field `banners[][size]` is required.');
+                throw new ValidationException('Field `banners[][size]` is required.');
             }
 
             if (!isset($input['type'])) {
-                throw new ValidationDTOException('Field `banners[][type]` is required.');
+                throw new ValidationException('Field `banners[][type]` is required.');
             }
         }
     }
@@ -111,11 +111,11 @@ final class CampaignUpdateDTO
     private function validateFilters(array $filters): void
     {
         if (isset($filters['require']) && !is_array($filters['require'])) {
-            throw new ValidationDTOException('Field `filters[require]` must be an array.');
+            throw new ValidationException('Field `filters[require]` must be an array.');
         }
 
         if (isset($filters['exclude']) && !is_array($filters['exclude'])) {
-            throw new ValidationDTOException('Field `filters[exclude]` must be an array.');
+            throw new ValidationException('Field `filters[exclude]` must be an array.');
         }
     }
 
@@ -123,27 +123,27 @@ final class CampaignUpdateDTO
     {
         foreach ($conversions as $input) {
             if (!isset($input['id'])) {
-                throw new ValidationDTOException('Field `conversions[][id]` is required.');
+                throw new ValidationException('Field `conversions[][id]` is required.');
             }
 
             if (!isset($input['limit_type'])) {
-                throw new ValidationDTOException('Field `conversions[][limit_type]` is required.');
+                throw new ValidationException('Field `conversions[][limit_type]` is required.');
             }
 
             if (!isset($input['cost'])) {
-                throw new ValidationDTOException('Field `conversions[][cost]` is required.');
+                throw new ValidationException('Field `conversions[][cost]` is required.');
             }
 
             if (!isset($input['is_repeatable'])) {
-                throw new ValidationDTOException('Field `conversions[][is_repeatable]` is required.');
+                throw new ValidationException('Field `conversions[][is_repeatable]` is required.');
             }
 
             if (!isset($input['value'])) {
-                throw new ValidationDTOException('Field `conversions[][value]` is required.');
+                throw new ValidationException('Field `conversions[][value]` is required.');
             }
 
             if (!isset($input['is_value_mutable'])) {
-                throw new ValidationDTOException('Field `conversions[][is_value_mutable]` is required.');
+                throw new ValidationException('Field `conversions[][is_value_mutable]` is required.');
             }
         }
     }
@@ -180,7 +180,7 @@ final class CampaignUpdateDTO
                 $conversions
             );
         } catch (InvalidArgumentException|DateTimeException|TypeError $exception) {
-            throw new ValidationDtoException($exception->getMessage());
+            throw new ValidationException($exception->getMessage());
         }
     }
 

@@ -3,7 +3,7 @@
 namespace Adshares\AdPay\Tests\Application\DTO;
 
 use Adshares\AdPay\Application\DTO\CampaignUpdateDTO;
-use Adshares\AdPay\Application\Exception\ValidationDTOException;
+use Adshares\AdPay\Application\Exception\ValidationException;
 use Adshares\AdPay\Domain\Model\Banner;
 use Adshares\AdPay\Domain\Model\Campaign;
 use Adshares\AdPay\Domain\Model\Conversion;
@@ -14,14 +14,14 @@ final class CampaignUpdateDTOTest extends TestCase
 {
     public function testEmptyInputData(): void
     {
-        $this->expectException(ValidationDTOException::class);
+        $this->expectException(ValidationException::class);
 
         new CampaignUpdateDTO([]);
     }
 
     public function testInvalidInputData(): void
     {
-        $this->expectException(ValidationDTOException::class);
+        $this->expectException(ValidationException::class);
 
         new CampaignUpdateDTO(['invalid' => []]);
     }
@@ -41,7 +41,7 @@ final class CampaignUpdateDTOTest extends TestCase
      */
     public function testInvalidCampaignsData(array $data): void
     {
-        $this->expectException(ValidationDTOException::class);
+        $this->expectException(ValidationException::class);
 
         new CampaignUpdateDTO(['campaigns' => $data]);
     }
@@ -67,7 +67,7 @@ final class CampaignUpdateDTOTest extends TestCase
      */
     public function testInvalidBannersData($data): void
     {
-        $this->expectException(ValidationDTOException::class);
+        $this->expectException(ValidationException::class);
 
         new CampaignUpdateDTO(
             [
@@ -99,7 +99,7 @@ final class CampaignUpdateDTOTest extends TestCase
      */
     public function testInvalidFiltersData($data): void
     {
-        $this->expectException(ValidationDTOException::class);
+        $this->expectException(ValidationException::class);
 
         new CampaignUpdateDTO(
             [
@@ -131,7 +131,7 @@ final class CampaignUpdateDTOTest extends TestCase
      */
     public function testInvalidConversionsData($data): void
     {
-        $this->expectException(ValidationDTOException::class);
+        $this->expectException(ValidationException::class);
 
         new CampaignUpdateDTO(
             [

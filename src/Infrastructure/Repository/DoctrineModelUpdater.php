@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\AdPay\Infrastructure\Doctrine\Service;
+namespace Adshares\AdPay\Infrastructure\Repository;
 
-use Adshares\AdPay\Application\Exception\UpdateDataException;
+use Adshares\AdPay\Domain\Exception\UpdateDataException;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use DateTimeInterface;
 use Doctrine\DBAL\Connection;

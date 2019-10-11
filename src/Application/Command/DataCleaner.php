@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\AdPay\Application\Service;
+namespace Adshares\AdPay\Application\Command;
 
 use DateTime;
 

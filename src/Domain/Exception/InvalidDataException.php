@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\AdPay\Application\Exception;
+namespace Adshares\AdPay\Domain\Exception;
 
 class InvalidDataException extends UpdateDataException
 {

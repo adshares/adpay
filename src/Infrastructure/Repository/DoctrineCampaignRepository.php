@@ -1,23 +1,23 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\AdPay\Infrastructure\Doctrine\Service;
+namespace Adshares\AdPay\Infrastructure\Repository;
 
-use Adshares\AdPay\Application\Exception\UpdateDataException;
-use Adshares\AdPay\Application\Service\CampaignUpdater;
+use Adshares\AdPay\Domain\Exception\UpdateDataException;
 use Adshares\AdPay\Domain\Model\Banner;
 use Adshares\AdPay\Domain\Model\Campaign;
 use Adshares\AdPay\Domain\Model\CampaignCollection;
 use Adshares\AdPay\Domain\Model\Conversion;
+use Adshares\AdPay\Domain\Repository\CampaignRepository;
 use Adshares\AdPay\Domain\ValueObject\IdCollection;
-use Adshares\AdPay\Infrastructure\Doctrine\Mapper\BannerMapper;
-use Adshares\AdPay\Infrastructure\Doctrine\Mapper\CampaignMapper;
-use Adshares\AdPay\Infrastructure\Doctrine\Mapper\ConversionMapper;
+use Adshares\AdPay\Infrastructure\Mapper\BannerMapper;
+use Adshares\AdPay\Infrastructure\Mapper\CampaignMapper;
+use Adshares\AdPay\Infrastructure\Mapper\ConversionMapper;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 
-final class DoctrineCampaignUpdater extends DoctrineModelUpdater implements CampaignUpdater
+final class DoctrineCampaignRepository extends DoctrineModelUpdater implements CampaignRepository
 {
-    public function update(CampaignCollection $campaigns): int
+    public function saveAll(CampaignCollection $campaigns): int
     {
         $count = 0;
         try {
@@ -56,7 +56,7 @@ final class DoctrineCampaignUpdater extends DoctrineModelUpdater implements Camp
         return $count;
     }
 
-    public function delete(IdCollection $ids): int
+    public function deleteAll(IdCollection $ids): int
     {
         try {
             $result = $this->db->executeUpdate(
