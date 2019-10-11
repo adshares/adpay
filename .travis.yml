@@ -28,6 +28,7 @@ install:
 script:
   - composer qa-check
   - composer test-ci
+  - git fetch --unshallow
   - sonar-scanner
 
 notifications:
