@@ -42,4 +42,5 @@ services:
         public: true
         arguments:
             $eventUpdater: '@Adshares\AdPay\Infrastructure\Doctrine\Service\DoctrineEventUpdater'
+            $reportUpdater: '@Adshares\AdPay\Infrastructure\Doctrine\Service\DoctrineReportUpdater'
             $logger: '@logger'

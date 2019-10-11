@@ -28,7 +28,7 @@ class CampaignController extends AbstractController
         $this->logger = $logger;
     }
 
-    public function upsertCampaigns(Request $request): Response
+    public function updateCampaigns(Request $request): Response
     {
         $this->logger->debug('Running post campaigns command');
 

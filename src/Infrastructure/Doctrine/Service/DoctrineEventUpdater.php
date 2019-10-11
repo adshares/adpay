@@ -15,30 +15,22 @@ use DateTimeInterface;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
-class DoctrineEventUpdater extends DoctrineModelUpdater implements EventUpdater
+final class DoctrineEventUpdater extends DoctrineModelUpdater implements EventUpdater
 {
-    public function updateViews(
+    public function update(
         DateTimeInterface $timeStart,
         DateTimeInterface $timeEnd,
-        EventCollection $views
+        EventCollection $events
     ): int {
-        return $this->insertEvents($timeStart, $timeEnd, $views, ViewEventMapper::class);
-    }
+        if ($events->getType()->isClick()) {
+            $mapper = ClickEventMapper::class;
+        } elseif ($events->getType()->isConversion()) {
+            $mapper = ConversionEventMapper::class;
+        } else {
+            $mapper = ViewEventMapper::class;
+        }
 
-    public function updateClicks(
-        DateTimeInterface $timeStart,
-        DateTimeInterface $timeEnd,
-        EventCollection $clicks
-    ): int {
-        return $this->insertEvents($timeStart, $timeEnd, $clicks, ClickEventMapper::class);
-    }
-
-    public function updateConversions(
-        DateTimeInterface $timeStart,
-        DateTimeInterface $timeEnd,
-        EventCollection $conversions
-    ): int {
-        return $this->insertEvents($timeStart, $timeEnd, $conversions, ConversionEventMapper::class);
+        return $this->insertEvents($timeStart, $timeEnd, $events, $mapper);
     }
 
     private function insertEvents(

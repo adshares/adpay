@@ -2,21 +2,19 @@
 
 namespace Adshares\AdPay\Application\Service;
 
-use Adshares\AdPay\Domain\Model\EventCollection;
+use Adshares\AdPay\Domain\ValueObject\EventType;
 use DateTimeInterface;
 
-interface EventUpdater
+interface ReportUpdater
 {
     /**
+     * @param EventType $type
      * @param DateTimeInterface $timeStart
      * @param DateTimeInterface $timeEnd
-     * @param EventCollection $views
-     *
-     * @return int
      */
-    public function update(
+    public function noticeEvents(
+        EventType $type,
         DateTimeInterface $timeStart,
-        DateTimeInterface $timeEnd,
-        EventCollection $views
-    ): int;
+        DateTimeInterface $timeEnd
+    ): void;
 }

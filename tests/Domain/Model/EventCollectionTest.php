@@ -24,13 +24,14 @@ final class EventCollectionTest extends TestCase
         $item3 = $this->createEvent(3);
         $item4 = $this->createEvent(4);
 
-        $this->assertCount(4, new EventCollection($item1, $item2, $item3, $item4));
+        $this->assertCount(4, new EventCollection(EventType::createView(), $item1, $item2, $item3, $item4));
     }
 
     public function testEmptyCollection(): void
     {
-        $collection = new EventCollection();
+        $collection = new EventCollection(EventType::createView());
 
+        $this->assertEquals(EventType::VIEW, $collection->getType());
         $this->assertCount(0, $collection);
         $this->assertEmpty($collection);
     }

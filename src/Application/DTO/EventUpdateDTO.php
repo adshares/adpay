@@ -123,7 +123,7 @@ abstract class EventUpdateDTO
                 throw new ValidationDtoException('Start time cannot be greater than end time');
             }
 
-            $collection = new EventCollection();
+            $collection = $this->createEventCollection();
             foreach ($input['events'] as $item) {
                 $event = $this->createEventModel($item);
                 if ($event->getTime() < $this->timeStart || $event->getTime() > $this->timeEnd) {
@@ -136,6 +136,8 @@ abstract class EventUpdateDTO
             throw new ValidationDTOException($exception->getMessage());
         }
     }
+
+    abstract protected function createEventCollection(): EventCollection;
 
     abstract protected function createEventModel(array $input): Event;
 

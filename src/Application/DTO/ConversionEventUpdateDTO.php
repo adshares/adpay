@@ -5,12 +5,19 @@ namespace Adshares\AdPay\Application\DTO;
 use Adshares\AdPay\Application\Exception\ValidationDTOException;
 use Adshares\AdPay\Domain\Model\ConversionEvent;
 use Adshares\AdPay\Domain\Model\Event;
+use Adshares\AdPay\Domain\Model\EventCollection;
+use Adshares\AdPay\Domain\ValueObject\EventType;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
 use Adshares\AdPay\Lib\DateTimeHelper;
 
 final class ConversionEventUpdateDTO extends EventUpdateDTO
 {
+    protected function createEventCollection(): EventCollection
+    {
+        return new EventCollection(EventType::createConversion());
+    }
+
     protected function createEventModel(array $input): Event
     {
         return new ConversionEvent(

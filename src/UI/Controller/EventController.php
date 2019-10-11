@@ -4,10 +4,12 @@ namespace Adshares\AdPay\UI\Controller;
 
 use Adshares\AdPay\Application\DTO\ClickEventUpdateDTO;
 use Adshares\AdPay\Application\DTO\ConversionEventUpdateDTO;
+use Adshares\AdPay\Application\DTO\EventUpdateDTO;
 use Adshares\AdPay\Application\DTO\ViewEventUpdateDTO;
 use Adshares\AdPay\Application\Exception\InvalidDataException;
 use Adshares\AdPay\Application\Exception\ValidationDTOException;
 use Adshares\AdPay\Application\Service\EventUpdater;
+use Adshares\AdPay\Application\Service\ReportUpdater;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,90 +22,69 @@ class EventController extends AbstractController
     /** @var EventUpdater */
     private $eventUpdater;
 
+    /** @var ReportUpdater */
+    private $reportUpdater;
+
     /** @var LoggerInterface */
     private $logger;
 
-    public function __construct(EventUpdater $eventUpdater, LoggerInterface $logger)
+    public function __construct(EventUpdater $eventUpdater, ReportUpdater $reportUpdater, LoggerInterface $logger)
     {
         $this->eventUpdater = $eventUpdater;
+        $this->reportUpdater = $reportUpdater;
         $this->logger = $logger;
     }
 
-    public function upsertViews(Request $request): Response
+    private function parseRequest(Request $request, string $dto): EventUpdateDTO
     {
-        $this->logger->debug('Running post views command');
-
         $input = json_decode($request->getContent(), true);
         if ($input === null || !is_array($input)) {
             throw new UnprocessableEntityHttpException('Invalid input data');
         }
 
         try {
-            $dto = new ViewEventUpdateDTO($input);
+            $dto = new $dto($input);
         } catch (ValidationDTOException $exception) {
             throw new UnprocessableEntityHttpException($exception->getMessage());
         }
 
+        return $dto;
+    }
+
+    private function updateEvents(EventUpdateDTO $dto): int
+    {
         try {
-            $result = $this->eventUpdater->updateViews($dto->getTimeStart(), $dto->getTimeEnd(), $dto->getEvents());
+            $result = $this->eventUpdater->update($dto->getTimeStart(), $dto->getTimeEnd(), $dto->getEvents());
+            $this->reportUpdater->noticeEvents($dto->getEvents()->getType(), $dto->getTimeStart(), $dto->getTimeEnd());
         } catch (InvalidDataException $exception) {
             throw new UnprocessableEntityHttpException($exception->getMessage());
         }
 
+        return $result;
+    }
+
+    public function updateViews(Request $request): Response
+    {
+        $this->logger->debug('Running post views command');
+        $result = $this->updateEvents($this->parseRequest($request, ViewEventUpdateDTO::class));
         $this->logger->info(sprintf('%d views updated', $result));
 
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
     }
 
-    public function upsertClicks(Request $request): Response
+    public function updateClicks(Request $request): Response
     {
         $this->logger->debug('Running post clicks command');
-
-        $input = json_decode($request->getContent(), true);
-        if ($input === null || !is_array($input)) {
-            throw new UnprocessableEntityHttpException('Invalid input data');
-        }
-
-        try {
-            $dto = new ClickEventUpdateDTO($input);
-        } catch (ValidationDTOException $exception) {
-            throw new UnprocessableEntityHttpException($exception->getMessage());
-        }
-
-        try {
-            $result = $this->eventUpdater->updateClicks($dto->getTimeStart(), $dto->getTimeEnd(), $dto->getEvents());
-        } catch (InvalidDataException $exception) {
-            throw new UnprocessableEntityHttpException($exception->getMessage());
-        }
-
+        $result = $this->updateEvents($this->parseRequest($request, ClickEventUpdateDTO::class));
         $this->logger->info(sprintf('%d clicks updated', $result));
 
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
     }
 
-    public function upsertConversions(Request $request): Response
+    public function updateConversions(Request $request): Response
     {
         $this->logger->debug('Running post conversions command');
-
-        $input = json_decode($request->getContent(), true);
-        if ($input === null || !is_array($input)) {
-            throw new UnprocessableEntityHttpException('Invalid input data');
-        }
-
-        try {
-            $dto = new ConversionEventUpdateDTO($input);
-        } catch (ValidationDTOException $exception) {
-            throw new UnprocessableEntityHttpException($exception->getMessage());
-        }
-
-        try {
-            $result =
-                $this->eventUpdater->updateConversions($dto->getTimeStart(), $dto->getTimeEnd(), $dto->getEvents());
-        } catch (InvalidDataException $exception) {
-            throw new UnprocessableEntityHttpException($exception->getMessage());
-        }
-
-        $this->logger->info(sprintf('%d conversions updated', $result));
+        $result = $this->updateEvents($this->parseRequest($request, ConversionEventUpdateDTO::class));
         $this->logger->info(sprintf('%d conversions updated', $result));
 
         return new JsonResponse([], Response::HTTP_NO_CONTENT);

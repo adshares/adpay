@@ -2,12 +2,25 @@
 
 namespace Adshares\AdPay\Domain\Model;
 
+use Adshares\AdPay\Domain\ValueObject\EventType;
 use Doctrine\Common\Collections\ArrayCollection;
 
 final class EventCollection extends ArrayCollection
 {
-    public function __construct(Event ...$views)
+    /** @var EventType */
+    private $type;
+
+    public function __construct(EventType $type, Event ...$views)
     {
         parent::__construct($views);
+        $this->type = $type;
+    }
+
+    /**
+     * @return EventType
+     */
+    public function getType(): EventType
+    {
+        return $this->type;
     }
 }

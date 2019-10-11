@@ -11,7 +11,7 @@ final class ConversionEventUpdateDTOTest extends EventUpdateDTOTest
     public function testConversionModel(): void
     {
         $input = static::simpleEvent(['conversion_value' => 100]);
-        $dto = $this->createDTO(['time_start' => 123123123, 'time_end' => 123123123, 'events' => [$input]]);
+        $dto = $this->createDTO(['time_start' => 123123123, 'time_end' => 123123133, 'events' => [$input]]);
 
         /* @var $event ConversionEvent */
         $event = $dto->getEvents()->first();

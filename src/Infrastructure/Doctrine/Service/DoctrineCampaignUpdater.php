@@ -15,7 +15,7 @@ use Adshares\AdPay\Infrastructure\Doctrine\Mapper\ConversionMapper;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 
-class DoctrineCampaignUpdater extends DoctrineModelUpdater implements CampaignUpdater
+final class DoctrineCampaignUpdater extends DoctrineModelUpdater implements CampaignUpdater
 {
     public function update(CampaignCollection $campaigns): int
     {
