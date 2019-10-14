@@ -128,6 +128,18 @@ final class Version20191002095930 extends AbstractMigration
                 INDEX time (time)
             )'
         );
+
+        $this->addSql(
+            'CREATE TABLE payment_reports (
+                id BIGINT(20) NOT NULL,
+                status TINYINT(3) NOT NULL,
+                intervals JSON NOT NULL,
+                created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+                updated_at TIMESTAMP NOT NULL DEFAULT NOW() ON UPDATE NOW(),
+                PRIMARY KEY (id),
+                INDEX status (status)
+            )'
+        );
     }
 
     public function down(Schema $schema): void

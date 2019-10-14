@@ -61,16 +61,18 @@ abstract class DoctrineModelUpdater
 
     /**
      * @param string $table
-     * @param Id $id
+     * @param int|Id $id
      * @param array $data
      * @param array $types
      *
      * @throws DBALException
      */
-    protected function upsert(string $table, Id $id, array $data, array $types = []): void
+    protected function upsert(string $table, $id, array $data, array $types = []): void
     {
+        $value = $id instanceof Id ? $id->toBin() : $id;
+
         if ($this->isModelExists($table, $id)) {
-            $this->db->update($table, $data, ['id' => $id->toBin()], $types);
+            $this->db->update($table, $data, ['id' => $value], $types);
         } else {
             $this->db->insert($table, $data, $types);
         }
@@ -83,13 +85,16 @@ abstract class DoctrineModelUpdater
      * @return bool
      * @throws DBALException
      */
-    protected function isModelExists(string $table, Id $id): bool
+    protected function isModelExists(string $table, $id): bool
     {
+        $value = $id instanceof Id ? $id->toBin() : $id;
+        $type = $id instanceof Id ? Type::BINARY : Type::INTEGER;
+
         $isset = $this->db->fetchColumn(
             sprintf('SELECT id FROM %s WHERE id = ?', $table),
-            [$id->toBin()],
+            [$value],
             0,
-            [Type::BINARY]
+            [$type]
         );
 
         return $isset !== false;

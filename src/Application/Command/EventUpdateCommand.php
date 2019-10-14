@@ -51,7 +51,7 @@ final class EventUpdateCommand
 
             $report = $this->paymentReportRepository->fetch($timestamp);
             $report->addInterval($type, $start, $end);
-            $this->paymentReportRepository->update($report);
+            $this->paymentReportRepository->save($report);
 
             $timestamp += self::HOUR;
         };

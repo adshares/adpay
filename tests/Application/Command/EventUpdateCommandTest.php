@@ -36,7 +36,7 @@ class EventUpdateCommandTest extends TestCase
 
         $paymentReportRepository = $this->createMock(PaymentReportRepository::class);
         $paymentReportRepository->expects($this->once())->method('fetch')->with($timestamp)->willReturn($report);
-        $paymentReportRepository->expects($this->once())->method('update')->with($report);
+        $paymentReportRepository->expects($this->once())->method('save')->with($report);
 
         /** @var EventRepository $eventRepository */
         /** @var PaymentReportRepository $paymentReportRepository */
@@ -83,7 +83,7 @@ class EventUpdateCommandTest extends TestCase
 
         $paymentReportRepository = $this->createMock(PaymentReportRepository::class);
         $paymentReportRepository->expects($this->exactly(3))->method('fetch')->with($timestamp)->willReturn($report);
-        $paymentReportRepository->expects($this->exactly(3))->method('update')->with($report);
+        $paymentReportRepository->expects($this->exactly(3))->method('save')->with($report);
 
         /** @var EventRepository $eventRepository */
         /** @var PaymentReportRepository $paymentReportRepository */
@@ -135,7 +135,7 @@ class EventUpdateCommandTest extends TestCase
 
         $paymentReportRepository
             ->expects($this->exactly(4))
-            ->method('update')
+            ->method('save')
             ->withConsecutive([$report1], [$report2], [$report3], [$report4]);
 
         /** @var EventRepository $eventRepository */

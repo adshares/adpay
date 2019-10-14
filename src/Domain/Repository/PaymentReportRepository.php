@@ -8,5 +8,5 @@ interface PaymentReportRepository
 {
     public function fetch(int $id): PaymentReport;
 
-    public function update(PaymentReport $report): void;
+    public function save(PaymentReport $report): void;
 }
