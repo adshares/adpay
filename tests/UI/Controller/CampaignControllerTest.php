@@ -22,6 +22,16 @@ final class CampaignControllerTest extends WebTestCase
                             'type' => 'image',
                         ],
                     ],
+                    'conversions' => [
+                        [
+                            'id' => '249befbe667e49a7a5c93dfb9b21935c',
+                            'limit_type' => 'in_budget',
+                            'cost' => 0,
+                            'is_repeatable' => false,
+                            'value' => 1000000000,
+                            'is_value_mutable' => false,
+                        ],
+                    ],
                 ],
             ],
         ];
