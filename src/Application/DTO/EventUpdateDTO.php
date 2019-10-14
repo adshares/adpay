@@ -34,11 +34,11 @@ abstract class EventUpdateDTO
     protected function validate(array $input): void
     {
         if (!isset($input['time_start'])) {
-            throw new ValidationException('Field `events` is required.');
+            throw new ValidationException('Field `time_start` is required.');
         }
 
         if (!isset($input['time_end'])) {
-            throw new ValidationException('Field `events` is required.');
+            throw new ValidationException('Field `time_end` is required.');
         }
 
         if (!isset($input['events'])) {

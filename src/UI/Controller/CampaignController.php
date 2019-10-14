@@ -37,7 +37,7 @@ class CampaignController extends AbstractController
 
     public function updateCampaigns(Request $request): Response
     {
-        $this->logger->debug('Running post campaigns command');
+        $this->logger->debug('Call update campaigns endpoint');
 
         $input = json_decode($request->getContent(), true);
         if ($input === null || !is_array($input)) {
@@ -51,19 +51,17 @@ class CampaignController extends AbstractController
         }
 
         try {
-            $result = $this->updateCommand->execute($dto);
+            $this->updateCommand->execute($dto);
         } catch (ValidationException $exception) {
             throw new UnprocessableEntityHttpException($exception->getMessage());
         }
-
-        $this->logger->info(sprintf('%d campaigns updated', $result));
 
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
     }
 
     public function deleteCampaigns(Request $request): Response
     {
-        $this->logger->debug('Running delete campaigns command');
+        $this->logger->debug('Call delete campaigns endpoint');
 
         $input = json_decode($request->getContent(), true);
         if ($input === null || !is_array($input)) {
@@ -77,12 +75,10 @@ class CampaignController extends AbstractController
         }
 
         try {
-            $result = $this->deleteCommand->execute($dto);
+            $this->deleteCommand->execute($dto);
         } catch (ValidationException $exception) {
             throw new UnprocessableEntityHttpException($exception->getMessage());
         }
-
-        $this->logger->info(sprintf('%d campaigns deleted', $result));
 
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
     }

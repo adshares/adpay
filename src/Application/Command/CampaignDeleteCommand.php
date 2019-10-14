@@ -24,6 +24,10 @@ final class CampaignDeleteCommand
 
     public function execute(CampaignDeleteDTO $dto): int
     {
-        return $this->campaignRepository->deleteAll($dto->getIds());
+        $this->logger->debug('Running delete campaigns command');
+        $result = $this->campaignRepository->deleteAll($dto->getIds());
+        $this->logger->info(sprintf('%d campaigns deleted', $result));
+
+        return $result;
     }
 }

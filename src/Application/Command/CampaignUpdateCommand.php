@@ -24,6 +24,10 @@ final class CampaignUpdateCommand
 
     public function execute(CampaignUpdateDTO $dto): int
     {
-        return $this->campaignRepository->saveAll($dto->getCampaigns());
+        $this->logger->debug('Running update campaigns command');
+        $result = $this->campaignRepository->saveAll($dto->getCampaigns());
+        $this->logger->info(sprintf('%d campaigns updated', $result));
+
+        return $result;
     }
 }

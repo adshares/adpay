@@ -42,15 +42,16 @@ final class EventUpdateCommand
 
         $noticeStart = $dto->getEvents()->getTimeStart()->getTimestamp();
         $noticeEnd = $dto->getEvents()->getTimeEnd()->getTimestamp();
+        $type = $dto->getEvents()->getType();
 
         $timestamp = (int)floor($noticeStart / self::HOUR) * self::HOUR;
         while ($timestamp <= $noticeEnd) {
-            $start = min(0, $noticeStart - $timestamp);
-            $end = max(59, $noticeEnd - $timestamp);
+            $start = max(0, $noticeStart - $timestamp);
+            $end = min(self::HOUR - 1, $noticeEnd - $timestamp);
 
             $report = $this->paymentReportRepository->fetch($timestamp);
-//            $report->addInterval($start, $end);
-//            $this->paymentReportRepository->update($report);
+            $report->addInterval($type, $start, $end);
+            $this->paymentReportRepository->update($report);
 
             $timestamp += self::HOUR;
         };
