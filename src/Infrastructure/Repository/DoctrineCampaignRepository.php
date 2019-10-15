@@ -12,7 +12,6 @@ use Adshares\AdPay\Domain\ValueObject\IdCollection;
 use Adshares\AdPay\Infrastructure\Mapper\BannerMapper;
 use Adshares\AdPay\Infrastructure\Mapper\CampaignMapper;
 use Adshares\AdPay\Infrastructure\Mapper\ConversionMapper;
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 
 final class DoctrineCampaignRepository extends DoctrineModelUpdater implements CampaignRepository
@@ -21,6 +20,14 @@ final class DoctrineCampaignRepository extends DoctrineModelUpdater implements C
     {
         $count = 0;
         try {
+            $ids = new IdCollection();
+            foreach ($campaigns as $campaign) {
+                /*  @var $campaign Campaign */
+                $ids->add($campaign->getId());
+            }
+            $this->softDelete(BannerMapper::table(), $ids->toBinArray(), 'campaign_id');
+            $this->softDelete(ConversionMapper::table(), $ids->toBinArray(), 'campaign_id');
+
             foreach ($campaigns as $campaign) {
                 /*  @var $campaign Campaign */
                 $this->upsert(
@@ -59,15 +66,18 @@ final class DoctrineCampaignRepository extends DoctrineModelUpdater implements C
     public function deleteAll(IdCollection $ids): int
     {
         try {
-            $result = $this->db->executeUpdate(
-                'DELETE FROM campaigns WHERE id IN (?)',
-                [$ids->toBinArray()],
-                [Connection::PARAM_STR_ARRAY]
-            );
+            $this->softDelete(BannerMapper::table(), $ids->toBinArray(), 'campaign_id');
+            $this->softDelete(ConversionMapper::table(), $ids->toBinArray(), 'campaign_id');
+            $result = $this->softDelete(CampaignMapper::table(), $ids->toBinArray());
         } catch (DBALException $exception) {
             throw new UpdateDataException($exception->getMessage());
         }
 
         return $result;
+    }
+
+    public function fetchAll(): CampaignCollection
+    {
+        return null;
     }
 }

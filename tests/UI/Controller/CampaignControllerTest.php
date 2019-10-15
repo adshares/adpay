@@ -17,14 +17,14 @@ final class CampaignControllerTest extends WebTestCase
                     'budget' => 10000,
                     'banners' => [
                         [
-                            'id' => '43c567e1396b4cadb52223a51796fd01',
+                            'id' => '43c567e1396b4cadb52223a51796fd02',
                             'size' => '220x345',
                             'type' => 'image',
                         ],
                     ],
                     'conversions' => [
                         [
-                            'id' => '249befbe667e49a7a5c93dfb9b21935c',
+                            'id' => '249befbe667e49a7a5c93dfb9b219352',
                             'limit_type' => 'in_budget',
                             'cost' => 0,
                             'is_repeatable' => false,

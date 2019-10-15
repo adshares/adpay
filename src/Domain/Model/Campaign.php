@@ -33,6 +33,9 @@ final class Campaign
     /** @var ConversionCollection */
     private $conversions;
 
+    /** @var DateTimeInterface|null */
+    private $deletedAt;
+
     /**
      * @param array<string> $filters
      */
@@ -133,5 +136,10 @@ final class Campaign
     public function getConversions(): ConversionCollection
     {
         return $this->conversions;
+    }
+
+    public function getDeletedAt(): ?DateTimeInterface
+    {
+        return $this->deletedAt;
     }
 }

@@ -12,6 +12,7 @@ use Adshares\AdPay\Domain\ValueObject\Context;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use Adshares\AdPay\Lib\DateTimeHelper;
 use Adshares\AdPay\Lib\Exception\DateTimeException;
+use DateTime;
 use DateTimeInterface;
 use TypeError;
 
@@ -103,6 +104,12 @@ abstract class EventUpdateDTO
             $timeStart = DateTimeHelper::createFromTimestamp($input['time_start']);
             $timeEnd = DateTimeHelper::createFromTimestamp($input['time_end']);
 
+            if ($timeStart < (new DateTime())->modify('-32 day')) {
+                throw new ValidationException('End time cannot be in the future');
+            }
+            if ($timeEnd > new DateTime()) {
+                throw new ValidationException('End time cannot be in the future');
+            }
             if ($timeStart > $timeEnd) {
                 throw new ValidationException('Start time cannot be greater than end time');
             }

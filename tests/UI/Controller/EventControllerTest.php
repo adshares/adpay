@@ -9,12 +9,12 @@ final class EventControllerTest extends WebTestCase
     public function testUpdateViews(): void
     {
         $parameters = [
-            'time_start' => 123123123,
-            'time_end' => 123123123,
+            'time_start' => time() - 10,
+            'time_end' => time() - 1,
             'events' => [
                 [
                     'id' => '43c567e1396b4cadb52223a51796fd01',
-                    'time' => 123123123,
+                    'time' => time() - 5,
                     'case_id' => '43c567e1396b4cadb52223a51796fd01',
                     'publisher_id' => 'ffc567e1396b4cadb52223a51796fd02',
                     'zone_id' => 'aac567e1396b4cadb52223a51796fdbb',
@@ -53,8 +53,8 @@ final class EventControllerTest extends WebTestCase
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
 
         $parameters = [
-            'time_start' => 123123123,
-            'time_end' => 123123123,
+            'time_start' => time() - 10,
+            'time_end' => time() - 1,
             'events' => [
                 [
                     'id' => 'invalid',
@@ -70,12 +70,12 @@ final class EventControllerTest extends WebTestCase
     public function testUpdateClicks(): void
     {
         $parameters = [
-            'time_start' => 123123123,
-            'time_end' => 123123123,
+            'time_start' => time() - 10,
+            'time_end' => time() - 1,
             'events' => [
                 [
                     'id' => '43c567e1396b4cadb52223a51796fd01',
-                    'time' => 123123123,
+                    'time' => time() - 5,
                     'case_id' => '43c567e1396b4cadb52223a51796fd01',
                     'publisher_id' => 'ffc567e1396b4cadb52223a51796fd02',
                     'zone_id' => 'aac567e1396b4cadb52223a51796fdbb',
@@ -114,8 +114,8 @@ final class EventControllerTest extends WebTestCase
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
 
         $parameters = [
-            'time_start' => 123123123,
-            'time_end' => 123123123,
+            'time_start' => time() - 10,
+            'time_end' => time() - 1,
             'events' => [
                 [
                     'id' => 'invalid',
@@ -131,12 +131,12 @@ final class EventControllerTest extends WebTestCase
     public function testUpdateConversions(): void
     {
         $parameters = [
-            'time_start' => 123123123,
-            'time_end' => 123123123,
+            'time_start' => time() - 10,
+            'time_end' => time() - 1,
             'events' => [
                 [
                     'id' => '43c567e1396b4cadb52223a51796fd01',
-                    'time' => 123123123,
+                    'time' => time() - 5,
                     'case_id' => '43c567e1396b4cadb52223a51796fd01',
                     'publisher_id' => 'ffc567e1396b4cadb52223a51796fd02',
                     'zone_id' => 'aac567e1396b4cadb52223a51796fdbb',
@@ -176,8 +176,8 @@ final class EventControllerTest extends WebTestCase
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
 
         $parameters = [
-            'time_start' => 123123123,
-            'time_end' => 123123123,
+            'time_start' => time() - 10,
+            'time_end' => time() - 1,
             'events' => [
                 [
                     'id' => 'invalid',
@@ -193,12 +193,12 @@ final class EventControllerTest extends WebTestCase
     public function testDuplicateEvents(): void
     {
         $parameters1 = [
-            'time_start' => 1231230,
-            'time_end' => 1231235,
+            'time_start' => time() - 10,
+            'time_end' => time() - 1,
             'events' => [
                 [
-                    'id' => 'ffc567e1396b4cadb52223a51796fdf1',
-                    'time' => 1231231,
+                    'id' => 'afc567e1396b4cadb52223a51796fdf1',
+                    'time' => time() - 5,
                     'case_id' => '43c567e1396b4cadb52223a51796fd01',
                     'publisher_id' => 'ffc567e1396b4cadb52223a51796fd02',
                     'zone_id' => 'aac567e1396b4cadb52223a51796fdbb',
@@ -219,12 +219,12 @@ final class EventControllerTest extends WebTestCase
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
 
         $parameters1 = [
-            'time_start' => 1231236,
-            'time_end' => 1231239,
+            'time_start' => time() - 110,
+            'time_end' => time() - 101,
             'events' => [
                 [
-                    'id' => 'ffc567e1396b4cadb52223a51796fdf1',
-                    'time' => 1231237,
+                    'id' => 'afc567e1396b4cadb52223a51796fdf1',
+                    'time' => time() - 105,
                     'case_id' => '43c567e1396b4cadb52223a51796fd01',
                     'publisher_id' => 'ffc567e1396b4cadb52223a51796fd02',
                     'zone_id' => 'aac567e1396b4cadb52223a51796fdbb',

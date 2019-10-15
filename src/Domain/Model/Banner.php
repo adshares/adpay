@@ -5,6 +5,7 @@ namespace Adshares\AdPay\Domain\Model;
 use Adshares\AdPay\Domain\ValueObject\BannerType;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use Adshares\AdPay\Domain\ValueObject\Size;
+use DateTimeInterface;
 
 final class Banner
 {
@@ -19,6 +20,9 @@ final class Banner
 
     /** @var BannerType */
     private $type;
+
+    /** @var DateTimeInterface|null */
+    private $deletedAt;
 
     public function __construct(Id $id, Id $campaignId, Size $size, BannerType $type)
     {
@@ -46,5 +50,10 @@ final class Banner
     public function getType(): BannerType
     {
         return $this->type;
+    }
+
+    public function getDeletedAt(): ?DateTimeInterface
+    {
+        return $this->deletedAt;
     }
 }

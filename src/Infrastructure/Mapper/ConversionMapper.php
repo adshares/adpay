@@ -23,6 +23,7 @@ class ConversionMapper
             'value' => $conversion->getValue(),
             'is_value_mutable' => $conversion->isValueMutable(),
             'is_repeatable' => $conversion->isRepeatable(),
+            'deleted_at' => $conversion->getDeletedAt(),
         ];
     }
 
@@ -37,6 +38,7 @@ class ConversionMapper
             'value' => Type::INTEGER,
             'is_value_mutable' => Type::BOOLEAN,
             'is_repeatable' => Type::BOOLEAN,
+            'deleted_at' => TYPE::DATETIME,
         ];
     }
 }

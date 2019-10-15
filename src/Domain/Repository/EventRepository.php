@@ -22,4 +22,10 @@ interface EventRepository
         ?DateTimeInterface $timeStart,
         ?DateTimeInterface $timeEnd
     ): void;
+
+    public function fetchByTime(
+        EventType $type,
+        DateTimeInterface $timeStart,
+        DateTimeInterface $timeEnd
+    ): iterable;
 }

@@ -78,4 +78,12 @@ final class DoctrineEventRepository extends DoctrineModelUpdater implements Even
 
         return $count;
     }
+
+    public function fetchByTime(
+        EventType $type,
+        DateTimeInterface $timeStart,
+        DateTimeInterface $timeEnd
+    ): iterable {
+        return null;
+    }
 }

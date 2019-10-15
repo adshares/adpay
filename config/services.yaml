@@ -12,8 +12,8 @@ services:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
-#    Adshares\AdPay\UI\Command\:
-#        resource: '../src/UI/Command'
+    Adshares\AdPay\UI\Command\:
+        resource: '../src/UI/Command'
 
 #    Adshares\AdSelect\UI\EventListener\ApiExceptionListenerSubscriber:
 #        arguments:
@@ -43,6 +43,22 @@ services:
         arguments:
             $eventRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineEventRepository'
             $paymentReportRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository'
+            $logger: '@logger'
+
+    Adshares\AdPay\Application\Command\PaymentCalculateCommand:
+        public: true
+        arguments:
+            $paymentReportRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository'
+            $paymentRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentRepository'
+            $campaignRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineCampaignRepository'
+            $eventRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineEventRepository'
+            $logger: '@logger'
+
+    Adshares\AdPay\Application\Command\PaymentFetchCommand:
+        public: true
+        arguments:
+            $paymentReportRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository'
+            $paymentRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentRepository'
             $logger: '@logger'
 
     Adshares\AdPay\UI\Controller\:

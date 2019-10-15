@@ -10,4 +10,6 @@ interface CampaignRepository
     public function saveAll(CampaignCollection $campaigns): int;
 
     public function deleteAll(IdCollection $ids): int;
+
+    public function fetchAll(): CampaignCollection;
 }

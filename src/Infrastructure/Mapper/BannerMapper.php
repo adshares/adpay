@@ -19,6 +19,7 @@ class BannerMapper
             'campaign_id' => $banner->getCampaignId()->toBin(),
             'size' => $banner->getSize()->toString(),
             'type' => $banner->getType()->toString(),
+            'deleted_at' => $banner->getDeletedAt(),
         ];
     }
 
@@ -29,6 +30,7 @@ class BannerMapper
             'campaign_id' => Type::BINARY,
             'size' => Type::STRING,
             'type' => Type::STRING,
+            'deleted_at' => TYPE::DATETIME,
         ];
     }
 }

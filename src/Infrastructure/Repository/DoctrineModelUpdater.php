@@ -99,4 +99,21 @@ abstract class DoctrineModelUpdater
 
         return $isset !== false;
     }
+
+    /**
+     * @param string $table
+     * @param array $ids
+     * @param string $field
+     *
+     * @return int
+     * @throws DBALException
+     */
+    protected function softDelete(string $table, array $ids, string $field = 'id'): int
+    {
+        return $this->db->executeUpdate(
+            sprintf('UPDATE %s SET deleted_at = NOW() WHERE %s IN (?)', $table, $field),
+            [$ids],
+            [Connection::PARAM_STR_ARRAY]
+        );
+    }
 }

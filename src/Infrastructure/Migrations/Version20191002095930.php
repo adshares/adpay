@@ -27,6 +27,7 @@ final class Version20191002095930 extends AbstractMigration
                 budget BIGINT(20) NOT NULL,
                 max_cpm BIGINT(20) NULL DEFAULT NULL,
                 max_cpc BIGINT(20) NULL DEFAULT NULL,
+                deleted_at TIMESTAMP NULL DEFAULT NULL,
                 PRIMARY KEY (id),
                 INDEX time_start (time_start),
                 INDEX time_end (time_end)
@@ -39,6 +40,7 @@ final class Version20191002095930 extends AbstractMigration
                 campaign_id VARBINARY(16) NOT NULL,
                 size VARCHAR(32) NOT NULL,
                 type VARCHAR(32) NOT NULL,
+                deleted_at TIMESTAMP NULL DEFAULT NULL,
                 PRIMARY KEY (id),
                 INDEX campaign_id (campaign_id),
                 CONSTRAINT banners_campaigns FOREIGN KEY (campaign_id) REFERENCES campaigns (id) ON DELETE CASCADE
@@ -55,6 +57,7 @@ final class Version20191002095930 extends AbstractMigration
                 value BIGINT(20) NOT NULL,
                 is_value_mutable TINYINT(4) NOT NULL,
                 is_repeatable TINYINT(4) NOT NULL,
+                deleted_at TIMESTAMP NULL DEFAULT NULL,
                 PRIMARY KEY (id),
                 INDEX campaign_id (campaign_id),
                 CONSTRAINT conversions_campaigns FOREIGN KEY (campaign_id) REFERENCES campaigns (id) ON DELETE CASCADE
@@ -138,6 +141,21 @@ final class Version20191002095930 extends AbstractMigration
                 updated_at TIMESTAMP NOT NULL DEFAULT NOW() ON UPDATE NOW(),
                 PRIMARY KEY (id),
                 INDEX status (status)
+            )'
+        );
+
+        $this->addSql(
+            'CREATE TABLE payments (
+                id BIGINT(20) NOT NULL AUTO_INCREMENT,
+                report_id BIGINT(20) NOT NULL,
+                event_id VARBINARY(16) NOT NULL,
+                event_type VARCHAR(16) NOT NULL,
+                status TINYINT(3) NOT NULL,
+                value BIGINT(20) NULL DEFAULT NULL,
+                PRIMARY KEY (id),
+                INDEX report_id (report_id),
+                CONSTRAINT payments_payment_reports FOREIGN KEY (report_id)
+                    REFERENCES payment_reports (id) ON DELETE CASCADE
             )'
         );
     }

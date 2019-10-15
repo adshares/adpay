@@ -6,6 +6,7 @@ use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use Adshares\AdPay\Domain\ValueObject\Limit;
 use Adshares\AdPay\Domain\ValueObject\LimitType;
+use DateTimeInterface;
 
 final class Conversion
 {
@@ -26,6 +27,9 @@ final class Conversion
 
     /** @var bool */
     private $repeatable;
+
+    /** @var DateTimeInterface|null */
+    private $deletedAt;
 
     public function __construct(
         Id $id,
@@ -94,5 +98,10 @@ final class Conversion
     public function isRepeatable(): bool
     {
         return $this->repeatable;
+    }
+
+    public function getDeletedAt(): ?DateTimeInterface
+    {
+        return $this->deletedAt;
     }
 }

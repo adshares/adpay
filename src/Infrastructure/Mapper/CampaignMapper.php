@@ -23,6 +23,7 @@ class CampaignMapper
             'budget' => $campaign->getBudgetValue(),
             'max_cpm' => $campaign->getMaxCpm(),
             'max_cpc' => $campaign->getMaxCpc(),
+            'deleted_at' => $campaign->getDeletedAt(),
         ];
     }
 
@@ -37,6 +38,7 @@ class CampaignMapper
             'budget' => Type::INTEGER,
             'max_cpm' => Type::INTEGER,
             'max_cpc' => Type::INTEGER,
+            'deleted_at' => TYPE::DATETIME,
         ];
     }
 }

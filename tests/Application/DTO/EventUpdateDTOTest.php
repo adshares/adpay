@@ -31,16 +31,16 @@ abstract class EventUpdateDTOTest extends TestCase
 
         $this->createDTO(
             [
-                'time_start' => 1570626700,
-                'time_end' => 1570626700,
+                'time_start' => time() - 10,
+                'time_end' => time() - 1,
             ]
         );
     }
 
     public function testValidTimespanData(): void
     {
-        $time_start = 1570626700;
-        $time_end = 1570626750;
+        $time_start = time() - 10;
+        $time_end = time() - 1;
 
         $dto = $this->createDTO(
             [
@@ -81,10 +81,10 @@ abstract class EventUpdateDTOTest extends TestCase
 
         $this->createDTO(
             [
-                'time_start' => 123123123,
-                'time_end' => 123123133,
+                'time_start' => time() - 10,
+                'time_end' => time() - 1,
                 'events' => [
-                    static::simpleEvent(['time' => 123123120]),
+                    static::simpleEvent(['time' => time() - 15]),
                 ],
             ]
         );
@@ -96,10 +96,10 @@ abstract class EventUpdateDTOTest extends TestCase
 
         $this->createDTO(
             [
-                'time_start' => 123123123,
-                'time_end' => 123123133,
+                'time_start' => time() - 10,
+                'time_end' => time() - 5,
                 'events' => [
-                    static::simpleEvent(['time' => 123123135]),
+                    static::simpleEvent(['time' => time() - 1]),
                 ],
             ]
         );
@@ -112,8 +112,8 @@ abstract class EventUpdateDTOTest extends TestCase
     {
         $dto = $this->createDTO(
             [
-                'time_start' => 123123123,
-                'time_end' => 123123133,
+                'time_start' => time() - 10,
+                'time_end' => time() - 1,
                 'events' => $data,
             ]
         );
@@ -130,8 +130,8 @@ abstract class EventUpdateDTOTest extends TestCase
 
         $this->createDTO(
             [
-                'time_start' => 123123123,
-                'time_end' => 123123133,
+                'time_start' => time() - 10,
+                'time_end' => time() - 1,
                 'events' => $data,
             ]
         );
@@ -143,7 +143,7 @@ abstract class EventUpdateDTOTest extends TestCase
             static::simpleEvent(
                 ['zone_id' => 'aac567e1396b4cadb52223a51796fdbb', 'payment_status' => 1, 'context' => ['a' => 1]]
             );
-        $dto = $this->createDTO(['time_start' => 123123123, 'time_end' => 123123133, 'events' => [$input],]);
+        $dto = $this->createDTO(['time_start' => time() - 10, 'time_end' => time() - 1, 'events' => [$input],]);
 
         /* @var $event Event */
         $event = $dto->getEvents()->first();
@@ -168,11 +168,13 @@ abstract class EventUpdateDTOTest extends TestCase
     {
         return [
             [[]],
-            [['time_start' => 1570626700]],
-            [['time_end' => 1570626700]],
-            [['time_start' => 'invalid', 'time_end' => 1570626700]],
-            [['time_start' => 1570626700, 'time_end' => 'invalid']],
-            [['time_start' => 1570626700, 'time_end' => 1570626000]],
+            [['time_start' => time() - 1]],
+            [['time_end' => time() - 1]],
+            [['time_start' => 'invalid', 'time_end' => time() - 1]],
+            [['time_start' => time() - 1, 'time_end' => 'invalid']],
+            [['time_start' => time() - 1, 'time_end' => time() - 10]],
+            [['time_start' => time() - 3000000, 'time_end' => time() - 1]],
+            [['time_start' => time() - 10, 'time_end' => time() + 10]],
         ];
     }
 
@@ -302,7 +304,7 @@ abstract class EventUpdateDTOTest extends TestCase
         $event = array_merge(
             [
                 'id' => '43c567e1396b4cadb52223a51796fd01',
-                'time' => 123123124,
+                'time' => time() - 5,
                 'case_id' => '43c567e1396b4cadb52223a51796fd01',
                 'publisher_id' => 'ffc567e1396b4cadb52223a51796fd02',
                 'advertiser_id' => 'ccc567e1396b4cadb52223a51796fdcc',

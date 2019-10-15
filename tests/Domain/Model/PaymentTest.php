@@ -12,7 +12,6 @@ final class PaymentTest extends TestCase
 {
     public function testInstanceOfPayment(): void
     {
-        $paymentId = '43c567e1396b4cadb52223a51796fd01';
         $reportId = 123;
         $eventId = '43c567e1396b4cadb52223a51796fd01';
         $status = PaymentStatus::INVALID_TARGETING;
@@ -20,7 +19,6 @@ final class PaymentTest extends TestCase
 
         $payment =
             new Payment(
-                new Id($paymentId),
                 $reportId,
                 EventType::createView(),
                 new Id($eventId),
@@ -29,7 +27,6 @@ final class PaymentTest extends TestCase
             );
 
         $this->assertInstanceOf(Payment::class, $payment);
-        $this->assertEquals($paymentId, $payment->getId());
         $this->assertEquals($reportId, $payment->getReportId());
         $this->assertEquals(EventType::VIEW, $payment->getEventType());
         $this->assertEquals($eventId, $payment->getEventId());

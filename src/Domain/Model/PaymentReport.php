@@ -5,12 +5,14 @@ namespace Adshares\AdPay\Domain\Model;
 use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 use Adshares\AdPay\Domain\ValueObject\EventType;
 use Adshares\AdPay\Domain\ValueObject\PaymentReportStatus;
+use Adshares\AdPay\Lib\DateTimeHelper;
+use DateTimeInterface;
 
 final class PaymentReport
 {
-    private const INTERVAL_START = 0;
+    public const INTERVAL_START = 0;
 
-    private const INTERVAL_END = 3599;
+    public const INTERVAL_END = 3599;
 
     /** @var int */
     private $id;
@@ -42,6 +44,16 @@ final class PaymentReport
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function getTimeStart(): DateTimeInterface
+    {
+        return DateTimeHelper::createFromTimestamp($this->id + PaymentReport::INTERVAL_START);
+    }
+
+    public function getTimeEnd(): DateTimeInterface
+    {
+        return DateTimeHelper::createFromTimestamp($this->id + PaymentReport::INTERVAL_END);
     }
 
     public function getStatus(): PaymentReportStatus
@@ -140,5 +152,10 @@ final class PaymentReport
             && $complete === $this->intervals[EventType::CONVERSION]) {
             $this->status = PaymentReportStatus::createComplete();
         }
+    }
+
+    public static function timestampToId(int $timestamp): int
+    {
+        return (int)floor($timestamp / (self::INTERVAL_END + 1)) * (self::INTERVAL_END + 1);
     }
 }

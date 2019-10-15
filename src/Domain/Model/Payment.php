@@ -8,9 +8,6 @@ use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
 
 final class Payment
 {
-    /** @var Id */
-    private $id;
-
     /** @var int */
     private $reportId;
 
@@ -27,24 +24,17 @@ final class Payment
     private $value;
 
     public function __construct(
-        Id $id,
         int $reportId,
         EventType $eventType,
         Id $eventId,
         PaymentStatus $status = null,
         ?int $value = null
     ) {
-        $this->id = $id;
         $this->reportId = $reportId;
         $this->eventType = $eventType;
         $this->eventId = $eventId;
         $this->status = $status;
         $this->value = $value;
-    }
-
-    public function getId(): Id
-    {
-        return $this->id;
     }
 
     public function getReportId(): int
