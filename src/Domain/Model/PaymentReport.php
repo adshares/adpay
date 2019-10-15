@@ -121,20 +121,20 @@ final class PaymentReport
             }
         );
 
-        $intervals = [];
+        $merged = [];
         $maxEnd = self::INTERVAL_START;
         foreach ($list as [$itemStart, $itemEnd]) {
-            if (empty($intervals) || $itemStart > $maxEnd + 1) {
-                $intervals[] = [$itemStart, $itemEnd];
+            if (empty($merged) || $itemStart > $maxEnd + 1) {
+                $merged[] = [$itemStart, $itemEnd];
                 $maxEnd = $itemEnd;
                 continue;
             }
-            [$lastStart, $lastEnd] = array_pop($intervals);
+            [$lastStart, $lastEnd] = array_pop($merged);
             $maxEnd = max($lastEnd, $itemEnd);
-            $intervals[] = [$lastStart, $maxEnd];
+            $merged[] = [$lastStart, $maxEnd];
         }
 
-        $this->intervals[$type->toString()] = $intervals;
+        $this->intervals[$type->toString()] = $merged;
 
         $this->checkCompleteness();
     }

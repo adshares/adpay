@@ -4,7 +4,7 @@ namespace Adshares\AdPay\Lib;
 
 use Adshares\AdPay\Lib\Exception\DateTimeException;
 use DateTimeImmutable;
-use Exception;
+use RuntimeException;
 use Throwable;
 
 final class DateTimeHelper
@@ -13,7 +13,7 @@ final class DateTimeHelper
     {
         try {
             if ($timestamp === 0) {
-                throw new Exception('Timestamp equals 0');
+                throw new RuntimeException('Timestamp equals 0');
             }
             return new DateTimeImmutable('@'.$timestamp);
         } catch (Throwable $exception) {

@@ -16,8 +16,6 @@ use Psr\Log\LoggerInterface;
 
 final class PaymentCalculateCommand
 {
-    private const HOUR = 3600;
-
     /** @var PaymentReportRepository */
     private $paymentReportRepository;
 

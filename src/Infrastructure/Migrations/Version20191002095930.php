@@ -165,8 +165,10 @@ final class Version20191002095930 extends AbstractMigration
         $this->addSql('DROP TABLE conversions');
         $this->addSql('DROP TABLE banners');
         $this->addSql('DROP TABLE campaigns');
-//        $this->addSql('DROP TABLE view_events');
-//        $this->addSql('DROP TABLE click_events');
-//        $this->addSql('DROP TABLE conversion_events');
+        $this->addSql('DROP TABLE view_events');
+        $this->addSql('DROP TABLE click_events');
+        $this->addSql('DROP TABLE conversion_events');
+        $this->addSql('DROP TABLE payments');
+        $this->addSql('DROP TABLE payment_reports');
     }
 }

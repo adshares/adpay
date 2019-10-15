@@ -47,14 +47,14 @@ class Context
 
     public function get(string ...$keys)
     {
-        $data = $this->data;
+        $items = $this->data;
         foreach ($keys as $key) {
-            if (!is_array($data) || !array_key_exists($key, $data)) {
+            if (!is_array($items) || !array_key_exists($key, $items)) {
                 return null;
             }
-            $data = $data[$key];
+            $items = $items[$key];
         }
 
-        return $data;
+        return $items;
     }
 }

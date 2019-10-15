@@ -54,7 +54,7 @@ final class EventUpdateCommand
             $this->paymentReportRepository->save($report);
 
             $timestamp += self::HOUR;
-        };
+        }
 
         return $result;
     }
