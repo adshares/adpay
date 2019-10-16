@@ -58,6 +58,7 @@ abstract class EventUpdateDTO
         if (!isset($input['id'])) {
             throw new ValidationException('Field `id` is required.');
         }
+
         if (!isset($input['time'])) {
             throw new ValidationException('Field `time` is required.');
         }
@@ -68,15 +69,19 @@ abstract class EventUpdateDTO
         if (!isset($input['case_id'])) {
             throw new ValidationException('Field `case_id` is required.');
         }
+
         if (!isset($input['publisher_id'])) {
             throw new ValidationException('Field `publisher_id` is required.');
         }
+
         if (!isset($input['advertiser_id'])) {
             throw new ValidationException('Field `advertiser_id` is required.');
         }
+
         if (!isset($input['campaign_id'])) {
             throw new ValidationException('Field `campaign_id` is required.');
         }
+
         if (!isset($input['banner_id'])) {
             throw new ValidationException('Field `banner_id` is required.');
         }
@@ -87,12 +92,15 @@ abstract class EventUpdateDTO
         if (!isset($input['impression_id'])) {
             throw new ValidationException('Field `impression_id` is required.');
         }
+
         if (!isset($input['tracking_id'])) {
             throw new ValidationException('Field `tracking_id` is required.');
         }
+
         if (!isset($input['user_id'])) {
             throw new ValidationException('Field `user_id` is required.');
         }
+
         if (!isset($input['human_score'])) {
             throw new ValidationException('Field `human_score` is required.');
         }
@@ -107,9 +115,11 @@ abstract class EventUpdateDTO
             if ($timeStart < (new DateTime())->modify('-32 day')) {
                 throw new ValidationException('End time cannot be in the future');
             }
+
             if ($timeEnd > new DateTime()) {
                 throw new ValidationException('End time cannot be in the future');
             }
+
             if ($timeStart > $timeEnd) {
                 throw new ValidationException('Start time cannot be greater than end time');
             }

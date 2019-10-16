@@ -3,7 +3,6 @@
 namespace Adshares\AdPay\Domain\ValueObject;
 
 use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
-use function explode;
 use function preg_match;
 
 class Size
@@ -22,13 +21,12 @@ class Size
 
     public static function fromString(string $size): self
     {
-        if (!preg_match('/^\d+x\d+$/', $size)) {
+        $matches = [];
+        if (!preg_match('/^(\d+)x(\d+)$/', $size, $matches)) {
             throw InvalidArgumentException::fromArgument('size', $size, 'We support only [WIDTH]x[HEIGHT].');
         }
 
-        $size = explode('x', $size);
-
-        return new self((int)$size[0], (int)$size[1]);
+        return new self((int)$matches[1], (int)$matches[2]);
     }
 
     public function getWidth(): int
