@@ -113,7 +113,7 @@ abstract class EventUpdateDTO
             $timeEnd = DateTimeHelper::createFromTimestamp($input['time_end']);
 
             if ($timeStart < (new DateTime())->modify('-32 day')) {
-                throw new ValidationException('End time cannot be in the future');
+                throw new ValidationException('Start time cannot be older than 32 days');
             }
 
             if ($timeEnd > new DateTime()) {
