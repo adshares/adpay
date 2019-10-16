@@ -3,10 +3,17 @@
 namespace Adshares\AdPay\Domain\Service;
 
 use Adshares\AdPay\Domain\Model\CampaignCollection;
+use Adshares\AdPay\Domain\Model\Payment;
+use Adshares\AdPay\Domain\Model\PaymentReport;
+use Adshares\AdPay\Domain\ValueObject\EventType;
+use Adshares\AdPay\Domain\ValueObject\Id;
 
 class PaymentCalculator
 {
-    public function __construct(CampaignCollection $campaigns)
+
+
+
+    public function __construct(PaymentReport $report, CampaignCollection $campaigns)
     {
     }
 
@@ -15,6 +22,6 @@ class PaymentCalculator
         iterable $clicks,
         iterable $conversions
     ): iterable {
-        return [];
+        yield new Payment(1, EventType::createView(), new Id('6000000000000000000000000000000f'));
     }
 }

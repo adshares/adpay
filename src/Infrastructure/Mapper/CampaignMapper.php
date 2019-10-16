@@ -64,7 +64,7 @@ class CampaignMapper
             $banners,
             json_decode($row['filters'], true),
             $conversions,
-            DateTimeHelper::fromString($row['deleted_at'])
+            $row['deleted_at'] !== null ? DateTimeHelper::fromString($row['deleted_at']) : null
         );
     }
 }

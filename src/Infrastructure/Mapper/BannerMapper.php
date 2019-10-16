@@ -45,7 +45,7 @@ class BannerMapper
             Id::fromBin($row['campaign_id']),
             Size::fromString($row['size']),
             new BannerType($row['type']),
-            DateTimeHelper::fromString($row['deleted_at'])
+            $row['deleted_at'] !== null ? DateTimeHelper::fromString($row['deleted_at']) : null
         );
     }
 }

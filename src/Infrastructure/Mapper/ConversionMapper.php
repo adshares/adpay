@@ -62,7 +62,7 @@ class ConversionMapper
             (int)$row['value'],
             (bool)$row['is_value_mutable'],
             (bool)$row['is_repeatable'],
-            DateTimeHelper::fromString($row['deleted_at'])
+            $row['deleted_at'] !== null ? DateTimeHelper::fromString($row['deleted_at']) : null
         );
     }
 }

@@ -18,6 +18,8 @@ final class PaymentStatus
 
     public const CAMPAIGN_OUTDATED = 5;
 
+    public const CONVERSION_NOT_FOUND = 6;
+
     private static $labels = [
         self::ACCEPTED => 'accepted',
         self::CAMPAIGN_NOT_FOUND => 'rejected:campaign_not_found',
@@ -25,6 +27,7 @@ final class PaymentStatus
         self::INVALID_TARGETING => 'rejected:invalid_targeting',
         self::BANNER_NOT_FOUND => 'rejected:banner_not_found',
         self::CAMPAIGN_OUTDATED => 'rejected:campaign_outdated',
+        self::CONVERSION_NOT_FOUND => 'rejected:conversion_not_found',
     ];
 
     /** @var ?int */

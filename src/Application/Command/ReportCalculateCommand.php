@@ -87,7 +87,7 @@ final class ReportCalculateCommand
                 $report->getTimeEnd()
             );
 
-        $calculator = new PaymentCalculator($campaigns);
+        $calculator = new PaymentCalculator($report, $campaigns);
 
         $count = 0;
         foreach ($calculator->calculate($views, $clicks, $conversions) as $payment) {

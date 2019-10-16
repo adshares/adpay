@@ -52,9 +52,14 @@ final class Payment
         return $this->eventId;
     }
 
-    public function getStatus(): PaymentStatus
+    public function getStatus(): ?PaymentStatus
     {
         return $this->status;
+    }
+
+    public function getStatusCode(): ?int
+    {
+        return $this->status !== null ? $this->status->getStatus() : null;
     }
 
     public function getValue()
