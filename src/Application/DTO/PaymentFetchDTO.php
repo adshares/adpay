@@ -2,23 +2,23 @@
 
 namespace Adshares\AdPay\Application\DTO;
 
-final class PaymentFetchingDTO
+final class PaymentFetchDTO
 {
     /** @var bool */
-    private $prepared;
+    private $calculated;
 
     /** @var iterable */
     private $payments;
 
-    public function __construct(bool $prepared, iterable $payments)
+    public function __construct(bool $calculated, iterable $payments)
     {
-        $this->prepared = $prepared;
+        $this->calculated = $calculated;
         $this->payments = $payments;
     }
 
-    public function isPrepared(): bool
+    public function isCalculated(): bool
     {
-        return $this->prepared;
+        return $this->calculated;
     }
 
     public function getPayments(): array

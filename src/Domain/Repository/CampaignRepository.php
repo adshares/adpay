@@ -7,9 +7,9 @@ use Adshares\AdPay\Domain\ValueObject\IdCollection;
 
 interface CampaignRepository
 {
+    public function fetchAll(): CampaignCollection;
+
     public function saveAll(CampaignCollection $campaigns): int;
 
     public function deleteAll(IdCollection $ids): int;
-
-    public function fetchAll(): CampaignCollection;
 }

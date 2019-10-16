@@ -3,6 +3,10 @@
 namespace Adshares\AdPay\Infrastructure\Mapper;
 
 use Adshares\AdPay\Domain\Model\Banner;
+use Adshares\AdPay\Domain\ValueObject\BannerType;
+use Adshares\AdPay\Domain\ValueObject\Id;
+use Adshares\AdPay\Domain\ValueObject\Size;
+use Adshares\AdPay\Lib\DateTimeHelper;
 use Doctrine\DBAL\Types\Type;
 
 class BannerMapper
@@ -32,5 +36,16 @@ class BannerMapper
             'type' => Type::STRING,
             'deleted_at' => TYPE::DATETIME,
         ];
+    }
+
+    public static function fill(array $row): Banner
+    {
+        return new Banner(
+            Id::fromBin($row['id']),
+            Id::fromBin($row['campaign_id']),
+            Size::fromString($row['size']),
+            new BannerType($row['type']),
+            DateTimeHelper::fromString($row['deleted_at'])
+        );
     }
 }

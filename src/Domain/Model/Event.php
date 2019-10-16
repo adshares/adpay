@@ -72,7 +72,7 @@ abstract class Event
         return $this->case->getPublisherId();
     }
 
-    public function getZoneId(): Id
+    public function getZoneId(): ?Id
     {
         return $this->case->getZoneId();
     }

@@ -37,7 +37,8 @@ final class Conversion
         Limit $limit,
         int $value,
         bool $valueMutable = false,
-        bool $repeatable = false
+        bool $repeatable = false,
+        DateTimeInterface $deletedAt = null
     ) {
         if ($value < 0) {
             throw InvalidArgumentException::fromArgument(
@@ -53,6 +54,7 @@ final class Conversion
         $this->value = $value;
         $this->valueMutable = $valueMutable;
         $this->repeatable = $repeatable;
+        $this->deletedAt = $deletedAt;
     }
 
     public function getId(): Id

@@ -45,7 +45,13 @@ services:
             $paymentReportRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository'
             $logger: '@logger'
 
-    Adshares\AdPay\Application\Command\PaymentCalculateCommand:
+    Adshares\AdPay\Application\Command\ReportFetchCommand:
+        public: true
+        arguments:
+            $paymentReportRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository'
+            $logger: '@logger'
+
+    Adshares\AdPay\Application\Command\ReportCalculateCommand:
         public: true
         arguments:
             $paymentReportRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository'

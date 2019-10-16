@@ -9,6 +9,12 @@ use DateTimeInterface;
 
 interface EventRepository
 {
+    public function fetchByTime(
+        EventType $type,
+        ?DateTimeInterface $timeStart,
+        ?DateTimeInterface $timeEnd
+    ): iterable;
+
     /**
      * @param EventCollection $events
      *
@@ -17,15 +23,9 @@ interface EventRepository
      */
     public function saveAll(EventCollection $events): int;
 
-    public function deleteTimeInterval(
+    public function deleteByTime(
         EventType $type,
         ?DateTimeInterface $timeStart,
         ?DateTimeInterface $timeEnd
     ): void;
-
-    public function fetchByTime(
-        EventType $type,
-        DateTimeInterface $timeStart,
-        DateTimeInterface $timeEnd
-    ): iterable;
 }

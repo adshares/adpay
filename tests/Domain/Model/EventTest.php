@@ -57,7 +57,7 @@ final class EventTest extends TestCase
             [
                 new Id($eventId),
                 EventType::createView(),
-                DateTimeHelper::createFromString($time),
+                DateTimeHelper::fromString($time),
                 $case,
             ]
         );
@@ -83,18 +83,29 @@ final class EventTest extends TestCase
         $this->assertEquals($context, $event->getContextData());
         $this->assertNull($event->getPaymentStatus()->getStatus());
 
+        $case = new ImpressionCase(
+            new Id($impressionCaseId),
+            new Id($publisherId),
+            null,
+            new Id($advertiserId),
+            new Id($campaignId),
+            new Id($bannerId),
+            $impression
+        );
+
         /* @var $event Event */
         $event = $this->getMockForAbstractClass(
             'Adshares\AdPay\Domain\Model\Event',
             [
                 new Id($eventId),
                 EventType::createView(),
-                DateTimeHelper::createFromString($time),
+                DateTimeHelper::fromString($time),
                 $case,
                 new PaymentStatus(PaymentStatus::ACCEPTED),
             ]
         );
 
         $this->assertEquals(PaymentStatus::ACCEPTED, $event->getPaymentStatus()->getStatus());
+        $this->assertNull($event->getZoneId());
     }
 }

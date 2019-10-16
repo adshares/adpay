@@ -58,5 +58,17 @@ final class ImpressionCaseTest extends TestCase
         $this->assertEquals($keywords, $case->getKeywords());
         $this->assertEquals($context, $case->getContext()->getData());
         $this->assertEquals($context, $case->getContextData());
+
+        $case = new ImpressionCase(
+            new Id($impressionCaseId),
+            new Id($publisherId),
+            null,
+            new Id($advertiserId),
+            new Id($campaignId),
+            new Id($bannerId),
+            $impression
+        );
+
+        $this->assertNull($case->getZoneId());
     }
 }

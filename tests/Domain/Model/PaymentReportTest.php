@@ -32,7 +32,7 @@ final class PaymentReportTest extends TestCase
         $this->assertEmpty($report->getTypedIntervals(EventType::createClick()));
         $this->assertEmpty($report->getTypedIntervals(EventType::createConversion()));
         $this->assertFalse($report->isComplete());
-        $this->assertFalse($report->isPrepared());
+        $this->assertFalse($report->isCalculated());
 
         $report = new PaymentReport($id, $status);
         $this->assertEquals($emptyIntervals, $report->getIntervals());
@@ -126,7 +126,7 @@ final class PaymentReportTest extends TestCase
     {
         $type = EventType::createView();
 
-        $report = new PaymentReport(1571011200, PaymentReportStatus::createPrepared());
+        $report = new PaymentReport(1571011200, PaymentReportStatus::createCalculated());
         $this->assertTrue($report->isComplete());
 
         $report->addInterval($type, 50, 99);
@@ -155,5 +155,10 @@ final class PaymentReportTest extends TestCase
 
         $report->addInterval($type, 2001, 2001);
         $this->assertTrue($report->isComplete());
+    }
+
+    public function testTimestampToId()
+    {
+        $this->assertEquals(0, PaymentReport::timestampToId(22));
     }
 }

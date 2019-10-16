@@ -9,7 +9,7 @@ use Throwable;
 
 final class DateTimeHelper
 {
-    public static function createFromTimestamp(int $timestamp): DateTimeImmutable
+    public static function fromTimestamp(int $timestamp): DateTimeImmutable
     {
         try {
             if ($timestamp === 0) {
@@ -21,7 +21,7 @@ final class DateTimeHelper
         }
     }
 
-    public static function createFromString(string $date): DateTimeImmutable
+    public static function fromString(string $date): DateTimeImmutable
     {
         try {
             return new DateTimeImmutable($date);

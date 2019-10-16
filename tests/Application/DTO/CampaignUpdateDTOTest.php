@@ -236,7 +236,7 @@ final class CampaignUpdateDTOTest extends TestCase
     public function validBannersDataProvider(): array
     {
         return [
-            [[]],
+            [[], 0],
             [[self::simpleBanner()]],
             [[self::simpleBanner(), self::simpleBanner()], 2],
         ];

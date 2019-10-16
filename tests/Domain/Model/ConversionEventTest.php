@@ -55,7 +55,7 @@ final class ConversionEventTest extends TestCase
 
         $event = new ConversionEvent(
             new Id($eventId),
-            DateTimeHelper::createFromString($time),
+            DateTimeHelper::fromString($time),
             $case,
             new Id($conversionId),
             $conversionValue,
@@ -73,7 +73,7 @@ final class ConversionEventTest extends TestCase
 
         $event = new ConversionEvent(
             new Id($eventId),
-            DateTimeHelper::createFromString($time),
+            DateTimeHelper::fromString($time),
             $case,
             new Id($conversionId),
             null,

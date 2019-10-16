@@ -2,8 +2,8 @@
 
 namespace Adshares\AdPay\UI\Controller;
 
-use Adshares\AdPay\Application\Command\PaymentCalculateCommand;
 use Adshares\AdPay\Application\Command\PaymentFetchCommand;
+use Adshares\AdPay\Application\Command\ReportCalculateCommand;
 use Adshares\AdPay\Application\Exception\FetchingException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,7 +20,7 @@ class PaymentController extends AbstractController
     /** @var PaymentFetchCommand */
     private $paymentFetchCommand;
 
-    /** @var PaymentCalculateCommand */
+    /** @var ReportCalculateCommand */
     private $paymentCalculateCommand;
 
     /** @var LoggerInterface */
@@ -28,7 +28,7 @@ class PaymentController extends AbstractController
 
     public function __construct(
         PaymentFetchCommand $paymentFetchCommand,
-        PaymentCalculateCommand $paymentCalculateCommand,
+        ReportCalculateCommand $paymentCalculateCommand,
         LoggerInterface $logger
     ) {
         $this->paymentFetchCommand = $paymentFetchCommand;
@@ -36,12 +36,8 @@ class PaymentController extends AbstractController
         $this->logger = $logger;
     }
 
-    public function find(int $timestamp, Request $request): Response
+    private function validateRequest(Request $request): void
     {
-        $this->logger->debug('Call find payments endpoint');
-
-        $force = (bool)$request->get('force', false);
-        $recalculate = (bool)$request->get('recalculate', false);
         $limit = $request->get('limit');
         $offset = $request->get('offset');
 
@@ -49,18 +45,30 @@ class PaymentController extends AbstractController
             if (!preg_match('/^\d+$/', $limit)) {
                 throw new UnprocessableEntityHttpException('Limit must be numeric');
             }
-            $limit = (int)$limit;
-            if ($limit > self::MAX_LIMIT) {
+            if ((int)$limit > self::MAX_LIMIT) {
                 throw new UnprocessableEntityHttpException(sprintf('Limit must be lower than %d', self::MAX_LIMIT));
             }
-        } else {
-            $limit = self::MAX_LIMIT;
         }
 
         if ($offset !== null) {
             if (!preg_match('/^\d+$/', $offset)) {
                 throw new UnprocessableEntityHttpException('Offset must be numeric');
             }
+        }
+    }
+
+    public function find(int $timestamp, Request $request): Response
+    {
+        $this->logger->debug('Call find payments endpoint');
+
+        $this->validateRequest($request);
+
+        $force = (bool)$request->get('force', false);
+        $recalculate = (bool)$request->get('recalculate', false);
+        $limit = $request->get('limit', self::MAX_LIMIT);
+        $offset = $request->get('offset');
+
+        if ($offset !== null) {
             $offset = (int)$offset;
         }
 
@@ -74,8 +82,8 @@ class PaymentController extends AbstractController
 
         $dto = $this->paymentFetchCommand->execute($timestamp, $limit, $offset);
 
-        if (!$dto->isPrepared()) {
-            throw new NotFoundHttpException('Report is not prepared yet');
+        if (!$dto->isCalculated()) {
+            throw new NotFoundHttpException('Report is not calculated yet');
         }
 
         return new JsonResponse($dto->getPayments());

@@ -48,12 +48,12 @@ final class PaymentReport
 
     public function getTimeStart(): DateTimeInterface
     {
-        return DateTimeHelper::createFromTimestamp($this->id + PaymentReport::INTERVAL_START);
+        return DateTimeHelper::fromTimestamp($this->id + PaymentReport::INTERVAL_START);
     }
 
     public function getTimeEnd(): DateTimeInterface
     {
-        return DateTimeHelper::createFromTimestamp($this->id + PaymentReport::INTERVAL_END);
+        return DateTimeHelper::fromTimestamp($this->id + PaymentReport::INTERVAL_END);
     }
 
     public function getStatus(): PaymentReportStatus
@@ -61,9 +61,9 @@ final class PaymentReport
         return $this->status;
     }
 
-    public function isPrepared(): bool
+    public function isCalculated(): bool
     {
-        return $this->status->isPrepared();
+        return $this->status->isCalculated();
     }
 
     public function isComplete(): bool

@@ -2,8 +2,8 @@
 
 namespace Adshares\AdPay\Infrastructure\Repository;
 
-use Adshares\AdPay\Domain\Exception\UpdateDataException;
-use Adshares\AdPay\Domain\Model\PaymentCollection;
+use Adshares\AdPay\Domain\Exception\DomainRepositoryException;
+use Adshares\AdPay\Domain\Model\Payment;
 use Adshares\AdPay\Domain\Repository\PaymentRepository;
 use Adshares\AdPay\Infrastructure\Mapper\PaymentMapper;
 use DateTimeInterface;
@@ -11,15 +11,14 @@ use Doctrine\DBAL\DBALException;
 
 final class DoctrinePaymentRepository extends DoctrineModelUpdater implements PaymentRepository
 {
-    public function deleteTimeInterval(
+    public function deleteByTime(
         ?DateTimeInterface $timeStart,
         ?DateTimeInterface $timeEnd
     ): void {
     }
 
-    public function saveAll(PaymentCollection $events): int
+    public function save(Payment $payment): void
     {
-        return 0;
     }
 
     public function deleteByReportId(int $reportId): void
@@ -40,7 +39,7 @@ final class DoctrinePaymentRepository extends DoctrineModelUpdater implements Pa
         try {
             $result = $this->db->executeQuery($query, [$reportId]);
         } catch (DBALException $exception) {
-            throw new UpdateDataException($exception->getMessage());
+            throw new DomainRepositoryException($exception->getMessage());
         }
 
         while ($row = $result->fetch()) {

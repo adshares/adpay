@@ -3,8 +3,6 @@
 namespace Adshares\AdPay\Domain\Service;
 
 use Adshares\AdPay\Domain\Model\CampaignCollection;
-use Adshares\AdPay\Domain\Model\EventCollection;
-use Adshares\AdPay\Domain\Model\PaymentCollection;
 
 class PaymentCalculator
 {

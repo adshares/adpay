@@ -53,7 +53,7 @@ final class ViewEventTest extends TestCase
 
         $event = new ViewEvent(
             new Id($eventId),
-            DateTimeHelper::createFromString($time),
+            DateTimeHelper::fromString($time),
             $case,
             new PaymentStatus(PaymentStatus::ACCEPTED)
         );

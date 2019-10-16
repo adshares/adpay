@@ -2,8 +2,8 @@
 
 namespace Adshares\AdPay\Application\Command;
 
-use Adshares\AdPay\Application\DTO\PaymentFetchingDTO;
 use Adshares\AdPay\Application\Exception\FetchingException;
+use Adshares\AdPay\Domain\Model\Payment;
 use Adshares\AdPay\Domain\Model\PaymentReport;
 use Adshares\AdPay\Domain\Repository\CampaignRepository;
 use Adshares\AdPay\Domain\Repository\EventRepository;
@@ -14,7 +14,7 @@ use Adshares\AdPay\Domain\ValueObject\EventType;
 use DateTimeInterface;
 use Psr\Log\LoggerInterface;
 
-final class PaymentCalculateCommand
+final class ReportCalculateCommand
 {
     /** @var PaymentReportRepository */
     private $paymentReportRepository;
@@ -45,7 +45,7 @@ final class PaymentCalculateCommand
         $this->logger = $logger;
     }
 
-    public function execute(int $timestamp, bool $force = false): PaymentFetchingDTO
+    public function execute(int $timestamp, bool $force = false): int
     {
         $this->logger->debug(sprintf('Running calculate payments command %s', $force ? '[forced]' : ''));
 
@@ -53,17 +53,19 @@ final class PaymentCalculateCommand
         $report = $this->paymentReportRepository->fetch($reportId);
 
         if (!$report->isComplete() && !$force) {
-            throw new FetchingException(sprintf('Report [%d] is not complete yet', $reportId));
+            throw new FetchingException(sprintf('Report #%d is not complete yet.', $reportId));
         }
 
         $this->logger->info(
             sprintf(
-                'Calculating report [%d] from %s to %s',
+                'Calculating report #%d from %s to %s',
                 $reportId,
                 $report->getTimeStart()->format(DateTimeInterface::ATOM),
                 $report->getTimeEnd()->format(DateTimeInterface::ATOM)
             )
         );
+
+        $this->paymentRepository->deleteByReportId($report->getId());
 
         $campaigns = $this->campaignRepository->fetchAll();
         $views =
@@ -86,13 +88,16 @@ final class PaymentCalculateCommand
             );
 
         $calculator = new PaymentCalculator($campaigns);
-        $payments = $calculator->calculate($views, $clicks, $conversions);
 
-        $this->paymentRepository->deleteByReportId($report->getId());
-//        $this->paymentRepository->saveAll($payments);
+        $count = 0;
+        foreach ($calculator->calculate($views, $clicks, $conversions) as $payment) {
+            /** @var $payment Payment */
+            $this->paymentRepository->save($payment);
+            ++$count;
+        }
 
-        $this->logger->info(sprintf('%d payments calculated', count($payments)));
+        $this->logger->info(sprintf('%d payments calculated', $count));
 
-        return new PaymentFetchingDTO(true, $payments);
+        return $count;
     }
 }

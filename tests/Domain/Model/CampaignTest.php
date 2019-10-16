@@ -21,6 +21,7 @@ final class CampaignTest extends TestCase
         $advertiserId = 'ffc567e1396b4cadb52223a51796fd02';
         $timeStart = '2019-01-01T12:00:00+00:00';
         $timeEnd = '2019-03-03T09:00:00+00:00';
+        $deletedAt = '2019-01-01T12:00:00+00:00';
 
         $budgetValue = 1000000;
         $macCpm = 20;
@@ -35,8 +36,8 @@ final class CampaignTest extends TestCase
         $campaign = new Campaign(
             new Id($campaignId),
             new Id($advertiserId),
-            DateTimeHelper::createFromString($timeStart),
-            DateTimeHelper::createFromString($timeEnd),
+            DateTimeHelper::fromString($timeStart),
+            DateTimeHelper::fromString($timeEnd),
             $budget,
             $banners,
             $filters,
@@ -55,6 +56,21 @@ final class CampaignTest extends TestCase
         $this->assertEquals($banners, $campaign->getBanners());
         $this->assertEquals($filters, $campaign->getFilters());
         $this->assertEquals($conversions, $campaign->getConversions());
+        $this->assertNull($campaign->getDeletedAt());
+
+        $campaign = new Campaign(
+            new Id($campaignId),
+            new Id($advertiserId),
+            DateTimeHelper::fromString($timeStart),
+            DateTimeHelper::fromString($timeEnd),
+            $budget,
+            $banners,
+            $filters,
+            $conversions,
+            DateTimeHelper::fromString($deletedAt)
+        );
+
+        $this->assertEquals($deletedAt, $campaign->getDeletedAt()->format(DateTimeInterface::ATOM));
     }
 
     public function testEmptyFilters(): void
@@ -82,8 +98,8 @@ final class CampaignTest extends TestCase
         new Campaign(
             new Id('43c567e1396b4cadb52223a51796fd01'),
             new Id('43c567e1396b4cadb52223a51796fd01'),
-            DateTimeHelper::createFromString('2019-01-02T12:00:00+00:00'),
-            DateTimeHelper::createFromString('2019-01-01T12:00:00+00:00'),
+            DateTimeHelper::fromString('2019-01-02T12:00:00+00:00'),
+            DateTimeHelper::fromString('2019-01-01T12:00:00+00:00'),
             new Budget(10),
             new BannerCollection(),
             [],

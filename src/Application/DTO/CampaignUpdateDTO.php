@@ -171,8 +171,8 @@ final class CampaignUpdateDTO
             return new Campaign(
                 $campaignId,
                 $advertiserId,
-                DateTimeHelper::createFromTimestamp($input['time_start']),
-                isset($input['time_end']) ? DateTimeHelper::createFromTimestamp($input['time_end'])
+                DateTimeHelper::fromTimestamp($input['time_start']),
+                isset($input['time_end']) ? DateTimeHelper::fromTimestamp($input['time_end'])
                     : null,
                 $budget,
                 $banners,

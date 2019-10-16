@@ -3,6 +3,10 @@
 namespace Adshares\AdPay\Infrastructure\Mapper;
 
 use Adshares\AdPay\Domain\Model\Conversion;
+use Adshares\AdPay\Domain\ValueObject\Id;
+use Adshares\AdPay\Domain\ValueObject\Limit;
+use Adshares\AdPay\Domain\ValueObject\LimitType;
+use Adshares\AdPay\Lib\DateTimeHelper;
 use Doctrine\DBAL\Types\Type;
 
 class ConversionMapper
@@ -40,5 +44,25 @@ class ConversionMapper
             'is_repeatable' => Type::BOOLEAN,
             'deleted_at' => TYPE::DATETIME,
         ];
+    }
+
+    public static function fill(array $row): Conversion
+    {
+        $limit =
+            new Limit(
+                $row['limit'] !== null ? (int)$row['limit'] : null,
+                new LimitType($row['limit_type']),
+                (int)$row['cost']
+            );
+
+        return new Conversion(
+            Id::fromBin($row['id']),
+            Id::fromBin($row['campaign_id']),
+            $limit,
+            (int)$row['value'],
+            (bool)$row['is_value_mutable'],
+            (bool)$row['is_repeatable'],
+            DateTimeHelper::fromString($row['deleted_at'])
+        );
     }
 }

@@ -109,8 +109,8 @@ abstract class EventUpdateDTO
     protected function fill(array $input): void
     {
         try {
-            $timeStart = DateTimeHelper::createFromTimestamp($input['time_start']);
-            $timeEnd = DateTimeHelper::createFromTimestamp($input['time_end']);
+            $timeStart = DateTimeHelper::fromTimestamp($input['time_start']);
+            $timeEnd = DateTimeHelper::fromTimestamp($input['time_end']);
 
             if ($timeStart < (new DateTime())->modify('-32 day')) {
                 throw new ValidationException('Start time cannot be older than 32 days');

@@ -2,19 +2,13 @@
 
 namespace Adshares\AdPay\Domain\Repository;
 
-use Adshares\AdPay\Domain\Model\PaymentCollection;
-use DateTimeInterface;
+use Adshares\AdPay\Domain\Model\Payment;
 
 interface PaymentRepository
 {
-    public function deleteTimeInterval(
-        ?DateTimeInterface $timeStart,
-        ?DateTimeInterface $timeEnd
-    ): void;
+    public function fetchByReportId(int $reportId, ?int $limit = null, ?int $offset = null): iterable;
 
-    public function saveAll(PaymentCollection $events): int;
+    public function save(Payment $payment): void;
 
     public function deleteByReportId(int $reportId): void;
-
-    public function fetchByReportId(int $reportId, ?int $limit = null, ?int $offset = null): iterable;
 }

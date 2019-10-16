@@ -3,10 +3,14 @@
 namespace Adshares\AdPay\Domain\Repository;
 
 use Adshares\AdPay\Domain\Model\PaymentReport;
+use Adshares\AdPay\Domain\Model\PaymentReportCollection;
+use Adshares\AdPay\Domain\ValueObject\PaymentReportStatus;
 
 interface PaymentReportRepository
 {
     public function fetch(int $id): PaymentReport;
+
+    public function fetchByStatus(PaymentReportStatus ...$statuses): PaymentReportCollection;
 
     public function save(PaymentReport $report): void;
 }

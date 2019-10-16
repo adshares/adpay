@@ -3,7 +3,7 @@
 namespace Adshares\AdPay\Infrastructure\Repository;
 
 use Adshares\AdPay\Domain\Exception\InvalidDataException;
-use Adshares\AdPay\Domain\Exception\UpdateDataException;
+use Adshares\AdPay\Domain\Exception\DomainRepositoryException;
 use Adshares\AdPay\Domain\Model\Event;
 use Adshares\AdPay\Domain\Model\EventCollection;
 use Adshares\AdPay\Domain\Repository\EventRepository;
@@ -15,6 +15,7 @@ use Adshares\AdPay\Infrastructure\Mapper\ViewEventMapper;
 use DateTimeInterface;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\DBAL\Types\Type;
 
 final class DoctrineEventRepository extends DoctrineModelUpdater implements EventRepository
 {
@@ -24,7 +25,7 @@ final class DoctrineEventRepository extends DoctrineModelUpdater implements Even
         return $this->upsertEvents($events, self::getMapper($events->getType()));
     }
 
-    public function deleteTimeInterval(
+    public function deleteByTime(
         EventType $type,
         ?DateTimeInterface $timeStart,
         ?DateTimeInterface $timeEnd
@@ -34,7 +35,7 @@ final class DoctrineEventRepository extends DoctrineModelUpdater implements Even
         try {
             $this->clearInterval($mapper::table(), $timeStart, $timeEnd);
         } catch (DBALException $exception) {
-            throw new UpdateDataException($exception->getMessage());
+            throw new DomainRepositoryException($exception->getMessage());
         }
     }
 
@@ -73,7 +74,7 @@ final class DoctrineEventRepository extends DoctrineModelUpdater implements Even
                 ++$count;
             }
         } catch (DBALException $exception) {
-            throw new UpdateDataException($exception->getMessage());
+            throw new DomainRepositoryException($exception->getMessage());
         }
 
         return $count;
@@ -81,9 +82,41 @@ final class DoctrineEventRepository extends DoctrineModelUpdater implements Even
 
     public function fetchByTime(
         EventType $type,
-        DateTimeInterface $timeStart,
-        DateTimeInterface $timeEnd
+        ?DateTimeInterface $timeStart,
+        ?DateTimeInterface $timeEnd
     ): iterable {
+        /*  @var $mapper EventMapper */
+        $mapper = self::getMapper($type);
+
+        if ($timeStart === null && $timeEnd === null) {
+            throw new DomainRepositoryException('Time start or time end is required');
+        }
+
+        $query = sprintf('SELECT * FROM %s WHERE 1=1', $mapper::table());
+        $params = [];
+        $types = [];
+
+        if ($timeStart !== null) {
+            $query .= ' AND time >= ?';
+            $params[] = $timeStart;
+            $types[] = Type::DATETIME;
+        }
+        if ($timeEnd !== null) {
+            $query .= ' AND time <= ?';
+            $params[] = $timeEnd;
+            $types[] = Type::DATETIME;
+        }
+
+        try {
+            $result = $this->db->executeQuery($query, $params, $types);
+        } catch (DBALException $exception) {
+            throw new DomainRepositoryException($exception->getMessage());
+        }
+
+        while ($row = $result->fetch()) {
+            yield $mapper::fillRaw($row);
+        }
+
         return null;
     }
 }

@@ -53,7 +53,7 @@ final class ClickEventTest extends TestCase
 
         $event = new ClickEvent(
             new Id($eventId),
-            DateTimeHelper::createFromString($time),
+            DateTimeHelper::fromString($time),
             $case,
             new PaymentStatus(PaymentStatus::ACCEPTED)
         );

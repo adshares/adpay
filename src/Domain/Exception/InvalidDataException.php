@@ -2,6 +2,6 @@
 
 namespace Adshares\AdPay\Domain\Exception;
 
-class InvalidDataException extends UpdateDataException
+class InvalidDataException extends DomainRepositoryException
 {
 }

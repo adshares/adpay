@@ -4,6 +4,7 @@ namespace Adshares\AdPay\Infrastructure\Mapper;
 
 use Adshares\AdPay\Domain\Model\ConversionEvent;
 use Adshares\AdPay\Domain\Model\Event;
+use Adshares\AdPay\Domain\ValueObject\EventType;
 use Doctrine\DBAL\Types\Type;
 
 class ConversionEventMapper extends EventMapper
@@ -34,5 +35,10 @@ class ConversionEventMapper extends EventMapper
                 'conversion_value' => Type::INTEGER,
             ]
         );
+    }
+
+    protected static function getEventType(): string
+    {
+        return EventType::CONVERSION;
     }
 }

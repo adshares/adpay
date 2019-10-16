@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\AdPay\Tests\UI\Helper;
+namespace Adshares\AdPay\Tests\Lib;
 
-use Adshares\AdPay\UI\Helper\InfoHelper;
+use Adshares\AdPay\Lib\InfoHelper;
 use PHPUnit\Framework\TestCase;
 
 final class InfoHelperTest extends TestCase

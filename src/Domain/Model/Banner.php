@@ -24,12 +24,18 @@ final class Banner
     /** @var DateTimeInterface|null */
     private $deletedAt;
 
-    public function __construct(Id $id, Id $campaignId, Size $size, BannerType $type)
-    {
+    public function __construct(
+        Id $id,
+        Id $campaignId,
+        Size $size,
+        BannerType $type,
+        DateTimeInterface $deletedAt = null
+    ) {
         $this->id = $id;
         $this->campaignId = $campaignId;
         $this->size = $size;
         $this->type = $type;
+        $this->deletedAt = $deletedAt;
     }
 
     public function getId(): Id

@@ -9,6 +9,8 @@ abstract class EventMapper
 {
     abstract public static function table(): string;
 
+    abstract protected static function getEventType(): string;
+
     public static function map(Event $event): array
     {
         return [
@@ -48,6 +50,28 @@ abstract class EventMapper
             'human_score' => Type::FLOAT,
             'keywords' => Type::JSON,
             'context' => Type::JSON,
+        ];
+    }
+
+    public static function fillRaw(array $row): array
+    {
+        return [
+            'type' => static::getEventType(),
+            'id' => bin2hex($row['id']),
+            'time' => (int)$row['time'],
+            'payment_status' => (int)$row['payment_status'],
+            'case_id' => bin2hex($row['case_id']),
+            'publisher_id' => bin2hex($row['publisher_id']),
+            'zone_id' => $row['zone_id'] !== null ? bin2hex($row['zone_id']) : null,
+            'advertiser_id' => bin2hex($row['advertiser_id']),
+            'campaign_id' => bin2hex($row['campaign_id']),
+            'banner_id' => bin2hex($row['banner_id']),
+            'impression_id' => bin2hex($row['impression_id']),
+            'tracking_id' => bin2hex($row['tracking_id']),
+            'user_id' => bin2hex($row['user_id']),
+            'human_score' => (float)$row['human_score'],
+            'keywords' => json_decode($row['keywords'], true),
+            'context' => json_decode($row['context'], true),
         ];
     }
 }

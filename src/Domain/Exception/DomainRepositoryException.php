@@ -4,6 +4,6 @@ namespace Adshares\AdPay\Domain\Exception;
 
 use RuntimeException;
 
-class UpdateDataException extends RuntimeException
+class DomainRepositoryException extends RuntimeException
 {
 }

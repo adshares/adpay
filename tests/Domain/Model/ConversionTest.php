@@ -7,6 +7,8 @@ use Adshares\AdPay\Domain\Model\Conversion;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use Adshares\AdPay\Domain\ValueObject\Limit;
 use Adshares\AdPay\Domain\ValueObject\LimitType;
+use Adshares\AdPay\Lib\DateTimeHelper;
+use DateTimeInterface;
 use PHPUnit\Framework\TestCase;
 
 final class ConversionTest extends TestCase
@@ -16,6 +18,7 @@ final class ConversionTest extends TestCase
         $conversionId = 'ffc567e1396b4cadb52223a51796fd02';
         $campaignId = '43c567e1396b4cadb52223a51796fd01';
         $value = 25000;
+        $deletedAt = '2019-01-01T12:00:00+00:00';
 
         $limitValue = 1000000;
         $limitType = LimitType::createInBudget();
@@ -23,33 +26,44 @@ final class ConversionTest extends TestCase
 
         $limit = new Limit($limitValue, $limitType, $cost);
 
-        $campaign = new Conversion(new Id($conversionId), new Id($campaignId), $limit, $value);
+        $conversion = new Conversion(new Id($conversionId), new Id($campaignId), $limit, $value);
 
-        $this->assertInstanceOf(Conversion::class, $campaign);
-        $this->assertEquals($conversionId, $campaign->getId());
-        $this->assertEquals($campaignId, $campaign->getCampaignId());
-        $this->assertEquals($limit, $campaign->getLimit());
-        $this->assertEquals($limitValue, $campaign->getLimitValue());
-        $this->assertEquals($limitType, $campaign->getLimitType());
-        $this->assertEquals($cost, $campaign->getCost());
-        $this->assertEquals($value, $campaign->getValue());
-        $this->assertFalse($campaign->isValueMutable());
-        $this->assertFalse($campaign->isRepeatable());
+        $this->assertInstanceOf(Conversion::class, $conversion);
+        $this->assertEquals($conversionId, $conversion->getId());
+        $this->assertEquals($campaignId, $conversion->getCampaignId());
+        $this->assertEquals($limit, $conversion->getLimit());
+        $this->assertEquals($limitValue, $conversion->getLimitValue());
+        $this->assertEquals($limitType, $conversion->getLimitType());
+        $this->assertEquals($cost, $conversion->getCost());
+        $this->assertEquals($value, $conversion->getValue());
+        $this->assertFalse($conversion->isValueMutable());
+        $this->assertFalse($conversion->isRepeatable());
+        $this->assertNull($conversion->getDeletedAt());
 
-        $campaign = new Conversion(new Id($conversionId), new Id($campaignId), $limit, $value, true, true);
+        $conversion =
+            new Conversion(
+                new Id($conversionId),
+                new Id($campaignId),
+                $limit,
+                $value,
+                true,
+                true,
+                DateTimeHelper::fromString($deletedAt)
+            );
 
-        $this->assertTrue($campaign->isValueMutable());
-        $this->assertTrue($campaign->isRepeatable());
+        $this->assertTrue($conversion->isValueMutable());
+        $this->assertTrue($conversion->isRepeatable());
+        $this->assertEquals($deletedAt, $conversion->getDeletedAt()->format(DateTimeInterface::ATOM));
 
-        $campaign = new Conversion(new Id($conversionId), new Id($campaignId), $limit, $value, true, false);
+        $conversion = new Conversion(new Id($conversionId), new Id($campaignId), $limit, $value, true, false);
 
-        $this->assertTrue($campaign->isValueMutable());
-        $this->assertFalse($campaign->isRepeatable());
+        $this->assertTrue($conversion->isValueMutable());
+        $this->assertFalse($conversion->isRepeatable());
 
-        $campaign = new Conversion(new Id($conversionId), new Id($campaignId), $limit, $value, false, true);
+        $conversion = new Conversion(new Id($conversionId), new Id($campaignId), $limit, $value, false, true);
 
-        $this->assertFalse($campaign->isValueMutable());
-        $this->assertTrue($campaign->isRepeatable());
+        $this->assertFalse($conversion->isValueMutable());
+        $this->assertTrue($conversion->isRepeatable());
     }
 
     public function testInvalidValue(): void

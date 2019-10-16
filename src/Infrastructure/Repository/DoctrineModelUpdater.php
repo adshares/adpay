@@ -2,7 +2,7 @@
 
 namespace Adshares\AdPay\Infrastructure\Repository;
 
-use Adshares\AdPay\Domain\Exception\UpdateDataException;
+use Adshares\AdPay\Domain\Exception\DomainRepositoryException;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use DateTimeInterface;
 use Doctrine\DBAL\Connection;
@@ -38,7 +38,7 @@ abstract class DoctrineModelUpdater
         ?DateTimeInterface $timeEnd
     ): int {
         if ($timeStart === null && $timeEnd === null) {
-            throw new UpdateDataException('Time start or time end is required');
+            throw new DomainRepositoryException('Time start or time end is required');
         }
 
         $query = sprintf('DELETE FROM %s WHERE 1=1', $table);

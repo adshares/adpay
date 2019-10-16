@@ -36,9 +36,6 @@ final class Campaign
     /** @var DateTimeInterface|null */
     private $deletedAt;
 
-    /**
-     * @param array<string> $filters
-     */
     public function __construct(
         Id $id,
         Id $advertiserId,
@@ -47,7 +44,8 @@ final class Campaign
         Budget $budget,
         BannerCollection $banners,
         array $filters,
-        ConversionCollection $conversions
+        ConversionCollection $conversions,
+        DateTimeInterface $deletedAt = null
     ) {
         if ($timeEnd !== null && $timeStart > $timeEnd) {
             throw InvalidArgumentException::fromArgument(
@@ -68,6 +66,7 @@ final class Campaign
             'require' => $filters['require'] ?? [],
         ];
         $this->conversions = $conversions;
+        $this->deletedAt = $deletedAt;
     }
 
     public function getId(): Id

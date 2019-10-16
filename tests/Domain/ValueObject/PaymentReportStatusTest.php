@@ -8,14 +8,14 @@ use PHPUnit\Framework\TestCase;
 
 final class PaymentReportStatusTest extends TestCase
 {
-    public function testPreparedStatus(): void
+    public function testCalculatedStatus(): void
     {
-        $status = PaymentReportStatus::createPrepared();
+        $status = PaymentReportStatus::createCalculated();
 
-        $this->assertEquals(PaymentReportStatus::PREPARED, $status->getStatus());
-        $this->assertEquals('prepared', $status->toString());
-        $this->assertEquals('prepared', (string)$status);
-        $this->assertTrue($status->isPrepared());
+        $this->assertEquals(PaymentReportStatus::CALCULATED, $status->getStatus());
+        $this->assertEquals('calculated', $status->toString());
+        $this->assertEquals('calculated', (string)$status);
+        $this->assertTrue($status->isCalculated());
         $this->assertTrue($status->isComplete());
         $this->assertFalse($status->isIncomplete());
     }
@@ -29,7 +29,7 @@ final class PaymentReportStatusTest extends TestCase
         $this->assertEquals('incomplete', (string)$status);
         $this->assertTrue($status->isIncomplete());
         $this->assertFalse($status->isComplete());
-        $this->assertFalse($status->isPrepared());
+        $this->assertFalse($status->isCalculated());
     }
 
     public function testCompleteStatus(): void
@@ -41,7 +41,7 @@ final class PaymentReportStatusTest extends TestCase
         $this->assertEquals('complete', (string)$status);
         $this->assertTrue($status->isComplete());
         $this->assertFalse($status->isIncomplete());
-        $this->assertFalse($status->isPrepared());
+        $this->assertFalse($status->isCalculated());
     }
 
     public function testInvalidStatus(): void

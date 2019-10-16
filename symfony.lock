@@ -260,6 +260,9 @@
     "symfony/http-kernel": {
         "version": "v4.3.4"
     },
+    "symfony/lock": {
+        "version": "v4.3.5"
+    },
     "symfony/maker-bundle": {
         "version": "1.0",
         "recipe": {

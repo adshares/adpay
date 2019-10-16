@@ -8,7 +8,6 @@ use PHPUnit\Framework\TestCase;
 
 final class IdTest extends TestCase
 {
-
     public function testInstanceOfId(): void
     {
         $value = '43c567e1396b4cadb52223a51796fd01';
@@ -49,5 +48,17 @@ final class IdTest extends TestCase
         $this->assertTrue($id->equals($id2));
         $this->assertFalse($id->equals($id3));
         $this->assertFalse($id2->equals($id3));
+    }
+
+    public function testFromBin(): void
+    {
+        $value = '43c567e1396b4cadb52223a51796fd01';
+        $bin = hex2bin($value);
+
+        $id = Id::fromBin($bin);
+
+        $this->assertEquals($value, $id->toString());
+        $this->assertEquals($value, (string)$id);
+        $this->assertEquals($bin, $id->toBin());
     }
 }
