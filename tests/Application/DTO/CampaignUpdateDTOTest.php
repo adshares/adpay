@@ -236,6 +236,7 @@ final class CampaignUpdateDTOTest extends TestCase
     public function validBannersDataProvider(): array
     {
         return [
+            [[]],
             [[self::simpleBanner()]],
             [[self::simpleBanner(), self::simpleBanner()], 2],
         ];
@@ -246,7 +247,6 @@ final class CampaignUpdateDTOTest extends TestCase
         return [
             [null],
             ['invalid_value'],
-            [[]],
             [[self::simpleBanner([], 'id')]],
             [[self::simpleBanner(['id' => null])]],
             [[self::simpleBanner(['id' => 0])]],

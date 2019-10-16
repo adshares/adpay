@@ -64,7 +64,7 @@ final class CampaignUpdateDTO
             throw new ValidationException('Field `budget` is required.');
         }
 
-        if (!isset($input['banners']) || empty($input['banners'])) {
+        if (!isset($input['banners'])) {
             throw new ValidationException('Field `banners` is required.');
         }
 
