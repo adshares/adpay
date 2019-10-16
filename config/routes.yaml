@@ -4,6 +4,8 @@ api_post_campaigns:
     methods: POST
     requirements:
         version: '1'
+    defaults:
+        _format: json
 
 api_delete_campaigns:
     path: /api/v{version}/campaigns
@@ -11,6 +13,8 @@ api_delete_campaigns:
     methods: DELETE
     requirements:
         version: '1'
+    defaults:
+        _format: json
 
 api_post_views:
     path: /api/v{version}/events/views
@@ -18,6 +22,8 @@ api_post_views:
     methods: POST
     requirements:
         version: '1'
+    defaults:
+        _format: json
 
 api_post_clicks:
     path: /api/v{version}/events/clicks
@@ -25,6 +31,8 @@ api_post_clicks:
     methods: POST
     requirements:
         version: '1'
+    defaults:
+        _format: json
 
 api_post_conversions:
     path: /api/v{version}/events/conversions
@@ -32,6 +40,8 @@ api_post_conversions:
     methods: POST
     requirements:
         version: '1'
+    defaults:
+        _format: json
 
 api_get_payments:
     path: /api/v{version}/payments/{timestamp}
@@ -40,6 +50,8 @@ api_get_payments:
     requirements:
         version: '1'
         timestamp: '\d+'
+    defaults:
+        _format: json
 
 info:
     path: /info.{_format}
