@@ -86,6 +86,6 @@ class PaymentController extends AbstractController
             throw new NotFoundHttpException('Report is not calculated yet');
         }
 
-        return new JsonResponse($dto->getPayments());
+        return new JsonResponse(['payments' => $dto->getPayments()]);
     }
 }
