@@ -18,7 +18,7 @@ class PaymentMapper
             'report_id' => $payment->getReportId(),
             'event_id' => $payment->getEventId()->toBin(),
             'event_type' => $payment->getEventType()->toString(),
-            'status' => $payment->getStatus()->getStatus(),
+            'status' => $payment->getStatusCode(),
             'value' => $payment->getValue(),
         ];
     }

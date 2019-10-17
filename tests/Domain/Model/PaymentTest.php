@@ -21,15 +21,16 @@ final class PaymentTest extends TestCase
             new Payment(
                 $reportId,
                 EventType::createView(),
-                new Id($eventId)
+                new Id($eventId),
+                new PaymentStatus($status)
             );
 
         $this->assertInstanceOf(Payment::class, $payment);
         $this->assertEquals($reportId, $payment->getReportId());
         $this->assertEquals(EventType::VIEW, $payment->getEventType());
         $this->assertEquals($eventId, $payment->getEventId());
-        $this->assertNull($payment->getStatus());
-        $this->assertNull($payment->getStatusCode());
+        $this->assertEquals($status, $payment->getStatus()->getStatus());
+        $this->assertEquals($status, $payment->getStatusCode());
         $this->assertNull($payment->getValue());
 
         $payment =
@@ -41,8 +42,6 @@ final class PaymentTest extends TestCase
                 $value
             );
 
-        $this->assertEquals($status, $payment->getStatus()->getStatus());
-        $this->assertEquals($status, $payment->getStatusCode());
         $this->assertEquals($value, $payment->getValue());
     }
 }

@@ -65,7 +65,7 @@ class PaymentController extends AbstractController
 
         $force = (bool)$request->get('force', false);
         $recalculate = (bool)$request->get('recalculate', false);
-        $limit = $request->get('limit', self::MAX_LIMIT);
+        $limit = (int)$request->get('limit', self::MAX_LIMIT);
         $offset = $request->get('offset');
 
         if ($offset !== null) {

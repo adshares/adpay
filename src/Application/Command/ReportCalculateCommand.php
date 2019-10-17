@@ -68,21 +68,8 @@ final class ReportCalculateCommand
         $this->paymentRepository->deleteByReportId($report->getId());
 
         $campaigns = $this->campaignRepository->fetchAll();
-        $views =
+        $events =
             $this->eventRepository->fetchByTime(
-                EventType::createView(),
-                $report->getTimeStart(),
-                $report->getTimeEnd()
-            );
-        $clicks =
-            $this->eventRepository->fetchByTime(
-                EventType::createClick(),
-                $report->getTimeStart(),
-                $report->getTimeEnd()
-            );
-        $conversions =
-            $this->eventRepository->fetchByTime(
-                EventType::createConversion(),
                 $report->getTimeStart(),
                 $report->getTimeEnd()
             );
@@ -90,7 +77,7 @@ final class ReportCalculateCommand
         $calculator = new PaymentCalculator($report, $campaigns);
 
         $count = 0;
-        foreach ($calculator->calculate($views, $clicks, $conversions) as $payment) {
+        foreach ($calculator->calculate($events) as $payment) {
             /** @var $payment Payment */
             $this->paymentRepository->save($payment);
             ++$count;

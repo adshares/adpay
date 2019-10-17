@@ -27,7 +27,7 @@ final class Payment
         int $reportId,
         EventType $eventType,
         Id $eventId,
-        PaymentStatus $status = null,
+        PaymentStatus $status,
         ?int $value = null
     ) {
         $this->reportId = $reportId;
@@ -52,14 +52,14 @@ final class Payment
         return $this->eventId;
     }
 
-    public function getStatus(): ?PaymentStatus
+    public function getStatus(): PaymentStatus
     {
         return $this->status;
     }
 
-    public function getStatusCode(): ?int
+    public function getStatusCode(): int
     {
-        return $this->status !== null ? $this->status->getStatus() : null;
+        return $this->status->getStatus();
     }
 
     public function getValue()

@@ -2,8 +2,8 @@
 
 namespace Adshares\AdPay\Infrastructure\Repository;
 
-use Adshares\AdPay\Domain\Exception\InvalidDataException;
 use Adshares\AdPay\Domain\Exception\DomainRepositoryException;
+use Adshares\AdPay\Domain\Exception\InvalidDataException;
 use Adshares\AdPay\Domain\Model\Event;
 use Adshares\AdPay\Domain\Model\EventCollection;
 use Adshares\AdPay\Domain\Repository\EventRepository;
@@ -81,18 +81,14 @@ final class DoctrineEventRepository extends DoctrineModelUpdater implements Even
     }
 
     public function fetchByTime(
-        EventType $type,
         ?DateTimeInterface $timeStart,
         ?DateTimeInterface $timeEnd
     ): iterable {
-        /*  @var $mapper EventMapper */
-        $mapper = self::getMapper($type);
-
         if ($timeStart === null && $timeEnd === null) {
             throw new DomainRepositoryException('Time start or time end is required');
         }
 
-        $query = sprintf('SELECT * FROM %s WHERE 1=1', $mapper::table());
+        $query = 'SELECT * FROM %s WHERE 1=1';
         $params = [];
         $types = [];
 
@@ -108,13 +104,20 @@ final class DoctrineEventRepository extends DoctrineModelUpdater implements Even
         }
 
         try {
-            $result = $this->db->executeQuery($query, $params, $types);
+            $result = $this->db->executeQuery(sprintf($query, ViewEventMapper::table()), $params, $types);
+            while ($row = $result->fetch()) {
+                yield ViewEventMapper::fillRaw($row);
+            }
+            $result = $this->db->executeQuery(sprintf($query, ClickEventMapper::table()), $params, $types);
+            while ($row = $result->fetch()) {
+                yield ClickEventMapper::fillRaw($row);
+            }
+            $result = $this->db->executeQuery(sprintf($query, ConversionEventMapper::table()), $params, $types);
+            while ($row = $result->fetch()) {
+                yield ConversionEventMapper::fillRaw($row);
+            }
         } catch (DBALException $exception) {
             throw new DomainRepositoryException($exception->getMessage());
-        }
-
-        while ($row = $result->fetch()) {
-            yield $mapper::fillRaw($row);
         }
 
         return null;

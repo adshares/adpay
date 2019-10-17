@@ -41,30 +41,131 @@ final class PaymentCalculatorTest extends TestCase
 
     public function testCampaignNotExist(): void
     {
-        $campaigns = new CampaignCollection(self::campaign());
-
-        $payment = $this->single($campaigns, self::viewEvent(['campaign_id' => '6000000000000000000000000000000f']));
-        $this->assertEquals(PaymentStatus::CAMPAIGN_NOT_FOUND, $payment->getStatusCode());
-
-        $payment = $this->single($campaigns, self::clickEvent(['campaign_id' => '6000000000000000000000000000000f']));
-        $this->assertEquals(PaymentStatus::CAMPAIGN_NOT_FOUND, $payment->getStatusCode());
-
-        $payment =
-            $this->single($campaigns, self::conversionEvent(['campaign_id' => '6000000000000000000000000000000f']));
-        $this->assertEquals(PaymentStatus::CAMPAIGN_NOT_FOUND, $payment->getStatusCode());
+        $this->statusForAll(
+            PaymentStatus::CAMPAIGN_NOT_FOUND,
+            ['campaign_id' => '6000000000000000000000000000000f']
+        );
     }
 
-    private function single(CampaignCollection $campaigns, array $event): Payment
+    public function testCampaignDeleted(): void
     {
-        $views = $event['type'] === EventType::VIEW ? [$event] : [];
-        $clicks = $event['type'] === EventType::CLICK ? [$event] : [];
-        $conversions = $event['type'] === EventType::CONVERSION ? [$event] : [];
+        $this->statusForAll(
+            PaymentStatus::CAMPAIGN_NOT_FOUND,
+            [],
+            ['deleted_at' => self::TIME - 3600 * 24]
+        );
+    }
 
+    public function testCampaignOutdated(): void
+    {
+        $this->statusForAll(
+            PaymentStatus::CAMPAIGN_OUTDATED,
+            [],
+            ['time_end' => self::TIME - 3600 * 24]
+        );
+
+        $this->statusForAll(
+            PaymentStatus::CAMPAIGN_OUTDATED,
+            [],
+            ['time_start' => self::TIME + 3600 * 24]
+        );
+    }
+
+    public function testBannerNotExist(): void
+    {
+        $this->statusForAll(
+            PaymentStatus::BANNER_NOT_FOUND,
+            ['banner_id' => '7000000000000000000000000000000f']
+        );
+    }
+
+    public function testBannerDeleted(): void
+    {
+        $this->statusForAll(
+            PaymentStatus::BANNER_NOT_FOUND,
+            [],
+            [],
+            ['deleted_at' => self::TIME - 3600 * 24]
+        );
+    }
+
+    public function testHumanScoreTooLow(): void
+    {
+        $this->statusForAll(
+            PaymentStatus::HUMAN_SCORE_TOO_LOW,
+            ['human_score' => 0]
+        );
+
+        $this->statusForAll(
+            PaymentStatus::HUMAN_SCORE_TOO_LOW,
+            ['human_score' => 0.3]
+        );
+
+        $this->statusForAll(
+            PaymentStatus::HUMAN_SCORE_TOO_LOW,
+            ['human_score' => 0.499]
+        );
+    }
+
+    public function testConversionNotExist(): void
+    {
+        $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
+
+        $payment = $this->single(
+            $campaigns,
+            self::conversionEvent(
+                [
+                    'conversion_id' => 'b000000000000000000000000000000f',
+                ]
+            )
+        );
+        $this->assertEquals(PaymentStatus::CONVERSION_NOT_FOUND, $payment->getStatusCode());
+    }
+
+    public function testConversionDeleted(): void
+    {
+        $campaigns =
+            new CampaignCollection(
+                self::campaign([], [self::banner()], [self::conversion(['deleted_at' => self::TIME - 3600 * 24])])
+            );
+
+        $payment = $this->single($campaigns, self::conversionEvent());
+        $this->assertEquals(PaymentStatus::CONVERSION_NOT_FOUND, $payment->getStatusCode());
+    }
+
+    private function statusForAll(
+        int $status,
+        array $eventData = [],
+        array $campaignData = [],
+        array $bannerData = [],
+        array $conversionData = []
+    ) {
+        $campaigns =
+            new CampaignCollection(
+                self::campaign($campaignData, [self::banner($bannerData)], [self::conversion($conversionData)])
+            );
+
+        $payment = $this->single($campaigns, self::viewEvent($eventData));
+        $this->assertEquals($status, $payment->getStatusCode());
+
+        $payment = $this->single($campaigns, self::clickEvent($eventData));
+        $this->assertEquals($status, $payment->getStatusCode());
+
+        $payment = $this->single($campaigns, self::conversionEvent($eventData));
+        $this->assertEquals($status, $payment->getStatusCode());
+    }
+
+    private function single(CampaignCollection $campaigns, array $event): ?Payment
+    {
         $report = new PaymentReport(1, PaymentReportStatus::createComplete());
-        $payments = (new PaymentCalculator($report, $campaigns))->calculate($views, $clicks, $conversions);
+        $payments = (new PaymentCalculator($report, $campaigns))->calculate([$event]);
 
         foreach ($payments as $payment) {
-            return $payment;
+            /** @var Payment $payment */
+            if ($payment->getEventType()->toString() === $event['type']
+                && $payment->getEventId()->toString() === $event['id']) {
+                return $payment;
+            }
         }
 
         return null;

@@ -7,21 +7,24 @@ use Adshares\AdPay\Domain\Model\Payment;
 use Adshares\AdPay\Domain\Model\PaymentReport;
 use Adshares\AdPay\Domain\ValueObject\EventType;
 use Adshares\AdPay\Domain\ValueObject\Id;
+use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
 
 class PaymentCalculator
 {
-
-
-
     public function __construct(PaymentReport $report, CampaignCollection $campaigns)
     {
     }
 
     public function calculate(
-        iterable $views,
-        iterable $clicks,
-        iterable $conversions
+        iterable $events
     ): iterable {
-        yield new Payment(1, EventType::createView(), new Id('6000000000000000000000000000000f'));
+        foreach ($events as $event) {
+            yield new Payment(
+                1,
+                new EventType($event['type']),
+                new Id($event['id']),
+                new PaymentStatus(PaymentStatus::ACCEPTED)
+            );
+        }
     }
 }

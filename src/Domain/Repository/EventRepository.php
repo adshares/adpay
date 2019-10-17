@@ -10,7 +10,6 @@ use DateTimeInterface;
 interface EventRepository
 {
     public function fetchByTime(
-        EventType $type,
         ?DateTimeInterface $timeStart,
         ?DateTimeInterface $timeEnd
     ): iterable;
