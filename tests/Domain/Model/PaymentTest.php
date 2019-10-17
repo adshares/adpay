@@ -2,6 +2,7 @@
 
 namespace Adshares\AdPay\Tests\Domain\Model;
 
+use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 use Adshares\AdPay\Domain\Model\Payment;
 use Adshares\AdPay\Domain\ValueObject\EventType;
 use Adshares\AdPay\Domain\ValueObject\Id;
@@ -19,14 +20,12 @@ final class PaymentTest extends TestCase
 
         $payment =
             new Payment(
-                $reportId,
                 EventType::createView(),
                 new Id($eventId),
                 new PaymentStatus($status)
             );
 
         $this->assertInstanceOf(Payment::class, $payment);
-        $this->assertEquals($reportId, $payment->getReportId());
         $this->assertEquals(EventType::VIEW, $payment->getEventType());
         $this->assertEquals($eventId, $payment->getEventId());
         $this->assertEquals($status, $payment->getStatus()->getStatus());
@@ -35,13 +34,28 @@ final class PaymentTest extends TestCase
 
         $payment =
             new Payment(
-                $reportId,
                 EventType::createView(),
                 new Id($eventId),
                 new PaymentStatus($status),
-                $value
+                $value,
+                $reportId
             );
 
         $this->assertEquals($value, $payment->getValue());
+        $this->assertEquals($reportId, $payment->getReportId());
+    }
+
+    public function testNullReportId(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $payment =
+            new Payment(
+                EventType::createView(),
+                new Id('43c567e1396b4cadb52223a51796fd01'),
+                new PaymentStatus(PaymentStatus::ACCEPTED)
+            );
+
+        $payment->getReportId();
     }
 }

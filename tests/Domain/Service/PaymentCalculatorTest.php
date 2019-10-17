@@ -9,7 +9,6 @@ use Adshares\AdPay\Domain\Model\CampaignCollection;
 use Adshares\AdPay\Domain\Model\Conversion;
 use Adshares\AdPay\Domain\Model\ConversionCollection;
 use Adshares\AdPay\Domain\Model\Payment;
-use Adshares\AdPay\Domain\Model\PaymentReport;
 use Adshares\AdPay\Domain\Service\PaymentCalculator;
 use Adshares\AdPay\Domain\ValueObject\BannerType;
 use Adshares\AdPay\Domain\ValueObject\Budget;
@@ -17,7 +16,6 @@ use Adshares\AdPay\Domain\ValueObject\EventType;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use Adshares\AdPay\Domain\ValueObject\Limit;
 use Adshares\AdPay\Domain\ValueObject\LimitType;
-use Adshares\AdPay\Domain\ValueObject\PaymentReportStatus;
 use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
 use Adshares\AdPay\Domain\ValueObject\Size;
 use Adshares\AdPay\Lib\DateTimeHelper;
@@ -41,70 +39,59 @@ final class PaymentCalculatorTest extends TestCase
 
     public function testCampaignNotExist(): void
     {
-        $this->statusForAll(
-            PaymentStatus::CAMPAIGN_NOT_FOUND,
-            ['campaign_id' => '6000000000000000000000000000000f']
-        );
+        $this->statusForAll(PaymentStatus::CAMPAIGN_NOT_FOUND, ['campaign_id' => '6000000000000000000000000000000f']);
     }
 
     public function testCampaignDeleted(): void
     {
-        $this->statusForAll(
-            PaymentStatus::CAMPAIGN_NOT_FOUND,
-            [],
-            ['deleted_at' => self::TIME - 3600 * 24]
-        );
+        $this->statusForAll(PaymentStatus::CAMPAIGN_NOT_FOUND, [], ['deleted_at' => self::TIME - 3600 * 24]);
     }
 
     public function testCampaignOutdated(): void
     {
-        $this->statusForAll(
-            PaymentStatus::CAMPAIGN_OUTDATED,
-            [],
-            ['time_end' => self::TIME - 3600 * 24]
-        );
-
-        $this->statusForAll(
-            PaymentStatus::CAMPAIGN_OUTDATED,
-            [],
-            ['time_start' => self::TIME + 3600 * 24]
-        );
+        $this->statusForAll(PaymentStatus::CAMPAIGN_OUTDATED, [], ['time_end' => self::TIME - 3600 * 24]);
+        $this->statusForAll(PaymentStatus::CAMPAIGN_OUTDATED, [], ['time_start' => self::TIME + 3600 * 24]);
     }
 
     public function testBannerNotExist(): void
     {
-        $this->statusForAll(
-            PaymentStatus::BANNER_NOT_FOUND,
-            ['banner_id' => '7000000000000000000000000000000f']
-        );
+        $this->statusForAll(PaymentStatus::BANNER_NOT_FOUND, ['banner_id' => '7000000000000000000000000000000f']);
     }
 
     public function testBannerDeleted(): void
     {
-        $this->statusForAll(
-            PaymentStatus::BANNER_NOT_FOUND,
-            [],
-            [],
-            ['deleted_at' => self::TIME - 3600 * 24]
-        );
+        $this->statusForAll(PaymentStatus::BANNER_NOT_FOUND, [], [], ['deleted_at' => self::TIME - 3600 * 24]);
     }
 
-    public function testHumanScoreTooLow(): void
+    public function testHumanScore(): void
     {
-        $this->statusForAll(
-            PaymentStatus::HUMAN_SCORE_TOO_LOW,
-            ['human_score' => 0]
-        );
+        $this->statusForAll(PaymentStatus::HUMAN_SCORE_TOO_LOW, ['human_score' => 0]);
+        $this->statusForAll(PaymentStatus::HUMAN_SCORE_TOO_LOW, ['human_score' => 0.3]);
+        $this->statusForAll(PaymentStatus::HUMAN_SCORE_TOO_LOW, ['human_score' => 0.499]);
+        $this->statusForAll(PaymentStatus::ACCEPTED, ['human_score' => 0.5]);
+        $this->statusForAll(PaymentStatus::ACCEPTED, ['human_score' => 0.501]);
+        $this->statusForAll(PaymentStatus::ACCEPTED, ['human_score' => 0.7]);
+        $this->statusForAll(PaymentStatus::ACCEPTED, ['human_score' => 1]);
+    }
 
-        $this->statusForAll(
-            PaymentStatus::HUMAN_SCORE_TOO_LOW,
-            ['human_score' => 0.3]
-        );
+    public function testHumanScoreThreshold(): void
+    {
+        $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
 
-        $this->statusForAll(
-            PaymentStatus::HUMAN_SCORE_TOO_LOW,
-            ['human_score' => 0.499]
-        );
+        $payment = $this->single($campaigns, self::viewEvent(['human_score' => 0.5]));
+        $this->assertEquals(PaymentStatus::ACCEPTED, $payment->getStatusCode());
+
+        $payment = $this->single($campaigns, self::viewEvent(['human_score' => 0.5]), ['humanScoreThreshold' => 0.55]);
+        $this->assertEquals(PaymentStatus::HUMAN_SCORE_TOO_LOW, $payment->getStatusCode());
+    }
+
+    public function testKeywords(): void
+    {
+        $this->statusForAll(PaymentStatus::ACCEPTED);
+        $this->statusForAll(PaymentStatus::INVALID_TARGETING, ['keywords' => ['r1' => ['r1_v3']]]);
+        $this->statusForAll(PaymentStatus::INVALID_TARGETING, ['keywords' => ['e1' => ['e1_v1']]]);
+        $this->statusForAll(PaymentStatus::INVALID_TARGETING, [], ['filters' => ['require' => ['r1' => ['r1_v3']]]]);
+        $this->statusForAll(PaymentStatus::INVALID_TARGETING, [], ['filters' => ['exclude' => ['e1' => ['e1_v3']]]]);
     }
 
     public function testConversionNotExist(): void
@@ -155,10 +142,9 @@ final class PaymentCalculatorTest extends TestCase
         $this->assertEquals($status, $payment->getStatusCode());
     }
 
-    private function single(CampaignCollection $campaigns, array $event): ?Payment
+    private function single(CampaignCollection $campaigns, array $event, array $config = []): ?Payment
     {
-        $report = new PaymentReport(1, PaymentReportStatus::createComplete());
-        $payments = (new PaymentCalculator($report, $campaigns))->calculate([$event]);
+        $payments = (new PaymentCalculator($campaigns, $config))->calculate([$event]);
 
         foreach ($payments as $payment) {
             /** @var Payment $payment */
@@ -173,13 +159,15 @@ final class PaymentCalculatorTest extends TestCase
 
     private static function campaign(array $mergeData = [], array $banners = [], array $conversions = []): Campaign
     {
+        $filters = ['require' => ['r1' => ['r1_v1', 'r1_v2']], 'exclude' => ['e1' => ['e1_v1', 'e1_v2']]];
+
         $data = array_merge(
             [
                 'id' => self::CAMPAIGN_ID,
                 'advertiser_id' => self::ADVERTISER_ID,
                 'time_start' => self::TIME - 7 * 24 * 3600,
                 'time_end' => null,
-                'filters' => [],
+                'filters' => $filters,
                 'budget' => 1000,
                 'max_cpm' => 100,
                 'max_cpc' => null,
@@ -315,7 +303,7 @@ final class PaymentCalculatorTest extends TestCase
             'tracking_id' => '90000000000000000000000000000001',
             'user_id' => self::USER_ID,
             'human_score' => 0.9,
-            'keywords' => [],
+            'keywords' => ['r1' => ['r1_v1'], 'e1' => ['e1_v3']],
             'context' => [],
         ];
     }

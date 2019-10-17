@@ -2,15 +2,13 @@
 
 namespace Adshares\AdPay\Domain\Model;
 
+use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 use Adshares\AdPay\Domain\ValueObject\EventType;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
 
 final class Payment
 {
-    /** @var int */
-    private $reportId;
-
     /** @var EventType */
     private $eventType;
 
@@ -23,23 +21,37 @@ final class Payment
     /** @var ?int */
     private $value;
 
+    /** @var int */
+    private $reportId;
+
     public function __construct(
-        int $reportId,
         EventType $eventType,
         Id $eventId,
         PaymentStatus $status,
-        ?int $value = null
+        ?int $value = null,
+        ?int $reportId = null
     ) {
-        $this->reportId = $reportId;
         $this->eventType = $eventType;
         $this->eventId = $eventId;
         $this->status = $status;
         $this->value = $value;
+        if ($reportId !== null) {
+            $this->reportId = $reportId;
+        }
     }
 
     public function getReportId(): int
     {
+        if ($this->reportId === null) {
+            throw InvalidArgumentException::fromArgument('reportId', 'null');
+        }
+
         return $this->reportId;
+    }
+
+    public function setReportId(int $reportId): void
+    {
+        $this->reportId = $reportId;
     }
 
     public function getEventType(): EventType

@@ -3,6 +3,7 @@
 namespace Adshares\AdPay\Application\Command;
 
 use Adshares\AdPay\Application\DTO\PaymentFetchDTO;
+use Adshares\AdPay\Application\Exception\FetchingException;
 use Adshares\AdPay\Domain\Model\PaymentReport;
 use Adshares\AdPay\Domain\Repository\PaymentReportRepository;
 use Adshares\AdPay\Domain\Repository\PaymentRepository;
@@ -34,6 +35,10 @@ final class PaymentFetchCommand
         $this->logger->debug('Running fetch payments command');
 
         $report = $this->paymentReportRepository->fetch(PaymentReport::timestampToId($timestamp));
+
+        if (!$report->isComplete()) {
+            throw new FetchingException(sprintf('Report #%d is not complete yet.', $report->getId()));
+        }
 
         if (!$report->isCalculated()) {
             return new PaymentFetchDTO(false, []);

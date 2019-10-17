@@ -10,7 +10,6 @@ use Adshares\AdPay\Domain\Repository\EventRepository;
 use Adshares\AdPay\Domain\Repository\PaymentReportRepository;
 use Adshares\AdPay\Domain\Repository\PaymentRepository;
 use Adshares\AdPay\Domain\Service\PaymentCalculator;
-use Adshares\AdPay\Domain\ValueObject\EventType;
 use DateTimeInterface;
 use Psr\Log\LoggerInterface;
 
@@ -67,18 +66,17 @@ final class ReportCalculateCommand
 
         $this->paymentRepository->deleteByReportId($report->getId());
 
-        $campaigns = $this->campaignRepository->fetchAll();
         $events =
             $this->eventRepository->fetchByTime(
                 $report->getTimeStart(),
                 $report->getTimeEnd()
             );
 
-        $calculator = new PaymentCalculator($report, $campaigns);
-
+        $calculator = $this->createCalculator();
         $count = 0;
         foreach ($calculator->calculate($events) as $payment) {
             /** @var $payment Payment */
+            $payment->setReportId($report->getId());
             $this->paymentRepository->save($payment);
             ++$count;
         }
@@ -86,5 +84,15 @@ final class ReportCalculateCommand
         $this->logger->info(sprintf('%d payments calculated', $count));
 
         return $count;
+    }
+
+    private function createCalculator(): PaymentCalculator
+    {
+        $campaigns = $this->campaignRepository->fetchAll();
+        $config = [
+            'humanScoreThreshold' => getenv('HUMAN_SCORE_THRESHOLD'),
+        ];
+
+        return new PaymentCalculator($campaigns, $config);
     }
 }

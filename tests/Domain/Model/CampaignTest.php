@@ -106,4 +106,40 @@ final class CampaignTest extends TestCase
             new ConversionCollection()
         );
     }
+
+    /**
+     * @dataProvider filteringDataProvider
+     */
+    public function testFiltering(array $require, array $exclude, array $keywords, bool $result): void
+    {
+        $campaign = new Campaign(
+            new Id('43c567e1396b4cadb52223a51796fd01'),
+            new Id('43c567e1396b4cadb52223a51796fd01'),
+            DateTimeHelper::fromString('2019-01-02T12:00:00+00:00'),
+            DateTimeHelper::fromString('2019-01-03T12:00:00+00:00'),
+            new Budget(10),
+            new BannerCollection(),
+            ['require' => $require, 'exclude' => $exclude],
+            new ConversionCollection()
+        );
+
+        $this->assertEquals($result, $campaign->checkFilters($keywords));
+    }
+
+    public function filteringDataProvider(): array
+    {
+        return [
+            [[], [], [], true],
+            [[], [], ['a' => ['a1', 'a2']], true],
+            [[], ['a' => ['a1', 'a2'], 'b' => ['b1']], [], true],
+            [['a' => ['a2', 'a3']], [], ['a' => ['a1', 'a2']], true],
+            [[], ['a' => ['a3', 'a4']], ['a' => ['a1', 'a2']], true],
+            [['a' => ['a2']], ['a' => ['a3'], 'b' => ['b1']], ['a' => ['a1', 'a2']], true],
+            [['a' => ['a2', 'a3']], [], [], false],
+            [['a' => ['a2', 'a3']], [], ['a' => ['a1', 'a4']], false],
+            [[], ['a' => ['a1', 'a2'], 'b' => ['b1']], ['b' => ['b1']], false],
+            [['a' => ['a1']], ['a' => ['a3'], 'b' => ['b1']], ['a' => ['a1'], 'b' => ['b1']], false],
+            [['a' => ['a1']], ['a' => ['a3'], 'b' => ['b1']], ['a' => ['a1', 'a3']], false],
+        ];
+    }
 }

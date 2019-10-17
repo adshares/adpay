@@ -141,4 +141,20 @@ final class Campaign
     {
         return $this->deletedAt;
     }
+
+    public function checkFilters(array $keywords): bool
+    {
+        foreach ($this->getRequireFilters() as $key => $values) {
+            if (!isset($keywords[$key]) || empty(array_intersect($values, $keywords[$key]))) {
+                return false;
+            }
+        }
+        foreach ($this->getExcludeFilters() as $key => $values) {
+            if (isset($keywords[$key]) && !empty(array_intersect($values, $keywords[$key]))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
