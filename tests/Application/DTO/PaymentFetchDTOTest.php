@@ -24,12 +24,7 @@ final class PaymentFetchDTOTest extends TestCase
 
     public function testPayments(): void
     {
-        $dto = new PaymentFetchDTO(
-            false, [
-                self::payment(1),
-                self::payment(2),
-            ]
-        );
+        $dto = new PaymentFetchDTO(false, [self::payment(1), self::payment(2),]);
         $this->assertCount(2, $dto->getPayments());
         $this->assertEquals(
             [

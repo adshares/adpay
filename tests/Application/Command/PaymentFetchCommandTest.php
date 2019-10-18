@@ -26,6 +26,19 @@ class PaymentFetchCommandTest extends TestCase
         $this->assertCount(2, $dto->getPayments());
     }
 
+    public function testPadding()
+    {
+        $reportId = 1571403600;
+        $paymentReportRepository = $this->paymentReportRepository($reportId);
+        $paymentRepository = $this->paymentRepository($reportId, 100, 200);
+
+        $command = new PaymentFetchCommand($paymentReportRepository, $paymentRepository, new NullLogger());
+        $dto = $command->execute($reportId + 22, 100, 200);
+
+        $this->assertTrue($dto->isCalculated());
+        $this->assertCount(2, $dto->getPayments());
+    }
+
     public function testNotCalculated()
     {
         $reportId = 1571403600;
