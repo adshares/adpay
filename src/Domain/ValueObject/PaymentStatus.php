@@ -62,6 +62,11 @@ final class PaymentStatus
         return $this->isProcessed() && !$this->isAccepted();
     }
 
+    public static function createAccepted(): self
+    {
+        return new self(self::ACCEPTED);
+    }
+
     public function toString(): string
     {
         if (!$this->isProcessed()) {

@@ -99,14 +99,28 @@ final class Campaign
         return $this->budget->getValue();
     }
 
+    public function getMaxCpm(): ?int
+    {
+        return $this->budget->getMaxCpm();
+    }
+
+    public function getViewCost(): int
+    {
+        $cpm = $this->budget->getMaxCpm();
+
+        return $cpm !== null ? (int)($cpm / 1000) : 0;
+    }
+
     public function getMaxCpc(): ?int
     {
         return $this->budget->getMaxCpc();
     }
 
-    public function getMaxCpm(): ?int
+    public function getClickCost(): int
     {
-        return $this->budget->getMaxCpm();
+        $cpc = $this->budget->getMaxCpc();
+
+        return $cpc !== null ? $cpc : 0;
     }
 
     public function getBanners(): BannerCollection

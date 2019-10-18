@@ -319,6 +319,7 @@ final class PaymentCalculatorTest extends TestCase
             'impression_id' => '80000000000000000000000000000001',
             'tracking_id' => '90000000000000000000000000000001',
             'user_id' => self::USER_ID,
+            'page_rank' => 1.0,
             'human_score' => 0.9,
             'keywords' => ['r1' => ['r1_v1'], 'e1' => ['e1_v3']],
             'context' => [],

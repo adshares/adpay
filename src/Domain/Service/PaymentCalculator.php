@@ -46,14 +46,68 @@ final class PaymentCalculator
     public function calculate(
         iterable $events
     ): iterable {
+        $matrix = [];
         foreach ($events as $event) {
             $status = $this->validateEvent($event);
 
-            yield new Payment(
-                new EventType($event['type']),
-                new Id($event['id']),
-                $status
-            );
+            if ($status->isRejected()) {
+                yield new Payment(
+                    new EventType($event['type']),
+                    new Id($event['id']),
+                    $status
+                );
+            }
+
+            // conversions ara not supported yet
+            if ($event['type'] === EventType::CONVERSION) {
+                yield new Payment(
+                    new EventType($event['type']),
+                    new Id($event['id']),
+                    $status,
+                    0
+                );
+                continue;
+            }
+
+            $campaignId = $event['campaign_id'];
+            $userId = $event['user_id'];
+
+            /** @var Campaign $campaign */
+            $campaign = $this->campaigns[$campaignId];
+
+            if (!array_key_exists($campaignId, $matrix)) {
+                $matrix[$campaignId] = [
+                    'events' => [],
+                    'users' => [],
+                    'costs' => 0,
+                ];
+            }
+
+            $matrix[$campaignId]['events'][] = $event;
+            if (!array_key_exists($userId, $matrix[$campaignId]['users'])) {
+                $matrix[$campaignId]['users'][$userId] = 1;
+                $matrix[$campaignId]['costs'] += $campaign->getViewCost();
+            } else {
+                $matrix[$campaignId]['users'][$userId]++;
+            }
+        }
+
+        foreach ($matrix as $campaignId => $item) {
+            /** @var Campaign $campaign */
+            $campaign = $this->campaigns[$campaignId];
+            $factor = $item['costs'] > $campaign->getBudgetValue() ? $campaign->getBudgetValue() / $item['costs'] : 1;
+
+            foreach ($item['events'] as $event) {
+                $value = self::getEventCost($campaign, $event) * $factor * $event['page_rank'];
+                $value = (int)($value / $item['users'][$event['user_id']]);
+
+                yield new Payment(
+                    new EventType($event['type']),
+                    new Id($event['id']),
+                    PaymentStatus::createAccepted(),
+                    $value
+                );
+            }
         }
     }
 
@@ -98,5 +152,19 @@ final class PaymentCalculator
         }
 
         return new PaymentStatus($status);
+    }
+
+    private static function getEventCost(Campaign $campaign, array $event): int
+    {
+        switch ($event['type']) {
+            case EventType::VIEW:
+                return $campaign->getViewCost();
+            case EventType::CLICK:
+                return $campaign->getClickCost();
+            case EventType::CONVERSION:
+                return $event['conversion_value'];
+            default:
+                return 0;
+        }
     }
 }
