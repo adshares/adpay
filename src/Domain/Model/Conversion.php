@@ -19,9 +19,6 @@ final class Conversion
     /** @var Limit */
     private $limit;
 
-    /** @var int */
-    private $value;
-
     /** @var bool */
     private $valueMutable;
 
@@ -35,23 +32,13 @@ final class Conversion
         Id $id,
         Id $campaignId,
         Limit $limit,
-        int $value,
         bool $valueMutable = false,
         bool $repeatable = false,
         DateTimeInterface $deletedAt = null
     ) {
-        if ($value < 0) {
-            throw InvalidArgumentException::fromArgument(
-                'value',
-                (string)$value,
-                'The value must be greater than or equal to 0'
-            );
-        }
-
         $this->id = $id;
         $this->campaignId = $campaignId;
         $this->limit = $limit;
-        $this->value = $value;
         $this->valueMutable = $valueMutable;
         $this->repeatable = $repeatable;
         $this->deletedAt = $deletedAt;
@@ -85,11 +72,6 @@ final class Conversion
     public function getCost(): int
     {
         return $this->limit->getCost();
-    }
-
-    public function getValue(): int
-    {
-        return $this->value;
     }
 
     public function isValueMutable(): bool

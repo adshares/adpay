@@ -18,7 +18,8 @@ final class ContextTest extends TestCase
         $bb = ['b' => 2];
         $cc = ['c' => 3];
 
-        $humanScore = 0.99;
+        $humanScore = 0.89;
+        $pageRank = 0.99;
 
         $keywords = [
             'k1' => $k1,
@@ -32,10 +33,11 @@ final class ContextTest extends TestCase
             'cc' => $cc,
         ];
 
-        $context = new Context($humanScore, $keywords, $data);
+        $context = new Context($humanScore, $pageRank, $keywords, $data);
 
         $this->assertInstanceOf(Context::class, $context);
         $this->assertEquals($humanScore, $context->getHumanScore());
+        $this->assertEquals($pageRank, $context->getPageRank());
         $this->assertEquals($keywords, $context->getKeywords());
         $this->assertEquals($data, $context->getData());
         $this->assertEquals($aa, $context->get('aa'));
@@ -50,12 +52,24 @@ final class ContextTest extends TestCase
     public function testTooLowHumanScore(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        new Context(-0.88);
+        new Context(-0.88, 1.0);
     }
 
     public function testTooHightHumanScore(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        new Context(1.88);
+        new Context(1.88, 1.0);
+    }
+
+    public function testTooLowPageRank(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        new Context(1.0, -0.88);
+    }
+
+    public function testTooHightPageRank(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        new Context(1.0, 1.88);
     }
 }

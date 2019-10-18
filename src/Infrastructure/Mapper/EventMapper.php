@@ -16,7 +16,6 @@ abstract class EventMapper
         return [
             'id' => $event->getId()->toBin(),
             'time' => $event->getTime(),
-            'payment_status' => $event->getPaymentStatus()->getStatus(),
             'case_id' => $event->getCaseId()->toBin(),
             'publisher_id' => $event->getPublisherId()->toBin(),
             'zone_id' => $event->getZoneId() !== null ? $event->getZoneId()->toBin() : null,
@@ -37,7 +36,6 @@ abstract class EventMapper
         return [
             'id' => Type::BINARY,
             'time' => Type::DATETIME,
-            'payment_status' => Type::INTEGER,
             'case_id' => Type::BINARY,
             'publisher_id' => Type::BINARY,
             'zone_id' => Type::BINARY,
@@ -59,7 +57,6 @@ abstract class EventMapper
             'type' => static::getEventType(),
             'id' => bin2hex($row['id']),
             'time' => (int)$row['time'],
-            'payment_status' => (int)$row['payment_status'],
             'case_id' => bin2hex($row['case_id']),
             'publisher_id' => bin2hex($row['publisher_id']),
             'zone_id' => $row['zone_id'] !== null ? bin2hex($row['zone_id']) : null,

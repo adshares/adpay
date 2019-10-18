@@ -16,13 +16,14 @@ final class ImpressionTest extends TestCase
         $userId = 'aac567e1396b4cadb52223a51796fdbb';
         $keywords = ['k' => 111];
         $context = ['a' => 123];
-        $humanScore = 0.99;
+        $humanScore = 0.89;
+        $pageRank = 0.99;
 
         $impression = new Impression(
             new Id($impressionId),
             new Id($trackingId),
             new Id($userId),
-            new Context($humanScore, $keywords, $context)
+            new Context($humanScore, $pageRank, $keywords, $context)
         );
 
         $this->assertInstanceOf(Impression::class, $impression);
@@ -31,6 +32,7 @@ final class ImpressionTest extends TestCase
         $this->assertEquals($userId, $impression->getUserId());
         $this->assertEquals($keywords, $impression->getKeywords());
         $this->assertEquals($humanScore, $impression->getHumanScore());
+        $this->assertEquals($pageRank, $impression->getPageRank());
         $this->assertEquals($context, $impression->getContext()->getData());
         $this->assertEquals($context, $impression->getContextData());
     }

@@ -5,7 +5,6 @@ namespace Adshares\AdPay\Domain\Model;
 use Adshares\AdPay\Domain\ValueObject\Context;
 use Adshares\AdPay\Domain\ValueObject\EventType;
 use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
 use DateTimeInterface;
 
 abstract class Event
@@ -22,24 +21,16 @@ abstract class Event
     /** @var ImpressionCase */
     private $case;
 
-    /** @var PaymentStatus */
-    private $paymentStatus;
-
     public function __construct(
         Id $id,
         EventType $type,
         DateTimeInterface $time,
-        ImpressionCase $case,
-        PaymentStatus $paymentStatus = null
+        ImpressionCase $case
     ) {
-        if ($paymentStatus === null) {
-            $paymentStatus = new PaymentStatus();
-        }
         $this->id = $id;
         $this->type = $type;
         $this->time = $time;
         $this->case = $case;
-        $this->paymentStatus = $paymentStatus;
     }
 
     public function getId(): Id
@@ -132,8 +123,8 @@ abstract class Event
         return $this->case->getHumanScore();
     }
 
-    public function getPaymentStatus(): PaymentStatus
+    public function getPageRank(): float
     {
-        return $this->paymentStatus;
+        return $this->case->getPageRank();
     }
 }

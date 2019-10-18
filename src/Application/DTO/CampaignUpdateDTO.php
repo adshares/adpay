@@ -138,10 +138,6 @@ final class CampaignUpdateDTO
                 throw new ValidationException('Field `conversions[][is_repeatable]` is required.');
             }
 
-            if (!isset($input['value'])) {
-                throw new ValidationException('Field `conversions[][value]` is required.');
-            }
-
             if (!isset($input['is_value_mutable'])) {
                 throw new ValidationException('Field `conversions[][is_value_mutable]` is required.');
             }
@@ -216,7 +212,6 @@ final class CampaignUpdateDTO
                 new Id($input['id']),
                 $campaignId,
                 new Limit($input['limit'] ?? null, new LimitType($input['limit_type']), $input['cost']),
-                $input['value'],
                 $input['is_value_mutable'],
                 $input['is_repeatable']
             );

@@ -9,13 +9,16 @@ class Context
     /** @var float */
     private $humanScore;
 
+    /** @var float */
+    private $pageRank;
+
     /** @var array */
     private $keywords;
 
     /* @var array */
     private $data;
 
-    public function __construct(float $humanScore, array $keywords = [], array $data = [])
+    public function __construct(float $humanScore, float $pageRank, array $keywords = [], array $data = [])
     {
         if ($humanScore < 0 || $humanScore > 1) {
             throw InvalidArgumentException::fromArgument(
@@ -24,8 +27,16 @@ class Context
                 'Must be in the range of <0, 1>.'
             );
         }
+        if ($pageRank < 0 || $pageRank > 1) {
+            throw InvalidArgumentException::fromArgument(
+                'page rank',
+                (string)$pageRank,
+                'Must be in the range of <0, 1>.'
+            );
+        }
 
         $this->humanScore = $humanScore;
+        $this->pageRank = $pageRank;
         $this->keywords = $keywords;
         $this->data = $data;
     }
@@ -33,6 +44,11 @@ class Context
     public function getHumanScore(): float
     {
         return $this->humanScore;
+    }
+
+    public function getPageRank(): float
+    {
+        return $this->pageRank;
     }
 
     public function getKeywords(): array

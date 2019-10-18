@@ -48,6 +48,7 @@ final class PaymentCalculator
     ): iterable {
         foreach ($events as $event) {
             $status = $this->validateEvent($event);
+
             yield new Payment(
                 new EventType($event['type']),
                 new Id($event['id']),
@@ -59,13 +60,14 @@ final class PaymentCalculator
     private function validateEvent(array $event): PaymentStatus
     {
         $status = PaymentStatus::ACCEPTED;
+        $isConversion = $event['type'] === EventType::CONVERSION;
 
         /** @var Campaign $campaign */
         $campaign = $this->campaigns[$event['campaign_id']] ?? null;
         /** @var Banner $banner */
         $banner = $this->banners[$event['banner_id']] ?? null;
         /** @var Conversion $conversion */
-        $conversion = $this->conversions[$event['conversion_id'] ?? null] ?? null;
+        $conversion = $isConversion ? ($this->conversions[$event['conversion_id']] ?? null) : null;
 
         $eventTime = $event['time'];
 
@@ -73,20 +75,22 @@ final class PaymentCalculator
             $status = PaymentStatus::CAMPAIGN_NOT_FOUND;
         } elseif ($campaign->getDeletedAt() !== null && $campaign->getDeletedAt()->getTimestamp() < $eventTime) {
             $status = PaymentStatus::CAMPAIGN_NOT_FOUND;
-        } elseif ($campaign->getTimeStart()->getTimestamp() > $eventTime) {
-            $status = PaymentStatus::CAMPAIGN_OUTDATED;
-        } elseif ($campaign->getTimeEnd() !== null && $campaign->getTimeEnd()->getTimestamp() < $eventTime) {
-            $status = PaymentStatus::CAMPAIGN_OUTDATED;
         } elseif ($banner === null) {
             $status = PaymentStatus::BANNER_NOT_FOUND;
         } elseif ($banner->getDeletedAt() !== null && $banner->getDeletedAt()->getTimestamp() < $eventTime) {
             $status = PaymentStatus::BANNER_NOT_FOUND;
-        } elseif ($event['type'] === EventType::CONVERSION && $conversion === null) {
+        } elseif ($isConversion && $conversion === null) {
             $status = PaymentStatus::CONVERSION_NOT_FOUND;
-        } elseif ($event['type'] === EventType::CONVERSION
+        } elseif ($isConversion
             && $conversion->getDeletedAt() !== null
             && $conversion->getDeletedAt()->getTimestamp() < $eventTime) {
             $status = PaymentStatus::CONVERSION_NOT_FOUND;
+        } elseif ($isConversion && $event['payment_status'] !== null) {
+            $status = $event['payment_status'];
+        } elseif ($campaign->getTimeStart()->getTimestamp() > $eventTime) {
+            $status = PaymentStatus::CAMPAIGN_OUTDATED;
+        } elseif ($campaign->getTimeEnd() !== null && $campaign->getTimeEnd()->getTimestamp() < $eventTime) {
+            $status = PaymentStatus::CAMPAIGN_OUTDATED;
         } elseif ($event['human_score'] < $this->humanScoreThreshold) {
             $status = PaymentStatus::HUMAN_SCORE_TOO_LOW;
         } elseif (!$campaign->checkFilters($event['keywords'])) {

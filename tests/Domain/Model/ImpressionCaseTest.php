@@ -24,13 +24,14 @@ final class ImpressionCaseTest extends TestCase
         $userId = '33c567e1396b4cadb52223a51796fd01';
         $keywords = ['k' => 111];
         $context = ['a' => 123];
-        $humanScore = 0.99;
+        $humanScore = 0.89;
+        $pageRank = 0.99;
 
         $impression = new Impression(
             new Id($impressionId),
             new Id($trackingId),
             new Id($userId),
-            new Context($humanScore, $keywords, $context)
+            new Context($humanScore, $pageRank, $keywords, $context)
         );
 
         $case = new ImpressionCase(
@@ -55,6 +56,7 @@ final class ImpressionCaseTest extends TestCase
         $this->assertEquals($trackingId, $case->getTrackingId());
         $this->assertEquals($userId, $case->getUserId());
         $this->assertEquals($humanScore, $case->getHumanScore());
+        $this->assertEquals($pageRank, $case->getPageRank());
         $this->assertEquals($keywords, $case->getKeywords());
         $this->assertEquals($context, $case->getContext()->getData());
         $this->assertEquals($context, $case->getContextData());

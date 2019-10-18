@@ -65,4 +65,9 @@ final class Impression
     {
         return $this->context->getHumanScore();
     }
+
+    public function getPageRank(): float
+    {
+        return $this->context->getPageRank();
+    }
 }

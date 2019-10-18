@@ -54,7 +54,6 @@ final class Version20191002095930 extends AbstractMigration
                 `limit` BIGINT(20) NULL DEFAULT NULL,
                 limit_type VARCHAR(20) NOT NULL,
                 cost BIGINT(20) NOT NULL,
-                value BIGINT(20) NOT NULL,
                 is_value_mutable TINYINT(4) NOT NULL,
                 is_repeatable TINYINT(4) NOT NULL,
                 deleted_at TIMESTAMP NULL DEFAULT NULL,
@@ -80,7 +79,6 @@ final class Version20191002095930 extends AbstractMigration
                 human_score DECIMAL(3,2) NOT NULL,
                 keywords JSON NOT NULL,
                 context JSON NOT NULL,
-                payment_status TINYINT(3) NULL DEFAULT NULL,
                 PRIMARY KEY (id),
                 INDEX time (time)
             )'
@@ -102,7 +100,6 @@ final class Version20191002095930 extends AbstractMigration
                 human_score DECIMAL(3,2) NOT NULL,
                 keywords JSON NOT NULL,
                 context JSON NOT NULL,
-                payment_status TINYINT(3) NULL DEFAULT NULL,
                 PRIMARY KEY (id),
                 INDEX time (time)
             )'
@@ -124,8 +121,9 @@ final class Version20191002095930 extends AbstractMigration
                 human_score DECIMAL(3,2) NOT NULL,
                 keywords JSON NOT NULL,
                 context JSON NOT NULL,
+                group_id VARBINARY(16) NOT NULL,
                 conversion_id VARBINARY(16) NOT NULL,
-                conversion_value BIGINT(20) NULL DEFAULT NULL,
+                conversion_value BIGINT(20) NOT NULL,
                 payment_status TINYINT(3) NULL DEFAULT NULL,
                 PRIMARY KEY (id),
                 INDEX time (time)

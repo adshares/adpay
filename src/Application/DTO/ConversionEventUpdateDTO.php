@@ -25,8 +25,9 @@ final class ConversionEventUpdateDTO extends EventUpdateDTO
             new Id($input['id']),
             DateTimeHelper::fromTimestamp($input['time']),
             $this->createImpressionCaseModel($input),
+            new Id($input['group_id']),
             new Id($input['conversion_id']),
-            $input['conversion_value'] ?? null,
+            $input['conversion_value'],
             new PaymentStatus($input['payment_status'] ?? null)
         );
     }
@@ -35,8 +36,14 @@ final class ConversionEventUpdateDTO extends EventUpdateDTO
     {
         parent::validateEvent($input);
 
+        if (!isset($input['group_id'])) {
+            throw new ValidationException('Field `group_id` is required.');
+        }
         if (!isset($input['conversion_id'])) {
             throw new ValidationException('Field `conversion_id` is required.');
+        }
+        if (!isset($input['conversion_value'])) {
+            throw new ValidationException('Field `conversion_value` is required.');
         }
     }
 }

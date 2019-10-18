@@ -32,13 +32,14 @@ final class ViewEventTest extends TestCase
         $userId = '33c567e1396b4cadb52223a51796fd01';
         $keywords = ['k' => 111];
         $context = ['a' => 123];
-        $humanScore = 0.99;
+        $humanScore = 0.89;
+        $pageRank = 0.99;
 
         $impression = new Impression(
             new Id($impressionId),
             new Id($trackingId),
             new Id($userId),
-            new Context($humanScore, $keywords, $context)
+            new Context($humanScore, $pageRank, $keywords, $context)
         );
 
         $case = new ImpressionCase(
@@ -54,8 +55,7 @@ final class ViewEventTest extends TestCase
         $event = new ViewEvent(
             new Id($eventId),
             DateTimeHelper::fromString($time),
-            $case,
-            new PaymentStatus(PaymentStatus::ACCEPTED)
+            $case
         );
 
         $this->assertInstanceOf(ViewEvent::class, $event);
@@ -63,6 +63,5 @@ final class ViewEventTest extends TestCase
         $this->assertEquals(EventType::VIEW, $event->getType());
         $this->assertEquals($time, $event->getTime()->format(DateTimeInterface::ATOM));
         $this->assertEquals($case, $event->getCase());
-        $this->assertEquals(PaymentStatus::ACCEPTED, $event->getPaymentStatus()->getStatus());
     }
 }

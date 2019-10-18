@@ -17,7 +17,6 @@ final class ConversionTest extends TestCase
     {
         $conversionId = 'ffc567e1396b4cadb52223a51796fd02';
         $campaignId = '43c567e1396b4cadb52223a51796fd01';
-        $value = 25000;
         $deletedAt = '2019-01-01T12:00:00+00:00';
 
         $limitValue = 1000000;
@@ -26,7 +25,7 @@ final class ConversionTest extends TestCase
 
         $limit = new Limit($limitValue, $limitType, $cost);
 
-        $conversion = new Conversion(new Id($conversionId), new Id($campaignId), $limit, $value);
+        $conversion = new Conversion(new Id($conversionId), new Id($campaignId), $limit);
 
         $this->assertInstanceOf(Conversion::class, $conversion);
         $this->assertEquals($conversionId, $conversion->getId());
@@ -35,7 +34,6 @@ final class ConversionTest extends TestCase
         $this->assertEquals($limitValue, $conversion->getLimitValue());
         $this->assertEquals($limitType, $conversion->getLimitType());
         $this->assertEquals($cost, $conversion->getCost());
-        $this->assertEquals($value, $conversion->getValue());
         $this->assertFalse($conversion->isValueMutable());
         $this->assertFalse($conversion->isRepeatable());
         $this->assertNull($conversion->getDeletedAt());
@@ -45,7 +43,6 @@ final class ConversionTest extends TestCase
                 new Id($conversionId),
                 new Id($campaignId),
                 $limit,
-                $value,
                 true,
                 true,
                 DateTimeHelper::fromString($deletedAt)
@@ -55,26 +52,14 @@ final class ConversionTest extends TestCase
         $this->assertTrue($conversion->isRepeatable());
         $this->assertEquals($deletedAt, $conversion->getDeletedAt()->format(DateTimeInterface::ATOM));
 
-        $conversion = new Conversion(new Id($conversionId), new Id($campaignId), $limit, $value, true, false);
+        $conversion = new Conversion(new Id($conversionId), new Id($campaignId), $limit, true, false);
 
         $this->assertTrue($conversion->isValueMutable());
         $this->assertFalse($conversion->isRepeatable());
 
-        $conversion = new Conversion(new Id($conversionId), new Id($campaignId), $limit, $value, false, true);
+        $conversion = new Conversion(new Id($conversionId), new Id($campaignId), $limit, false, true);
 
         $this->assertFalse($conversion->isValueMutable());
         $this->assertTrue($conversion->isRepeatable());
-    }
-
-    public function testInvalidValue(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-
-        new Conversion(
-            new Id('43c567e1396b4cadb52223a51796fd01'),
-            new Id('43c567e1396b4cadb52223a51796fd01'),
-            new Limit(null, LimitType::createInBudget()),
-            -100
-        );
     }
 }

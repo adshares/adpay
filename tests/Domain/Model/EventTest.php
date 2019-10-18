@@ -32,13 +32,14 @@ final class EventTest extends TestCase
         $userId = '33c567e1396b4cadb52223a51796fd01';
         $keywords = ['k' => 111];
         $context = ['a' => 123];
-        $humanScore = 0.99;
+        $humanScore = 0.89;
+        $pageRank = 0.99;
 
         $impression = new Impression(
             new Id($impressionId),
             new Id($trackingId),
             new Id($userId),
-            new Context($humanScore, $keywords, $context)
+            new Context($humanScore, $pageRank, $keywords, $context)
         );
 
         $case = new ImpressionCase(
@@ -79,9 +80,9 @@ final class EventTest extends TestCase
         $this->assertEquals($userId, $event->getUserId());
         $this->assertEquals($keywords, $event->getKeywords());
         $this->assertEquals($humanScore, $event->getHumanScore());
+        $this->assertEquals($pageRank, $event->getPageRank());
         $this->assertEquals($context, $event->getContext()->getData());
         $this->assertEquals($context, $event->getContextData());
-        $this->assertNull($event->getPaymentStatus()->getStatus());
 
         $case = new ImpressionCase(
             new Id($impressionCaseId),
@@ -100,12 +101,10 @@ final class EventTest extends TestCase
                 new Id($eventId),
                 EventType::createView(),
                 DateTimeHelper::fromString($time),
-                $case,
-                new PaymentStatus(PaymentStatus::ACCEPTED),
+                $case
             ]
         );
 
-        $this->assertEquals(PaymentStatus::ACCEPTED, $event->getPaymentStatus()->getStatus());
         $this->assertNull($event->getZoneId());
     }
 }

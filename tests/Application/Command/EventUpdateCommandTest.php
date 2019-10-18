@@ -19,7 +19,7 @@ class EventUpdateCommandTest extends TestCase
 {
     public function testExecuteCommand()
     {
-        $timestamp = 1571011200;
+        $timestamp = (int)floor(time() / 3600) * 3600 - 7200;
 
         $dto = new ViewEventUpdateDTO(
             [
@@ -47,7 +47,7 @@ class EventUpdateCommandTest extends TestCase
 
     public function testExecuteCrossCommand()
     {
-        $timestamp = 1571011200;
+        $timestamp = (int)floor(time() / 3600) * 3600 - 7200;
         $report = new PaymentReport($timestamp, PaymentReportStatus::createIncomplete());
 
         $viewDto = new ViewEventUpdateDTO(
@@ -108,7 +108,7 @@ class EventUpdateCommandTest extends TestCase
 
     public function testExecuteWideCommand()
     {
-        $timestamp = 1571011200;
+        $timestamp = (int)floor(time() / 3600) * 3600 - 7200;
 
         $report1 = new PaymentReport($timestamp, PaymentReportStatus::createIncomplete());
         $report2 = new PaymentReport($timestamp, PaymentReportStatus::createIncomplete());
@@ -160,10 +160,12 @@ class EventUpdateCommandTest extends TestCase
         /** @var PaymentReportRepository $paymentReportRepository */
         $command = new EventUpdateCommand($eventRepository, $paymentReportRepository, new NullLogger());
 
+        $timestamp = (int)floor(time() / 3600) * 3600 - 7200;
+
         $dto = new ViewEventUpdateDTO(
             [
-                'time_start' => 123123123,
-                'time_end' => 123123123,
+                'time_start' => $timestamp + 12,
+                'time_end' => $timestamp + 22,
                 'events' => [],
             ]
         );

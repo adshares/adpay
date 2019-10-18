@@ -160,11 +160,18 @@ abstract class EventUpdateDTO
 
     protected function createImpressionModel(array $input): Impression
     {
+        $context = new Context(
+            $input['human_score'],
+            $input['page_rank'] ?? 1.0,
+            $input['keywords'] ?? [],
+            $input['context'] ?? []
+        );
+
         return new Impression(
             new Id($input['impression_id']),
             new Id($input['tracking_id']),
             new Id($input['user_id']),
-            new Context($input['human_score'], $input['keywords'] ?? [], $input['context'] ?? [])
+            $context
         );
     }
 }

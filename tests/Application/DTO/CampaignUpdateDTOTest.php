@@ -185,7 +185,6 @@ final class CampaignUpdateDTOTest extends TestCase
         $this->assertEquals($conversionInput['limit'], $conversion->getLimitValue());
         $this->assertEquals($conversionInput['limit_type'], $conversion->getLimitType());
         $this->assertEquals($conversionInput['cost'], $conversion->getCost());
-        $this->assertEquals($conversionInput['value'], $conversion->getValue());
         $this->assertEquals($conversionInput['is_value_mutable'], $conversion->isValueMutable());
         $this->assertEquals($conversionInput['is_repeatable'], $conversion->isRepeatable());
     }
@@ -322,11 +321,6 @@ final class CampaignUpdateDTOTest extends TestCase
             [[self::simpleConversion(['is_repeatable' => 4])]],
             [[self::simpleConversion(['is_repeatable' => 'invalid_value'])]],
 
-            [[self::simpleConversion([], 'value')]],
-            [[self::simpleConversion(['value' => null])]],
-            [[self::simpleConversion(['value' => -100])]],
-            [[self::simpleConversion(['value' => 'invalid_value'])]],
-
             [[self::simpleConversion([], 'is_value_mutable')]],
             [[self::simpleConversion(['is_value_mutable' => null])]],
             [[self::simpleConversion(['is_value_mutable' => 4])]],
@@ -360,7 +354,6 @@ final class CampaignUpdateDTOTest extends TestCase
                 'limit_type' => 'in_budget',
                 'cost' => 0,
                 'is_repeatable' => false,
-                'value' => 1000000000,
                 'is_value_mutable' => false,
             ],
             $mergeData

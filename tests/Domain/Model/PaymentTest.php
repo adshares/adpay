@@ -45,6 +45,20 @@ final class PaymentTest extends TestCase
         $this->assertEquals($reportId, $payment->getReportId());
     }
 
+    public function testReportId(): void
+    {
+        $payment =
+            new Payment(
+                EventType::createView(),
+                new Id('43c567e1396b4cadb52223a51796fd01'),
+                new PaymentStatus(PaymentStatus::ACCEPTED)
+            );
+
+        $reportId = 123;
+        $payment->setReportId($reportId);
+        $this->assertEquals($reportId, $payment->getReportId());
+    }
+
     public function testNullReportId(): void
     {
         $this->expectException(InvalidArgumentException::class);

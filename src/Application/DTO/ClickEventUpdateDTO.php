@@ -23,8 +23,7 @@ final class ClickEventUpdateDTO extends EventUpdateDTO
         return new ClickEvent(
             new Id($input['id']),
             DateTimeHelper::fromTimestamp($input['time']),
-            $this->createImpressionCaseModel($input),
-            new PaymentStatus($input['payment_status'] ?? null)
+            $this->createImpressionCaseModel($input)
         );
     }
 }

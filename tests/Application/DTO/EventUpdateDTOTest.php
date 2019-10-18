@@ -5,10 +5,13 @@ namespace Adshares\AdPay\Tests\Application\DTO;
 use Adshares\AdPay\Application\DTO\EventUpdateDTO;
 use Adshares\AdPay\Application\Exception\ValidationException;
 use Adshares\AdPay\Domain\Model\Event;
+use Adshares\AdPay\Domain\ValueObject\EventType;
 use PHPUnit\Framework\TestCase;
 
 abstract class EventUpdateDTOTest extends TestCase
 {
+    abstract protected function getEventType(): EventType;
+
     abstract protected function createDTO(array $data): EventUpdateDTO;
 
     public function testEmptyInputData(): void
@@ -141,16 +144,16 @@ abstract class EventUpdateDTOTest extends TestCase
     {
         $input =
             static::simpleEvent(
-                ['zone_id' => 'aac567e1396b4cadb52223a51796fdbb', 'payment_status' => 1, 'context' => ['a' => 1]]
+                ['zone_id' => 'aac567e1396b4cadb52223a51796fdbb', 'context' => ['a' => 1]]
             );
         $dto = $this->createDTO(['time_start' => time() - 10, 'time_end' => time() - 1, 'events' => [$input],]);
 
         /* @var $event Event */
         $event = $dto->getEvents()->first();
 
+        $this->assertEquals($this->getEventType()->toString(), $event->getType()->toString());
         $this->assertEquals($input['id'], $event->getId());
         $this->assertEquals($input['time'], $event->getTime()->getTimestamp());
-        $this->assertEquals($input['payment_status'], $event->getPaymentStatus()->getStatus());
         $this->assertEquals($input['case_id'], $event->getCaseId());
         $this->assertEquals($input['publisher_id'], $event->getPublisherId());
         $this->assertEquals($input['zone_id'], $event->getZoneId());
@@ -202,9 +205,6 @@ abstract class EventUpdateDTOTest extends TestCase
             [[], 0],
             [[static::simpleEvent()]],
             [[static::simpleEvent(), static::simpleEvent()], 2],
-            [[static::simpleEvent(['payment_status' => null])]],
-            [[static::simpleEvent(['payment_status' => 0])]],
-            [[static::simpleEvent(['payment_status' => 1])]],
         ];
     }
 
@@ -225,6 +225,10 @@ abstract class EventUpdateDTOTest extends TestCase
             [[static::simpleEvent(['context' => null])]],
             [[static::simpleEvent(['context' => []])]],
             [[static::simpleEvent(['context' => ['a' => 123]])]],
+            [[static::simpleEvent(['page_rank' => null])]],
+            [[static::simpleEvent(['page_rank' => 0.0])]],
+            [[static::simpleEvent(['page_rank' => 0.59])]],
+            [[static::simpleEvent(['page_rank' => 1.0])]],
         ];
     }
 
@@ -239,8 +243,6 @@ abstract class EventUpdateDTOTest extends TestCase
             [[static::simpleEvent(['time' => null])]],
             [[static::simpleEvent(['time' => 0])]],
             [[static::simpleEvent(['time' => 'invalid_value'])]],
-            [[static::simpleEvent(['payment_status' => -1])]],
-            [[static::simpleEvent(['payment_status' => 'invalid_value'])]],
         ];
     }
 
@@ -291,6 +293,9 @@ abstract class EventUpdateDTOTest extends TestCase
             [[static::simpleEvent(['keywords' => 'invalid_value'])]],
             [[static::simpleEvent(['context' => 0])]],
             [[static::simpleEvent(['context' => 'invalid_value'])]],
+            [[static::simpleEvent(['page_rank' => -1])]],
+            [[static::simpleEvent(['page_rank' => 100])]],
+            [[static::simpleEvent(['page_rank' => 'invalid_value'])]],
             [[static::simpleEvent([], 'human_score')]],
             [[static::simpleEvent(['human_score' => null])]],
             [[static::simpleEvent(['human_score' => -1])]],

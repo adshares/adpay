@@ -35,7 +35,20 @@ final class PaymentCalculatorTest extends TestCase
 
     private const USER_ID = 'a0000000000000000000000000000001';
 
-    private const CONVERSION_ID = 'b0000000000000000000000000000001';
+    private const CONVERSION_GROUP_ID = 'b0000000000000000000000000000001';
+
+    private const CONVERSION_ID = 'c0000000000000000000000000000001';
+
+    public function testPaymentList(): void
+    {
+        $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
+        $payments = (new PaymentCalculator($campaigns))->calculate([self::viewEvent(), self::clickEvent()]);
+
+        $list = [];
+        array_push($list, ...$payments);
+
+        $this->assertCount(2, $list);
+    }
 
     public function testCampaignNotExist(): void
     {
@@ -61,6 +74,37 @@ final class PaymentCalculatorTest extends TestCase
     public function testBannerDeleted(): void
     {
         $this->statusForAll(PaymentStatus::BANNER_NOT_FOUND, [], [], ['deleted_at' => self::TIME - 3600 * 24]);
+    }
+
+    public function testConversionNotExist(): void
+    {
+        $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
+
+        $payment = $this->single(
+            $campaigns,
+            self::conversionEvent(
+                [
+                    'conversion_id' => 'c000000000000000000000000000000f',
+                ]
+            )
+        );
+        $this->assertEquals(PaymentStatus::CONVERSION_NOT_FOUND, $payment->getStatusCode());
+    }
+
+    public function testConversionDeleted(): void
+    {
+        $campaigns =
+            new CampaignCollection(
+                self::campaign([], [self::banner()], [self::conversion(['deleted_at' => self::TIME - 3600 * 24])])
+            );
+
+        $payment = $this->single($campaigns, self::conversionEvent());
+        $this->assertEquals(PaymentStatus::CONVERSION_NOT_FOUND, $payment->getStatusCode());
+    }
+
+    public function testPreviousState(): void
+    {
+        $this->statusForAll(PaymentStatus::CAMPAIGN_NOT_FOUND, [], ['deleted_at' => self::TIME - 3600 * 24]);
     }
 
     public function testHumanScore(): void
@@ -92,32 +136,6 @@ final class PaymentCalculatorTest extends TestCase
         $this->statusForAll(PaymentStatus::INVALID_TARGETING, ['keywords' => ['e1' => ['e1_v1']]]);
         $this->statusForAll(PaymentStatus::INVALID_TARGETING, [], ['filters' => ['require' => ['r1' => ['r1_v3']]]]);
         $this->statusForAll(PaymentStatus::INVALID_TARGETING, [], ['filters' => ['exclude' => ['e1' => ['e1_v3']]]]);
-    }
-
-    public function testConversionNotExist(): void
-    {
-        $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
-
-        $payment = $this->single(
-            $campaigns,
-            self::conversionEvent(
-                [
-                    'conversion_id' => 'b000000000000000000000000000000f',
-                ]
-            )
-        );
-        $this->assertEquals(PaymentStatus::CONVERSION_NOT_FOUND, $payment->getStatusCode());
-    }
-
-    public function testConversionDeleted(): void
-    {
-        $campaigns =
-            new CampaignCollection(
-                self::campaign([], [self::banner()], [self::conversion(['deleted_at' => self::TIME - 3600 * 24])])
-            );
-
-        $payment = $this->single($campaigns, self::conversionEvent());
-        $this->assertEquals(PaymentStatus::CONVERSION_NOT_FOUND, $payment->getStatusCode());
     }
 
     private function statusForAll(
@@ -226,7 +244,6 @@ final class PaymentCalculatorTest extends TestCase
                 'limit' => null,
                 'limit_type' => LimitType::IN_BUDGET,
                 'cost' => 0,
-                'value' => 10,
                 'is_value_mutable' => false,
                 'is_repeatable' => false,
                 'deleted_at' => null,
@@ -245,7 +262,6 @@ final class PaymentCalculatorTest extends TestCase
             new Id($data['id']),
             new Id($data['campaign_id']),
             $limit,
-            $data['value'],
             $data['is_value_mutable'],
             $data['is_repeatable'],
             $data['deleted_at'] !== null ? DateTimeHelper::fromTimestamp($data['deleted_at']) : null
@@ -280,6 +296,8 @@ final class PaymentCalculatorTest extends TestCase
             self::event(),
             [
                 'type' => EventType::CONVERSION,
+                'payment_status' => null,
+                'conversion_group_id' => self::CONVERSION_GROUP_ID,
                 'conversion_id' => self::CONVERSION_ID,
                 'conversion_value' => 100,
             ],
@@ -292,7 +310,6 @@ final class PaymentCalculatorTest extends TestCase
         return [
             'id' => '10000000000000000000000000000001',
             'time' => self::TIME,
-            'payment_status' => null,
             'case_id' => '20000000000000000000000000000001',
             'publisher_id' => '30000000000000000000000000000001',
             'zone_id' => '40000000000000000000000000000001',

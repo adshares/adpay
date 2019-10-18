@@ -115,4 +115,9 @@ final class ImpressionCase
     {
         return $this->impression->getHumanScore();
     }
+
+    public function getPageRank(): float
+    {
+        return $this->impression->getPageRank();
+    }
 }

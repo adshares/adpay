@@ -11,22 +11,29 @@ use DateTimeInterface;
 final class ConversionEvent extends Event
 {
     /** @var Id */
+    private $groupId;
+
+    /** @var Id */
     private $conversionId;
 
-    /** @var ?int */
+    /** @var int */
     private $conversionValue;
+
+    /** @var PaymentStatus */
+    private $paymentStatus;
 
     public function __construct(
         Id $id,
         DateTimeInterface $time,
         ImpressionCase $case,
+        Id $groupId,
         Id $conversionId,
-        ?int $value,
+        int $value,
         PaymentStatus $paymentStatus = null
     ) {
-        parent::__construct($id, EventType::createConversion(), $time, $case, $paymentStatus);
+        parent::__construct($id, EventType::createConversion(), $time, $case);
 
-        if ($value !== null && $value < 0) {
+        if ($value < 0) {
             throw InvalidArgumentException::fromArgument(
                 'value',
                 (string)$value,
@@ -34,8 +41,19 @@ final class ConversionEvent extends Event
             );
         }
 
+        if ($paymentStatus === null) {
+            $paymentStatus = new PaymentStatus();
+        }
+
+        $this->groupId = $groupId;
         $this->conversionId = $conversionId;
         $this->conversionValue = $value;
+        $this->paymentStatus = $paymentStatus;
+    }
+
+    public function getGroupId(): Id
+    {
+        return $this->groupId;
     }
 
     public function getConversionId(): Id
@@ -43,8 +61,13 @@ final class ConversionEvent extends Event
         return $this->conversionId;
     }
 
-    public function getConversionValue(): ?int
+    public function getConversionValue(): int
     {
         return $this->conversionValue;
+    }
+
+    public function getPaymentStatus(): PaymentStatus
+    {
+        return $this->paymentStatus;
     }
 }

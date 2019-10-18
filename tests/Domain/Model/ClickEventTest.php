@@ -8,7 +8,6 @@ use Adshares\AdPay\Domain\Model\ImpressionCase;
 use Adshares\AdPay\Domain\ValueObject\Context;
 use Adshares\AdPay\Domain\ValueObject\EventType;
 use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
 use Adshares\AdPay\Lib\DateTimeHelper;
 use DateTimeInterface;
 use PHPUnit\Framework\TestCase;
@@ -32,13 +31,14 @@ final class ClickEventTest extends TestCase
         $userId = '33c567e1396b4cadb52223a51796fd01';
         $keywords = ['k' => 111];
         $context = ['a' => 123];
-        $humanScore = 0.99;
+        $humanScore = 0.89;
+        $pageRank = 0.99;
 
         $impression = new Impression(
             new Id($impressionId),
             new Id($trackingId),
             new Id($userId),
-            new Context($humanScore, $keywords, $context)
+            new Context($humanScore, $pageRank, $keywords, $context)
         );
 
         $case = new ImpressionCase(
@@ -54,8 +54,7 @@ final class ClickEventTest extends TestCase
         $event = new ClickEvent(
             new Id($eventId),
             DateTimeHelper::fromString($time),
-            $case,
-            new PaymentStatus(PaymentStatus::ACCEPTED)
+            $case
         );
 
         $this->assertInstanceOf(ClickEvent::class, $event);
@@ -63,6 +62,5 @@ final class ClickEventTest extends TestCase
         $this->assertEquals(EventType::CLICK, $event->getType());
         $this->assertEquals($time, $event->getTime()->format(DateTimeInterface::ATOM));
         $this->assertEquals($case, $event->getCase());
-        $this->assertEquals(PaymentStatus::ACCEPTED, $event->getPaymentStatus()->getStatus());
     }
 }

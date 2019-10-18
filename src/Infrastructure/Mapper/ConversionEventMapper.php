@@ -20,8 +20,10 @@ class ConversionEventMapper extends EventMapper
         return array_merge(
             parent::map($event),
             [
+                'group_id' => $event->getGroupId()->toBin(),
                 'conversion_id' => $event->getConversionId()->toBin(),
                 'conversion_value' => $event->getConversionValue(),
+                'payment_status' => $event->getPaymentStatus()->getStatus(),
             ]
         );
     }
@@ -31,8 +33,10 @@ class ConversionEventMapper extends EventMapper
         return array_merge(
             parent::types(),
             [
+                'group_id' => Type::BINARY,
                 'conversion_id' => Type::BINARY,
                 'conversion_value' => Type::INTEGER,
+                'payment_status' => Type::INTEGER,
             ]
         );
     }
@@ -40,5 +44,18 @@ class ConversionEventMapper extends EventMapper
     protected static function getEventType(): string
     {
         return EventType::CONVERSION;
+    }
+
+    public static function fillRaw(array $row): array
+    {
+        return array_merge(
+            parent::fillRaw($row),
+            [
+                'group_id' => bin2hex($row['group_id']),
+                'conversion_id' => bin2hex($row['conversion_id']),
+                'conversion_value' => (int)$row['conversion_value'],
+                'payment_status' => $row['payment_status'] !== null ? (int)$row['payment_status'] : null,
+            ]
+        );
     }
 }
