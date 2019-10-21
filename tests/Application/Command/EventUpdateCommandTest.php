@@ -108,7 +108,7 @@ class EventUpdateCommandTest extends TestCase
 
     public function testExecuteWideCommand()
     {
-        $timestamp = (int)floor(time() / 3600) * 3600 - 7200;
+        $timestamp = (int)floor(time() / 3600) * 3600 - 14400;
 
         $report1 = new PaymentReport($timestamp, PaymentReportStatus::createIncomplete());
         $report2 = new PaymentReport($timestamp, PaymentReportStatus::createIncomplete());

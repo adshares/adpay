@@ -29,6 +29,12 @@ final class PaymentCalculatorTest extends TestCase
 
     private const CAMPAIGN_ID = '60000000000000000000000000000001';
 
+    private const CAMPAIGN_BUDGET = 10000000000;
+
+    private const CAMPAIGN_CPV = 100;
+
+    private const CAMPAIGN_CPC = 1000000;
+
     private const BANNER_ID = '70000000000000000000000000000001';
 
     private const BANNER_SZIE = '100x200';
@@ -138,6 +144,160 @@ final class PaymentCalculatorTest extends TestCase
         $this->statusForAll(PaymentStatus::INVALID_TARGETING, [], ['filters' => ['exclude' => ['e1' => ['e1_v3']]]]);
     }
 
+    public function testSimpleEvents(): void
+    {
+        $campaigns = new CampaignCollection(self::campaign([], [self::banner()]));
+
+        $this->assertEquals(
+            [
+                '10000000000000000000000000000001' => self::CAMPAIGN_CPV,
+            ],
+            $this->values($campaigns, [self::viewEvent()])
+        );
+        $this->assertEquals(
+            [
+                '10000000000000000000000000000002' => self::CAMPAIGN_CPC,
+            ],
+            $this->values($campaigns, [self::clickEvent()])
+        );
+        $this->assertEquals(
+            [
+                '10000000000000000000000000000001' => self::CAMPAIGN_CPV,
+                '10000000000000000000000000000002' => self::CAMPAIGN_CPC,
+            ],
+            $this->values($campaigns, [self::viewEvent(), self::clickEvent()])
+        );
+    }
+
+    public function testMultipleEvents(): void
+    {
+        $campaigns =
+            new CampaignCollection(
+                self::campaign([], [self::banner()]),
+                self::campaign(
+                    ['id' => '60000000000000000000000000000002', 'max_cpm' => 123000],
+                    [self::banner(['id' => '70000000000000000000000000000002'])]
+                )
+            );
+
+        $this->assertEquals(
+            [
+                '10000000000000000000000000000001' => 33,
+                '10000000000000000000000000000011' => 33,
+                '10000000000000000000000000000021' => 33,
+                '10000000000000000000000000000101' => 123,
+                '10000000000000000000000000000002' => self::CAMPAIGN_CPC,
+            ],
+            $this->values(
+                $campaigns,
+                [
+                    self::viewEvent(),
+                    self::viewEvent(['id' => '10000000000000000000000000000011']),
+                    self::viewEvent(['id' => '10000000000000000000000000000021']),
+                    self::viewEvent(
+                        [
+                            'id' => '10000000000000000000000000000101',
+                            'campaign_id' => '60000000000000000000000000000002',
+                        ]
+                    ),
+                    self::clickEvent(),
+                ]
+            )
+        );
+    }
+
+    public function testOverBudget(): void
+    {
+        $campaigns =
+            new CampaignCollection(
+                self::campaign(['budget' => 500, 'max_cpm' => 300000, 'max_cpc' => 700], [self::banner()])
+            );
+
+        $this->assertEquals(
+            [
+                '10000000000000000000000000000001' => 250,
+                '10000000000000000000000000000011' => 250,
+            ],
+            $this->values(
+                $campaigns,
+                [
+                    self::viewEvent(),
+                    self::viewEvent(
+                        ['id' => '10000000000000000000000000000011', 'user_id' => 'a0000000000000000000000000000002']
+                    ),
+                ]
+            )
+        );
+
+        $this->assertEquals(
+            ['10000000000000000000000000000002' => 500],
+            $this->values($campaigns, [self::clickEvent()])
+        );
+
+        $this->assertEquals(
+            [
+                '10000000000000000000000000000001' => 75,
+                '10000000000000000000000000000011' => 75,
+                '10000000000000000000000000000002' => 175,
+                '10000000000000000000000000000012' => 175,
+            ],
+            $this->values(
+                $campaigns,
+                [
+                    self::viewEvent(),
+                    self::viewEvent(
+                        ['id' => '10000000000000000000000000000011', 'user_id' => 'a0000000000000000000000000000002']
+                    ),
+                    self::clickEvent(),
+                    self::clickEvent(
+                        ['id' => '10000000000000000000000000000012', 'user_id' => 'a0000000000000000000000000000002']
+                    ),
+                ]
+            )
+        );
+    }
+
+    public function testZeroCosts(): void
+    {
+        $campaigns =
+            new CampaignCollection(
+                self::campaign(['max_cpm' => 0, 'max_cpc' => 0], [self::banner()])
+            );
+
+        $this->assertEquals(
+            [
+                '10000000000000000000000000000001' => 0,
+                '10000000000000000000000000000011' => 0,
+            ],
+            $this->values(
+                $campaigns,
+                [
+                    self::viewEvent(),
+                    self::viewEvent(['id' => '10000000000000000000000000000011']),
+                ]
+            )
+        );
+    }
+
+    public function testPageRank(): void
+    {
+        $campaigns = new CampaignCollection(self::campaign([], [self::banner()]));
+
+        $this->assertEquals(
+            [
+                '10000000000000000000000000000001' => self::CAMPAIGN_CPV / 4,
+            ],
+            $this->values($campaigns, [self::viewEvent(['page_rank' => 0.25])])
+        );
+        $this->assertEquals(
+            [
+                '10000000000000000000000000000001' => self::CAMPAIGN_CPV,
+                '10000000000000000000000000000002' => self::CAMPAIGN_CPC / 2,
+            ],
+            $this->values($campaigns, [self::viewEvent(), self::clickEvent(['page_rank' => 0.5])])
+        );
+    }
+
     private function statusForAll(
         int $status,
         array $eventData = [],
@@ -163,16 +323,30 @@ final class PaymentCalculatorTest extends TestCase
     private function single(CampaignCollection $campaigns, array $event, array $config = []): ?Payment
     {
         $payments = (new PaymentCalculator($campaigns, $config))->calculate([$event]);
+        $result = null;
 
         foreach ($payments as $payment) {
             /** @var Payment $payment */
             if ($payment->getEventType()->toString() === $event['type']
                 && $payment->getEventId()->toString() === $event['id']) {
-                return $payment;
+                $result = $payment;
             }
         }
 
-        return null;
+        return $result;
+    }
+
+    private function values(CampaignCollection $campaigns, array $events, array $config = []): array
+    {
+        $payments = (new PaymentCalculator($campaigns, $config))->calculate($events);
+        $result = [];
+
+        foreach ($payments as $payment) {
+            /** @var Payment $payment */
+            $result[$payment->getEventId()->toString()] = $payment->getValue();
+        }
+
+        return $result;
     }
 
     private static function campaign(array $mergeData = [], array $banners = [], array $conversions = []): Campaign
@@ -186,9 +360,9 @@ final class PaymentCalculatorTest extends TestCase
                 'time_start' => self::TIME - 7 * 24 * 3600,
                 'time_end' => null,
                 'filters' => $filters,
-                'budget' => 1000,
-                'max_cpm' => 100,
-                'max_cpc' => null,
+                'budget' => self::CAMPAIGN_BUDGET,
+                'max_cpm' => self::CAMPAIGN_CPV * 1000,
+                'max_cpc' => self::CAMPAIGN_CPC,
                 'deleted_at' => null,
             ],
             $mergeData
@@ -273,6 +447,7 @@ final class PaymentCalculatorTest extends TestCase
         return array_merge(
             self::event(),
             [
+                'id' => '10000000000000000000000000000001',
                 'type' => EventType::VIEW,
             ],
             $mergeData
@@ -284,6 +459,7 @@ final class PaymentCalculatorTest extends TestCase
         return array_merge(
             self::event(),
             [
+                'id' => '10000000000000000000000000000002',
                 'type' => EventType::CLICK,
             ],
             $mergeData
@@ -295,6 +471,7 @@ final class PaymentCalculatorTest extends TestCase
         return array_merge(
             self::event(),
             [
+                'id' => '10000000000000000000000000000003',
                 'type' => EventType::CONVERSION,
                 'payment_status' => null,
                 'conversion_group_id' => self::CONVERSION_GROUP_ID,
@@ -308,7 +485,7 @@ final class PaymentCalculatorTest extends TestCase
     private static function event(): array
     {
         return [
-            'id' => '10000000000000000000000000000001',
+            'id' => '10000000000000000000000000000000',
             'time' => self::TIME,
             'case_id' => '20000000000000000000000000000001',
             'publisher_id' => '30000000000000000000000000000001',

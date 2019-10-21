@@ -79,17 +79,19 @@ final class PaymentCalculator
             if (!array_key_exists($campaignId, $matrix)) {
                 $matrix[$campaignId] = [
                     'events' => [],
-                    'users' => [],
+                    EventType::VIEW => [],
+                    EventType::CLICK => [],
+                    EventType::CONVERSION => [],
                     'costs' => 0,
                 ];
             }
 
             $matrix[$campaignId]['events'][] = $event;
-            if (!array_key_exists($userId, $matrix[$campaignId]['users'])) {
-                $matrix[$campaignId]['users'][$userId] = 1;
-                $matrix[$campaignId]['costs'] += $campaign->getViewCost();
+            if (!array_key_exists($userId, $matrix[$campaignId][$event['type']])) {
+                $matrix[$campaignId][$event['type']][$userId] = 1;
+                $matrix[$campaignId]['costs'] += self::getEventCost($campaign, $event);
             } else {
-                $matrix[$campaignId]['users'][$userId]++;
+                $matrix[$campaignId][$event['type']][$userId]++;
             }
         }
 
@@ -99,8 +101,8 @@ final class PaymentCalculator
             $factor = $item['costs'] > $campaign->getBudgetValue() ? $campaign->getBudgetValue() / $item['costs'] : 1;
 
             foreach ($item['events'] as $event) {
-                $value = self::getEventCost($campaign, $event) * $factor * $event['page_rank'];
-                $value = (int)($value / $item['users'][$event['user_id']]);
+                $value = self::getEventCost($campaign, $event) * $factor;
+                $value = (int)($value / $item[$event['type']][$event['user_id']]);
 
                 yield new Payment(
                     new EventType($event['type']),
@@ -159,9 +161,9 @@ final class PaymentCalculator
     {
         switch ($event['type']) {
             case EventType::VIEW:
-                return $campaign->getViewCost();
+                return (int)($campaign->getViewCost() * $event['page_rank']);
             case EventType::CLICK:
-                return $campaign->getClickCost();
+                return (int)($campaign->getClickCost() * $event['page_rank']);
             case EventType::CONVERSION:
                 return $event['conversion_value'];
             default:
