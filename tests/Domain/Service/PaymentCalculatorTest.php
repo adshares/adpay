@@ -19,6 +19,7 @@ use Adshares\AdPay\Domain\ValueObject\LimitType;
 use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
 use Adshares\AdPay\Domain\ValueObject\Size;
 use Adshares\AdPay\Lib\DateTimeHelper;
+use DateTimeInterface;
 use PHPUnit\Framework\TestCase;
 
 final class PaymentCalculatorTest extends TestCase
@@ -523,7 +524,7 @@ final class PaymentCalculatorTest extends TestCase
     {
         return [
             'id' => '10000000000000000000000000000000',
-            'time' => self::TIME,
+            'time' => DateTimeHelper::fromTimestamp(self::TIME)->format(DateTimeInterface::ATOM),
             'case_id' => '20000000000000000000000000000001',
             'publisher_id' => '30000000000000000000000000000001',
             'zone_id' => '40000000000000000000000000000001',

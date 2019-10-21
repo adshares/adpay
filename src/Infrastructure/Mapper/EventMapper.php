@@ -56,7 +56,7 @@ abstract class EventMapper
         return [
             'type' => static::getEventType(),
             'id' => bin2hex($row['id']),
-            'time' => (int)$row['time'],
+            'time' => $row['time'],
             'case_id' => bin2hex($row['case_id']),
             'publisher_id' => bin2hex($row['publisher_id']),
             'zone_id' => $row['zone_id'] !== null ? bin2hex($row['zone_id']) : null,

@@ -10,6 +10,7 @@ use Adshares\AdPay\Domain\Model\Payment;
 use Adshares\AdPay\Domain\ValueObject\EventType;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
+use Adshares\AdPay\Lib\DateTimeHelper;
 
 final class PaymentCalculator
 {
@@ -115,27 +116,27 @@ final class PaymentCalculator
         /** @var Conversion $conversion */
         $conversion = $isConversion ? ($this->conversions[$event['conversion_id']] ?? null) : null;
 
-        $eventTime = $event['time'];
+        $eventTime = DateTimeHelper::fromString($event['time']);
 
         if ($campaign === null) {
             $status = PaymentStatus::CAMPAIGN_NOT_FOUND;
-        } elseif ($campaign->getDeletedAt() !== null && $campaign->getDeletedAt()->getTimestamp() < $eventTime) {
+        } elseif ($campaign->getDeletedAt() !== null && $campaign->getDeletedAt() < $eventTime) {
             $status = PaymentStatus::CAMPAIGN_NOT_FOUND;
         } elseif ($banner === null) {
             $status = PaymentStatus::BANNER_NOT_FOUND;
-        } elseif ($banner->getDeletedAt() !== null && $banner->getDeletedAt()->getTimestamp() < $eventTime) {
+        } elseif ($banner->getDeletedAt() !== null && $banner->getDeletedAt() < $eventTime) {
             $status = PaymentStatus::BANNER_NOT_FOUND;
         } elseif ($isConversion && $conversion === null) {
             $status = PaymentStatus::CONVERSION_NOT_FOUND;
         } elseif ($isConversion
             && $conversion->getDeletedAt() !== null
-            && $conversion->getDeletedAt()->getTimestamp() < $eventTime) {
+            && $conversion->getDeletedAt() < $eventTime) {
             $status = PaymentStatus::CONVERSION_NOT_FOUND;
         } elseif ($isConversion && $event['payment_status'] !== null) {
             $status = $event['payment_status'];
-        } elseif ($campaign->getTimeStart()->getTimestamp() > $eventTime) {
+        } elseif ($campaign->getTimeStart() > $eventTime) {
             $status = PaymentStatus::CAMPAIGN_OUTDATED;
-        } elseif ($campaign->getTimeEnd() !== null && $campaign->getTimeEnd()->getTimestamp() < $eventTime) {
+        } elseif ($campaign->getTimeEnd() !== null && $campaign->getTimeEnd() < $eventTime) {
             $status = PaymentStatus::CAMPAIGN_OUTDATED;
         } elseif ($event['human_score'] < $this->humanScoreThreshold) {
             $status = PaymentStatus::HUMAN_SCORE_TOO_LOW;
