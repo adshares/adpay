@@ -20,9 +20,6 @@ final class Conversion
     private $limit;
 
     /** @var bool */
-    private $valueMutable;
-
-    /** @var bool */
     private $repeatable;
 
     /** @var DateTimeInterface|null */
@@ -32,14 +29,12 @@ final class Conversion
         Id $id,
         Id $campaignId,
         Limit $limit,
-        bool $valueMutable = false,
         bool $repeatable = false,
         DateTimeInterface $deletedAt = null
     ) {
         $this->id = $id;
         $this->campaignId = $campaignId;
         $this->limit = $limit;
-        $this->valueMutable = $valueMutable;
         $this->repeatable = $repeatable;
         $this->deletedAt = $deletedAt;
     }
@@ -72,11 +67,6 @@ final class Conversion
     public function getCost(): int
     {
         return $this->limit->getCost();
-    }
-
-    public function isValueMutable(): bool
-    {
-        return $this->valueMutable;
     }
 
     public function isRepeatable(): bool

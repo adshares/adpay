@@ -24,7 +24,6 @@ class ConversionMapper
             '`limit`' => $conversion->getLimitValue(),
             'limit_type' => $conversion->getLimitType()->toString(),
             'cost' => $conversion->getCost(),
-            'is_value_mutable' => $conversion->isValueMutable(),
             'is_repeatable' => $conversion->isRepeatable(),
             'deleted_at' => $conversion->getDeletedAt(),
         ];
@@ -39,7 +38,6 @@ class ConversionMapper
             'limit_type' => Type::STRING,
             'cost' => Type::INTEGER,
             'value' => Type::INTEGER,
-            'is_value_mutable' => Type::BOOLEAN,
             'is_repeatable' => Type::BOOLEAN,
             'deleted_at' => TYPE::DATETIME,
         ];
@@ -58,7 +56,6 @@ class ConversionMapper
             Id::fromBin($row['id']),
             Id::fromBin($row['campaign_id']),
             $limit,
-            (bool)$row['is_value_mutable'],
             (bool)$row['is_repeatable'],
             $row['deleted_at'] !== null ? DateTimeHelper::fromString($row['deleted_at']) : null
         );

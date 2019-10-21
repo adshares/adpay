@@ -34,7 +34,6 @@ final class ConversionTest extends TestCase
         $this->assertEquals($limitValue, $conversion->getLimitValue());
         $this->assertEquals($limitType, $conversion->getLimitType());
         $this->assertEquals($cost, $conversion->getCost());
-        $this->assertFalse($conversion->isValueMutable());
         $this->assertFalse($conversion->isRepeatable());
         $this->assertNull($conversion->getDeletedAt());
 
@@ -44,22 +43,16 @@ final class ConversionTest extends TestCase
                 new Id($campaignId),
                 $limit,
                 true,
-                true,
                 DateTimeHelper::fromString($deletedAt)
             );
 
-        $this->assertTrue($conversion->isValueMutable());
         $this->assertTrue($conversion->isRepeatable());
         $this->assertEquals($deletedAt, $conversion->getDeletedAt()->format(DateTimeInterface::ATOM));
 
-        $conversion = new Conversion(new Id($conversionId), new Id($campaignId), $limit, true, false);
-
-        $this->assertTrue($conversion->isValueMutable());
+        $conversion = new Conversion(new Id($conversionId), new Id($campaignId), $limit, false);
         $this->assertFalse($conversion->isRepeatable());
 
-        $conversion = new Conversion(new Id($conversionId), new Id($campaignId), $limit, false, true);
-
-        $this->assertFalse($conversion->isValueMutable());
+        $conversion = new Conversion(new Id($conversionId), new Id($campaignId), $limit, true);
         $this->assertTrue($conversion->isRepeatable());
     }
 }

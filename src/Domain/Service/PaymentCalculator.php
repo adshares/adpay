@@ -59,17 +59,6 @@ final class PaymentCalculator
                 continue;
             }
 
-            // conversions ara not supported yet
-            if ($event['type'] === EventType::CONVERSION) {
-                yield new Payment(
-                    new EventType($event['type']),
-                    new Id($event['id']),
-                    $status,
-                    0
-                );
-                continue;
-            }
-
             $campaignId = $event['campaign_id'];
             $userId = $event['user_id'];
 
@@ -160,14 +149,12 @@ final class PaymentCalculator
     private static function getEventCost(Campaign $campaign, array $event): int
     {
         switch ($event['type']) {
-            case EventType::VIEW:
-                return (int)($campaign->getViewCost() * $event['page_rank']);
             case EventType::CLICK:
                 return (int)($campaign->getClickCost() * $event['page_rank']);
             case EventType::CONVERSION:
                 return $event['conversion_value'];
             default:
-                return 0;
+                return (int)($campaign->getViewCost() * $event['page_rank']);
         }
     }
 }

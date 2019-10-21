@@ -33,7 +33,7 @@ final class PaymentCalculatorTest extends TestCase
 
     private const CAMPAIGN_CPV = 100;
 
-    private const CAMPAIGN_CPC = 1000000;
+    private const CAMPAIGN_CPC = 1500000;
 
     private const BANNER_ID = '70000000000000000000000000000001';
 
@@ -44,6 +44,8 @@ final class PaymentCalculatorTest extends TestCase
     private const CONVERSION_GROUP_ID = 'b0000000000000000000000000000001';
 
     private const CONVERSION_ID = 'c0000000000000000000000000000001';
+
+    private const CONVERSION_VALUE = 200;
 
     public function testPaymentList(): void
     {
@@ -110,7 +112,21 @@ final class PaymentCalculatorTest extends TestCase
 
     public function testPreviousState(): void
     {
-        $this->statusForAll(PaymentStatus::CAMPAIGN_NOT_FOUND, [], ['deleted_at' => self::TIME - 3600 * 24]);
+        $campaigns =
+            new CampaignCollection(
+                self::campaign([], [self::banner()], [self::conversion()])
+            );
+
+        $payment = $this->single($campaigns, self::conversionEvent(['payment_status' => PaymentStatus::ACCEPTED]));
+        $this->assertEquals(PaymentStatus::ACCEPTED, $payment->getStatusCode());
+
+        $payment =
+            $this->single($campaigns, self::conversionEvent(['payment_status' => PaymentStatus::HUMAN_SCORE_TOO_LOW]));
+        $this->assertEquals(PaymentStatus::HUMAN_SCORE_TOO_LOW, $payment->getStatusCode());
+
+        $payment =
+            $this->single($campaigns, self::conversionEvent(['payment_status' => PaymentStatus::INVALID_TARGETING]));
+        $this->assertEquals(PaymentStatus::INVALID_TARGETING, $payment->getStatusCode());
     }
 
     public function testHumanScore(): void
@@ -146,7 +162,7 @@ final class PaymentCalculatorTest extends TestCase
 
     public function testSimpleEvents(): void
     {
-        $campaigns = new CampaignCollection(self::campaign([], [self::banner()]));
+        $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
 
         $this->assertEquals(
             [
@@ -162,10 +178,17 @@ final class PaymentCalculatorTest extends TestCase
         );
         $this->assertEquals(
             [
+                '10000000000000000000000000000003' => self::CONVERSION_VALUE,
+            ],
+            $this->values($campaigns, [self::conversionEvent()])
+        );
+        $this->assertEquals(
+            [
                 '10000000000000000000000000000001' => self::CAMPAIGN_CPV,
                 '10000000000000000000000000000002' => self::CAMPAIGN_CPC,
+                '10000000000000000000000000000003' => self::CONVERSION_VALUE,
             ],
-            $this->values($campaigns, [self::viewEvent(), self::clickEvent()])
+            $this->values($campaigns, [self::viewEvent(), self::clickEvent(), self::conversionEvent()])
         );
     }
 
@@ -210,7 +233,11 @@ final class PaymentCalculatorTest extends TestCase
     {
         $campaigns =
             new CampaignCollection(
-                self::campaign(['budget' => 500, 'max_cpm' => 300000, 'max_cpc' => 700], [self::banner()])
+                self::campaign(
+                    ['budget' => 500, 'max_cpm' => 300000, 'max_cpc' => 700],
+                    [self::banner()],
+                    [self::conversion()]
+                )
             );
 
         $this->assertEquals(
@@ -255,13 +282,18 @@ final class PaymentCalculatorTest extends TestCase
                 ]
             )
         );
+
+        $this->assertEquals(
+            ['10000000000000000000000000000003' => 500],
+            $this->values($campaigns, [self::conversionEvent(['conversion_value' => 501])])
+        );
     }
 
     public function testZeroCosts(): void
     {
         $campaigns =
             new CampaignCollection(
-                self::campaign(['max_cpm' => 0, 'max_cpc' => 0], [self::banner()])
+                self::campaign(['max_cpm' => 0, 'max_cpc' => 0], [self::banner()], [self::conversion()])
             );
 
         $this->assertEquals(
@@ -276,6 +308,11 @@ final class PaymentCalculatorTest extends TestCase
                     self::viewEvent(['id' => '10000000000000000000000000000011']),
                 ]
             )
+        );
+
+        $this->assertEquals(
+            ['10000000000000000000000000000003' => 0],
+            $this->values($campaigns, [self::conversionEvent(['conversion_value' => 0])])
         );
     }
 
@@ -343,7 +380,9 @@ final class PaymentCalculatorTest extends TestCase
 
         foreach ($payments as $payment) {
             /** @var Payment $payment */
-            $result[$payment->getEventId()->toString()] = $payment->getValue();
+            if ($payment->isAccepted()) {
+                $result[$payment->getEventId()->toString()] = $payment->getValue();
+            }
         }
 
         return $result;
@@ -418,7 +457,6 @@ final class PaymentCalculatorTest extends TestCase
                 'limit' => null,
                 'limit_type' => LimitType::IN_BUDGET,
                 'cost' => 0,
-                'is_value_mutable' => false,
                 'is_repeatable' => false,
                 'deleted_at' => null,
             ],
@@ -436,7 +474,6 @@ final class PaymentCalculatorTest extends TestCase
             new Id($data['id']),
             new Id($data['campaign_id']),
             $limit,
-            $data['is_value_mutable'],
             $data['is_repeatable'],
             $data['deleted_at'] !== null ? DateTimeHelper::fromTimestamp($data['deleted_at']) : null
         );
@@ -476,7 +513,7 @@ final class PaymentCalculatorTest extends TestCase
                 'payment_status' => null,
                 'conversion_group_id' => self::CONVERSION_GROUP_ID,
                 'conversion_id' => self::CONVERSION_ID,
-                'conversion_value' => 100,
+                'conversion_value' => self::CONVERSION_VALUE,
             ],
             $mergeData
         );
