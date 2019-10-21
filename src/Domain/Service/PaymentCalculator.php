@@ -6,9 +6,7 @@ use Adshares\AdPay\Domain\Model\Banner;
 use Adshares\AdPay\Domain\Model\Campaign;
 use Adshares\AdPay\Domain\Model\CampaignCollection;
 use Adshares\AdPay\Domain\Model\Conversion;
-use Adshares\AdPay\Domain\Model\Payment;
 use Adshares\AdPay\Domain\ValueObject\EventType;
-use Adshares\AdPay\Domain\ValueObject\Id;
 use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
 use Adshares\AdPay\Lib\DateTimeHelper;
 
@@ -51,10 +49,10 @@ final class PaymentCalculator
         foreach ($events as $event) {
             $status = $this->validateEvent($event);
 
-            if ($status->isRejected()) {
-                yield new Payment(
-                    new EventType($event['type']),
-                    new Id($event['id']),
+            if ($status !== PaymentStatus::ACCEPTED) {
+                yield self::createPayment(
+                    $event['type'],
+                    $event['id'],
                     $status
                 );
                 continue;
@@ -94,17 +92,17 @@ final class PaymentCalculator
                 $value = self::getEventCost($campaign, $event) * $factor;
                 $value = (int)($value / $item[$event['type']][$event['user_id']]);
 
-                yield new Payment(
-                    new EventType($event['type']),
-                    new Id($event['id']),
-                    PaymentStatus::createAccepted(),
+                yield self::createPayment(
+                    $event['type'],
+                    $event['id'],
+                    PaymentStatus::ACCEPTED,
                     $value
                 );
             }
         }
     }
 
-    private function validateEvent(array $event): PaymentStatus
+    private function validateEvent(array $event): int
     {
         $status = PaymentStatus::ACCEPTED;
         $isConversion = $event['type'] === EventType::CONVERSION;
@@ -144,7 +142,17 @@ final class PaymentCalculator
             $status = PaymentStatus::INVALID_TARGETING;
         }
 
-        return new PaymentStatus($status);
+        return $status;
+    }
+
+    private static function createPayment(string $eventType, string $eventId, int $status, ?int $value = null)
+    {
+        return [
+            'event_type' => $eventType,
+            'event_id' => $eventId,
+            'status' => $status,
+            'value' => $value,
+        ];
     }
 
     private static function getEventCost(Campaign $campaign, array $event): int

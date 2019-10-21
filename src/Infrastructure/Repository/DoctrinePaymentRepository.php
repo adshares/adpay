@@ -3,15 +3,16 @@
 namespace Adshares\AdPay\Infrastructure\Repository;
 
 use Adshares\AdPay\Domain\Exception\DomainRepositoryException;
-use Adshares\AdPay\Domain\Model\Payment;
 use Adshares\AdPay\Domain\Repository\PaymentRepository;
 use Adshares\AdPay\Infrastructure\Mapper\PaymentMapper;
 use Doctrine\DBAL\DBALException;
 
 final class DoctrinePaymentRepository extends DoctrineModelUpdater implements PaymentRepository
 {
-    public function save(Payment $payment): void
+    public function saveRaw(int $reportId, array $payment): void
     {
+        $payment['report_id'] = $reportId;
+
         try {
             $this->db->insert(
                 PaymentMapper::table(),

@@ -75,9 +75,7 @@ final class ReportCalculateCommand
         $calculator = $this->createCalculator();
         $count = 0;
         foreach ($calculator->calculate($events) as $payment) {
-            /** @var $payment Payment */
-            $payment->setReportId($report->getId());
-            $this->paymentRepository->save($payment);
+            $this->paymentRepository->saveRaw($report->getId(), $payment);
             ++$count;
         }
 

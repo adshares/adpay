@@ -5,7 +5,6 @@ namespace Adshares\AdPay\Tests\Application\Command;
 use Adshares\AdPay\Application\Command\ReportCalculateCommand;
 use Adshares\AdPay\Application\Exception\FetchingException;
 use Adshares\AdPay\Domain\Model\CampaignCollection;
-use Adshares\AdPay\Domain\Model\Payment;
 use Adshares\AdPay\Domain\Model\PaymentReport;
 use Adshares\AdPay\Domain\Repository\CampaignRepository;
 use Adshares\AdPay\Domain\Repository\EventRepository;
@@ -43,7 +42,7 @@ class ReportCalculateCommandTest extends TestCase
 
         $paymentRepository = $this->createMock(PaymentRepository::class);
         $paymentRepository->expects($this->never())->method('deleteByReportId');
-        $paymentRepository->expects($this->never())->method('save');
+        $paymentRepository->expects($this->never())->method('saveRaw');
 
         $campaignRepository = $this->createMock(CampaignRepository::class);
         $campaignRepository->expects($this->never())->method('fetchAll');
@@ -70,26 +69,15 @@ class ReportCalculateCommandTest extends TestCase
     private function reportCalculateCommand(PaymentReport $report, array $events): ReportCalculateCommand
     {
         $paymentReportRepository = $this->createMock(PaymentReportRepository::class);
-        $paymentReportRepository->expects($this->once())
-            ->method('fetch')
-            ->with($report->getId())
-            ->willReturn($report);
-        $paymentReportRepository->expects($this->once())
-            ->method('save')
-            ->with($report);
+        $paymentReportRepository->expects($this->once())->method('fetch')->with($report->getId())->willReturn($report);
+        $paymentReportRepository->expects($this->once())->method('save')->with($report);
 
         $paymentRepository = $this->createMock(PaymentRepository::class);
-        $paymentRepository->expects($this->once())
-            ->method('deleteByReportId')
-            ->with($report->getId());
-        $paymentRepository->expects($this->exactly(count($events)))
-            ->method('save')
-            ->with($this->isInstanceOf(Payment::class));
+        $paymentRepository->expects($this->once())->method('deleteByReportId')->with($report->getId());
+        $paymentRepository->expects($this->exactly(count($events)))->method('saveRaw');
 
         $campaignRepository = $this->createMock(CampaignRepository::class);
-        $campaignRepository->expects($this->once())
-            ->method('fetchAll')
-            ->willReturn(new CampaignCollection());
+        $campaignRepository->expects($this->once())->method('fetchAll')->willReturn(new CampaignCollection());
 
         $eventRepository = $this->createMock(EventRepository::class);
         $eventRepository->expects($this->once())
@@ -118,7 +106,7 @@ class ReportCalculateCommandTest extends TestCase
         return [
             'id' => '1000000000000000000000000000000'.$id,
             'type' => EventType::VIEW,
-            'time' => 1571231623,
+            'time' => '2019-10-21 08:08:49',
             'case_id' => '20000000000000000000000000000001',
             'publisher_id' => '30000000000000000000000000000001',
             'zone_id' => '40000000000000000000000000000001',

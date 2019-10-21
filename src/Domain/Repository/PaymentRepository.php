@@ -8,7 +8,7 @@ interface PaymentRepository
 {
     public function fetchByReportId(int $reportId, ?int $limit = null, ?int $offset = null): iterable;
 
-    public function save(Payment $payment): void;
+    public function saveRaw(int $reportId, array $payment): void;
 
     public function deleteByReportId(int $reportId): int;
 }

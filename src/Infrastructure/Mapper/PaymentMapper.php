@@ -2,7 +2,6 @@
 
 namespace Adshares\AdPay\Infrastructure\Mapper;
 
-use Adshares\AdPay\Domain\Model\Payment;
 use Doctrine\DBAL\Types\Type;
 
 class PaymentMapper
@@ -12,14 +11,14 @@ class PaymentMapper
         return 'payments';
     }
 
-    public static function map(Payment $payment): array
+    public static function map(array $payment): array
     {
         return [
-            'report_id' => $payment->getReportId(),
-            'event_id' => $payment->getEventId()->toBin(),
-            'event_type' => $payment->getEventType()->toString(),
-            'status' => $payment->getStatusCode(),
-            'value' => $payment->getValue(),
+            'report_id' => $payment['report_id'],
+            'event_id' => hex2bin($payment['event_id']),
+            'event_type' => $payment['event_type'],
+            'status' => $payment['status'],
+            'value' => $payment['value'],
         ];
     }
 

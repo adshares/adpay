@@ -8,7 +8,6 @@ use Adshares\AdPay\Domain\Model\Campaign;
 use Adshares\AdPay\Domain\Model\CampaignCollection;
 use Adshares\AdPay\Domain\Model\Conversion;
 use Adshares\AdPay\Domain\Model\ConversionCollection;
-use Adshares\AdPay\Domain\Model\Payment;
 use Adshares\AdPay\Domain\Service\PaymentCalculator;
 use Adshares\AdPay\Domain\ValueObject\BannerType;
 use Adshares\AdPay\Domain\ValueObject\Budget;
@@ -97,7 +96,7 @@ final class PaymentCalculatorTest extends TestCase
                 ]
             )
         );
-        $this->assertEquals(PaymentStatus::CONVERSION_NOT_FOUND, $payment->getStatusCode());
+        $this->assertEquals(PaymentStatus::CONVERSION_NOT_FOUND, $payment['status']);
     }
 
     public function testConversionDeleted(): void
@@ -108,7 +107,7 @@ final class PaymentCalculatorTest extends TestCase
             );
 
         $payment = $this->single($campaigns, self::conversionEvent());
-        $this->assertEquals(PaymentStatus::CONVERSION_NOT_FOUND, $payment->getStatusCode());
+        $this->assertEquals(PaymentStatus::CONVERSION_NOT_FOUND, $payment['status']);
     }
 
     public function testPreviousState(): void
@@ -119,15 +118,15 @@ final class PaymentCalculatorTest extends TestCase
             );
 
         $payment = $this->single($campaigns, self::conversionEvent(['payment_status' => PaymentStatus::ACCEPTED]));
-        $this->assertEquals(PaymentStatus::ACCEPTED, $payment->getStatusCode());
+        $this->assertEquals(PaymentStatus::ACCEPTED, $payment['status']);
 
         $payment =
             $this->single($campaigns, self::conversionEvent(['payment_status' => PaymentStatus::HUMAN_SCORE_TOO_LOW]));
-        $this->assertEquals(PaymentStatus::HUMAN_SCORE_TOO_LOW, $payment->getStatusCode());
+        $this->assertEquals(PaymentStatus::HUMAN_SCORE_TOO_LOW, $payment['status']);
 
         $payment =
             $this->single($campaigns, self::conversionEvent(['payment_status' => PaymentStatus::INVALID_TARGETING]));
-        $this->assertEquals(PaymentStatus::INVALID_TARGETING, $payment->getStatusCode());
+        $this->assertEquals(PaymentStatus::INVALID_TARGETING, $payment['status']);
     }
 
     public function testHumanScore(): void
@@ -146,10 +145,10 @@ final class PaymentCalculatorTest extends TestCase
         $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
 
         $payment = $this->single($campaigns, self::viewEvent(['human_score' => 0.5]));
-        $this->assertEquals(PaymentStatus::ACCEPTED, $payment->getStatusCode());
+        $this->assertEquals(PaymentStatus::ACCEPTED, $payment['status']);
 
         $payment = $this->single($campaigns, self::viewEvent(['human_score' => 0.5]), ['humanScoreThreshold' => 0.55]);
-        $this->assertEquals(PaymentStatus::HUMAN_SCORE_TOO_LOW, $payment->getStatusCode());
+        $this->assertEquals(PaymentStatus::HUMAN_SCORE_TOO_LOW, $payment['status']);
     }
 
     public function testKeywords(): void
@@ -349,24 +348,23 @@ final class PaymentCalculatorTest extends TestCase
             );
 
         $payment = $this->single($campaigns, self::viewEvent($eventData));
-        $this->assertEquals($status, $payment->getStatusCode());
+        $this->assertEquals($status, $payment['status']);
 
         $payment = $this->single($campaigns, self::clickEvent($eventData));
-        $this->assertEquals($status, $payment->getStatusCode());
+        $this->assertEquals($status, $payment['status']);
 
         $payment = $this->single($campaigns, self::conversionEvent($eventData));
-        $this->assertEquals($status, $payment->getStatusCode());
+        $this->assertEquals($status, $payment['status']);
     }
 
-    private function single(CampaignCollection $campaigns, array $event, array $config = []): ?Payment
+    private function single(CampaignCollection $campaigns, array $event, array $config = []): array
     {
         $payments = (new PaymentCalculator($campaigns, $config))->calculate([$event]);
-        $result = null;
+        $result = [];
 
         foreach ($payments as $payment) {
-            /** @var Payment $payment */
-            if ($payment->getEventType()->toString() === $event['type']
-                && $payment->getEventId()->toString() === $event['id']) {
+            if ($payment['event_type'] === $event['type']
+                && $payment['event_id'] === $event['id']) {
                 $result = $payment;
             }
         }
@@ -380,9 +378,8 @@ final class PaymentCalculatorTest extends TestCase
         $result = [];
 
         foreach ($payments as $payment) {
-            /** @var Payment $payment */
-            if ($payment->isAccepted()) {
-                $result[$payment->getEventId()->toString()] = $payment->getValue();
+            if ($payment['status'] === PaymentStatus::ACCEPTED) {
+                $result[$payment['event_id']] = $payment['value'];
             }
         }
 
