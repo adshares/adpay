@@ -71,6 +71,11 @@ final class PaymentReport
         return $this->status->isComplete();
     }
 
+    public function markAsCalculated(): void
+    {
+        $this->status = PaymentReportStatus::createCalculated();
+    }
+
     public function getIntervals(): array
     {
         return $this->intervals;

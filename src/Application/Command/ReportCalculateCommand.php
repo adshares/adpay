@@ -81,6 +81,9 @@ final class ReportCalculateCommand
             ++$count;
         }
 
+        $report->markAsCalculated();
+        $this->paymentReportRepository->save($report);
+
         $this->logger->info(sprintf('%d payments calculated', $count));
 
         return $count;

@@ -10,5 +10,5 @@ interface PaymentRepository
 
     public function save(Payment $payment): void;
 
-    public function deleteByReportId(int $reportId): void;
+    public function deleteByReportId(int $reportId): int;
 }

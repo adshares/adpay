@@ -56,6 +56,7 @@ final class PaymentCalculator
                     new Id($event['id']),
                     $status
                 );
+                continue;
             }
 
             // conversions ara not supported yet
