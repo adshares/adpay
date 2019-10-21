@@ -26,6 +26,7 @@ abstract class EventMapper
             'tracking_id' => $event->getTrackingId()->toBin(),
             'user_id' => $event->getUserId()->toBin(),
             'human_score' => $event->getHumanScore(),
+            'page_rank' => $event->getPageRank(),
             'keywords' => $event->getKeywords(),
             'context' => $event->getContextData(),
         ];
@@ -46,6 +47,7 @@ abstract class EventMapper
             'tracking_id' => Type::BINARY,
             'user_id' => Type::BINARY,
             'human_score' => Type::FLOAT,
+            'page_rank' => Type::FLOAT,
             'keywords' => Type::JSON,
             'context' => Type::JSON,
         ];
@@ -67,6 +69,7 @@ abstract class EventMapper
             'tracking_id' => bin2hex($row['tracking_id']),
             'user_id' => bin2hex($row['user_id']),
             'human_score' => (float)$row['human_score'],
+            'page_rank' => (float)$row['page_rank'],
             'keywords' => json_decode($row['keywords'], true),
             'context' => json_decode($row['context'], true),
         ];

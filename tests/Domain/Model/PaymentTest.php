@@ -30,6 +30,7 @@ final class PaymentTest extends TestCase
         $this->assertEquals($eventId, $payment->getEventId());
         $this->assertEquals($status, $payment->getStatus()->getStatus());
         $this->assertEquals($status, $payment->getStatusCode());
+        $this->assertFalse($payment->isAccepted());
         $this->assertNull($payment->getValue());
 
         $payment =
@@ -57,6 +58,7 @@ final class PaymentTest extends TestCase
         $reportId = 123;
         $payment->setReportId($reportId);
         $this->assertEquals($reportId, $payment->getReportId());
+        $this->assertTrue($payment->isAccepted());
     }
 
     public function testNullReportId(): void
