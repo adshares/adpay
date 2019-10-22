@@ -30,13 +30,15 @@
 		"symfony/yaml": "^4.3"
 	},
 	"require-dev": {
+		"dama/doctrine-test-bundle": "^6.1",
 		"dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
 		"jakub-onderka/php-parallel-lint": "^1.0",
 		"phpcompatibility/php-compatibility": "^9.3",
+		"phpunit/phpunit": "^8.4",
 		"sensiolabs-de/deptrac-shim": "^0.5",
 		"sensiolabs/security-checker": "^6.0",
-		"squizlabs/php_codesniffer": "^3.5",
 		"slevomat/coding-standard": "^5.0",
+		"squizlabs/php_codesniffer": "^3.5",
 		"symfony/debug-pack": "^1.0",
 		"symfony/maker-bundle": "^1.13",
 		"symfony/profiler-pack": "^1.0",
@@ -79,9 +81,9 @@
 			"phpcs -s config src tests",
 			"deptrac --no-ansi"
 		],
-		"test": "php bin/phpunit --testsuite Domain,Lib,Application,Infrastructure",
+		"test": "phpunit --testsuite Domain,Lib,Application,Infrastructure",
 		"test-coverage": "@test --coverage-text",
-		"test-ci": "php bin/phpunit --configuration phpunit-ci.xml",
+		"test-ci": "phpunit --configuration phpunit-ci.xml",
 		"post-install-cmd": [
 			"@auto-scripts"
 		],

@@ -90,13 +90,13 @@ final class PaymentCalculator
 
             foreach ($item['events'] as $event) {
                 $value = self::getEventCost($campaign, $event) * $factor;
-                $value = (int)($value / $item[$event['type']][$event['user_id']]);
+                $value = $value / $item[$event['type']][$event['user_id']];
 
                 yield self::createPayment(
                     $event['type'],
                     $event['id'],
                     PaymentStatus::ACCEPTED,
-                    $value
+                    (int)$value
                 );
             }
         }
@@ -155,15 +155,15 @@ final class PaymentCalculator
         ];
     }
 
-    private static function getEventCost(Campaign $campaign, array $event): int
+    private static function getEventCost(Campaign $campaign, array $event): float
     {
         switch ($event['type']) {
             case EventType::CLICK:
-                return (int)($campaign->getClickCost() * $event['page_rank']);
+                return $campaign->getClickCost() * $event['page_rank'];
             case EventType::CONVERSION:
                 return $event['conversion_value'];
             default:
-                return (int)($campaign->getViewCost() * $event['page_rank']);
+                return $campaign->getViewCost() * $event['page_rank'];
         }
     }
 }
