@@ -28,6 +28,18 @@ class ReportCalculateCommandTest extends TestCase
         $this->assertEquals(3, $command->execute(1571659222));
     }
 
+    public function testBachInsert()
+    {
+        $events = [];
+        for ($i = 0; $i < 1001; ++$i) {
+            $events[] = self::event($i);
+        }
+
+        $report = new PaymentReport(1571659200, PaymentReportStatus::createComplete());
+        $command = $this->reportCalculateCommand($report, $events);
+        $this->assertEquals(1001, $command->execute(1571659222));
+    }
+
     public function testIncompleteReport()
     {
         $this->expectException(FetchingException::class);
@@ -42,7 +54,7 @@ class ReportCalculateCommandTest extends TestCase
 
         $paymentRepository = $this->createMock(PaymentRepository::class);
         $paymentRepository->expects($this->never())->method('deleteByReportId');
-        $paymentRepository->expects($this->never())->method('saveRaw');
+        $paymentRepository->expects($this->never())->method('saveAllRaw');
 
         $campaignRepository = $this->createMock(CampaignRepository::class);
         $campaignRepository->expects($this->never())->method('fetchAll');
@@ -74,7 +86,7 @@ class ReportCalculateCommandTest extends TestCase
 
         $paymentRepository = $this->createMock(PaymentRepository::class);
         $paymentRepository->expects($this->once())->method('deleteByReportId')->with($report->getId());
-        $paymentRepository->expects($this->exactly(count($events)))->method('saveRaw');
+        $paymentRepository->expects($this->exactly((int)floor(count($events) / 1000) + 1))->method('saveAllRaw');
 
         $campaignRepository = $this->createMock(CampaignRepository::class);
         $campaignRepository->expects($this->once())->method('fetchAll')->willReturn(new CampaignCollection());

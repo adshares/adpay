@@ -6,6 +6,7 @@ use Adshares\AdPay\Application\Command\ReportCalculateCommand;
 use Adshares\AdPay\Application\Command\ReportFetchCommand;
 use Adshares\AdPay\Application\Exception\FetchingException;
 use Adshares\AdPay\Lib\DateTimeHelper;
+use Adshares\AdPay\Lib\Exception\DateTimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputArgument;
@@ -13,7 +14,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use DateTimeInterface;
 
 class PaymentsCalculateCommand extends Command
 {
@@ -41,7 +41,7 @@ class PaymentsCalculateCommand extends Command
     {
         $this
             ->setDescription('Calculates payments for events')
-            ->addArgument('timestamp', InputArgument::OPTIONAL, 'Report time')
+            ->addArgument('date', InputArgument::OPTIONAL, 'Report date or timestamp')
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force calculation of incomplete report');
     }
 
@@ -87,31 +87,33 @@ class PaymentsCalculateCommand extends Command
         $io->success(sprintf('%d payments calculated.', $count));
     }
 
-    protected function interact(InputInterface $input, OutputInterface $output)
-    {
-        parent::interact($input, $output);
-
-        $timestamp = $input->getArgument('timestamp');
-        if ($timestamp !== null && !preg_match('/^\d+$/', $timestamp)) {
-            throw new \RuntimeException(sprintf('Timestamp "%s" is invalid.', $timestamp));
-        }
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);
-        $timestamp = $input->getArgument('timestamp');
+        $date = $input->getArgument('date');
 
         if (!$this->lock()) {
             $io->warning('The command is already running in another process.');
 
-            return 0;
+            return;
         }
 
-        if ($timestamp === null) {
+        if ($date === null) {
             $this->calculateAll($io);
         } else {
-            $this->calculate((int)$timestamp, $input->getOption('force'), $io);
+            if (preg_match('/^\d+$/', $date)) {
+                $timestamp = (int)$date;
+            } else {
+                try {
+                    $timestamp = (DateTimeHelper::fromString($date)->getTimestamp());
+                } catch (DateTimeException $exception) {
+                    $io->error($exception->getMessage());
+
+                    return;
+                }
+            }
+
+            $this->calculate($timestamp, $input->getOption('force'), $io);
         }
 
         $this->release();

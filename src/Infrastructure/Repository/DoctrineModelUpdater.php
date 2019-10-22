@@ -2,11 +2,10 @@
 
 namespace Adshares\AdPay\Infrastructure\Repository;
 
-use Adshares\AdPay\Domain\Exception\DomainRepositoryException;
 use Adshares\AdPay\Domain\ValueObject\Id;
-use DateTimeInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Types\Type;
 use Psr\Log\LoggerInterface;
 
@@ -80,5 +79,41 @@ abstract class DoctrineModelUpdater
             [$ids],
             [Connection::PARAM_STR_ARRAY]
         );
+    }
+
+    /**
+     * @param string $table
+     * @param array $data
+     * @param array $types
+     *
+     * @return int
+     * @throws DBALException
+     */
+    protected function insertBatch(string $table, array $data, array $types = []): int
+    {
+        if (empty($data)) {
+            return 0;
+        }
+
+        $columns = array_keys(reset($data));
+        $set = '('.implode(', ', array_fill(0, count($columns), '?')).')';
+
+        return $this->db->executeUpdate(
+            'INSERT INTO '.$table.' ('.implode(', ', $columns).')'.
+            ' VALUES '.implode(',', array_fill(0, count($data), $set)),
+            array_merge(...array_map('array_values', $data)),
+            array_merge(...array_fill(0, count($data), $this->extractTypeValues($columns, $types)))
+        );
+    }
+
+    private function extractTypeValues(array $columnList, array $types): array
+    {
+        $typeValues = [];
+
+        foreach ($columnList as $columnIndex => $columnName) {
+            $typeValues[] = $types[$columnName] ?? ParameterType::STRING;
+        }
+
+        return $typeValues;
     }
 }

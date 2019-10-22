@@ -9,14 +9,17 @@ use Doctrine\DBAL\DBALException;
 
 final class DoctrinePaymentRepository extends DoctrineModelUpdater implements PaymentRepository
 {
-    public function saveRaw(int $reportId, array $payment): void
+    public function saveAllRaw(int $reportId, array $payments): int
     {
-        $payment['report_id'] = $reportId;
+        foreach ($payments as $key => $payment) {
+            $payment['report_id'] = $reportId;
+            $payments[$key] = PaymentMapper::map($payment);
+        }
 
         try {
-            $this->db->insert(
+            return $this->insertBatch(
                 PaymentMapper::table(),
-                PaymentMapper::map($payment),
+                $payments,
                 PaymentMapper::types()
             );
         } catch (DBALException $exception) {

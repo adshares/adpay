@@ -15,6 +15,8 @@ use Psr\Log\LoggerInterface;
 
 final class ReportCalculateCommand
 {
+    private const BATCH_SIZE = 1000;
+
     /** @var PaymentReportRepository */
     private $paymentReportRepository;
 
@@ -74,10 +76,16 @@ final class ReportCalculateCommand
 
         $calculator = $this->createCalculator();
         $count = 0;
+        $payments = [];
         foreach ($calculator->calculate($events) as $payment) {
-            $this->paymentRepository->saveRaw($report->getId(), $payment);
+            $payments[] = $payment;
             ++$count;
+            if ($count % self::BATCH_SIZE === 0) {
+                $this->paymentRepository->saveAllRaw($report->getId(), $payments);
+                $payments = [];
+            }
         }
+        $this->paymentRepository->saveAllRaw($report->getId(), $payments);
 
         $report->markAsCalculated();
         $this->paymentReportRepository->save($report);

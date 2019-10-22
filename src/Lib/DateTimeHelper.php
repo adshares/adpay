@@ -15,9 +15,12 @@ final class DateTimeHelper
             if ($timestamp === 0) {
                 throw new RuntimeException('Timestamp equals 0');
             }
+
             return new DateTimeImmutable('@'.$timestamp);
         } catch (Throwable $exception) {
-            throw new DateTimeException($exception->getMessage());
+            throw new DateTimeException(
+                str_replace('DateTimeImmutable::__construct(): ', '', $exception->getMessage())
+            );
         }
     }
 
@@ -26,7 +29,9 @@ final class DateTimeHelper
         try {
             return new DateTimeImmutable($date);
         } catch (Throwable $exception) {
-            throw new DateTimeException($exception->getMessage());
+            throw new DateTimeException(
+                str_replace('DateTimeImmutable::__construct(): ', '', $exception->getMessage())
+            );
         }
     }
 }
