@@ -26,7 +26,7 @@ final class PaymentCalculator
 
     public function __construct(CampaignCollection $campaigns, array $config = [])
     {
-        $this->humanScoreThreshold = $config['humanScoreThreshold'] ?? $this->humanScoreThreshold;
+        $this->humanScoreThreshold = (float)($config['humanScoreThreshold'] ?? $this->humanScoreThreshold);
 
         foreach ($campaigns as $campaign) {
             /** @var Campaign $campaign */

@@ -99,7 +99,7 @@ final class ReportCalculateCommand
     {
         $campaigns = $this->campaignRepository->fetchAll();
         $config = [
-            'humanScoreThreshold' => getenv('HUMAN_SCORE_THRESHOLD'),
+            'humanScoreThreshold' => $_ENV['HUMAN_SCORE_THRESHOLD'] ?? null,
         ];
 
         return new PaymentCalculator($campaigns, $config);
