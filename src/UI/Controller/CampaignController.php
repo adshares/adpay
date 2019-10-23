@@ -50,11 +50,7 @@ class CampaignController extends AbstractController
             throw new UnprocessableEntityHttpException($exception->getMessage());
         }
 
-        try {
-            $this->updateCommand->execute($dto);
-        } catch (ValidationException $exception) {
-            throw new UnprocessableEntityHttpException($exception->getMessage());
-        }
+        $this->updateCommand->execute($dto);
 
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
     }
@@ -74,11 +70,7 @@ class CampaignController extends AbstractController
             throw new UnprocessableEntityHttpException($exception->getMessage());
         }
 
-        try {
-            $this->deleteCommand->execute($dto);
-        } catch (ValidationException $exception) {
-            throw new UnprocessableEntityHttpException($exception->getMessage());
-        }
+        $this->deleteCommand->execute($dto);
 
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
     }

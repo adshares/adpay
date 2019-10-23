@@ -27,16 +27,45 @@ final class DoctrineEventRepository extends DoctrineModelUpdater implements Even
 
     public function deleteByTime(
         EventType $type,
-        ?DateTimeInterface $timeStart,
-        ?DateTimeInterface $timeEnd
-    ): void {
+        ?DateTimeInterface $timeStart = null,
+        ?DateTimeInterface $timeEnd = null
+    ): int {
         /*  @var $mapper EventMapper */
         $mapper = self::getMapper($type);
         try {
-            $this->clearInterval($mapper::table(), $timeStart, $timeEnd);
+            return $this->clearInterval($mapper::table(), $timeStart, $timeEnd);
         } catch (DBALException $exception) {
             throw new DomainRepositoryException($exception->getMessage());
         }
+    }
+
+    public function fetchByTime(
+        ?DateTimeInterface $timeStart = null,
+        ?DateTimeInterface $timeEnd = null
+    ): iterable {
+        $params = [];
+        $types = [];
+        $query = 'SELECT * FROM %s WHERE 1=1';
+        $query .= self::timeCondition($timeStart, $timeEnd, $params, $types);
+
+        try {
+            $result = $this->db->executeQuery(sprintf($query, ViewEventMapper::table()), $params, $types);
+            while ($row = $result->fetch()) {
+                yield ViewEventMapper::fillRaw($row);
+            }
+            $result = $this->db->executeQuery(sprintf($query, ClickEventMapper::table()), $params, $types);
+            while ($row = $result->fetch()) {
+                yield ClickEventMapper::fillRaw($row);
+            }
+            $result = $this->db->executeQuery(sprintf($query, ConversionEventMapper::table()), $params, $types);
+            while ($row = $result->fetch()) {
+                yield ConversionEventMapper::fillRaw($row);
+            }
+        } catch (DBALException $exception) {
+            throw new DomainRepositoryException($exception->getMessage());
+        }
+
+        return null;
     }
 
     private static function getMapper(EventType $type): string
@@ -80,49 +109,6 @@ final class DoctrineEventRepository extends DoctrineModelUpdater implements Even
         return $count;
     }
 
-    public function fetchByTime(
-        ?DateTimeInterface $timeStart,
-        ?DateTimeInterface $timeEnd
-    ): iterable {
-        if ($timeStart === null && $timeEnd === null) {
-            throw new DomainRepositoryException('Time start or time end is required');
-        }
-
-        $query = 'SELECT * FROM %s WHERE 1=1';
-        $params = [];
-        $types = [];
-
-        if ($timeStart !== null) {
-            $query .= ' AND time >= ?';
-            $params[] = $timeStart;
-            $types[] = Type::DATETIME;
-        }
-        if ($timeEnd !== null) {
-            $query .= ' AND time <= ?';
-            $params[] = $timeEnd;
-            $types[] = Type::DATETIME;
-        }
-
-        try {
-            $result = $this->db->executeQuery(sprintf($query, ViewEventMapper::table()), $params, $types);
-            while ($row = $result->fetch()) {
-                yield ViewEventMapper::fillRaw($row);
-            }
-            $result = $this->db->executeQuery(sprintf($query, ClickEventMapper::table()), $params, $types);
-            while ($row = $result->fetch()) {
-                yield ClickEventMapper::fillRaw($row);
-            }
-            $result = $this->db->executeQuery(sprintf($query, ConversionEventMapper::table()), $params, $types);
-            while ($row = $result->fetch()) {
-                yield ConversionEventMapper::fillRaw($row);
-            }
-        } catch (DBALException $exception) {
-            throw new DomainRepositoryException($exception->getMessage());
-        }
-
-        return null;
-    }
-
     /**
      * @param string $table
      * @param DateTimeInterface|null $timeStart
@@ -131,18 +117,26 @@ final class DoctrineEventRepository extends DoctrineModelUpdater implements Even
      * @return int
      * @throws DBALException
      */
-    protected function clearInterval(
+    private function clearInterval(
         string $table,
-        ?DateTimeInterface $timeStart,
-        ?DateTimeInterface $timeEnd
+        ?DateTimeInterface $timeStart = null,
+        ?DateTimeInterface $timeEnd = null
     ): int {
-        if ($timeStart === null && $timeEnd === null) {
-            throw new DomainRepositoryException('Time start or time end is required');
-        }
-
-        $query = sprintf('DELETE FROM %s WHERE 1=1', $table);
         $params = [];
         $types = [];
+        $query = sprintf('DELETE FROM %s WHERE 1=1', $table);
+        $query .= self::timeCondition($timeStart, $timeEnd, $params, $types);
+
+        return $this->db->executeUpdate($query, $params, $types);
+    }
+
+    private static function timeCondition(
+        ?DateTimeInterface $timeStart,
+        ?DateTimeInterface $timeEnd,
+        array &$params,
+        array &$types
+    ) {
+        $query = '';
 
         if ($timeStart !== null) {
             $query .= ' AND time >= ?';
@@ -155,6 +149,6 @@ final class DoctrineEventRepository extends DoctrineModelUpdater implements Even
             $types[] = Type::DATETIME;
         }
 
-        return $this->db->executeUpdate($query, $params, $types);
+        return $query;
     }
 }

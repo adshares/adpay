@@ -10,8 +10,8 @@ use DateTimeInterface;
 interface EventRepository
 {
     public function fetchByTime(
-        ?DateTimeInterface $timeStart,
-        ?DateTimeInterface $timeEnd
+        ?DateTimeInterface $timeStart = null,
+        ?DateTimeInterface $timeEnd = null
     ): iterable;
 
     /**
@@ -24,7 +24,7 @@ interface EventRepository
 
     public function deleteByTime(
         EventType $type,
-        ?DateTimeInterface $timeStart,
-        ?DateTimeInterface $timeEnd
-    ): void;
+        ?DateTimeInterface $timeStart = null,
+        ?DateTimeInterface $timeEnd = null
+    ): int;
 }

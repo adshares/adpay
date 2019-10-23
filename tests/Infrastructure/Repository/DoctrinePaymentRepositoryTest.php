@@ -102,24 +102,49 @@ final class DoctrinePaymentRepositoryTest extends RepositoryTestCase
 
     public function testDeleting(): void
     {
-        $this->installReports(2);
+        $this->installReports(1, 2);
         $repository = new DoctrinePaymentRepository($this->connection, new NullLogger());
+
+        $repository->saveAllRaw(
+            1,
+            [
+                self::payment(12),
+                self::payment(13),
+            ]
+        );
 
         $repository->saveAllRaw(
             2,
             [
                 self::payment(22),
-                self::payment(23),
             ]
         );
 
         $this->assertEquals(0, $repository->deleteByReportId(123));
 
         $list = [];
-        array_push($list, ...$repository->fetchByReportId(2));
+        array_push($list, ...$repository->fetchByReportId(1));
         $this->assertCount(2, $list);
 
-        $this->assertEquals(2, $repository->deleteByReportId(2));
+        $list = [];
+        array_push($list, ...$repository->fetchByReportId(2));
+        $this->assertCount(1, $list);
+
+        $this->assertEquals(2, $repository->deleteByReportId(1));
+
+        $list = [];
+        array_push($list, ...$repository->fetchByReportId(1));
+        $this->assertEmpty($list);
+
+        $list = [];
+        array_push($list, ...$repository->fetchByReportId(2));
+        $this->assertCount(1, $list);
+
+        $this->assertEquals(1, $repository->deleteByReportId(2));
+
+        $list = [];
+        array_push($list, ...$repository->fetchByReportId(1));
+        $this->assertEmpty($list);
 
         $list = [];
         array_push($list, ...$repository->fetchByReportId(2));
