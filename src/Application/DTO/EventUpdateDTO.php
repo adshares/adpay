@@ -104,6 +104,10 @@ abstract class EventUpdateDTO
         if (!isset($input['human_score'])) {
             throw new ValidationException('Field `human_score` is required.');
         }
+
+        if (!isset($input['page_rank'])) {
+            throw new ValidationException('Field `page_rank` is required.');
+        }
     }
 
     protected function fill(array $input): void
@@ -162,7 +166,7 @@ abstract class EventUpdateDTO
     {
         $context = new Context(
             $input['human_score'],
-            $input['page_rank'] ?? 1.0,
+            $input['page_rank'],
             $input['keywords'] ?? [],
             $input['context'] ?? []
         );
