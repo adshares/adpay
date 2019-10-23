@@ -3,6 +3,7 @@
 namespace Adshares\AdPay\Tests\Infrastructure\Repository;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DBALException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 abstract class RepositoryTestCase extends KernelTestCase
@@ -20,5 +21,17 @@ abstract class RepositoryTestCase extends KernelTestCase
     {
         parent::tearDown();
         $this->connection->close();
+    }
+
+    protected function failedConnection(): Connection
+    {
+        $connection = $this->createMock(Connection::class);
+        $connection->method('executeQuery')->willThrowException(new DBALException());
+        $connection->method('executeUpdate')->willThrowException(new DBALException());
+        $connection->method('fetchAssoc')->willThrowException(new DBALException());
+        $connection->method('fetchColumn')->willThrowException(new DBALException());
+        $connection->method('fetchAll')->willThrowException(new DBALException());
+
+        return $connection;
     }
 }

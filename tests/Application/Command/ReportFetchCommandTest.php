@@ -26,33 +26,29 @@ class ReportFetchCommandTest extends TestCase
         $command = $this->reportFetchCommand1(PaymentReportStatus::INCOMPLETE);
         $this->assertEquals([100, 101], $command->execute(false, false, true)->getReportIds());
 
-        $command =
-            $this->reportFetchCommand2(
-                PaymentReportStatus::CALCULATED,
-                PaymentReportStatus::COMPLETE
-            );
+        $command = $this->reportFetchCommand2(
+            PaymentReportStatus::CALCULATED,
+            PaymentReportStatus::COMPLETE
+        );
         $this->assertEquals([100, 101], $command->execute(true, true, false)->getReportIds());
 
-        $command =
-            $this->reportFetchCommand2(
-                PaymentReportStatus::CALCULATED,
-                PaymentReportStatus::INCOMPLETE
-            );
+        $command = $this->reportFetchCommand2(
+            PaymentReportStatus::CALCULATED,
+            PaymentReportStatus::INCOMPLETE
+        );
         $this->assertEquals([100, 101], $command->execute(true, false, true)->getReportIds());
 
-        $command =
-            $this->reportFetchCommand2(
-                PaymentReportStatus::COMPLETE,
-                PaymentReportStatus::INCOMPLETE
-            );
+        $command = $this->reportFetchCommand2(
+            PaymentReportStatus::COMPLETE,
+            PaymentReportStatus::INCOMPLETE
+        );
         $this->assertEquals([100, 101], $command->execute(false, true, true)->getReportIds());
 
-        $command =
-            $this->reportFetchCommand3(
-                PaymentReportStatus::CALCULATED,
-                PaymentReportStatus::COMPLETE,
-                PaymentReportStatus::INCOMPLETE
-            );
+        $command = $this->reportFetchCommand3(
+            PaymentReportStatus::CALCULATED,
+            PaymentReportStatus::COMPLETE,
+            PaymentReportStatus::INCOMPLETE
+        );
         $this->assertEquals([100, 101], $command->execute(true, true, true)->getReportIds());
     }
 

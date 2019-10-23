@@ -142,10 +142,9 @@ abstract class EventUpdateDTOTest extends TestCase
 
     public function testModel(): void
     {
-        $input =
-            static::simpleEvent(
-                ['zone_id' => 'aac567e1396b4cadb52223a51796fdbb', 'context' => ['a' => 1]]
-            );
+        $input = static::simpleEvent(
+            ['zone_id' => 'aac567e1396b4cadb52223a51796fdbb', 'context' => ['a' => 1]]
+        );
         $dto = $this->createDTO(['time_start' => time() - 10, 'time_end' => time() - 1, 'events' => [$input],]);
 
         /* @var $event Event */

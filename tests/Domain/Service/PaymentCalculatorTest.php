@@ -101,10 +101,9 @@ final class PaymentCalculatorTest extends TestCase
 
     public function testConversionDeleted(): void
     {
-        $campaigns =
-            new CampaignCollection(
-                self::campaign([], [self::banner()], [self::conversion(['deleted_at' => self::TIME - 3600 * 24])])
-            );
+        $campaigns = new CampaignCollection(
+            self::campaign([], [self::banner()], [self::conversion(['deleted_at' => self::TIME - 3600 * 24])])
+        );
 
         $payment = $this->single($campaigns, self::conversionEvent());
         $this->assertEquals(PaymentStatus::CONVERSION_NOT_FOUND, $payment['status']);
@@ -112,10 +111,9 @@ final class PaymentCalculatorTest extends TestCase
 
     public function testPreviousState(): void
     {
-        $campaigns =
-            new CampaignCollection(
-                self::campaign([], [self::banner()], [self::conversion()])
-            );
+        $campaigns = new CampaignCollection(
+            self::campaign([], [self::banner()], [self::conversion()])
+        );
 
         $payment = $this->single($campaigns, self::conversionEvent(['payment_status' => PaymentStatus::ACCEPTED]));
         $this->assertEquals(PaymentStatus::ACCEPTED, $payment['status']);
@@ -200,14 +198,13 @@ final class PaymentCalculatorTest extends TestCase
 
     public function testMultipleEvents(): void
     {
-        $campaigns =
-            new CampaignCollection(
-                self::campaign([], [self::banner()]),
-                self::campaign(
-                    ['id' => '60000000000000000000000000000002', 'max_cpm' => 123000],
-                    [self::banner(['id' => '70000000000000000000000000000002'])]
-                )
-            );
+        $campaigns = new CampaignCollection(
+            self::campaign([], [self::banner()]),
+            self::campaign(
+                ['id' => '60000000000000000000000000000002', 'max_cpm' => 123000],
+                [self::banner(['id' => '70000000000000000000000000000002'])]
+            )
+        );
 
         $this->assertEquals(
             [
@@ -237,14 +234,13 @@ final class PaymentCalculatorTest extends TestCase
 
     public function testOverBudget(): void
     {
-        $campaigns =
-            new CampaignCollection(
-                self::campaign(
-                    ['budget' => 500, 'max_cpm' => 300000, 'max_cpc' => 700],
-                    [self::banner()],
-                    [self::conversion()]
-                )
-            );
+        $campaigns = new CampaignCollection(
+            self::campaign(
+                ['budget' => 500, 'max_cpm' => 300000, 'max_cpc' => 700],
+                [self::banner()],
+                [self::conversion()]
+            )
+        );
 
         $this->assertEquals(
             [
@@ -297,10 +293,9 @@ final class PaymentCalculatorTest extends TestCase
 
     public function testZeroCosts(): void
     {
-        $campaigns =
-            new CampaignCollection(
-                self::campaign(['max_cpm' => 0, 'max_cpc' => 0], [self::banner()], [self::conversion()])
-            );
+        $campaigns = new CampaignCollection(
+            self::campaign(['max_cpm' => 0, 'max_cpc' => 0], [self::banner()], [self::conversion()])
+        );
 
         $this->assertEquals(
             [
@@ -348,10 +343,9 @@ final class PaymentCalculatorTest extends TestCase
         array $bannerData = [],
         array $conversionData = []
     ) {
-        $campaigns =
-            new CampaignCollection(
-                self::campaign($campaignData, [self::banner($bannerData)], [self::conversion($conversionData)])
-            );
+        $campaigns = new CampaignCollection(
+            self::campaign($campaignData, [self::banner($bannerData)], [self::conversion($conversionData)])
+        );
 
         $payment = $this->single($campaigns, self::viewEvent($eventData));
         $this->assertEquals($status, $payment['status']);
@@ -467,12 +461,11 @@ final class PaymentCalculatorTest extends TestCase
             $mergeData
         );
 
-        $limit =
-            new Limit(
-                $data['limit'] !== null ? $data['limit'] : null,
-                new LimitType($data['limit_type']),
-                $data['cost']
-            );
+        $limit = new Limit(
+            $data['limit'] !== null ? $data['limit'] : null,
+            new LimitType($data['limit_type']),
+            $data['cost']
+        );
 
         return new Conversion(
             new Id($data['id']),

@@ -18,12 +18,11 @@ final class PaymentTest extends TestCase
         $status = PaymentStatus::INVALID_TARGETING;
         $value = 100;
 
-        $payment =
-            new Payment(
-                EventType::createView(),
-                new Id($eventId),
-                new PaymentStatus($status)
-            );
+        $payment = new Payment(
+            EventType::createView(),
+            new Id($eventId),
+            new PaymentStatus($status)
+        );
 
         $this->assertInstanceOf(Payment::class, $payment);
         $this->assertEquals(EventType::VIEW, $payment->getEventType());
@@ -33,14 +32,13 @@ final class PaymentTest extends TestCase
         $this->assertFalse($payment->isAccepted());
         $this->assertNull($payment->getValue());
 
-        $payment =
-            new Payment(
-                EventType::createView(),
-                new Id($eventId),
-                new PaymentStatus($status),
-                $value,
-                $reportId
-            );
+        $payment = new Payment(
+            EventType::createView(),
+            new Id($eventId),
+            new PaymentStatus($status),
+            $value,
+            $reportId
+        );
 
         $this->assertEquals($value, $payment->getValue());
         $this->assertEquals($reportId, $payment->getReportId());
@@ -48,12 +46,11 @@ final class PaymentTest extends TestCase
 
     public function testReportId(): void
     {
-        $payment =
-            new Payment(
-                EventType::createView(),
-                new Id('43c567e1396b4cadb52223a51796fd01'),
-                new PaymentStatus(PaymentStatus::ACCEPTED)
-            );
+        $payment = new Payment(
+            EventType::createView(),
+            new Id('43c567e1396b4cadb52223a51796fd01'),
+            new PaymentStatus(PaymentStatus::ACCEPTED)
+        );
 
         $reportId = 123;
         $payment->setReportId($reportId);
@@ -65,12 +62,11 @@ final class PaymentTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        $payment =
-            new Payment(
-                EventType::createView(),
-                new Id('43c567e1396b4cadb52223a51796fd01'),
-                new PaymentStatus(PaymentStatus::ACCEPTED)
-            );
+        $payment = new Payment(
+            EventType::createView(),
+            new Id('43c567e1396b4cadb52223a51796fd01'),
+            new PaymentStatus(PaymentStatus::ACCEPTED)
+        );
 
         $payment->getReportId();
     }

@@ -29,14 +29,13 @@ final class BannerTest extends TestCase
         $this->assertEquals(BannerType::IMAGE, $banner->getType());
         $this->assertNull($banner->getDeletedAt());
 
-        $banner =
-            new Banner(
-                new Id($bannerId),
-                new Id($campaignId),
-                Size::fromString($size),
-                BannerType::createImage(),
-                DateTimeHelper::fromString($deletedAt)
-            );
+        $banner = new Banner(
+            new Id($bannerId),
+            new Id($campaignId),
+            Size::fromString($size),
+            BannerType::createImage(),
+            DateTimeHelper::fromString($deletedAt)
+        );
 
         $this->assertEquals($deletedAt, $banner->getDeletedAt()->format(DateTimeInterface::ATOM));
     }

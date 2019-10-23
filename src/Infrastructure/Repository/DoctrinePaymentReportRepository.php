@@ -41,12 +41,11 @@ final class DoctrinePaymentReportRepository extends DoctrineModelUpdater impleme
         }
 
         try {
-            $result =
-                $this->db->fetchAll(
-                    sprintf('SELECT * FROM %s WHERE status IN (?)', PaymentReportMapper::table()),
-                    [$conditions],
-                    [Connection::PARAM_STR_ARRAY]
-                );
+            $result = $this->db->fetchAll(
+                sprintf('SELECT * FROM %s WHERE status IN (?)', PaymentReportMapper::table()),
+                [$conditions],
+                [Connection::PARAM_STR_ARRAY]
+            );
         } catch (DBALException $exception) {
             throw new DomainRepositoryException($exception->getMessage());
         }

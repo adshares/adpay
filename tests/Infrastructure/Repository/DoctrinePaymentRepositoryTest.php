@@ -7,8 +7,6 @@ use Adshares\AdPay\Domain\Model\PaymentReport;
 use Adshares\AdPay\Domain\ValueObject\PaymentReportStatus;
 use Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository;
 use Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentRepository;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
 use Psr\Log\NullLogger;
 
 final class DoctrinePaymentRepositoryTest extends RepositoryTestCase
@@ -126,17 +124,13 @@ final class DoctrinePaymentRepositoryTest extends RepositoryTestCase
         $list = [];
         array_push($list, ...$repository->fetchByReportId(2));
         $this->assertEmpty($list);
-
     }
 
     public function testSavingException(): void
     {
         $this->expectException(DomainRepositoryException::class);
 
-        $connection = $this->createMock(Connection::class);
-        $connection->method('executeUpdate')->willThrowException(new DBALException());
-
-        $repository = new DoctrinePaymentRepository($connection, new NullLogger());
+        $repository = new DoctrinePaymentRepository($this->failedConnection(), new NullLogger());
         $repository->saveAllRaw(1, [self::payment(11)]);
     }
 
@@ -144,23 +138,16 @@ final class DoctrinePaymentRepositoryTest extends RepositoryTestCase
     {
         $this->expectException(DomainRepositoryException::class);
 
-        $connection = $this->createMock(Connection::class);
-        $connection->method('executeQuery')->willThrowException(new DBALException());
-
-        $repository = new DoctrinePaymentRepository($connection, new NullLogger());
+        $repository = new DoctrinePaymentRepository($this->failedConnection(), new NullLogger());
         $list = [];
         array_push($list, ...$repository->fetchByReportId(2));
-
     }
 
     public function testDeletingException(): void
     {
         $this->expectException(DomainRepositoryException::class);
 
-        $connection = $this->createMock(Connection::class);
-        $connection->method('executeUpdate')->willThrowException(new DBALException());
-
-        $repository = new DoctrinePaymentRepository($connection, new NullLogger());
+        $repository = new DoctrinePaymentRepository($this->failedConnection(), new NullLogger());
         $repository->deleteByReportId(1);
     }
 

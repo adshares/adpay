@@ -2,7 +2,6 @@
 
 namespace Adshares\AdPay\Tests\Domain\Model;
 
-use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 use Adshares\AdPay\Domain\Model\Conversion;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use Adshares\AdPay\Domain\ValueObject\Limit;
@@ -37,14 +36,13 @@ final class ConversionTest extends TestCase
         $this->assertFalse($conversion->isRepeatable());
         $this->assertNull($conversion->getDeletedAt());
 
-        $conversion =
-            new Conversion(
-                new Id($conversionId),
-                new Id($campaignId),
-                $limit,
-                true,
-                DateTimeHelper::fromString($deletedAt)
-            );
+        $conversion = new Conversion(
+            new Id($conversionId),
+            new Id($campaignId),
+            $limit,
+            true,
+            DateTimeHelper::fromString($deletedAt)
+        );
 
         $this->assertTrue($conversion->isRepeatable());
         $this->assertEquals($deletedAt, $conversion->getDeletedAt()->format(DateTimeInterface::ATOM));

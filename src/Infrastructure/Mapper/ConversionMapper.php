@@ -45,12 +45,11 @@ class ConversionMapper
 
     public static function fill(array $row): Conversion
     {
-        $limit =
-            new Limit(
-                $row['limit'] !== null ? (int)$row['limit'] : null,
-                new LimitType($row['limit_type']),
-                (int)$row['cost']
-            );
+        $limit = new Limit(
+            $row['limit'] !== null ? (int)$row['limit'] : null,
+            new LimitType($row['limit_type']),
+            (int)$row['cost']
+        );
 
         return new Conversion(
             Id::fromBin($row['id']),

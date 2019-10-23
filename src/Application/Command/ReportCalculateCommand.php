@@ -3,7 +3,6 @@
 namespace Adshares\AdPay\Application\Command;
 
 use Adshares\AdPay\Application\Exception\FetchingException;
-use Adshares\AdPay\Domain\Model\Payment;
 use Adshares\AdPay\Domain\Model\PaymentReport;
 use Adshares\AdPay\Domain\Repository\CampaignRepository;
 use Adshares\AdPay\Domain\Repository\EventRepository;
@@ -68,11 +67,7 @@ final class ReportCalculateCommand
 
         $this->paymentRepository->deleteByReportId($report->getId());
 
-        $events =
-            $this->eventRepository->fetchByTime(
-                $report->getTimeStart(),
-                $report->getTimeEnd()
-            );
+        $events = $this->eventRepository->fetchByTime($report->getTimeStart(), $report->getTimeEnd());
 
         $calculator = $this->createCalculator();
         $count = 0;
