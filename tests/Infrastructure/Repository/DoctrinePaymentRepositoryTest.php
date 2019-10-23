@@ -44,25 +44,11 @@ final class DoctrinePaymentRepositoryTest extends RepositoryTestCase
 
         $repository->saveAllRaw(4, []);
 
-        $list = [];
-        array_push($list, ...$repository->fetchByReportId(1));
-        $this->assertCount(5, $list);
-
-        $list = [];
-        array_push($list, ...$repository->fetchByReportId(2));
-        $this->assertCount(2, $list);
-
-        $list = [];
-        array_push($list, ...$repository->fetchByReportId(3));
-        $this->assertCount(3, $list);
-
-        $list = [];
-        array_push($list, ...$repository->fetchByReportId(4));
-        $this->assertEmpty($list);
-
-        $list = [];
-        array_push($list, ...$repository->fetchByReportId(5));
-        $this->assertEmpty($list);
+        $this->assertCount(5, self::iterableToArray($repository->fetchByReportId(1)));
+        $this->assertCount(2, self::iterableToArray($repository->fetchByReportId(2)));
+        $this->assertCount(3, self::iterableToArray($repository->fetchByReportId(3)));
+        $this->assertEmpty(self::iterableToArray($repository->fetchByReportId(4)));
+        $this->assertEmpty(self::iterableToArray($repository->fetchByReportId(5)));
     }
 
     public function testPagination(): void
@@ -83,21 +69,10 @@ final class DoctrinePaymentRepositoryTest extends RepositoryTestCase
             ]
         );
 
-        $list = [];
-        array_push($list, ...$repository->fetchByReportId(1, 3));
-        $this->assertCount(3, $list);
-
-        $list = [];
-        array_push($list, ...$repository->fetchByReportId(1, 3, 3));
-        $this->assertCount(3, $list);
-
-        $list = [];
-        array_push($list, ...$repository->fetchByReportId(1, 3, 6));
-        $this->assertCount(1, $list);
-
-        $list = [];
-        array_push($list, ...$repository->fetchByReportId(1, 3, 9));
-        $this->assertEmpty($list);
+        $this->assertCount(3, self::iterableToArray($repository->fetchByReportId(1, 3)));
+        $this->assertCount(3, self::iterableToArray($repository->fetchByReportId(1, 3, 3)));
+        $this->assertCount(1, self::iterableToArray($repository->fetchByReportId(1, 3, 6)));
+        $this->assertEmpty(self::iterableToArray($repository->fetchByReportId(1, 3, 9)));
     }
 
     public function testDeleting(): void
@@ -121,34 +96,16 @@ final class DoctrinePaymentRepositoryTest extends RepositoryTestCase
         );
 
         $this->assertEquals(0, $repository->deleteByReportId(123));
-
-        $list = [];
-        array_push($list, ...$repository->fetchByReportId(1));
-        $this->assertCount(2, $list);
-
-        $list = [];
-        array_push($list, ...$repository->fetchByReportId(2));
-        $this->assertCount(1, $list);
+        $this->assertCount(2, self::iterableToArray($repository->fetchByReportId(1)));
+        $this->assertCount(1, self::iterableToArray($repository->fetchByReportId(2)));
 
         $this->assertEquals(2, $repository->deleteByReportId(1));
-
-        $list = [];
-        array_push($list, ...$repository->fetchByReportId(1));
-        $this->assertEmpty($list);
-
-        $list = [];
-        array_push($list, ...$repository->fetchByReportId(2));
-        $this->assertCount(1, $list);
+        $this->assertEmpty(self::iterableToArray($repository->fetchByReportId(1)));
+        $this->assertCount(1, self::iterableToArray($repository->fetchByReportId(2)));
 
         $this->assertEquals(1, $repository->deleteByReportId(2));
-
-        $list = [];
-        array_push($list, ...$repository->fetchByReportId(1));
-        $this->assertEmpty($list);
-
-        $list = [];
-        array_push($list, ...$repository->fetchByReportId(2));
-        $this->assertEmpty($list);
+        $this->assertEmpty(self::iterableToArray($repository->fetchByReportId(1)));
+        $this->assertEmpty(self::iterableToArray($repository->fetchByReportId(2)));
     }
 
     public function testSavingException(): void
@@ -164,8 +121,7 @@ final class DoctrinePaymentRepositoryTest extends RepositoryTestCase
         $this->expectException(DomainRepositoryException::class);
 
         $repository = new DoctrinePaymentRepository($this->failedConnection(), new NullLogger());
-        $list = [];
-        array_push($list, ...$repository->fetchByReportId(2));
+        self::iterableToArray($repository->fetchByReportId(2));
     }
 
     public function testDeletingException(): void

@@ -34,4 +34,14 @@ abstract class RepositoryTestCase extends KernelTestCase
 
         return $connection;
     }
+
+    protected static function iterableToArray(iterable $list): array
+    {
+        $result = [];
+        foreach ($list as $item) {
+            $result[] = $item;
+        }
+
+        return $result;
+    }
 }

@@ -28,7 +28,7 @@ final class PaymentsCalculateCommandTest extends KernelTestCase
 
         $this->assertEquals(0, $commandTester->getStatusCode());
         $output = $commandTester->getDisplay();
-        $this->assertStringContainsString('Calculating report #1571828400 from 2019-10-23 11:00:00 to 2019-10-23 11:59:59', $output);
+        $this->assertStringContainsString('Calculating report #1571828400', $output);
         $this->assertStringContainsString('0 payments calculated', $output);
     }
 
@@ -73,7 +73,7 @@ final class PaymentsCalculateCommandTest extends KernelTestCase
         $this->assertEquals(0, $commandTester->getStatusCode());
         $output = $commandTester->getDisplay();
         $this->assertStringContainsString(
-            'Calculating report #1571842800 from 2019-10-23 15:00:00 to 2019-10-23 15:59:59',
+            'Calculating report #1571842800',
             $output
         );
         $this->assertStringContainsString('Report #1571842800 is not complete yet', $output);
@@ -99,7 +99,7 @@ final class PaymentsCalculateCommandTest extends KernelTestCase
         $this->assertEquals(0, $commandTester->getStatusCode());
         $output = $commandTester->getDisplay();
         $this->assertStringContainsString(
-            'Calculating report #1571828400 from 2019-10-23 11:00:00 to 2019-10-23 11:59:59',
+            'Calculating report #1571828400',
             $output
         );
         $this->assertStringContainsString('Report #1571828400 is not complete yet', $output);
@@ -126,7 +126,7 @@ final class PaymentsCalculateCommandTest extends KernelTestCase
         $this->assertEquals(0, $commandTester->getStatusCode());
         $output = $commandTester->getDisplay();
         $this->assertStringContainsString(
-            'Calculating report #1571241600 from 2019-10-16 16:00:00 to 2019-10-16 16:59:59',
+            'Calculating report #1571241600',
             $output
         );
         $this->assertStringContainsString('0 payments calculated', $output);

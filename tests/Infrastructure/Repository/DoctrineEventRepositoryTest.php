@@ -44,47 +44,36 @@ final class DoctrineEventRepositoryTest extends RepositoryTestCase
         $repository->saveAll($events2);
         $repository->saveAll($events3);
 
-        $list = [];
-        array_push($list, ...$repository->fetchByTime());
-        $this->assertCount(9, $list);
-
-        $list = [];
-        array_push($list, ...$repository->fetchByTime(DateTimeHelper::fromTimestamp($timestamp - 50)));
-        $this->assertCount(5, $list);
-
-        $list = [];
-        array_push($list, ...$repository->fetchByTime(null, DateTimeHelper::fromTimestamp($timestamp - 60)));
-        $this->assertCount(4, $list);
-
-        $list = [];
-        array_push(
-            $list,
-            ...
+        $this->assertCount(9, self::iterableToArray($repository->fetchByTime()));
+        $this->assertCount(
+            5,
+            self::iterableToArray($repository->fetchByTime(DateTimeHelper::fromTimestamp($timestamp - 50)))
+        );
+        $this->assertCount(
+            4,
+            self::iterableToArray($repository->fetchByTime(null, DateTimeHelper::fromTimestamp($timestamp - 60)))
+        );
+        $this->assertCount(
+            4,
             $repository->fetchByTime(
                 DateTimeHelper::fromTimestamp($timestamp - 70),
                 DateTimeHelper::fromTimestamp($timestamp - 30)
             )
         );
-        $this->assertCount(4, $list);
-
-        $list = [];
-        array_push($list, ...$repository->fetchByTime(DateTimeHelper::fromTimestamp($timestamp - 10)));
-        $this->assertEmpty($list);
-
-        $list = [];
-        array_push($list, ...$repository->fetchByTime(null, DateTimeHelper::fromTimestamp($timestamp - 110)));
-        $this->assertEmpty($list);
-
-        $list = [];
-        array_push(
-            $list,
-            ...
-            $repository->fetchByTime(
-                DateTimeHelper::fromTimestamp($timestamp - 75),
-                DateTimeHelper::fromTimestamp($timestamp - 70)
+        $this->assertEmpty(
+            self::iterableToArray($repository->fetchByTime(DateTimeHelper::fromTimestamp($timestamp - 10)))
+        );
+        $this->assertEmpty(
+            self::iterableToArray($repository->fetchByTime(null, DateTimeHelper::fromTimestamp($timestamp - 110)))
+        );
+        $this->assertEmpty(
+            self::iterableToArray(
+                $repository->fetchByTime(
+                    DateTimeHelper::fromTimestamp($timestamp - 75),
+                    DateTimeHelper::fromTimestamp($timestamp - 70)
+                )
             )
         );
-        $this->assertEmpty($list);
     }
 
     public function testDuplicateKey(): void
@@ -117,11 +106,7 @@ final class DoctrineEventRepositoryTest extends RepositoryTestCase
             0,
             $repository->deleteByTime(EventType::createView(), DateTimeHelper::fromTimestamp($timestamp))
         );
-
-        $list = [];
-        array_push($list, ...$repository->fetchByTime());
-        $this->assertCount(5, $list);
-
+        $this->assertCount(5, self::iterableToArray($repository->fetchByTime()));
         $this->assertEquals(
             3,
             $repository->deleteByTime(
@@ -130,19 +115,12 @@ final class DoctrineEventRepositoryTest extends RepositoryTestCase
                 DateTimeHelper::fromTimestamp($timestamp - 60)
             )
         );
-
-        $list = [];
-        array_push($list, ...$repository->fetchByTime());
-        $this->assertCount(2, $list);
-
+        $this->assertCount(2, self::iterableToArray($repository->fetchByTime()));
         $this->assertEquals(
             2,
             $repository->deleteByTime(EventType::createView(), DateTimeHelper::fromTimestamp($timestamp - 200))
         );
-
-        $list = [];
-        array_push($list, ...$repository->fetchByTime());
-        $this->assertEmpty($list);
+        $this->assertEmpty(self::iterableToArray($repository->fetchByTime()));
     }
 
     public function testSavingException(): void
@@ -158,8 +136,7 @@ final class DoctrineEventRepositoryTest extends RepositoryTestCase
         $this->expectException(DomainRepositoryException::class);
 
         $repository = new DoctrineEventRepository($this->failedConnection(), new NullLogger());
-        $list = [];
-        array_push($list, ...$repository->fetchByTime(new DateTime()));
+        self::iterableToArray($repository->fetchByTime());
     }
 
     public function testDeletingException(): void
