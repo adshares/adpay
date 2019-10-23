@@ -95,7 +95,7 @@ class PaymentsCalculateCommand extends Command
         if (!$this->lock()) {
             $io->warning('The command is already running in another process.');
 
-            return;
+            return 1;
         }
 
         if ($date === null) {
@@ -109,7 +109,7 @@ class PaymentsCalculateCommand extends Command
                 } catch (DateTimeException $exception) {
                     $io->error($exception->getMessage());
 
-                    return;
+                    return 1;
                 }
             }
 
@@ -117,5 +117,7 @@ class PaymentsCalculateCommand extends Command
         }
 
         $this->release();
+
+        return 0;
     }
 }

@@ -13,7 +13,7 @@ final class DoctrinePaymentRepositoryTest extends RepositoryTestCase
 {
     public function testRepository(): void
     {
-        $this->installReports(1, 2, 3, 4);
+        $this->setUpReports(1, 2, 3, 4);
         $repository = new DoctrinePaymentRepository($this->connection, new NullLogger());
 
         $repository->saveAllRaw(
@@ -67,7 +67,7 @@ final class DoctrinePaymentRepositoryTest extends RepositoryTestCase
 
     public function testPagination(): void
     {
-        $this->installReports(1);
+        $this->setUpReports(1);
         $repository = new DoctrinePaymentRepository($this->connection, new NullLogger());
 
         $repository->saveAllRaw(
@@ -102,7 +102,7 @@ final class DoctrinePaymentRepositoryTest extends RepositoryTestCase
 
     public function testDeleting(): void
     {
-        $this->installReports(1, 2);
+        $this->setUpReports(1, 2);
         $repository = new DoctrinePaymentRepository($this->connection, new NullLogger());
 
         $repository->saveAllRaw(
@@ -176,7 +176,7 @@ final class DoctrinePaymentRepositoryTest extends RepositoryTestCase
         $repository->deleteByReportId(1);
     }
 
-    private function installReports(...$ids)
+    private function setUpReports(...$ids)
     {
         $repository = new DoctrinePaymentReportRepository($this->connection, new NullLogger());
 

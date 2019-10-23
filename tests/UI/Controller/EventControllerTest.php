@@ -87,6 +87,7 @@ final class EventControllerTest extends WebTestCase
                     'tracking_id' => '23c567e1396b4cadb52223a51796fd02',
                     'user_id' => '33c567e1396b4cadb52223a51796fd01',
                     'human_score' => 0.99,
+                    'page_rank' => 0.8,
                 ],
             ],
         ];
@@ -148,6 +149,7 @@ final class EventControllerTest extends WebTestCase
                     'tracking_id' => '23c567e1396b4cadb52223a51796fd02',
                     'user_id' => '33c567e1396b4cadb52223a51796fd01',
                     'human_score' => 0.99,
+                    'page_rank' => 0.8,
                     'group_id' => 'fec567e1396b4cadb52223a51796fdff',
                     'conversion_id' => 'ffc567e1396b4cadb52223a51796fdff',
                     'conversion_value' => 1500,
@@ -212,6 +214,7 @@ final class EventControllerTest extends WebTestCase
                     'tracking_id' => '23c567e1396b4cadb52223a51796fd02',
                     'user_id' => '33c567e1396b4cadb52223a51796fd01',
                     'human_score' => 0.99,
+                    'page_rank' => 0.8,
                 ],
             ],
         ];
@@ -238,6 +241,7 @@ final class EventControllerTest extends WebTestCase
                     'tracking_id' => '23c567e1396b4cadb52223a51796fd02',
                     'user_id' => '33c567e1396b4cadb52223a51796fd01',
                     'human_score' => 0.99,
+                    'page_rank' => 0.8,
                 ],
             ],
         ];
