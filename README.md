@@ -42,9 +42,9 @@ php bin/console server:run
 ```
 git clone https://github.com/adshares/adpay.git
 cd adpay
+cp .env .env.local
+vi .env.local
 composer install --no-dev --optimize-autoloader
-composer dump-env prod
-vi .env.local.php
 php bin/console doctrine:database:create
 php bin/console doctrine:migration:migrate
 ```

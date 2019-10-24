@@ -1,3 +1,6 @@
+parameters:
+    env(LOG_FILE_PATH): "%kernel.logs_dir%/%kernel.environment%.log"
+
 monolog:
     handlers:
         main:
