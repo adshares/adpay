@@ -18,7 +18,7 @@ final class PaymentsCalculateCommandTest extends KernelTestCase
         $kernel = static::createKernel();
         $application = new Application($kernel);
 
-        $command = $application->find('app:payments:calculate');
+        $command = $application->find('ops:payments:calculate');
         $commandTester = new CommandTester($command);
         $commandTester->execute(
             [
@@ -40,7 +40,7 @@ final class PaymentsCalculateCommandTest extends KernelTestCase
         $kernel = static::createKernel();
         $application = new Application($kernel);
 
-        $command = $application->find('app:payments:calculate');
+        $command = $application->find('ops:payments:calculate');
         $commandTester = new CommandTester($command);
         $commandTester->execute(
             [
@@ -61,7 +61,7 @@ final class PaymentsCalculateCommandTest extends KernelTestCase
         $kernel = static::createKernel();
         $application = new Application($kernel);
 
-        $command = $application->find('app:payments:calculate');
+        $command = $application->find('ops:payments:calculate');
         $commandTester = new CommandTester($command);
         $commandTester->execute(
             [
@@ -87,7 +87,7 @@ final class PaymentsCalculateCommandTest extends KernelTestCase
         $kernel = static::createKernel();
         $application = new Application($kernel);
 
-        $command = $application->find('app:payments:calculate');
+        $command = $application->find('ops:payments:calculate');
         $commandTester = new CommandTester($command);
         $commandTester->execute(
             [
@@ -113,7 +113,7 @@ final class PaymentsCalculateCommandTest extends KernelTestCase
         $kernel = static::createKernel();
         $application = new Application($kernel);
 
-        $command = $application->find('app:payments:calculate');
+        $command = $application->find('ops:payments:calculate');
         $commandTester = new CommandTester($command);
         $commandTester->execute(
             [
@@ -140,7 +140,7 @@ final class PaymentsCalculateCommandTest extends KernelTestCase
         $kernel = static::createKernel();
         $application = new Application($kernel);
 
-        $command = $application->find('app:payments:calculate');
+        $command = $application->find('ops:payments:calculate');
         $commandTester = new CommandTester($command);
         $commandTester->execute(
             [
@@ -163,7 +163,7 @@ final class PaymentsCalculateCommandTest extends KernelTestCase
         $kernel = static::createKernel();
         $application = new Application($kernel);
 
-        $command = $application->find('app:payments:calculate');
+        $command = $application->find('ops:payments:calculate');
         $commandTester = new CommandTester($command);
         $commandTester->execute(
             [

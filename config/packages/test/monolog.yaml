@@ -1,7 +1,10 @@
+parameters:
+    env(LOG_FILE_PATH): "%kernel.logs_dir%/%kernel.environment%.log"
+
 monolog:
     handlers:
         main:
             type: stream
-            path: "%kernel.logs_dir%/%kernel.environment%.log"
+            path: '%env(LOG_FILE_PATH)%'
             level: debug
             channels: ["!event"]

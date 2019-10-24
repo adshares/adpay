@@ -1,0 +1,1 @@
+10-15,*/5 * * * * php /opt/adshares/adpay/bin/console ops:payments:calculate

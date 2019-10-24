@@ -19,7 +19,7 @@ class PaymentsCalculateCommand extends Command
 {
     use LockableTrait;
 
-    protected static $defaultName = 'app:payments:calculate';
+    protected static $defaultName = 'ops:payments:calculate';
 
     /** @var ReportFetchCommand */
     private $reportFetchCommand;
