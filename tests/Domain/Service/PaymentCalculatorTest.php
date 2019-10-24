@@ -199,7 +199,14 @@ final class PaymentCalculatorTest extends TestCase
     public function testMultipleEvents(): void
     {
         $campaigns = new CampaignCollection(
-            self::campaign([], [self::banner()]),
+            self::campaign(
+                [],
+                [self::banner()],
+                [
+                    self::conversion(),
+                    self::conversion(['id' => 'c0000000000000000000000000000002', 'is_repeatable' => true]),
+                ]
+            ),
             self::campaign(
                 ['id' => '60000000000000000000000000000002', 'max_cpm' => 123000],
                 [self::banner(['id' => '70000000000000000000000000000002'])]
@@ -213,6 +220,12 @@ final class PaymentCalculatorTest extends TestCase
                 '10000000000000000000000000000021' => 33,
                 '10000000000000000000000000000101' => 123,
                 '10000000000000000000000000000002' => self::CAMPAIGN_CPC,
+                '10000000000000000000000000000003' => self::CONVERSION_VALUE,
+                '10000000000000000000000000000032' => self::CONVERSION_VALUE,
+                '10000000000000000000000000000033' => 0,
+                '10000000000000000000000000000034' => 0,
+                '10000000000000000000000000000035' => self::CONVERSION_VALUE,
+                '10000000000000000000000000000036' => self::CONVERSION_VALUE,
             ],
             $this->values(
                 $campaigns,
@@ -227,6 +240,28 @@ final class PaymentCalculatorTest extends TestCase
                         ]
                     ),
                     self::clickEvent(),
+                    self::conversionEvent(),
+                    self::conversionEvent(['id' => '10000000000000000000000000000032']),
+                    self::conversionEvent(
+                        ['id' => '10000000000000000000000000000033', 'group_id' => 'b0000000000000000000000000000002']
+                    ),
+                    self::conversionEvent(
+                        ['id' => '10000000000000000000000000000034', 'group_id' => 'b0000000000000000000000000000002']
+                    ),
+                    self::conversionEvent(
+                        [
+                            'id' => '10000000000000000000000000000035',
+                            'conversion_id' => 'c0000000000000000000000000000002',
+                            'group_id' => 'b0000000000000000000000000000003',
+                        ]
+                    ),
+                    self::conversionEvent(
+                        [
+                            'id' => '10000000000000000000000000000036',
+                            'conversion_id' => 'c0000000000000000000000000000002',
+                            'group_id' => 'b0000000000000000000000000000004',
+                        ]
+                    ),
                 ]
             )
         );
@@ -238,7 +273,12 @@ final class PaymentCalculatorTest extends TestCase
             self::campaign(
                 ['budget' => 500, 'max_cpm' => 300000, 'max_cpc' => 700],
                 [self::banner()],
-                [self::conversion()]
+                [
+                    self::conversion(),
+                    self::conversion(
+                        ['id' => 'c0000000000000000000000000000002', 'limit_type' => LimitType::OUT_OF_BUDGET]
+                    ),
+                ]
             )
         );
 
@@ -252,7 +292,10 @@ final class PaymentCalculatorTest extends TestCase
                 [
                     self::viewEvent(),
                     self::viewEvent(
-                        ['id' => '10000000000000000000000000000011', 'user_id' => 'a0000000000000000000000000000002']
+                        [
+                            'id' => '10000000000000000000000000000011',
+                            'user_id' => 'a0000000000000000000000000000002',
+                        ]
                     ),
                 ]
             )
@@ -265,10 +308,46 @@ final class PaymentCalculatorTest extends TestCase
 
         $this->assertEquals(
             [
-                '10000000000000000000000000000001' => 75,
-                '10000000000000000000000000000011' => 75,
-                '10000000000000000000000000000002' => 175,
-                '10000000000000000000000000000012' => 175,
+                '10000000000000000000000000000003' => 166,
+                '10000000000000000000000000000031' => 166,
+                '10000000000000000000000000000032' => 166,
+                '10000000000000000000000000000033' => self::CONVERSION_VALUE,
+                '10000000000000000000000000000034' => self::CONVERSION_VALUE,
+            ],
+            $this->values(
+                $campaigns,
+                [
+                    self::conversionEvent(),
+                    self::conversionEvent(['id' => '10000000000000000000000000000031']),
+                    self::conversionEvent(
+                        [
+                            'id' => '10000000000000000000000000000032',
+                            'user_id' => 'a0000000000000000000000000000002',
+                        ]
+                    ),
+                    self::conversionEvent(
+                        [
+                            'id' => '10000000000000000000000000000033',
+                            'conversion_id' => 'c0000000000000000000000000000002',
+                        ]
+                    ),
+                    self::conversionEvent(
+                        [
+                            'id' => '10000000000000000000000000000034',
+                            'conversion_id' => 'c0000000000000000000000000000002',
+                        ]
+                    ),
+                ]
+            )
+        );
+
+        $this->assertEquals(
+            [
+                '10000000000000000000000000000001' => 68,
+                '10000000000000000000000000000011' => 68,
+                '10000000000000000000000000000002' => 159,
+                '10000000000000000000000000000012' => 159,
+                '10000000000000000000000000000003' => 45,
             ],
             $this->values(
                 $campaigns,
@@ -281,6 +360,7 @@ final class PaymentCalculatorTest extends TestCase
                     self::clickEvent(
                         ['id' => '10000000000000000000000000000012', 'user_id' => 'a0000000000000000000000000000002']
                     ),
+                    self::conversionEvent(),
                 ]
             )
         );
@@ -288,6 +368,58 @@ final class PaymentCalculatorTest extends TestCase
         $this->assertEquals(
             ['10000000000000000000000000000003' => 500],
             $this->values($campaigns, [self::conversionEvent(['conversion_value' => 501])])
+        );
+    }
+
+    public function testOverLimit(): void
+    {
+        $campaigns = new CampaignCollection(
+            self::campaign(
+                [],
+                [self::banner()],
+                [
+                    self::conversion(['limit' => 500]),
+                    self::conversion(
+                        [
+                            'id' => 'c0000000000000000000000000000002',
+                            'limit' => 200,
+                            'limit_type' => LimitType::OUT_OF_BUDGET,
+                        ]
+                    ),
+                ]
+            )
+        );
+
+        $this->assertEquals(
+            [
+                '10000000000000000000000000000003' => self::CONVERSION_VALUE,
+                '10000000000000000000000000000031' => self::CONVERSION_VALUE,
+                '10000000000000000000000000000032' => 100,
+                '10000000000000000000000000000033' => 0,
+                '10000000000000000000000000000034' => self::CONVERSION_VALUE,
+                '10000000000000000000000000000035' => 0,
+            ],
+            $this->values(
+                $campaigns,
+                [
+                    self::conversionEvent(),
+                    self::conversionEvent(['id' => '10000000000000000000000000000031']),
+                    self::conversionEvent(['id' => '10000000000000000000000000000032']),
+                    self::conversionEvent(['id' => '10000000000000000000000000000033']),
+                    self::conversionEvent(
+                        [
+                            'id' => '10000000000000000000000000000034',
+                            'conversion_id' => 'c0000000000000000000000000000002',
+                        ]
+                    ),
+                    self::conversionEvent(
+                        [
+                            'id' => '10000000000000000000000000000035',
+                            'conversion_id' => 'c0000000000000000000000000000002',
+                        ]
+                    ),
+                ]
+            )
         );
     }
 
@@ -508,7 +640,7 @@ final class PaymentCalculatorTest extends TestCase
                 'id' => '10000000000000000000000000000003',
                 'type' => EventType::CONVERSION,
                 'payment_status' => null,
-                'conversion_group_id' => self::CONVERSION_GROUP_ID,
+                'group_id' => self::CONVERSION_GROUP_ID,
                 'conversion_id' => self::CONVERSION_ID,
                 'conversion_value' => self::CONVERSION_VALUE,
             ],

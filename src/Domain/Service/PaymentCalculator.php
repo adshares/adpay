@@ -42,9 +42,8 @@ final class PaymentCalculator
         }
     }
 
-    public function calculate(
-        iterable $events
-    ): iterable {
+    public function calculate(iterable $events): iterable
+    {
         $matrix = [];
         foreach ($events as $event) {
             $status = $this->validateEvent($event);
@@ -58,29 +57,7 @@ final class PaymentCalculator
                 continue;
             }
 
-            $campaignId = $event['campaign_id'];
-            $userId = $event['user_id'];
-
-            /** @var Campaign $campaign */
-            $campaign = $this->campaigns[$campaignId];
-
-            if (!array_key_exists($campaignId, $matrix)) {
-                $matrix[$campaignId] = [
-                    'events' => [],
-                    EventType::VIEW => [],
-                    EventType::CLICK => [],
-                    EventType::CONVERSION => [],
-                    'costs' => 0,
-                ];
-            }
-
-            $matrix[$campaignId]['events'][] = $event;
-            if (!array_key_exists($userId, $matrix[$campaignId][$event['type']])) {
-                $matrix[$campaignId][$event['type']][$userId] = 1;
-                $matrix[$campaignId]['costs'] += self::getEventCost($campaign, $event);
-            } else {
-                $matrix[$campaignId][$event['type']][$userId]++;
-            }
+            $this->fillMatrix($matrix, $event);
         }
 
         foreach ($matrix as $campaignId => $item) {
@@ -89,9 +66,7 @@ final class PaymentCalculator
             $factor = $item['costs'] > $campaign->getBudgetValue() ? $campaign->getBudgetValue() / $item['costs'] : 1;
 
             foreach ($item['events'] as $event) {
-                $value = self::getEventCost($campaign, $event) * $factor;
-                $value = $value / $item[$event['type']][$event['user_id']];
-
+                $value = $this->getEventCost($event, $factor, $item[$event['type']][$event['user_id']] ?? 1);
                 yield self::createPayment(
                     $event['type'],
                     $event['id'],
@@ -145,6 +120,90 @@ final class PaymentCalculator
         return $status;
     }
 
+    private function getEventCost(array $event, float $factor = 1.0, int $userCount = 1): float
+    {
+        /** @var Campaign $campaign */
+        $campaign = $this->campaigns[$event['campaign_id']];
+        $value = 0;
+
+        if ($event['type'] === EventType::CONVERSION) {
+            /** @var Conversion $conversion */
+            $conversion = $this->conversions[$event['conversion_id']];
+            $value = $event['conversion_value'];
+            if ($conversion->getLimitType()->isInBudget()) {
+                $value = $value * $factor;
+            }
+        } elseif ($event['type'] === EventType::CLICK) {
+            $value = $campaign->getClickCost() * $event['page_rank'] * $factor / $userCount;
+        } elseif ($event['type'] === EventType::VIEW) {
+            $value = $campaign->getViewCost() * $event['page_rank'] * $factor / $userCount;
+        }
+
+        return $value;
+    }
+
+    private function fillMatrix(array &$matrix, array $event): void
+    {
+        $campaignId = $event['campaign_id'];
+        $userId = $event['user_id'];
+
+        /** @var Campaign $campaign */
+        $campaign = $this->campaigns[$campaignId];
+
+        if (!array_key_exists($campaignId, $matrix)) {
+            $matrix[$campaignId] = [
+                'events' => [],
+                'conversions' => [],
+                EventType::VIEW => [],
+                EventType::CLICK => [],
+                'costs' => 0,
+            ];
+        }
+
+        if ($event['type'] === EventType::CONVERSION) {
+            $conversionId = $event['conversion_id'];
+            /** @var Conversion $conversion */
+            $conversion = $this->conversions[$conversionId];
+
+            if (!array_key_exists($conversionId, $matrix[$campaignId]['conversions'])) {
+                $matrix[$campaignId]['conversions'][$conversionId] = [
+                    'cost' => $conversion->getCost(),
+                    'groups' => [],
+                ];
+            }
+
+            if (!$conversion->isRepeatable()) {
+                if (!array_key_exists($userId, $matrix[$campaignId]['conversions'][$conversionId]['groups'])) {
+                    $matrix[$campaignId]['conversions'][$conversionId]['groups'][$userId] = $event['group_id'];
+                }
+                if ($matrix[$campaignId]['conversions'][$conversionId]['groups'][$userId] !== $event['group_id']) {
+                    $event['conversion_value'] = 0;
+                }
+            }
+
+            if ($conversion->getLimitValue() !== null) {
+                $cost = $matrix[$campaignId]['conversions'][$conversionId]['cost'];
+                if ($cost + $event['conversion_value'] > $conversion->getLimitValue()) {
+                    $event['conversion_value'] = max(0, $conversion->getLimitValue() - $cost);
+                }
+                $matrix[$campaignId]['conversions'][$conversionId]['cost'] = $cost + $event['conversion_value'];
+            }
+
+            if ($conversion->getLimitType()->isInBudget()) {
+                $matrix[$campaignId]['costs'] += $event['conversion_value'];
+            }
+        } else {
+            if (!array_key_exists($userId, $matrix[$campaignId][$event['type']])) {
+                $matrix[$campaignId][$event['type']][$userId] = 1;
+                $matrix[$campaignId]['costs'] += $this->getEventCost($event);
+            } else {
+                $matrix[$campaignId][$event['type']][$userId]++;
+            }
+        }
+
+        $matrix[$campaignId]['events'][] = $event;
+    }
+
     private static function createPayment(string $eventType, string $eventId, int $status, ?int $value = null)
     {
         return [
@@ -153,17 +212,5 @@ final class PaymentCalculator
             'status' => $status,
             'value' => $value,
         ];
-    }
-
-    private static function getEventCost(Campaign $campaign, array $event): float
-    {
-        switch ($event['type']) {
-            case EventType::CLICK:
-                return $campaign->getClickCost() * $event['page_rank'];
-            case EventType::CONVERSION:
-                return $event['conversion_value'];
-            default:
-                return $campaign->getViewCost() * $event['page_rank'];
-        }
     }
 }
