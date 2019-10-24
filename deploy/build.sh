@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
-set -e
+# Usage: build.sh [<location-of-functions-file-to-include> [<work-dir>]]
+[[ -z ${1:-""} ]] && set -eu || source ${1}/_functions.sh --vendor
+cd ${2:-"."}
 
-source ${1:-$(dirname $(readlink -f "$0"))/bin}/_functions.sh
-[[ -z ${2:-""} ]] || cd $2
-[[ -z ${3:-".env"} ]] || set -a && source .env && set +a
-
-pipenv install
+composer install --no-dev --optimize-autoloader
+php bin/console doctrine:migrations:migrate -n

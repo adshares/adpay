@@ -1,0 +1,40 @@
+paths:
+  - ./src
+exclude_files:
+  - .*test.*
+layers:
+  - name: Domain
+    collectors:
+      - type: className
+        regex: .*AdPay\\Domain\\.*
+  - name: Application
+    collectors:
+      - type: className
+        regex: .*AdPay\\Application\\.*
+  - name: Infrastructure
+    collectors:
+      - type: className
+        regex: .*AdPay\\Infrastructure\\.*
+  - name: Lib
+    collectors:
+      - type: className
+        regex: .*AdPay\\Lib\\.*
+  - name: UI
+    collectors:
+      - type: className
+        regex: .*AdPay\\UI\\.*
+
+ruleset:
+  Domain:
+    - Lib
+  Application:
+    - Domain
+    - Lib
+  Infrastructure:
+    - Application
+    - Domain
+    - Lib
+  UI:
+    - Application
+    - Lib
+

@@ -1,0 +1,70 @@
+api_post_campaigns:
+    path: /api/v{version}/campaigns
+    controller: Adshares\AdPay\UI\Controller\CampaignController::updateCampaigns
+    methods: POST
+    requirements:
+        version: '1'
+    defaults:
+        _format: json
+
+api_delete_campaigns:
+    path: /api/v{version}/campaigns
+    controller: Adshares\AdPay\UI\Controller\CampaignController::deleteCampaigns
+    methods: DELETE
+    requirements:
+        version: '1'
+    defaults:
+        _format: json
+
+api_post_views:
+    path: /api/v{version}/events/views
+    controller: Adshares\AdPay\UI\Controller\EventController::updateViews
+    methods: POST
+    requirements:
+        version: '1'
+    defaults:
+        _format: json
+
+api_post_clicks:
+    path: /api/v{version}/events/clicks
+    controller: Adshares\AdPay\UI\Controller\EventController::updateClicks
+    methods: POST
+    requirements:
+        version: '1'
+    defaults:
+        _format: json
+
+api_post_conversions:
+    path: /api/v{version}/events/conversions
+    controller: Adshares\AdPay\UI\Controller\EventController::updateConversions
+    methods: POST
+    requirements:
+        version: '1'
+    defaults:
+        _format: json
+
+api_get_payments:
+    path: /api/v{version}/payments/{timestamp}
+    controller: Adshares\AdPay\UI\Controller\PaymentController::find
+    methods: GET
+    requirements:
+        version: '1'
+        timestamp: '\d+'
+    defaults:
+        _format: json
+
+info:
+    path: /info.{_format}
+    controller: Adshares\AdPay\UI\Controller\InfoController::info
+    methods: GET
+    defaults:
+        _format: 'json'
+    requirements:
+        _format:  'json|txt'
+
+index:
+    path: /
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::redirectAction
+    methods: GET
+    defaults:
+        route: 'info'

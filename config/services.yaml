@@ -1,0 +1,84 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    api_version: 'v1'
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    Adshares\AdPay\UI\Command\:
+        resource: '../src/UI/Command'
+
+#    Adshares\AdSelect\UI\EventListener\ApiExceptionListenerSubscriber:
+#        arguments:
+#            $env: '%env(APP_ENV)%'
+#            $logger: '@logger'
+#        tags:
+#            - { name: kernel.event_subscriber }
+
+
+    Adshares\AdPay\Infrastructure\Repository\:
+        resource: '../src/Infrastructure/Repository'
+
+    Adshares\AdPay\Application\Command\CampaignUpdateCommand:
+        public: true
+        arguments:
+            $campaignRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineCampaignRepository'
+            $logger: '@logger'
+
+    Adshares\AdPay\Application\Command\CampaignDeleteCommand:
+        public: true
+        arguments:
+            $campaignRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineCampaignRepository'
+            $logger: '@logger'
+
+    Adshares\AdPay\Application\Command\EventUpdateCommand:
+        public: true
+        arguments:
+            $eventRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineEventRepository'
+            $paymentReportRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository'
+            $logger: '@logger'
+
+    Adshares\AdPay\Application\Command\ReportFetchCommand:
+        public: true
+        arguments:
+            $paymentReportRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository'
+            $logger: '@logger'
+
+    Adshares\AdPay\Application\Command\ReportCalculateCommand:
+        public: true
+        arguments:
+            $paymentReportRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository'
+            $paymentRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentRepository'
+            $campaignRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineCampaignRepository'
+            $eventRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineEventRepository'
+            $logger: '@logger'
+
+    Adshares\AdPay\Application\Command\PaymentFetchCommand:
+        public: true
+        arguments:
+            $paymentReportRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository'
+            $paymentRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentRepository'
+            $logger: '@logger'
+
+    Adshares\AdPay\UI\Controller\:
+        resource: '../src/UI/Controller'
+        tags: ['controller.service_arguments']
+
+#    Adshares\AdPay\UI\Controller\CampaignController:
+#        public: true
+#        arguments:
+#            $campaignRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineCampaignRepository'
+#            $logger: '@logger'
+#
+#    Adshares\AdPay\UI\Controller\EventController:
+#        public: true
+#        arguments:
+#            $eventUpdater: '@Adshares\AdPay\Application\Service\EventUpdater'
+#            $logger: '@logger'
