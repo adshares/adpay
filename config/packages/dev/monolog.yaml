@@ -1,11 +1,8 @@
-parameters:
-    env(LOG_FILE_PATH): "%kernel.logs_dir%/%kernel.environment%.log"
-
 monolog:
     handlers:
         main:
             type: stream
-            path: '%env(LOG_FILE_PATH)%'
+            path: '%env(resolve:LOG_FILE_PATH)%'
             level: debug
             channels: ["!event"]
         # uncomment to get logging in your browser
