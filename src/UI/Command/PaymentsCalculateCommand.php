@@ -45,6 +45,41 @@ class PaymentsCalculateCommand extends Command
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force calculation of incomplete report');
     }
 
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $io = new SymfonyStyle($input, $output);
+
+        if (!$this->lock()) {
+            $io->warning('The command is already running in another process.');
+
+            return 1;
+        }
+
+        $date = $input->getArgument('date');
+        if ($date === null) {
+            $this->calculateAll($io);
+        } else {
+            if (preg_match('/^\d+$/', $date)) {
+                $timestamp = (int)$date;
+            } else {
+                try {
+                    $timestamp = (DateTimeHelper::fromString($date)->getTimestamp());
+                } catch (DateTimeException $exception) {
+                    $io->error($exception->getMessage());
+                    $this->release();
+
+                    return 1;
+                }
+            }
+
+            $this->calculate($timestamp, $input->getOption('force'), $io);
+        }
+
+        $this->release();
+
+        return 0;
+    }
+
     private function calculateAll(SymfonyStyle $io)
     {
         $dto = $this->reportFetchCommand->execute(false, true, false);
@@ -85,39 +120,5 @@ class PaymentsCalculateCommand extends Command
         }
 
         $io->success(sprintf('%d payments calculated.', $count));
-    }
-
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        $io = new SymfonyStyle($input, $output);
-        $date = $input->getArgument('date');
-
-        if (!$this->lock()) {
-            $io->warning('The command is already running in another process.');
-
-            return 1;
-        }
-
-        if ($date === null) {
-            $this->calculateAll($io);
-        } else {
-            if (preg_match('/^\d+$/', $date)) {
-                $timestamp = (int)$date;
-            } else {
-                try {
-                    $timestamp = (DateTimeHelper::fromString($date)->getTimestamp());
-                } catch (DateTimeException $exception) {
-                    $io->error($exception->getMessage());
-
-                    return 1;
-                }
-            }
-
-            $this->calculate($timestamp, $input->getOption('force'), $io);
-        }
-
-        $this->release();
-
-        return 0;
     }
 }

@@ -45,6 +45,12 @@ services:
             $paymentReportRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository'
             $logger: '@logger'
 
+    Adshares\AdPay\Application\Command\EventDeleteCommand:
+        public: true
+        arguments:
+            $eventRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineEventRepository'
+            $logger: '@logger'
+
     Adshares\AdPay\Application\Command\ReportFetchCommand:
         public: true
         arguments:
@@ -58,6 +64,12 @@ services:
             $paymentRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentRepository'
             $campaignRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineCampaignRepository'
             $eventRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineEventRepository'
+            $logger: '@logger'
+
+    Adshares\AdPay\Application\Command\ReportDeleteCommand:
+        public: true
+        arguments:
+            $paymentReportRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository'
             $logger: '@logger'
 
     Adshares\AdPay\Application\Command\PaymentFetchCommand:
