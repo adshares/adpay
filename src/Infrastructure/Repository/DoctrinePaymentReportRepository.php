@@ -8,6 +8,7 @@ use Adshares\AdPay\Domain\Model\PaymentReportCollection;
 use Adshares\AdPay\Domain\Repository\PaymentReportRepository;
 use Adshares\AdPay\Domain\ValueObject\PaymentReportStatus;
 use Adshares\AdPay\Infrastructure\Mapper\PaymentReportMapper;
+use DateTimeInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 
@@ -67,6 +68,28 @@ final class DoctrinePaymentReportRepository extends DoctrineModelUpdater impleme
                 PaymentReportMapper::map($report),
                 PaymentReportMapper::types()
             );
+        } catch (DBALException $exception) {
+            throw new DomainRepositoryException($exception->getMessage());
+        }
+    }
+
+    public function deleteByTime(?DateTimeInterface $timeStart = null, ?DateTimeInterface $timeEnd = null): int
+    {
+        try {
+            $params = [];
+            $types = [];
+            $query = sprintf('DELETE FROM %s WHERE 1=1', PaymentReportMapper::table());
+
+            if ($timeStart !== null) {
+                $query .= ' AND id >= ?';
+                $params[] = $timeStart->getTimestamp();
+            }
+            if ($timeEnd !== null) {
+                $query .= ' AND id <= ?';
+                $params[] = $timeEnd->getTimestamp();
+            }
+
+            return $this->db->executeUpdate($query, $params, $types);
         } catch (DBALException $exception) {
             throw new DomainRepositoryException($exception->getMessage());
         }

@@ -167,4 +167,13 @@ final class PaymentReportTest extends TestCase
         $this->assertEquals(158400, PaymentReport::timestampToId(158422));
         $this->assertEquals(158400, PaymentReport::timestampToId(161999));
     }
+
+    public function testMarkAsCalculated()
+    {
+        $report = new PaymentReport(1571011200, PaymentReportStatus::createComplete());
+        $this->assertFalse($report->isCalculated());
+
+        $report->markAsCalculated();
+        $this->assertTrue($report->isCalculated());
+    }
 }
