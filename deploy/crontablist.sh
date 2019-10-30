@@ -7,6 +7,6 @@ echo -n "10-15,*/5 * * * * "
 echo -n "php ${SERVICE_DIR}/bin/console ops:payments:calculate"
 echo ""
 
-echo -n "10-15,*/5 * * * * "
+echo -n "10 */1 * * * "
 echo -n "php ${SERVICE_DIR}/bin/console ops:history:clear"
 echo ""
