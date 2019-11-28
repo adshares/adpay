@@ -13,6 +13,9 @@ class Size
     /** @var int */
     private $height;
 
+    /** @var string */
+    private $size;
+
     public function __construct(int $width, int $height)
     {
         $this->width = $width;
@@ -22,11 +25,12 @@ class Size
     public static function fromString(string $size): self
     {
         $matches = [];
-        if (!preg_match('/^(\d+)x(\d+)$/', $size, $matches)) {
-            throw InvalidArgumentException::fromArgument('size', $size, 'We support only [WIDTH]x[HEIGHT].');
+        if (preg_match('/^(\d+)x(\d+)$/', $size, $matches)) {
+            $item = new self((int)$matches[1], (int)$matches[2]);
+        } else {
+            $item = new self(0, 0);
         }
-
-        return new self((int)$matches[1], (int)$matches[2]);
+        $item->size = $size;
     }
 
     public function getWidth(): int
@@ -41,7 +45,7 @@ class Size
 
     public function toString(): string
     {
-        return $this->width.'x'.$this->height;
+        return $this->size;
     }
 
     public function __toString(): string
