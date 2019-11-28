@@ -31,6 +31,8 @@ class Size
             $item = new self(0, 0);
         }
         $item->size = $size;
+
+        return $item;
     }
 
     public function getWidth(): int
