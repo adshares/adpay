@@ -18,28 +18,21 @@ final class ConversionTest extends TestCase
         $campaignId = '43c567e1396b4cadb52223a51796fd01';
         $deletedAt = '2019-01-01T12:00:00+00:00';
 
-        $limitValue = 1000000;
         $limitType = LimitType::createInBudget();
-        $cost = 40;
 
-        $limit = new Limit($limitValue, $limitType, $cost);
-
-        $conversion = new Conversion(new Id($conversionId), new Id($campaignId), $limit);
+        $conversion = new Conversion(new Id($conversionId), new Id($campaignId), $limitType);
 
         $this->assertInstanceOf(Conversion::class, $conversion);
         $this->assertEquals($conversionId, $conversion->getId());
         $this->assertEquals($campaignId, $conversion->getCampaignId());
-        $this->assertEquals($limit, $conversion->getLimit());
-        $this->assertEquals($limitValue, $conversion->getLimitValue());
         $this->assertEquals($limitType, $conversion->getLimitType());
-        $this->assertEquals($cost, $conversion->getCost());
         $this->assertFalse($conversion->isRepeatable());
         $this->assertNull($conversion->getDeletedAt());
 
         $conversion = new Conversion(
             new Id($conversionId),
             new Id($campaignId),
-            $limit,
+            $limitType,
             true,
             DateTimeHelper::fromString($deletedAt)
         );
@@ -47,10 +40,10 @@ final class ConversionTest extends TestCase
         $this->assertTrue($conversion->isRepeatable());
         $this->assertEquals($deletedAt, $conversion->getDeletedAt()->format(DateTimeInterface::ATOM));
 
-        $conversion = new Conversion(new Id($conversionId), new Id($campaignId), $limit, false);
+        $conversion = new Conversion(new Id($conversionId), new Id($campaignId), $limitType, false);
         $this->assertFalse($conversion->isRepeatable());
 
-        $conversion = new Conversion(new Id($conversionId), new Id($campaignId), $limit, true);
+        $conversion = new Conversion(new Id($conversionId), new Id($campaignId), $limitType, true);
         $this->assertTrue($conversion->isRepeatable());
     }
 }

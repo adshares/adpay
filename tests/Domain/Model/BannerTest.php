@@ -20,7 +20,7 @@ final class BannerTest extends TestCase
         $deletedAt = '2019-01-01T12:00:00+00:00';
 
         $banner =
-            new Banner(new Id($bannerId), new Id($campaignId), Size::fromString($size), BannerType::createImage());
+            new Banner(new Id($bannerId), new Id($campaignId), $size, BannerType::createImage());
 
         $this->assertInstanceOf(Banner::class, $banner);
         $this->assertEquals($bannerId, $banner->getId());
@@ -32,7 +32,7 @@ final class BannerTest extends TestCase
         $banner = new Banner(
             new Id($bannerId),
             new Id($campaignId),
-            Size::fromString($size),
+            $size,
             BannerType::createImage(),
             DateTimeHelper::fromString($deletedAt)
         );

@@ -21,9 +21,7 @@ class ConversionMapper
         return [
             'id' => $conversion->getId()->toBin(),
             'campaign_id' => $conversion->getCampaignId()->toBin(),
-            '`limit`' => $conversion->getLimitValue(),
             'limit_type' => $conversion->getLimitType()->toString(),
-            'cost' => $conversion->getCost(),
             'is_repeatable' => $conversion->isRepeatable(),
             'deleted_at' => $conversion->getDeletedAt(),
         ];
@@ -34,9 +32,7 @@ class ConversionMapper
         return [
             'id' => Type::BINARY,
             'campaign_id' => Type::BINARY,
-            '`limit`' => Type::INTEGER,
             'limit_type' => Type::STRING,
-            'cost' => Type::INTEGER,
             'value' => Type::INTEGER,
             'is_repeatable' => Type::BOOLEAN,
             'deleted_at' => TYPE::DATETIME,
@@ -45,16 +41,10 @@ class ConversionMapper
 
     public static function fill(array $row): Conversion
     {
-        $limit = new Limit(
-            $row['limit'] !== null ? (int)$row['limit'] : null,
-            new LimitType($row['limit_type']),
-            (int)$row['cost']
-        );
-
         return new Conversion(
             Id::fromBin($row['id']),
             Id::fromBin($row['campaign_id']),
-            $limit,
+            new LimitType($row['limit_type']),
             (bool)$row['is_repeatable'],
             $row['deleted_at'] !== null ? DateTimeHelper::fromString($row['deleted_at']) : null
         );

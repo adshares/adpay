@@ -371,58 +371,6 @@ final class PaymentCalculatorTest extends TestCase
         );
     }
 
-    public function testOverLimit(): void
-    {
-        $campaigns = new CampaignCollection(
-            self::campaign(
-                [],
-                [self::banner()],
-                [
-                    self::conversion(['limit' => 500]),
-                    self::conversion(
-                        [
-                            'id' => 'c0000000000000000000000000000002',
-                            'limit' => 200,
-                            'limit_type' => LimitType::OUT_OF_BUDGET,
-                        ]
-                    ),
-                ]
-            )
-        );
-
-        $this->assertEquals(
-            [
-                '10000000000000000000000000000003' => self::CONVERSION_VALUE,
-                '10000000000000000000000000000031' => self::CONVERSION_VALUE,
-                '10000000000000000000000000000032' => 100,
-                '10000000000000000000000000000033' => 0,
-                '10000000000000000000000000000034' => self::CONVERSION_VALUE,
-                '10000000000000000000000000000035' => 0,
-            ],
-            $this->values(
-                $campaigns,
-                [
-                    self::conversionEvent(),
-                    self::conversionEvent(['id' => '10000000000000000000000000000031']),
-                    self::conversionEvent(['id' => '10000000000000000000000000000032']),
-                    self::conversionEvent(['id' => '10000000000000000000000000000033']),
-                    self::conversionEvent(
-                        [
-                            'id' => '10000000000000000000000000000034',
-                            'conversion_id' => 'c0000000000000000000000000000002',
-                        ]
-                    ),
-                    self::conversionEvent(
-                        [
-                            'id' => '10000000000000000000000000000035',
-                            'conversion_id' => 'c0000000000000000000000000000002',
-                        ]
-                    ),
-                ]
-            )
-        );
-    }
-
     public function testZeroCosts(): void
     {
         $campaigns = new CampaignCollection(
@@ -572,7 +520,7 @@ final class PaymentCalculatorTest extends TestCase
         return new Banner(
             new Id($data['id']),
             new Id($data['campaign_id']),
-            Size::fromString($data['size']),
+            $data['size'],
             new BannerType($data['type']),
             $data['deleted_at'] !== null ? DateTimeHelper::fromTimestamp($data['deleted_at']) : null
         );
@@ -584,25 +532,17 @@ final class PaymentCalculatorTest extends TestCase
             [
                 'id' => self::CONVERSION_ID,
                 'campaign_id' => self::CAMPAIGN_ID,
-                'limit' => null,
                 'limit_type' => LimitType::IN_BUDGET,
-                'cost' => 0,
                 'is_repeatable' => false,
                 'deleted_at' => null,
             ],
             $mergeData
         );
 
-        $limit = new Limit(
-            $data['limit'] !== null ? $data['limit'] : null,
-            new LimitType($data['limit_type']),
-            $data['cost']
-        );
-
         return new Conversion(
             new Id($data['id']),
             new Id($data['campaign_id']),
-            $limit,
+            new LimitType($data['limit_type']),
             $data['is_repeatable'],
             $data['deleted_at'] !== null ? DateTimeHelper::fromTimestamp($data['deleted_at']) : null
         );

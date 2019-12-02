@@ -166,27 +166,16 @@ final class PaymentCalculator
             $conversion = $this->conversions[$conversionId];
 
             if (!array_key_exists($conversionId, $matrix[$campaignId]['conversions'])) {
-                $matrix[$campaignId]['conversions'][$conversionId] = [
-                    'cost' => $conversion->getCost(),
-                    'groups' => [],
-                ];
+                $matrix[$campaignId]['conversions'][$conversionId] = [];
             }
 
             if (!$conversion->isRepeatable()) {
-                if (!array_key_exists($userId, $matrix[$campaignId]['conversions'][$conversionId]['groups'])) {
-                    $matrix[$campaignId]['conversions'][$conversionId]['groups'][$userId] = $event['group_id'];
+                if (!array_key_exists($userId, $matrix[$campaignId]['conversions'][$conversionId])) {
+                    $matrix[$campaignId]['conversions'][$conversionId][$userId] = $event['group_id'];
                 }
-                if ($matrix[$campaignId]['conversions'][$conversionId]['groups'][$userId] !== $event['group_id']) {
+                if ($matrix[$campaignId]['conversions'][$conversionId][$userId] !== $event['group_id']) {
                     $event['conversion_value'] = 0;
                 }
-            }
-
-            if ($conversion->getLimitValue() !== null) {
-                $cost = $matrix[$campaignId]['conversions'][$conversionId]['cost'];
-                if ($cost + $event['conversion_value'] > $conversion->getLimitValue()) {
-                    $event['conversion_value'] = max(0, $conversion->getLimitValue() - $cost);
-                }
-                $matrix[$campaignId]['conversions'][$conversionId]['cost'] = $cost + $event['conversion_value'];
             }
 
             if ($conversion->getLimitType()->isInBudget()) {

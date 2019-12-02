@@ -15,7 +15,7 @@ final class Banner
     /** @var Id */
     private $campaignId;
 
-    /** @var Size */
+    /** @var string */
     private $size;
 
     /** @var BannerType */
@@ -27,7 +27,7 @@ final class Banner
     public function __construct(
         Id $id,
         Id $campaignId,
-        Size $size,
+        string $size,
         BannerType $type,
         DateTimeInterface $deletedAt = null
     ) {
@@ -48,7 +48,7 @@ final class Banner
         return $this->campaignId;
     }
 
-    public function getSize(): Size
+    public function getSize(): string
     {
         return $this->size;
     }

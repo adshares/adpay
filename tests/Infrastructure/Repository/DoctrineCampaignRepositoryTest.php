@@ -242,7 +242,7 @@ final class DoctrineCampaignRepositoryTest extends RepositoryTestCase
         return new Banner(
             new Id($id),
             new Id($campaignId),
-            Size::fromString('100x100'),
+            '100x100',
             BannerType::createImage()
         );
     }
@@ -252,7 +252,7 @@ final class DoctrineCampaignRepositoryTest extends RepositoryTestCase
         return new Conversion(
             new Id($id),
             new Id($campaignId),
-            new Limit(100, LimitType::createInBudget())
+            LimitType::createInBudget()
         );
     }
 

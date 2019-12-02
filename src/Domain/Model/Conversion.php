@@ -16,8 +16,8 @@ final class Conversion
     /** @var Id */
     private $campaignId;
 
-    /** @var Limit */
-    private $limit;
+    /** @var LimitType */
+    private $limitType;
 
     /** @var bool */
     private $repeatable;
@@ -28,13 +28,13 @@ final class Conversion
     public function __construct(
         Id $id,
         Id $campaignId,
-        Limit $limit,
+        LimitType $limitType,
         bool $repeatable = false,
         DateTimeInterface $deletedAt = null
     ) {
         $this->id = $id;
         $this->campaignId = $campaignId;
-        $this->limit = $limit;
+        $this->limitType = $limitType;
         $this->repeatable = $repeatable;
         $this->deletedAt = $deletedAt;
     }
@@ -49,24 +49,9 @@ final class Conversion
         return $this->campaignId;
     }
 
-    public function getLimit(): Limit
-    {
-        return $this->limit;
-    }
-
-    public function getLimitValue(): ?int
-    {
-        return $this->limit->getValue();
-    }
-
     public function getLimitType(): LimitType
     {
-        return $this->limit->getType();
-    }
-
-    public function getCost(): int
-    {
-        return $this->limit->getCost();
+        return $this->limitType;
     }
 
     public function isRepeatable(): bool

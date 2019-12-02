@@ -21,7 +21,7 @@ class BannerMapper
         return [
             'id' => $banner->getId()->toBin(),
             'campaign_id' => $banner->getCampaignId()->toBin(),
-            'size' => $banner->getSize()->toString(),
+            'size' => $banner->getSize(),
             'type' => $banner->getType()->toString(),
             'deleted_at' => $banner->getDeletedAt(),
         ];
@@ -43,7 +43,7 @@ class BannerMapper
         return new Banner(
             Id::fromBin($row['id']),
             Id::fromBin($row['campaign_id']),
-            Size::fromString($row['size']),
+            $row['size'],
             new BannerType($row['type']),
             $row['deleted_at'] !== null ? DateTimeHelper::fromString($row['deleted_at']) : null
         );

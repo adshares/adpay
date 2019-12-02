@@ -34,7 +34,7 @@ final class ConversionCollectionTest extends TestCase
         return new Conversion(
             new Id('0000000000000000000000000000000'.(string)$id),
             new Id('43c567e1396b4cadb52223a51796fd01'),
-            new Limit(100, LimitType::createInBudget())
+            LimitType::createInBudget()
         );
     }
 }

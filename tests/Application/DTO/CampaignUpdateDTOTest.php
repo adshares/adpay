@@ -145,7 +145,7 @@ final class CampaignUpdateDTOTest extends TestCase
     public function testModel(): void
     {
         $bannersInput = self::simpleBanner();
-        $conversionInput = self::simpleConversion(['limit' => 100]);
+        $conversionInput = self::simpleConversion();
 
         $input = self::simpleCampaign(
             [
@@ -182,9 +182,7 @@ final class CampaignUpdateDTOTest extends TestCase
 
         $this->assertEquals($input['id'], $conversion->getCampaignId());
         $this->assertEquals($conversionInput['id'], $conversion->getId());
-        $this->assertEquals($conversionInput['limit'], $conversion->getLimitValue());
         $this->assertEquals($conversionInput['limit_type'], $conversion->getLimitType());
-        $this->assertEquals($conversionInput['cost'], $conversion->getCost());
         $this->assertEquals($conversionInput['is_repeatable'], $conversion->isRepeatable());
     }
 
@@ -252,7 +250,7 @@ final class CampaignUpdateDTOTest extends TestCase
             [[self::simpleBanner([], 'size')]],
             [[self::simpleBanner(['size' => null])]],
             [[self::simpleBanner(['size' => 0])]],
-            [[self::simpleBanner(['size' => 'invalid_value'])]],
+            [[self::simpleBanner(['size' => ''])]],
             [[self::simpleBanner([], 'type')]],
             [[self::simpleBanner(['type' => null])]],
             [[self::simpleBanner(['type' => 0])]],
@@ -290,9 +288,6 @@ final class CampaignUpdateDTOTest extends TestCase
             [[], 0],
             [[self::simpleConversion()]],
             [[self::simpleConversion(), self::simpleConversion()], 2],
-            [[self::simpleConversion(['limit' => null])]],
-            [[self::simpleConversion(['limit' => 0])]],
-            [[self::simpleConversion(['limit' => 100])]],
         ];
     }
 
@@ -309,11 +304,6 @@ final class CampaignUpdateDTOTest extends TestCase
             [[self::simpleConversion(['limit_type' => null])]],
             [[self::simpleConversion(['limit_type' => 0])]],
             [[self::simpleConversion(['limit_type' => 'invalid_value'])]],
-
-            [[self::simpleConversion([], 'cost')]],
-            [[self::simpleConversion(['cost' => null])]],
-            [[self::simpleConversion(['cost' => -100])]],
-            [[self::simpleConversion(['cost' => 'invalid_value'])]],
 
             [[self::simpleConversion([], 'is_repeatable')]],
             [[self::simpleConversion(['is_repeatable' => null])]],
@@ -346,7 +336,6 @@ final class CampaignUpdateDTOTest extends TestCase
             [
                 'id' => '249befbe667e49a7a5c93dfb9b21935c',
                 'limit_type' => 'in_budget',
-                'cost' => 0,
                 'is_repeatable' => false
             ],
             $mergeData

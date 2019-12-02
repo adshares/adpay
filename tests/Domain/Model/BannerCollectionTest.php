@@ -34,7 +34,7 @@ final class BannerCollectionTest extends TestCase
         return new Banner(
             new Id('0000000000000000000000000000000'.(string)$id),
             new Id('43c567e1396b4cadb52223a51796fd01'),
-            new Size(100, 100),
+            '100x100',
             BannerType::createImage()
         );
     }

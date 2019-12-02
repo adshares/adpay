@@ -94,15 +94,15 @@ final class CampaignUpdateDTO
     private function validateBanners(array $banners): void
     {
         foreach ($banners as $input) {
-            if (!isset($input['id'])) {
+            if (empty($input['id'])) {
                 throw new ValidationException('Field `banners[][id]` is required.');
             }
 
-            if (!isset($input['size'])) {
+            if (empty($input['size'])) {
                 throw new ValidationException('Field `banners[][size]` is required.');
             }
 
-            if (!isset($input['type'])) {
+            if (empty($input['type'])) {
                 throw new ValidationException('Field `banners[][type]` is required.');
             }
         }
@@ -128,10 +128,6 @@ final class CampaignUpdateDTO
 
             if (!isset($input['limit_type'])) {
                 throw new ValidationException('Field `conversions[][limit_type]` is required.');
-            }
-
-            if (!isset($input['cost'])) {
-                throw new ValidationException('Field `conversions[][cost]` is required.');
             }
 
             if (!isset($input['is_repeatable'])) {
@@ -189,7 +185,7 @@ final class CampaignUpdateDTO
             $banner = new Banner(
                 new Id($input['id']),
                 $campaignId,
-                Size::fromString($input['size']),
+                $input['size'],
                 new BannerType($input['type'])
             );
 
@@ -207,7 +203,7 @@ final class CampaignUpdateDTO
             $conversion = new Conversion(
                 new Id($input['id']),
                 $campaignId,
-                new Limit($input['limit'] ?? null, new LimitType($input['limit_type']), $input['cost']),
+                new LimitType($input['limit_type']),
                 $input['is_repeatable']
             );
 

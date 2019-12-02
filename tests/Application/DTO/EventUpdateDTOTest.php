@@ -173,10 +173,10 @@ abstract class EventUpdateDTOTest extends TestCase
             [['time_start' => time() - 1]],
             [['time_end' => time() - 1]],
             [['time_start' => 'invalid', 'time_end' => time() - 1]],
-            [['time_start' => time() - 1, 'time_end' => 'invalid']],
-            [['time_start' => time() - 1, 'time_end' => time() - 10]],
+            [['time_start' => time() - 10, 'time_end' => 'invalid']],
+            [['time_start' => time() - 10, 'time_end' => time() - 15]],
             [['time_start' => time() - 3000000, 'time_end' => time() - 1]],
-            [['time_start' => time() - 10, 'time_end' => time() + 10]],
+            [['time_start' => time() - 10, 'time_end' => time() + 100]],
         ];
     }
 
