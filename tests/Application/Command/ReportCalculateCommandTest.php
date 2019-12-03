@@ -120,6 +120,7 @@ class ReportCalculateCommandTest extends TestCase
             'type' => EventType::VIEW,
             'time' => '2019-10-21 08:08:49',
             'case_id' => '20000000000000000000000000000001',
+            'case_time' => '2019-10-21 08:08:45',
             'publisher_id' => '30000000000000000000000000000001',
             'zone_id' => '40000000000000000000000000000001',
             'advertiser_id' => '50000000000000000000000000000001',

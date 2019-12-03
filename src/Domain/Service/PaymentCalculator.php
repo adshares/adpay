@@ -90,6 +90,7 @@ final class PaymentCalculator
         $conversion = $isConversion ? ($this->conversions[$event['conversion_id']] ?? null) : null;
 
         $eventTime = DateTimeHelper::fromString($event['time']);
+        $caseTime = DateTimeHelper::fromString($event['case_time']);
 
         if ($campaign === null) {
             $status = PaymentStatus::CAMPAIGN_NOT_FOUND;
@@ -97,13 +98,13 @@ final class PaymentCalculator
             $status = PaymentStatus::CAMPAIGN_NOT_FOUND;
         } elseif ($banner === null) {
             $status = PaymentStatus::BANNER_NOT_FOUND;
-        } elseif ($banner->getDeletedAt() !== null && $banner->getDeletedAt() < $eventTime) {
+        } elseif ($banner->getDeletedAt() !== null && $banner->getDeletedAt() < $caseTime) {
             $status = PaymentStatus::BANNER_NOT_FOUND;
         } elseif ($isConversion && $conversion === null) {
             $status = PaymentStatus::CONVERSION_NOT_FOUND;
         } elseif ($isConversion
             && $conversion->getDeletedAt() !== null
-            && $conversion->getDeletedAt() < $eventTime) {
+            && $conversion->getDeletedAt() < $caseTime) {
             $status = PaymentStatus::CONVERSION_NOT_FOUND;
         } elseif ($isConversion && $event['payment_status'] !== null) {
             $status = $event['payment_status'];
