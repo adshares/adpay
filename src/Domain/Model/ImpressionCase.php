@@ -4,11 +4,15 @@ namespace Adshares\AdPay\Domain\Model;
 
 use Adshares\AdPay\Domain\ValueObject\Context;
 use Adshares\AdPay\Domain\ValueObject\Id;
+use DateTimeInterface;
 
 final class ImpressionCase
 {
     /** @var Id */
     private $id;
+
+    /** @var DateTimeInterface */
+    private $time;
 
     /** @var Id */
     private $publisherId;
@@ -30,6 +34,7 @@ final class ImpressionCase
 
     public function __construct(
         Id $id,
+        DateTimeInterface $time,
         Id $publisherId,
         ?Id $zoneId,
         Id $advertiserId,
@@ -38,6 +43,7 @@ final class ImpressionCase
         Impression $impression
     ) {
         $this->id = $id;
+        $this->time = $time;
         $this->publisherId = $publisherId;
         $this->zoneId = $zoneId;
         $this->advertiserId = $advertiserId;
@@ -49,6 +55,11 @@ final class ImpressionCase
     public function getId(): Id
     {
         return $this->id;
+    }
+
+    public function getTime(): DateTimeInterface
+    {
+        return $this->time;
     }
 
     public function getPublisherId(): Id

@@ -70,6 +70,10 @@ abstract class EventUpdateDTO
             throw new ValidationException('Field `case_id` is required.');
         }
 
+        if (!isset($input['case_time'])) {
+            throw new ValidationException('Field `case_time` is required.');
+        }
+
         if (!isset($input['publisher_id'])) {
             throw new ValidationException('Field `publisher_id` is required.');
         }
@@ -153,6 +157,7 @@ abstract class EventUpdateDTO
     {
         return new ImpressionCase(
             new Id($input['case_id']),
+            DateTimeHelper::fromTimestamp($input['case_time']),
             new Id($input['publisher_id']),
             isset($input['zone_id']) ? new Id($input['zone_id']) : null,
             new Id($input['advertiser_id']),

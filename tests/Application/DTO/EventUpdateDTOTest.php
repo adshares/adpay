@@ -154,6 +154,7 @@ abstract class EventUpdateDTOTest extends TestCase
         $this->assertEquals($input['id'], $event->getId());
         $this->assertEquals($input['time'], $event->getTime()->getTimestamp());
         $this->assertEquals($input['case_id'], $event->getCaseId());
+        $this->assertEquals($input['case_time'], $event->getCaseTime()->getTimestamp());
         $this->assertEquals($input['publisher_id'], $event->getPublisherId());
         $this->assertEquals($input['zone_id'], $event->getZoneId());
         $this->assertEquals($input['advertiser_id'], $event->getAdvertiserId());
@@ -251,6 +252,10 @@ abstract class EventUpdateDTOTest extends TestCase
             [[static::simpleEvent(['case_id' => null])]],
             [[static::simpleEvent(['case_id' => 0])]],
             [[static::simpleEvent(['case_id' => 'invalid_value'])]],
+            [[static::simpleEvent(['case_time' => null])]],
+            [[static::simpleEvent(['case_time' => 0])]],
+            [[static::simpleEvent(['case_time' => 'invalid_value'])]],
+            [[static::simpleEvent(['case_time' => time()])]],
             [[static::simpleEvent([], 'publisher_id')]],
             [[static::simpleEvent(['publisher_id' => null])]],
             [[static::simpleEvent(['publisher_id' => 0])]],
@@ -311,6 +316,7 @@ abstract class EventUpdateDTOTest extends TestCase
                 'id' => '43c567e1396b4cadb52223a51796fd01',
                 'time' => time() - 30,
                 'case_id' => '43c567e1396b4cadb52223a51796fd01',
+                'case_time' => time() - 35,
                 'publisher_id' => 'ffc567e1396b4cadb52223a51796fd02',
                 'advertiser_id' => 'ccc567e1396b4cadb52223a51796fdcc',
                 'campaign_id' => 'ddc567e1396b4cadb52223a51796fddd',

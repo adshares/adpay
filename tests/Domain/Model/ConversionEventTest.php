@@ -24,7 +24,8 @@ final class ConversionEventTest extends TestCase
         $conversionId = '53c567e1396b4cadb52223a51796fd05';
         $conversionValue = 123;
 
-        $impressionCaseId = '43c567e1396b4cadb52223a51796fd01';
+        $caseId = '43c567e1396b4cadb52223a51796fd01';
+        $caseTime = '2019-01-01T12:00:00+10:00';
         $publisherId = 'ffc567e1396b4cadb52223a51796fd02';
         $zoneId = 'aac567e1396b4cadb52223a51796fdbb';
         $advertiserId = 'bbc567e1396b4cadb52223a51796fdaa';
@@ -47,7 +48,8 @@ final class ConversionEventTest extends TestCase
         );
 
         $case = new ImpressionCase(
-            new Id($impressionCaseId),
+            new Id($caseId),
+            DateTimeHelper::fromString($caseTime),
             new Id($publisherId),
             new Id($zoneId),
             new Id($advertiserId),
@@ -98,6 +100,7 @@ final class ConversionEventTest extends TestCase
             DateTimeHelper::fromTimestamp(123123123),
             new ImpressionCase(
                 new Id('43c567e1396b4cadb52223a51796fd01'),
+                DateTimeHelper::fromTimestamp(123123123),
                 new Id('ffc567e1396b4cadb52223a51796fd02'),
                 new Id('aac567e1396b4cadb52223a51796fdbb'),
                 new Id('bbc567e1396b4cadb52223a51796fdaa'),

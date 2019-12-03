@@ -2,6 +2,7 @@
 
 namespace Adshares\AdPay\Domain\Model;
 
+use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 use Adshares\AdPay\Domain\ValueObject\Context;
 use Adshares\AdPay\Domain\ValueObject\EventType;
 use Adshares\AdPay\Domain\ValueObject\Id;
@@ -31,6 +32,14 @@ abstract class Event
         $this->type = $type;
         $this->time = $time;
         $this->case = $case;
+
+        if ($time < $case->getTime()) {
+            throw InvalidArgumentException::fromArgument(
+                'time',
+                $time->format(DateTimeInterface::ATOM),
+                'The time must be greater than or equal to the case time'
+            );
+        }
     }
 
     public function getId(): Id
@@ -56,6 +65,11 @@ abstract class Event
     public function getCaseId(): Id
     {
         return $this->case->getId();
+    }
+
+    public function getCaseTime(): DateTimeInterface
+    {
+        return $this->case->getTime();
     }
 
     public function getPublisherId(): Id

@@ -13,6 +13,7 @@ use Adshares\AdPay\Domain\Model\ViewEvent;
 use Adshares\AdPay\Domain\ValueObject\Context;
 use Adshares\AdPay\Domain\ValueObject\EventType;
 use Adshares\AdPay\Domain\ValueObject\Id;
+use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
 use Adshares\AdPay\Infrastructure\Repository\DoctrineEventRepository;
 use Adshares\AdPay\Lib\DateTimeHelper;
 use DateTime;
@@ -74,6 +75,100 @@ final class DoctrineEventRepositoryTest extends RepositoryTestCase
                 )
             )
         );
+    }
+
+    public function testViewEvent(): void
+    {
+        $timestamp = 1571838426;
+        $events = new EventCollection(EventType::createView());
+        $events->add(self::viewEvent($timestamp, 1));
+        $repository = new DoctrineEventRepository($this->connection, new NullLogger());
+        $repository->saveAll($events);
+
+        $events = self::iterableToArray($repository->fetchByTime());
+        $event = array_pop($events);
+
+        $this->assertEquals(EventType::VIEW, $event['type']);
+        $this->assertEquals('f1c567e1396b4cadb52223a51796fd01', $event['id']);
+        $this->assertEquals('2019-10-23 13:47:06', $event['time']);
+        $this->assertEquals('13c567e1396b4cadb52223a51796fd01', $event['case_id']);
+        $this->assertEquals('2019-10-23 13:47:06', $event['case_time']);
+        $this->assertEquals('23c567e1396b4cadb52223a51796fd01', $event['publisher_id']);
+        $this->assertEquals('33c567e1396b4cadb52223a51796fd01', $event['zone_id']);
+        $this->assertEquals('43c567e1396b4cadb52223a51796fd01', $event['advertiser_id']);
+        $this->assertEquals('53c567e1396b4cadb52223a51796fd01', $event['campaign_id']);
+        $this->assertEquals('63c567e1396b4cadb52223a51796fd01', $event['banner_id']);
+        $this->assertEquals('73c567e1396b4cadb52223a51796fd01', $event['impression_id']);
+        $this->assertEquals('83c567e1396b4cadb52223a51796fd01', $event['tracking_id']);
+        $this->assertEquals('93c567e1396b4cadb52223a51796fd01', $event['user_id']);
+        $this->assertEquals(0.98, $event['human_score']);
+        $this->assertEquals(0.74, $event['page_rank']);
+        $this->assertEquals(['a' => 'aaa'], $event['keywords']);
+        $this->assertEquals(['b' => 'bbb'], $event['context']);
+    }
+
+    public function testClickEvent(): void
+    {
+        $timestamp = 1571838426;
+        $events = new EventCollection(EventType::createClick());
+        $events->add(self::clickEvent($timestamp, 1));
+        $repository = new DoctrineEventRepository($this->connection, new NullLogger());
+        $repository->saveAll($events);
+
+        $events = self::iterableToArray($repository->fetchByTime());
+        $event = array_pop($events);
+
+        $this->assertEquals(EventType::CLICK, $event['type']);
+        $this->assertEquals('f1c567e1396b4cadb52223a51796fd01', $event['id']);
+        $this->assertEquals('2019-10-23 13:47:06', $event['time']);
+        $this->assertEquals('13c567e1396b4cadb52223a51796fd01', $event['case_id']);
+        $this->assertEquals('2019-10-23 13:47:05', $event['case_time']);
+        $this->assertEquals('23c567e1396b4cadb52223a51796fd01', $event['publisher_id']);
+        $this->assertEquals('33c567e1396b4cadb52223a51796fd01', $event['zone_id']);
+        $this->assertEquals('43c567e1396b4cadb52223a51796fd01', $event['advertiser_id']);
+        $this->assertEquals('53c567e1396b4cadb52223a51796fd01', $event['campaign_id']);
+        $this->assertEquals('63c567e1396b4cadb52223a51796fd01', $event['banner_id']);
+        $this->assertEquals('73c567e1396b4cadb52223a51796fd01', $event['impression_id']);
+        $this->assertEquals('83c567e1396b4cadb52223a51796fd01', $event['tracking_id']);
+        $this->assertEquals('93c567e1396b4cadb52223a51796fd01', $event['user_id']);
+        $this->assertEquals(0.98, $event['human_score']);
+        $this->assertEquals(0.74, $event['page_rank']);
+        $this->assertEquals(['a' => 'aaa'], $event['keywords']);
+        $this->assertEquals(['b' => 'bbb'], $event['context']);
+    }
+
+    public function testConversionEvent(): void
+    {
+        $timestamp = 1571838426;
+        $events = new EventCollection(EventType::createConversion());
+        $events->add(self::conversionEvent($timestamp, 1));
+        $repository = new DoctrineEventRepository($this->connection, new NullLogger());
+        $repository->saveAll($events);
+
+        $events = self::iterableToArray($repository->fetchByTime());
+        $event = array_pop($events);
+
+        $this->assertEquals(EventType::CONVERSION, $event['type']);
+        $this->assertEquals('f1c567e1396b4cadb52223a51796fd01', $event['id']);
+        $this->assertEquals('2019-10-23 13:47:06', $event['time']);
+        $this->assertEquals('13c567e1396b4cadb52223a51796fd01', $event['case_id']);
+        $this->assertEquals('2019-10-23 13:46:56', $event['case_time']);
+        $this->assertEquals('23c567e1396b4cadb52223a51796fd01', $event['publisher_id']);
+        $this->assertEquals('33c567e1396b4cadb52223a51796fd01', $event['zone_id']);
+        $this->assertEquals('43c567e1396b4cadb52223a51796fd01', $event['advertiser_id']);
+        $this->assertEquals('53c567e1396b4cadb52223a51796fd01', $event['campaign_id']);
+        $this->assertEquals('63c567e1396b4cadb52223a51796fd01', $event['banner_id']);
+        $this->assertEquals('73c567e1396b4cadb52223a51796fd01', $event['impression_id']);
+        $this->assertEquals('83c567e1396b4cadb52223a51796fd01', $event['tracking_id']);
+        $this->assertEquals('93c567e1396b4cadb52223a51796fd01', $event['user_id']);
+        $this->assertEquals(0.98, $event['human_score']);
+        $this->assertEquals(0.74, $event['page_rank']);
+        $this->assertEquals(['a' => 'aaa'], $event['keywords']);
+        $this->assertEquals(['b' => 'bbb'], $event['context']);
+        $this->assertEquals('f2c567e1396b4cadb52223a51796fd01', $event['group_id']);
+        $this->assertEquals('f3c567e1396b4cadb52223a51796fd01', $event['conversion_id']);
+        $this->assertEquals(100, $event['conversion_value']);
+        $this->assertEquals(PaymentStatus::HUMAN_SCORE_TOO_LOW, $event['payment_status']);
     }
 
     public function testDuplicateKey(): void
@@ -147,17 +242,18 @@ final class DoctrineEventRepositoryTest extends RepositoryTestCase
         $repository->deleteByTime(EventType::createView(), new DateTime());
     }
 
-    private static function impressionCase(): ImpressionCase
+    private static function impressionCase(int $timestamp): ImpressionCase
     {
         $impression = new Impression(
             new Id('73c567e1396b4cadb52223a51796fd01'),
             new Id('83c567e1396b4cadb52223a51796fd01'),
             new Id('93c567e1396b4cadb52223a51796fd01'),
-            new Context(1.0, 1.0)
+            new Context(0.98, 0.74, ['a' => 'aaa'], ['b' => 'bbb'])
         );
 
         return new ImpressionCase(
             new Id('13c567e1396b4cadb52223a51796fd01'),
+            DateTimeHelper::fromTimestamp($timestamp),
             new Id('23c567e1396b4cadb52223a51796fd01'),
             new Id('33c567e1396b4cadb52223a51796fd01'),
             new Id('43c567e1396b4cadb52223a51796fd01'),
@@ -167,33 +263,34 @@ final class DoctrineEventRepositoryTest extends RepositoryTestCase
         );
     }
 
-    private static function viewEvent(int $timespan, int $id): ViewEvent
+    private static function viewEvent(int $timestamp, int $id): ViewEvent
     {
         return new ViewEvent(
             new Id('f1c567e1396b4cadb52223a51796fd0'.$id),
-            DateTimeHelper::fromTimestamp($timespan),
-            self::impressionCase()
+            DateTimeHelper::fromTimestamp($timestamp),
+            self::impressionCase($timestamp)
         );
     }
 
-    private static function clickEvent(int $timespan, int $id): ClickEvent
+    private static function clickEvent(int $timestamp, int $id): ClickEvent
     {
         return new ClickEvent(
             new Id('f1c567e1396b4cadb52223a51796fd0'.$id),
-            DateTimeHelper::fromTimestamp($timespan),
-            self::impressionCase()
+            DateTimeHelper::fromTimestamp($timestamp),
+            self::impressionCase($timestamp - 1)
         );
     }
 
-    private static function conversionEvent(int $timespan, int $id): ConversionEvent
+    private static function conversionEvent(int $timestamp, int $id): ConversionEvent
     {
         return new ConversionEvent(
             new Id('f1c567e1396b4cadb52223a51796fd0'.$id),
-            DateTimeHelper::fromTimestamp($timespan),
-            self::impressionCase(),
+            DateTimeHelper::fromTimestamp($timestamp),
+            self::impressionCase($timestamp - 10),
             new Id('f2c567e1396b4cadb52223a51796fd01'),
             new Id('f3c567e1396b4cadb52223a51796fd01'),
-            100
+            100,
+            new PaymentStatus(PaymentStatus::HUMAN_SCORE_TOO_LOW)
         );
     }
 }

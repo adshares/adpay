@@ -87,6 +87,7 @@ final class EventCollectionTest extends TestCase
                 new DateTime(),
                 new ImpressionCase(
                     new Id('13c567e1396b4cadb52223a51796fd01'),
+                    new DateTime('-1 second'),
                     new Id('23c567e1396b4cadb52223a51796fd01'),
                     new Id('33c567e1396b4cadb52223a51796fd01'),
                     new Id('43c567e1396b4cadb52223a51796fd01'),

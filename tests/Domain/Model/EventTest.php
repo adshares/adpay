@@ -20,7 +20,8 @@ final class EventTest extends TestCase
         $eventId = '43c567e1396b4cadb52223a51796fd01';
         $time = '2019-01-01T12:00:00+00:00';
 
-        $impressionCaseId = '43c567e1396b4cadb52223a51796fd01';
+        $caseId = '43c567e1396b4cadb52223a51796fd01';
+        $caseTime = '2019-01-01T12:00:00+10:00';
         $publisherId = 'ffc567e1396b4cadb52223a51796fd02';
         $zoneId = 'aac567e1396b4cadb52223a51796fdbb';
         $advertiserId = 'bbc567e1396b4cadb52223a51796fdaa';
@@ -43,7 +44,8 @@ final class EventTest extends TestCase
         );
 
         $case = new ImpressionCase(
-            new Id($impressionCaseId),
+            new Id($caseId),
+            DateTimeHelper::fromString($caseTime),
             new Id($publisherId),
             new Id($zoneId),
             new Id($advertiserId),
@@ -68,7 +70,8 @@ final class EventTest extends TestCase
         $this->assertEquals(EventType::VIEW, $event->getType());
         $this->assertEquals($time, $event->getTime()->format(DateTimeInterface::ATOM));
         $this->assertEquals($case, $event->getCase());
-        $this->assertEquals($impressionCaseId, $event->getCaseId());
+        $this->assertEquals($caseId, $event->getCaseId());
+        $this->assertEquals($caseTime, $event->getCaseTime()->format(DateTimeInterface::ATOM));
         $this->assertEquals($publisherId, $event->getPublisherId());
         $this->assertEquals($zoneId, $event->getZoneId());
         $this->assertEquals($advertiserId, $event->getAdvertiserId());
@@ -85,7 +88,8 @@ final class EventTest extends TestCase
         $this->assertEquals($context, $event->getContextData());
 
         $case = new ImpressionCase(
-            new Id($impressionCaseId),
+            new Id($caseId),
+            DateTimeHelper::fromString($caseTime),
             new Id($publisherId),
             null,
             new Id($advertiserId),

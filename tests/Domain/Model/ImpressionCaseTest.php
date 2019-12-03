@@ -6,13 +6,15 @@ use Adshares\AdPay\Domain\Model\Impression;
 use Adshares\AdPay\Domain\Model\ImpressionCase;
 use Adshares\AdPay\Domain\ValueObject\Context;
 use Adshares\AdPay\Domain\ValueObject\Id;
+use Adshares\AdPay\Lib\DateTimeHelper;
 use PHPUnit\Framework\TestCase;
 
 final class ImpressionCaseTest extends TestCase
 {
     public function testInstanceOfImpressionCase(): void
     {
-        $impressionCaseId = '43c567e1396b4cadb52223a51796fd01';
+        $caseId = '43c567e1396b4cadb52223a51796fd01';
+        $caseTime = '2019-01-01T12:00:00+10:00';
         $publisherId = 'ffc567e1396b4cadb52223a51796fd02';
         $zoneId = 'aac567e1396b4cadb52223a51796fdbb';
         $advertiserId = 'bbc567e1396b4cadb52223a51796fdaa';
@@ -35,7 +37,8 @@ final class ImpressionCaseTest extends TestCase
         );
 
         $case = new ImpressionCase(
-            new Id($impressionCaseId),
+            new Id($caseId),
+            DateTimeHelper::fromString($caseTime),
             new Id($publisherId),
             new Id($zoneId),
             new Id($advertiserId),
@@ -45,7 +48,7 @@ final class ImpressionCaseTest extends TestCase
         );
 
         $this->assertInstanceOf(ImpressionCase::class, $case);
-        $this->assertEquals($impressionCaseId, $case->getId());
+        $this->assertEquals($caseId, $case->getId());
         $this->assertEquals($publisherId, $case->getPublisherId());
         $this->assertEquals($zoneId, $case->getZoneId());
         $this->assertEquals($advertiserId, $case->getAdvertiserId());
@@ -62,7 +65,8 @@ final class ImpressionCaseTest extends TestCase
         $this->assertEquals($context, $case->getContextData());
 
         $case = new ImpressionCase(
-            new Id($impressionCaseId),
+            new Id($caseId),
+            DateTimeHelper::fromString($caseTime),
             new Id($publisherId),
             null,
             new Id($advertiserId),

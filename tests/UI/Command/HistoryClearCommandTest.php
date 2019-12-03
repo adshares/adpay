@@ -103,9 +103,10 @@ final class HistoryClearCommandTest extends CommandTestCase
             $collection->add(
                 new ViewEvent(
                     new Id('aaa567e1396b4cadb52223a51796fd0'.$i),
-                    new DateTime('@'.(time() - 50 * 3600)),
+                    new DateTime('-50 hours'),
                     new ImpressionCase(
                         new Id('fff567e1396b4cadb52223a51796fd01'),
+                        new DateTime('-51 hours'),
                         new Id('fff567e1396b4cadb52223a51796fd02'),
                         new Id('fff567e1396b4cadb52223a51796fd03'),
                         new Id('fff567e1396b4cadb52223a51796fd04'),
