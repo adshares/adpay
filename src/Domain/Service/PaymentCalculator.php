@@ -15,6 +15,9 @@ final class PaymentCalculator
     /** @var float */
     private $humanScoreThreshold = 0.5;
 
+    /** @var float */
+    private $conversionHumanScoreThreshold = 0.4;
+
     /** @var array */
     private $campaigns = [];
 
@@ -27,6 +30,7 @@ final class PaymentCalculator
     public function __construct(CampaignCollection $campaigns, array $config = [])
     {
         $this->humanScoreThreshold = (float)($config['humanScoreThreshold'] ?? $this->humanScoreThreshold);
+        $this->conversionHumanScoreThreshold = (float)($config['conversionHumanScoreThreshold'] ?? $this->conversionHumanScoreThreshold);
 
         foreach ($campaigns as $campaign) {
             /** @var Campaign $campaign */
@@ -81,6 +85,7 @@ final class PaymentCalculator
     {
         $status = PaymentStatus::ACCEPTED;
         $isConversion = $event['type'] === EventType::CONVERSION;
+        $humanScoreThreshold = $isConversion ? $this->conversionHumanScoreThreshold : $this->humanScoreThreshold;
 
         /** @var Campaign $campaign */
         $campaign = $this->campaigns[$event['campaign_id']] ?? null;
@@ -112,7 +117,7 @@ final class PaymentCalculator
             $status = PaymentStatus::CAMPAIGN_OUTDATED;
         } elseif ($campaign->getTimeEnd() !== null && $campaign->getTimeEnd() < $eventTime) {
             $status = PaymentStatus::CAMPAIGN_OUTDATED;
-        } elseif ($event['human_score'] < $this->humanScoreThreshold) {
+        } elseif ($event['human_score'] < $humanScoreThreshold) {
             $status = PaymentStatus::HUMAN_SCORE_TOO_LOW;
         } elseif (!$campaign->checkFilters($event['keywords'])) {
             $status = PaymentStatus::INVALID_TARGETING;
