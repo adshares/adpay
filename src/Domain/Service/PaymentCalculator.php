@@ -30,7 +30,8 @@ final class PaymentCalculator
     public function __construct(CampaignCollection $campaigns, array $config = [])
     {
         $this->humanScoreThreshold = (float)($config['humanScoreThreshold'] ?? $this->humanScoreThreshold);
-        $this->conversionHumanScoreThreshold = (float)($config['conversionHumanScoreThreshold'] ?? $this->conversionHumanScoreThreshold);
+        $this->conversionHumanScoreThreshold =
+            (float)($config['conversionHumanScoreThreshold'] ?? $this->conversionHumanScoreThreshold);
 
         foreach ($campaigns as $campaign) {
             /** @var Campaign $campaign */
@@ -111,7 +112,11 @@ final class PaymentCalculator
             && $conversion->getDeletedAt() !== null
             && $conversion->getDeletedAt() < $caseTime) {
             $status = PaymentStatus::CONVERSION_NOT_FOUND;
-        } elseif ($isConversion && $event['payment_status'] !== null) {
+        } elseif ($isConversion
+            && in_array(
+                $event['payment_status'],
+                [PaymentStatus::CAMPAIGN_OUTDATED, PaymentStatus::INVALID_TARGETING]
+            )) {
             $status = $event['payment_status'];
         } elseif ($campaign->getTimeStart() > $eventTime) {
             $status = PaymentStatus::CAMPAIGN_OUTDATED;
