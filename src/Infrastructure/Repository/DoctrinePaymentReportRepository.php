@@ -89,7 +89,10 @@ final class DoctrinePaymentReportRepository extends DoctrineModelUpdater impleme
                 $params[] = $timeEnd->getTimestamp();
             }
 
-            return $this->db->executeUpdate($query, $params, $types);
+            $this->db->beginTransaction();
+            $r = $this->db->executeUpdate($query, $params, $types);
+            $this->db->commit();
+            return $r;
         } catch (DBALException $exception) {
             throw new DomainRepositoryException($exception->getMessage());
         }
