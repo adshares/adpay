@@ -63,7 +63,7 @@ For the versions available, see the [tags on this repository](https://github.com
 
 ## Authors
 
-* **[Adam Włodarkiewicz](https://github.com/m-pilarczyk)** - _Python programmer_
+* **[Adam Włodarkiewicz](https://github.com/awlodarkiewicz)** - _Python programmer_
 * **[Maciej Pilarczyk](https://github.com/m-pilarczyk)** - _PHP programmer_
 
 See also the list of [contributors](https://github.com/adshares/adpay/contributors) who participated in this project.
