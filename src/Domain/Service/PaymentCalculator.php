@@ -100,7 +100,7 @@ final class PaymentCalculator
 
         if ($campaign === null) {
             $status = PaymentStatus::CAMPAIGN_NOT_FOUND;
-        } elseif ($campaign->getDeletedAt() !== null && $campaign->getDeletedAt() < $eventTime) {
+        } elseif ($campaign->getDeletedAt() !== null && $campaign->getDeletedAt() < $caseTime) {
             $status = PaymentStatus::CAMPAIGN_NOT_FOUND;
         } elseif ($banner === null) {
             $status = PaymentStatus::BANNER_NOT_FOUND;
@@ -118,9 +118,9 @@ final class PaymentCalculator
                 [PaymentStatus::CAMPAIGN_OUTDATED, PaymentStatus::INVALID_TARGETING]
             )) {
             $status = $event['payment_status'];
-        } elseif ($campaign->getTimeStart() > $eventTime) {
+        } elseif ($campaign->getTimeStart() > $caseTime) {
             $status = PaymentStatus::CAMPAIGN_OUTDATED;
-        } elseif ($campaign->getTimeEnd() !== null && $campaign->getTimeEnd() < $eventTime) {
+        } elseif ($campaign->getTimeEnd() !== null && $campaign->getTimeEnd() < $caseTime) {
             $status = PaymentStatus::CAMPAIGN_OUTDATED;
         } elseif ($event['human_score'] < $humanScoreThreshold) {
             $status = PaymentStatus::HUMAN_SCORE_TOO_LOW;
