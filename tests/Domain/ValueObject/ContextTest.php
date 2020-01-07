@@ -49,6 +49,12 @@ final class ContextTest extends TestCase
         $this->assertNull($context->get('aa', 'a', 'x'));
     }
 
+    public function testCpaOnly(): void
+    {
+        $context = new Context(0.89, -1, [], []);
+        $this->assertEquals(-1, $context->getPageRank());
+    }
+
     public function testTooLowHumanScore(): void
     {
         $this->expectException(InvalidArgumentException::class);

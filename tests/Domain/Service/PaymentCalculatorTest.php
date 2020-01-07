@@ -486,6 +486,52 @@ final class PaymentCalculatorTest extends TestCase
         );
     }
 
+    public function testPageRankOutOfRange(): void
+    {
+        $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
+
+        $this->assertEquals(
+            [
+                '10000000000000000000000000000001' => 0,
+                '10000000000000000000000000000002' => self::CAMPAIGN_CPC,
+            ],
+            $this->values($campaigns, [self::viewEvent(['page_rank' => 0]), self::clickEvent(['page_rank' => 2])])
+        );
+        $this->assertEquals(
+            [
+                '10000000000000000000000000000001' => self::CAMPAIGN_CPV,
+                '10000000000000000000000000000002' => 0,
+            ],
+            $this->values($campaigns, [self::viewEvent(), self::clickEvent(['page_rank' => 0])])
+        );
+        $this->assertEquals(
+            ['10000000000000000000000000000003' => self::CONVERSION_VALUE],
+            $this->values($campaigns, [self::conversionEvent(['page_rank' => 0])])
+        );
+    }
+
+    public function testPageRankCpaOnly(): void
+    {
+        $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
+
+        $this->assertEquals(
+            [
+                '10000000000000000000000000000001' => 0,
+            ],
+            $this->values($campaigns, [self::viewEvent(['page_rank' => -1])])
+        );
+        $this->assertEquals(
+            [
+                '10000000000000000000000000000002' => 0,
+            ],
+            $this->values($campaigns, [self::clickEvent(['page_rank' => -1])])
+        );
+        $this->assertEquals(
+            ['10000000000000000000000000000003' => self::CONVERSION_VALUE],
+            $this->values($campaigns, [self::conversionEvent(['page_rank' => -1])])
+        );
+    }
+
     private function statusForAll(
         int $status,
         array $eventData = [],

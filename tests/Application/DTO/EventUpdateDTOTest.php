@@ -228,6 +228,8 @@ abstract class EventUpdateDTOTest extends TestCase
             [[static::simpleEvent(['page_rank' => 0.0])]],
             [[static::simpleEvent(['page_rank' => 0.59])]],
             [[static::simpleEvent(['page_rank' => 1.0])]],
+            [[static::simpleEvent(['page_rank' => -1.0])]],
+            [[static::simpleEvent(['page_rank' => -1])]],
         ];
     }
 
@@ -298,7 +300,8 @@ abstract class EventUpdateDTOTest extends TestCase
             [[static::simpleEvent(['context' => 'invalid_value'])]],
             [[static::simpleEvent([], 'page_rank')]],
             [[static::simpleEvent(['page_rank' => null])]],
-            [[static::simpleEvent(['page_rank' => -1])]],
+            [[static::simpleEvent(['page_rank' => -2])]],
+            [[static::simpleEvent(['page_rank' => -0.1])]],
             [[static::simpleEvent(['page_rank' => 100])]],
             [[static::simpleEvent(['page_rank' => 'invalid_value'])]],
             [[static::simpleEvent([], 'human_score')]],

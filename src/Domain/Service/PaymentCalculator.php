@@ -136,6 +136,7 @@ final class PaymentCalculator
         /** @var Campaign $campaign */
         $campaign = $this->campaigns[$event['campaign_id']];
         $value = 0;
+        $pageRank = min(1, max(0, $event['page_rank']));
 
         if ($event['type'] === EventType::CONVERSION) {
             /** @var Conversion $conversion */
@@ -145,9 +146,9 @@ final class PaymentCalculator
                 $value = $value * $factor;
             }
         } elseif ($event['type'] === EventType::CLICK) {
-            $value = $campaign->getClickCost() * $event['page_rank'] * $factor / $userCount;
+            $value = $campaign->getClickCost() * $pageRank * $factor / $userCount;
         } elseif ($event['type'] === EventType::VIEW) {
-            $value = $campaign->getViewCost() * $event['page_rank'] * $factor / $userCount;
+            $value = $campaign->getViewCost() * $pageRank * $factor / $userCount;
         }
 
         return $value;

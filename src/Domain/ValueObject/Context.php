@@ -27,11 +27,11 @@ class Context
                 'Must be in the range of <0, 1>.'
             );
         }
-        if ($pageRank < 0 || $pageRank > 1) {
+        if (($pageRank < 0 && $pageRank !== -1.0) || $pageRank > 1) {
             throw InvalidArgumentException::fromArgument(
                 'page rank',
                 (string)$pageRank,
-                'Must be in the range of <0, 1>.'
+                'Must be in the range of <0, 1> or equal -1.'
             );
         }
 
