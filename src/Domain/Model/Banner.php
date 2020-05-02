@@ -4,7 +4,6 @@ namespace Adshares\AdPay\Domain\Model;
 
 use Adshares\AdPay\Domain\ValueObject\BannerType;
 use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Domain\ValueObject\Size;
 use DateTimeInterface;
 
 final class Banner

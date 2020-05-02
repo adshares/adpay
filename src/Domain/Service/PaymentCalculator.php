@@ -95,7 +95,6 @@ final class PaymentCalculator
         /** @var Conversion $conversion */
         $conversion = $isConversion ? ($this->conversions[$event['conversion_id']] ?? null) : null;
 
-        $eventTime = DateTimeHelper::fromString($event['time']);
         $caseTime = DateTimeHelper::fromString($event['case_time']);
 
         if ($campaign === null) {
@@ -158,9 +157,6 @@ final class PaymentCalculator
     {
         $campaignId = $event['campaign_id'];
         $userId = $event['user_id'];
-
-        /** @var Campaign $campaign */
-        $campaign = $this->campaigns[$campaignId];
 
         if (!array_key_exists($campaignId, $matrix)) {
             $matrix[$campaignId] = [
