@@ -117,7 +117,6 @@ final class PaymentCalculatorTest extends TestCase
         $payment = $this->single($campaigns, self::conversionEvent());
         $this->assertEquals(PaymentStatus::ACCEPTED, $payment['status']);
 
-
         $campaigns = new CampaignCollection(
             self::campaign([], [self::banner()], [self::conversion(['deleted_at' => self::TIME - 10])])
         );
@@ -205,17 +204,23 @@ final class PaymentCalculatorTest extends TestCase
 
         $payment = $this->single($campaigns, self::viewEvent(['human_score' => 0.5]), ['humanScoreThreshold' => 0.55]);
         $this->assertEquals(PaymentStatus::HUMAN_SCORE_TOO_LOW, $payment['status']);
-        $payment = $this->single($campaigns, self::conversionEvent(['human_score' => 0.5]), ['conversionHumanScoreThreshold' => 0.55]);
+        $payment = $this->single(
+            $campaigns,
+            self::conversionEvent(['human_score' => 0.5]),
+            ['conversionHumanScoreThreshold' => 0.55]
+        );
         $this->assertEquals(PaymentStatus::HUMAN_SCORE_TOO_LOW, $payment['status']);
 
         $payment = $this->single($campaigns, self::viewEvent(['human_score' => 0.3]), ['humanScoreThreshold' => '0.5']);
         $this->assertEquals(PaymentStatus::HUMAN_SCORE_TOO_LOW, $payment['status']);
-        $payment = $this->single($campaigns, self::conversionEvent(['human_score' => 0.3]), ['humanScoreThreshold' => '0.5']);
+        $payment =
+            $this->single($campaigns, self::conversionEvent(['human_score' => 0.3]), ['humanScoreThreshold' => '0.5']);
         $this->assertEquals(PaymentStatus::HUMAN_SCORE_TOO_LOW, $payment['status']);
 
         $payment = $this->single($campaigns, self::viewEvent(['human_score' => 0.49]), ['humanScoreThreshold' => null]);
         $this->assertEquals(PaymentStatus::HUMAN_SCORE_TOO_LOW, $payment['status']);
-        $payment = $this->single($campaigns, self::conversionEvent(['human_score' => 0.39]), ['humanScoreThreshold' => '0.5']);
+        $payment =
+            $this->single($campaigns, self::conversionEvent(['human_score' => 0.39]), ['humanScoreThreshold' => '0.5']);
         $this->assertEquals(PaymentStatus::HUMAN_SCORE_TOO_LOW, $payment['status']);
     }
 

@@ -112,10 +112,8 @@ final class PaymentCalculator
             && $conversion->getDeletedAt() < $caseTime) {
             $status = PaymentStatus::CONVERSION_NOT_FOUND;
         } elseif ($isConversion
-            && in_array(
-                $event['payment_status'],
-                [PaymentStatus::CAMPAIGN_OUTDATED, PaymentStatus::INVALID_TARGETING]
-            )) {
+            && in_array($event['payment_status'], [PaymentStatus::CAMPAIGN_OUTDATED, PaymentStatus::INVALID_TARGETING])
+        ) {
             $status = $event['payment_status'];
         } elseif ($campaign->getTimeStart() > $caseTime) {
             $status = PaymentStatus::CAMPAIGN_OUTDATED;
