@@ -264,7 +264,8 @@ final class DoctrineCampaignRepositoryTest extends RepositoryTestCase
             new Budget(10000),
             $banners,
             [],
-            $conversions
+            $conversions,
+            new Id('f2c567e1396b4cadb52223a51796fd02')
         );
     }
 }

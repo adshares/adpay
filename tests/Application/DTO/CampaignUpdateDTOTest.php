@@ -357,6 +357,7 @@ final class CampaignUpdateDTOTest extends TestCase
                 'time_start' => (new DateTime())->getTimestamp(),
                 'budget' => 10000,
                 'banners' => [self::simpleBanner()],
+                'bid_strategy_id' => 'fff567e1396b4cadb52223a51796fd02',
             ],
             $mergeData
         );

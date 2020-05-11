@@ -62,6 +62,10 @@ final class CampaignUpdateDTO
             throw new ValidationException('Field `budget` is required.');
         }
 
+        if (!isset($input['bid_strategy_id'])) {
+            throw new ValidationException('Field `bid_strategy_id` is required.');
+        }
+
         if (!isset($input['banners'])) {
             throw new ValidationException('Field `banners` is required.');
         }
@@ -153,6 +157,7 @@ final class CampaignUpdateDTO
             $conversions = $this->prepareConversionCollection($campaignId, $input['conversions'] ?? []);
             $budget =
                 new Budget($input['budget'], $input['max_cpm'] ?? null, $input['max_cpc'] ?? null);
+            $bidStrategyId = new Id($input['bid_strategy_id']);
 
             return new Campaign(
                 $campaignId,
@@ -163,7 +168,8 @@ final class CampaignUpdateDTO
                 $budget,
                 $banners,
                 $filters,
-                $conversions
+                $conversions,
+                $bidStrategyId
             );
         } catch (InvalidArgumentException|DateTimeException|TypeError $exception) {
             throw new ValidationException($exception->getMessage());

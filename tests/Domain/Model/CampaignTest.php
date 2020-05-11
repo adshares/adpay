@@ -21,6 +21,7 @@ final class CampaignTest extends TestCase
         $advertiserId = 'ffc567e1396b4cadb52223a51796fd02';
         $timeStart = '2019-01-01T12:00:00+00:00';
         $timeEnd = '2019-03-03T09:00:00+00:00';
+        $bidStrategyId = '43c567e1396b4cadb52223a51796fd02';
         $deletedAt = '2019-01-01T12:00:00+00:00';
 
         $budgetValue = 1000000;
@@ -41,7 +42,8 @@ final class CampaignTest extends TestCase
             $budget,
             $banners,
             $filters,
-            $conversions
+            $conversions,
+            new Id($bidStrategyId)
         );
 
         $this->assertInstanceOf(Campaign::class, $campaign);
@@ -56,6 +58,7 @@ final class CampaignTest extends TestCase
         $this->assertEquals($banners, $campaign->getBanners());
         $this->assertEquals($filters, $campaign->getFilters());
         $this->assertEquals($conversions, $campaign->getConversions());
+        $this->assertEquals($bidStrategyId, $campaign->getBidStrategyId());
         $this->assertNull($campaign->getDeletedAt());
 
         $campaign = new Campaign(
@@ -67,6 +70,7 @@ final class CampaignTest extends TestCase
             $banners,
             $filters,
             $conversions,
+            new Id($bidStrategyId),
             DateTimeHelper::fromString($deletedAt)
         );
 
@@ -83,7 +87,8 @@ final class CampaignTest extends TestCase
             new Budget(100),
             new BannerCollection(),
             [],
-            new ConversionCollection()
+            new ConversionCollection(),
+            new Id('43c567e1396b4cadb52223a51796fd02')
         );
 
         $this->assertEmpty($campaign->getRequireFilters());
@@ -103,7 +108,8 @@ final class CampaignTest extends TestCase
             new Budget(10),
             new BannerCollection(),
             [],
-            new ConversionCollection()
+            new ConversionCollection(),
+            new Id('43c567e1396b4cadb52223a51796fd02')
         );
     }
 
@@ -120,7 +126,8 @@ final class CampaignTest extends TestCase
             new Budget(10),
             new BannerCollection(),
             ['require' => $require, 'exclude' => $exclude],
-            new ConversionCollection()
+            new ConversionCollection(),
+            new Id('43c567e1396b4cadb52223a51796fd02')
         );
 
         $this->assertEquals($result, $campaign->checkFilters($keywords));

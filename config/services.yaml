@@ -26,6 +26,12 @@ services:
     Adshares\AdPay\Infrastructure\Repository\:
         resource: '../src/Infrastructure/Repository'
 
+    Adshares\AdPay\Application\Command\BidStrategyUpdateCommand:
+        public: true
+        arguments:
+            $bidStrategyRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineBidStrategyRepository'
+            $logger: '@logger'
+
     Adshares\AdPay\Application\Command\CampaignUpdateCommand:
         public: true
         arguments:
@@ -63,6 +69,7 @@ services:
             $paymentReportRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository'
             $paymentRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentRepository'
             $campaignRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineCampaignRepository'
+            $bidStrategyRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineBidStrategyRepository'
             $eventRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineEventRepository'
             $logger: '@logger'
 
