@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 namespace DoctrineMigrations;
 
@@ -20,29 +18,6 @@ final class Version20200507141554 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         $uuid = random_bytes(16);
-
-//        $this->addSql(<<<SQL
-//CREATE TABLE bid_strategy
-//(
-//    id   BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-//    name VARCHAR(255) NOT NULL
-//);
-//SQL
-//        );
-//
-//        $this->addSql(<<<SQL
-//CREATE TABLE bid_strategy_details
-//(
-//    id              BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-//    bid_strategy_id BIGINT UNSIGNED NOT NULL,
-//    category        varchar(267)    NOT NULL,
-//    `rank`          decimal(3, 2)   NOT NULL,
-//    CONSTRAINT bid_strategy_details_bid_strategy_id_foreign
-//        FOREIGN KEY (bid_strategy_id) REFERENCES bid_strategy (id)
-//            ON DELETE CASCADE
-//);
-//SQL
-//        );
 
         $this->addSql(<<<SQL
 CREATE TABLE bid_strategies
