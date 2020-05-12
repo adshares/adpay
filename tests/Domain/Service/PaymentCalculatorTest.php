@@ -547,20 +547,56 @@ final class PaymentCalculatorTest extends TestCase
         $bidStrategies = new BidStrategyCollection(
             new BidStrategy(new Id(self::BID_STRATEGY_ID), 'e1:e1_v3', 0.6)
         );
-        $events = [
-            self::viewEvent(
-                [
-                    'keywords' => ['r1' => ['r1_v2'], 'e1' => ['e1_v3']],
-                ]
-            ),
-        ];
+        $events = [self::viewEvent()];
 
         $result = self::valuesWithCustomBidStrategy($campaigns, $bidStrategies, $events);
 
         $this->assertEquals(self::CAMPAIGN_CPV * 0.6, $result['10000000000000000000000000000001']);
     }
 
-    public function testBidStrategyWithNormalization(): void
+    public function testBidStrategies(): void
+    {
+        $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
+        $bidStrategies = new BidStrategyCollection(
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v1', 0.6),
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v2', 1),
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'e1:e1_v3', 0.5),
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'c1:c1_v1', 0.5)
+        );
+        $events = [self::viewEvent()];
+
+        $result = self::valuesWithCustomBidStrategy($campaigns, $bidStrategies, $events);
+
+        $this->assertEquals(self::CAMPAIGN_CPV * 0.6 * 0.5, $result['10000000000000000000000000000001']);
+    }
+
+    public function testBidStrategyNotMatchingCampaignFilters(): void
+    {
+        $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
+        $bidStrategies = new BidStrategyCollection(
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v3', 0.6)
+        );
+        $events = [self::viewEvent()];
+
+        $result = self::valuesWithCustomBidStrategy($campaigns, $bidStrategies, $events);
+
+        $this->assertEquals(self::CAMPAIGN_CPV, $result['10000000000000000000000000000001']);
+    }
+
+    public function testBidStrategyMatchingCampaignFiltersZero(): void
+    {
+        $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
+        $bidStrategies = new BidStrategyCollection(
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v1', 0)
+        );
+        $events = [self::viewEvent()];
+
+        $result = self::valuesWithCustomBidStrategy($campaigns, $bidStrategies, $events);
+
+        $this->assertEquals(self::CAMPAIGN_CPV, $result['10000000000000000000000000000001']);
+    }
+
+    public function testBidStrategiesWithNormalization(): void
     {
         $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
         $bidStrategies = new BidStrategyCollection(
