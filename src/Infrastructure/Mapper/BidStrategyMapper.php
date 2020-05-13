@@ -10,7 +10,7 @@ class BidStrategyMapper
 {
     public static function table(): string
     {
-        return 'bid_strategies';
+        return 'bid_strategy_details';
     }
 
     public static function map(BidStrategy $bidStrategy): array

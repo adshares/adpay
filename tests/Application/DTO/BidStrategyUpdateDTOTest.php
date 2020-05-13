@@ -58,7 +58,7 @@ final class BidStrategyUpdateDTOTest extends TestCase
         /* @var $bidStrategy BidStrategy */
         $bidStrategy = $dto->getBidStrategies()->first();
 
-        $this->assertEquals($input['uuid'], $bidStrategy->getId());
+        $this->assertEquals($input['id'], $bidStrategy->getId());
         $this->assertEquals($input['details'][0]['category'], $bidStrategy->getCategory());
         $this->assertEquals($input['details'][0]['rank'], $bidStrategy->getRank());
     }
@@ -93,10 +93,10 @@ final class BidStrategyUpdateDTOTest extends TestCase
     public function invalidBidStrategiesDataProvider(): array
     {
         return [
-            [[self::simpleBidStrategy([], 'uuid')]],
-            [[self::simpleBidStrategy(['uuid' => null])]],
-            [[self::simpleBidStrategy(['uuid' => 0])]],
-            [[self::simpleBidStrategy(['uuid' => 'invalid_value'])]],
+            [[self::simpleBidStrategy([], 'id')]],
+            [[self::simpleBidStrategy(['id' => null])]],
+            [[self::simpleBidStrategy(['id' => 0])]],
+            [[self::simpleBidStrategy(['id' => 'invalid_value'])]],
             [[self::simpleBidStrategy([], 'details')]],
             [[self::simpleBidStrategy(['details' => null])]],
             [[self::simpleBidStrategy(['details' => 0])]],
@@ -132,7 +132,7 @@ final class BidStrategyUpdateDTOTest extends TestCase
     {
         $bidStrategy = array_merge(
             [
-                'uuid' => '43c567e1396b4cadb52223a51796fd01',
+                'id' => '43c567e1396b4cadb52223a51796fd01',
                 'name' => 'Test bid strategy',
                 'details' => [
                     self::simpleBidStrategyDetail(),

@@ -11,7 +11,7 @@ final class BidStrategyControllerTest extends WebTestCase
         $parameters = [
             'bid_strategies' => [
                 [
-                    'uuid' => 'fff567e1396b4cadb52223a51796fd02',
+                    'id' => 'fff567e1396b4cadb52223a51796fd02',
                     'name' => 'Test bid strategy',
                     'details' => [
                         [
@@ -48,7 +48,7 @@ final class BidStrategyControllerTest extends WebTestCase
         $parameters = [
             'bid-strategies' => [
                 [
-                    'uuid' => 'invalid',
+                    'id' => 'invalid',
                 ],
             ],
         ];

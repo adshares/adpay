@@ -17,10 +17,10 @@ final class Version20200507141554 extends AbstractMigration
 
     public function up(Schema $schema) : void
     {
-        $uuid = random_bytes(16);
+        $id = random_bytes(16);
 
         $this->addSql(<<<SQL
-CREATE TABLE bid_strategies
+CREATE TABLE bid_strategy_details
 (
     id              BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     bid_strategy_id VARBINARY(16) NOT NULL,
@@ -32,12 +32,12 @@ SQL
         );
 
         $this->addSql('ALTER TABLE campaigns ADD COLUMN bid_strategy_id VARBINARY(16) NOT NULL AFTER max_cpc');
-        $this->addSql('UPDATE campaigns SET bid_strategy_id = ?', [$uuid]);
+        $this->addSql('UPDATE campaigns SET bid_strategy_id = ?', [$id]);
     }
 
     public function down(Schema $schema) : void
     {
         $this->addSql('ALTER TABLE campaigns DROP COLUMN bid_strategy_id');
-        $this->addSql('DROP TABLE bid_strategy');
+        $this->addSql('DROP TABLE bid_strategy_details');
     }
 }

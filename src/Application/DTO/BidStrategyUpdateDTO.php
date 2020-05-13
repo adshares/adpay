@@ -42,8 +42,8 @@ final class BidStrategyUpdateDTO
 
     private function validateBidStrategy(array $input): void
     {
-        if (!isset($input['uuid'])) {
-            throw new ValidationException('Field `uuid` is required.');
+        if (!isset($input['id'])) {
+            throw new ValidationException('Field `id` is required.');
         }
 
         if (!isset($input['details'])) {
@@ -75,7 +75,7 @@ final class BidStrategyUpdateDTO
         $collection = new BidStrategyCollection();
         foreach ($input['bid_strategies'] as $bidStrategy) {
             try {
-                $id = new Id($bidStrategy['uuid']);
+                $id = new Id($bidStrategy['id']);
                 foreach ($bidStrategy['details'] as $bidStrategyDetail) {
                     $model = new BidStrategy($id, $bidStrategyDetail['category'], $bidStrategyDetail['rank']);
 
