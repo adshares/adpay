@@ -226,6 +226,7 @@ final class CampaignUpdateDTOTest extends TestCase
             [[self::simpleCampaign(['max_cpm' => 'invalid_value'])]],
             [[self::simpleCampaign(['max_cpc' => 'invalid_value'])]],
             [[self::simpleCampaign([], 'banners')]],
+            [[self::simpleCampaign([], 'bid_strategy_id')]],
         ];
     }
 

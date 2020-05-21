@@ -5,17 +5,14 @@ namespace DoctrineMigrations;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
-/**
- * Auto-generated Migration: Please modify to your needs!
- */
 final class Version20200507141554 extends AbstractMigration
 {
-    public function getDescription() : string
+    public function getDescription(): string
     {
         return 'Add bid strategies';
     }
 
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $id = random_bytes(16);
 
@@ -35,7 +32,7 @@ SQL
         $this->addSql('UPDATE campaigns SET bid_strategy_id = ?', [$id]);
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql('ALTER TABLE campaigns DROP COLUMN bid_strategy_id');
         $this->addSql('DROP TABLE bid_strategy_details');

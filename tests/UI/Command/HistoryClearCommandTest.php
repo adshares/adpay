@@ -15,6 +15,9 @@ use Adshares\AdPay\Infrastructure\Repository\DoctrineEventRepository;
 use Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository;
 use DateTime;
 use Psr\Log\NullLogger;
+use Symfony\Component\Lock\Factory;
+use Symfony\Component\Lock\Store\FlockStore;
+use Symfony\Component\Lock\Store\SemaphoreStore;
 
 final class HistoryClearCommandTest extends CommandTestCase
 {
@@ -77,6 +80,17 @@ final class HistoryClearCommandTest extends CommandTestCase
     {
         $this->executeCommand(['--before' => 100], 1, 'Failed to parse time string');
         $this->executeCommand(['--before' => 'invalid_date'], 1, 'Failed to parse time string');
+    }
+
+    public function testLock(): void
+    {
+        $store = SemaphoreStore::isSupported() ? new SemaphoreStore() : new FlockStore();
+        $lock = (new Factory($store))->createLock(self::$command);
+        self::assertTrue($lock->acquire());
+
+        $this->executeCommand([], 1, 'The command is already running in another process.');
+
+        $lock->release();
     }
 
     private static function periodToDate(int $period): string
