@@ -33,6 +33,9 @@ final class Campaign
     /** @var ConversionCollection */
     private $conversions;
 
+    /** @var Id */
+    private $bidStrategyId;
+
     /** @var DateTimeInterface|null */
     private $deletedAt;
 
@@ -45,6 +48,7 @@ final class Campaign
         BannerCollection $banners,
         array $filters,
         ConversionCollection $conversions,
+        Id $bidStrategyId,
         DateTimeInterface $deletedAt = null
     ) {
         if ($timeEnd !== null && $timeStart > $timeEnd) {
@@ -66,6 +70,7 @@ final class Campaign
             'require' => $filters['require'] ?? [],
         ];
         $this->conversions = $conversions;
+        $this->bidStrategyId = $bidStrategyId;
         $this->deletedAt = $deletedAt;
     }
 
@@ -149,6 +154,11 @@ final class Campaign
     public function getConversions(): ConversionCollection
     {
         return $this->conversions;
+    }
+
+    public function getBidStrategyId(): Id
+    {
+        return $this->bidStrategyId;
     }
 
     public function getDeletedAt(): ?DateTimeInterface

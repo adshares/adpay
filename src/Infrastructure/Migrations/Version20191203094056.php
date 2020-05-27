@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types = 1);
+<?php declare(strict_types = 1);
 
 namespace DoctrineMigrations;
 
@@ -19,9 +17,17 @@ final class Version20191203094056 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE view_events ADD COLUMN case_time TIMESTAMP NOT NULL AFTER case_id');
-        $this->addSql('ALTER TABLE click_events ADD COLUMN case_time TIMESTAMP NOT NULL AFTER case_id');
-        $this->addSql('ALTER TABLE conversion_events ADD COLUMN case_time TIMESTAMP NOT NULL AFTER case_id');
+        $this->addSql(
+            'ALTER TABLE view_events ADD COLUMN case_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER case_id'
+        );
+        $this->addSql(
+            'ALTER TABLE click_events ADD COLUMN case_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER case_id'
+        );
+        $this->addSql(<<<SQL
+ALTER TABLE conversion_events
+    ADD COLUMN case_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER case_id;
+SQL
+        );
 
         $this->addSql('UPDATE view_events SET case_time = time');
         $this->addSql('UPDATE click_events SET case_time = time');

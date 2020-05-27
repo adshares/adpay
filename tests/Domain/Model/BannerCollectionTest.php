@@ -6,7 +6,6 @@ use Adshares\AdPay\Domain\Model\Banner;
 use Adshares\AdPay\Domain\Model\BannerCollection;
 use Adshares\AdPay\Domain\ValueObject\BannerType;
 use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Domain\ValueObject\Size;
 use PHPUnit\Framework\TestCase;
 
 final class BannerCollectionTest extends TestCase

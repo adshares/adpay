@@ -1,11 +1,11 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\AdPay\Tests\Domain\Model\Exception;
+namespace Adshares\AdPay\Tests\Domain\Exception;
 
 use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
-final class SizeTest extends TestCase
+final class InvalidArgumentExceptionTest extends TestCase
 {
     public function testInstanceOfInvalidArgumentException(): void
     {

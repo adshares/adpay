@@ -1,9 +1,11 @@
 <?php declare(strict_types = 1);
 
-namespace Adshares\AdPay\Tests\Domain\Model;
+namespace Adshares\AdPay\Tests\Domain\Service;
 
 use Adshares\AdPay\Domain\Model\Banner;
 use Adshares\AdPay\Domain\Model\BannerCollection;
+use Adshares\AdPay\Domain\Model\BidStrategy;
+use Adshares\AdPay\Domain\Model\BidStrategyCollection;
 use Adshares\AdPay\Domain\Model\Campaign;
 use Adshares\AdPay\Domain\Model\CampaignCollection;
 use Adshares\AdPay\Domain\Model\Conversion;
@@ -13,10 +15,8 @@ use Adshares\AdPay\Domain\ValueObject\BannerType;
 use Adshares\AdPay\Domain\ValueObject\Budget;
 use Adshares\AdPay\Domain\ValueObject\EventType;
 use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Domain\ValueObject\Limit;
 use Adshares\AdPay\Domain\ValueObject\LimitType;
 use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
-use Adshares\AdPay\Domain\ValueObject\Size;
 use Adshares\AdPay\Lib\DateTimeHelper;
 use DateTimeInterface;
 use PHPUnit\Framework\TestCase;
@@ -47,10 +47,14 @@ final class PaymentCalculatorTest extends TestCase
 
     private const CONVERSION_VALUE = 200;
 
+    private const BID_STRATEGY_ID = 'd0000000000000000000000000000001';
+
     public function testPaymentList(): void
     {
         $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
-        $payments = (new PaymentCalculator($campaigns))->calculate([self::viewEvent(), self::clickEvent()]);
+        $bidStrategies = new BidStrategyCollection();
+        $payments =
+            (new PaymentCalculator($campaigns, $bidStrategies))->calculate([self::viewEvent(), self::clickEvent()]);
 
         $list = [];
         array_push($list, ...$payments);
@@ -118,7 +122,6 @@ final class PaymentCalculatorTest extends TestCase
         );
         $payment = $this->single($campaigns, self::conversionEvent());
         $this->assertEquals(PaymentStatus::ACCEPTED, $payment['status']);
-
 
         $campaigns = new CampaignCollection(
             self::campaign([], [self::banner()], [self::conversion(['deleted_at' => self::TIME - 10])])
@@ -207,17 +210,23 @@ final class PaymentCalculatorTest extends TestCase
 
         $payment = $this->single($campaigns, self::viewEvent(['human_score' => 0.5]), ['humanScoreThreshold' => 0.55]);
         $this->assertEquals(PaymentStatus::HUMAN_SCORE_TOO_LOW, $payment['status']);
-        $payment = $this->single($campaigns, self::conversionEvent(['human_score' => 0.5]), ['conversionHumanScoreThreshold' => 0.55]);
+        $payment = $this->single(
+            $campaigns,
+            self::conversionEvent(['human_score' => 0.5]),
+            ['conversionHumanScoreThreshold' => 0.55]
+        );
         $this->assertEquals(PaymentStatus::HUMAN_SCORE_TOO_LOW, $payment['status']);
 
         $payment = $this->single($campaigns, self::viewEvent(['human_score' => 0.3]), ['humanScoreThreshold' => '0.5']);
         $this->assertEquals(PaymentStatus::HUMAN_SCORE_TOO_LOW, $payment['status']);
-        $payment = $this->single($campaigns, self::conversionEvent(['human_score' => 0.3]), ['humanScoreThreshold' => '0.5']);
+        $payment =
+            $this->single($campaigns, self::conversionEvent(['human_score' => 0.3]), ['humanScoreThreshold' => '0.5']);
         $this->assertEquals(PaymentStatus::HUMAN_SCORE_TOO_LOW, $payment['status']);
 
         $payment = $this->single($campaigns, self::viewEvent(['human_score' => 0.49]), ['humanScoreThreshold' => null]);
         $this->assertEquals(PaymentStatus::HUMAN_SCORE_TOO_LOW, $payment['status']);
-        $payment = $this->single($campaigns, self::conversionEvent(['human_score' => 0.39]), ['humanScoreThreshold' => '0.5']);
+        $payment =
+            $this->single($campaigns, self::conversionEvent(['human_score' => 0.39]), ['humanScoreThreshold' => '0.5']);
         $this->assertEquals(PaymentStatus::HUMAN_SCORE_TOO_LOW, $payment['status']);
     }
 
@@ -532,6 +541,88 @@ final class PaymentCalculatorTest extends TestCase
         );
     }
 
+    public function testBidStrategy(): void
+    {
+        $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
+        $bidStrategies = new BidStrategyCollection(
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'e1:e1_v3', 0.6)
+        );
+        $events = [self::viewEvent()];
+
+        $result = self::valuesWithCustomBidStrategy($campaigns, $bidStrategies, $events);
+
+        $this->assertEquals(self::CAMPAIGN_CPV * 0.6, $result['10000000000000000000000000000001']);
+    }
+
+    public function testBidStrategies(): void
+    {
+        $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
+        $bidStrategies = new BidStrategyCollection(
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v1', 0.6),
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v2', 1),
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'e1:e1_v3', 0.5),
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'c1:c1_v1', 0.5)
+        );
+        $events = [self::viewEvent()];
+
+        $result = self::valuesWithCustomBidStrategy($campaigns, $bidStrategies, $events);
+
+        $this->assertEquals(self::CAMPAIGN_CPV * 0.6 * 0.5, $result['10000000000000000000000000000001']);
+    }
+
+    public function testBidStrategyNotMatchingCampaignFilters(): void
+    {
+        $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
+        $bidStrategies = new BidStrategyCollection(
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v3', 0.6)
+        );
+        $events = [self::viewEvent()];
+
+        $result = self::valuesWithCustomBidStrategy($campaigns, $bidStrategies, $events);
+
+        $this->assertEquals(self::CAMPAIGN_CPV, $result['10000000000000000000000000000001']);
+    }
+
+    public function testBidStrategyMatchingCampaignFiltersZero(): void
+    {
+        $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
+        $bidStrategies = new BidStrategyCollection(
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v1', 0)
+        );
+        $events = [self::viewEvent()];
+
+        $result = self::valuesWithCustomBidStrategy($campaigns, $bidStrategies, $events);
+
+        $this->assertEquals(self::CAMPAIGN_CPV, $result['10000000000000000000000000000001']);
+    }
+
+    public function testBidStrategiesWithNormalization(): void
+    {
+        $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
+        $bidStrategies = new BidStrategyCollection(
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v1', 0.6),
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v2', 0.3)
+        );
+        $events = [
+            self::viewEvent(),
+            self::viewEvent(
+                [
+                    'id' => '10000000000000000000000000000002',
+                    'case_id' => '20000000000000000000000000000002',
+                    'impression_id' => '80000000000000000000000000000002',
+                    'tracking_id' => '90000000000000000000000000000002',
+                    'user_id' => 'a0000000000000000000000000000002',
+                    'keywords' => ['r1' => ['r1_v2'], 'e1' => ['e1_v3']],
+                ]
+            ),
+        ];
+
+        $result = self::valuesWithCustomBidStrategy($campaigns, $bidStrategies, $events);
+
+        $this->assertEquals(self::CAMPAIGN_CPV, $result['10000000000000000000000000000001']);
+        $this->assertEquals(self::CAMPAIGN_CPV / 2, $result['10000000000000000000000000000002']);
+    }
+
     private function statusForAll(
         int $status,
         array $eventData = [],
@@ -555,7 +646,8 @@ final class PaymentCalculatorTest extends TestCase
 
     private function single(CampaignCollection $campaigns, array $event, array $config = []): array
     {
-        $payments = (new PaymentCalculator($campaigns, $config))->calculate([$event]);
+        $bidStrategies = new BidStrategyCollection();
+        $payments = (new PaymentCalculator($campaigns, $bidStrategies, $config))->calculate([$event]);
         $result = [];
 
         foreach ($payments as $payment) {
@@ -570,7 +662,16 @@ final class PaymentCalculatorTest extends TestCase
 
     private function values(CampaignCollection $campaigns, array $events, array $config = []): array
     {
-        $payments = (new PaymentCalculator($campaigns, $config))->calculate($events);
+        return $this->valuesWithCustomBidStrategy($campaigns, new BidStrategyCollection(), $events, $config);
+    }
+
+    private function valuesWithCustomBidStrategy(
+        CampaignCollection $campaigns,
+        BidStrategyCollection $bidStrategies,
+        array $events,
+        array $config = []
+    ): array {
+        $payments = (new PaymentCalculator($campaigns, $bidStrategies, $config))->calculate($events);
         $result = [];
 
         foreach ($payments as $payment) {
@@ -596,6 +697,7 @@ final class PaymentCalculatorTest extends TestCase
                 'budget' => self::CAMPAIGN_BUDGET,
                 'max_cpm' => self::CAMPAIGN_CPV * 1000,
                 'max_cpc' => self::CAMPAIGN_CPC,
+                'bid_strategy_id' => self::BID_STRATEGY_ID,
                 'deleted_at' => null,
             ],
             $mergeData
@@ -616,6 +718,7 @@ final class PaymentCalculatorTest extends TestCase
             new BannerCollection(...$banners),
             $data['filters'],
             new ConversionCollection(...$conversions),
+            new Id($data['bid_strategy_id']),
             $data['deleted_at'] !== null ? DateTimeHelper::fromTimestamp($data['deleted_at']) : null
         );
     }

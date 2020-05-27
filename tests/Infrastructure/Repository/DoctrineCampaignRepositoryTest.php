@@ -13,9 +13,7 @@ use Adshares\AdPay\Domain\ValueObject\BannerType;
 use Adshares\AdPay\Domain\ValueObject\Budget;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use Adshares\AdPay\Domain\ValueObject\IdCollection;
-use Adshares\AdPay\Domain\ValueObject\Limit;
 use Adshares\AdPay\Domain\ValueObject\LimitType;
-use Adshares\AdPay\Domain\ValueObject\Size;
 use Adshares\AdPay\Infrastructure\Repository\DoctrineCampaignRepository;
 use DateTime;
 use Psr\Log\NullLogger;
@@ -266,7 +264,8 @@ final class DoctrineCampaignRepositoryTest extends RepositoryTestCase
             new Budget(10000),
             $banners,
             [],
-            $conversions
+            $conversions,
+            new Id('f2c567e1396b4cadb52223a51796fd02')
         );
     }
 }

@@ -4,7 +4,6 @@ namespace Adshares\AdPay\Infrastructure\Mapper;
 
 use Adshares\AdPay\Domain\Model\Conversion;
 use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Domain\ValueObject\Limit;
 use Adshares\AdPay\Domain\ValueObject\LimitType;
 use Adshares\AdPay\Lib\DateTimeHelper;
 use Doctrine\DBAL\Types\Type;

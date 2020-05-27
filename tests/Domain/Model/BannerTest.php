@@ -5,7 +5,6 @@ namespace Adshares\AdPay\Tests\Domain\Model;
 use Adshares\AdPay\Domain\Model\Banner;
 use Adshares\AdPay\Domain\ValueObject\BannerType;
 use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Domain\ValueObject\Size;
 use Adshares\AdPay\Lib\DateTimeHelper;
 use DateTimeInterface;
 use PHPUnit\Framework\TestCase;

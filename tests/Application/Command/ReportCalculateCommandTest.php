@@ -4,8 +4,10 @@ namespace Adshares\AdPay\Tests\Application\Command;
 
 use Adshares\AdPay\Application\Command\ReportCalculateCommand;
 use Adshares\AdPay\Application\Exception\FetchingException;
+use Adshares\AdPay\Domain\Model\BidStrategyCollection;
 use Adshares\AdPay\Domain\Model\CampaignCollection;
 use Adshares\AdPay\Domain\Model\PaymentReport;
+use Adshares\AdPay\Domain\Repository\BidStrategyRepository;
 use Adshares\AdPay\Domain\Repository\CampaignRepository;
 use Adshares\AdPay\Domain\Repository\EventRepository;
 use Adshares\AdPay\Domain\Repository\PaymentReportRepository;
@@ -59,18 +61,23 @@ class ReportCalculateCommandTest extends TestCase
         $campaignRepository = $this->createMock(CampaignRepository::class);
         $campaignRepository->expects($this->never())->method('fetchAll');
 
+        $bidStrategyRepository = $this->createMock(BidStrategyRepository::class);
+        $bidStrategyRepository->expects($this->never())->method('fetchAll');
+
         $eventRepository = $this->createMock(EventRepository::class);
         $eventRepository->expects($this->never())->method('fetchByTime');
 
         /** @var PaymentReportRepository $paymentReportRepository */
         /** @var PaymentRepository $paymentRepository */
         /** @var CampaignRepository $campaignRepository */
+        /** @var BidStrategyRepository $bidStrategyRepository */
         /** @var EventRepository $eventRepository */
 
         $command = new ReportCalculateCommand(
             $paymentReportRepository,
             $paymentRepository,
             $campaignRepository,
+            $bidStrategyRepository,
             $eventRepository,
             new NullLogger()
         );
@@ -91,6 +98,9 @@ class ReportCalculateCommandTest extends TestCase
         $campaignRepository = $this->createMock(CampaignRepository::class);
         $campaignRepository->expects($this->once())->method('fetchAll')->willReturn(new CampaignCollection());
 
+        $bidStrategyRepository = $this->createMock(BidStrategyRepository::class);
+        $bidStrategyRepository->expects($this->once())->method('fetchAll')->willReturn(new BidStrategyCollection());
+
         $eventRepository = $this->createMock(EventRepository::class);
         $eventRepository->expects($this->once())
             ->method('fetchByTime')
@@ -100,12 +110,14 @@ class ReportCalculateCommandTest extends TestCase
         /** @var PaymentReportRepository $paymentReportRepository */
         /** @var PaymentRepository $paymentRepository */
         /** @var CampaignRepository $campaignRepository */
+        /** @var BidStrategyRepository $bidStrategyRepository */
         /** @var EventRepository $eventRepository */
 
         $command = new ReportCalculateCommand(
             $paymentReportRepository,
             $paymentRepository,
             $campaignRepository,
+            $bidStrategyRepository,
             $eventRepository,
             new NullLogger()
         );

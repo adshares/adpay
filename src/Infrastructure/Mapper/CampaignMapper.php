@@ -28,6 +28,7 @@ class CampaignMapper
             'budget' => $campaign->getBudgetValue(),
             'max_cpm' => $campaign->getMaxCpm(),
             'max_cpc' => $campaign->getMaxCpc(),
+            'bid_strategy_id' => $campaign->getBidStrategyId()->toBin(),
             'deleted_at' => $campaign->getDeletedAt(),
         ];
     }
@@ -43,6 +44,7 @@ class CampaignMapper
             'budget' => Type::INTEGER,
             'max_cpm' => Type::INTEGER,
             'max_cpc' => Type::INTEGER,
+            'bid_strategy_id' => Type::BINARY,
             'deleted_at' => TYPE::DATETIME,
         ];
     }
@@ -64,6 +66,7 @@ class CampaignMapper
             $banners,
             json_decode($row['filters'], true),
             $conversions,
+            Id::fromBin($row['bid_strategy_id']),
             $row['deleted_at'] !== null ? DateTimeHelper::fromString($row['deleted_at']) : null
         );
     }

@@ -13,9 +13,7 @@ use Adshares\AdPay\Domain\Model\ConversionCollection;
 use Adshares\AdPay\Domain\ValueObject\BannerType;
 use Adshares\AdPay\Domain\ValueObject\Budget;
 use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Domain\ValueObject\Limit;
 use Adshares\AdPay\Domain\ValueObject\LimitType;
-use Adshares\AdPay\Domain\ValueObject\Size;
 use Adshares\AdPay\Lib\DateTimeHelper;
 use Adshares\AdPay\Lib\Exception\DateTimeException;
 use TypeError;
@@ -62,6 +60,10 @@ final class CampaignUpdateDTO
 
         if (!isset($input['budget'])) {
             throw new ValidationException('Field `budget` is required.');
+        }
+
+        if (!isset($input['bid_strategy_id'])) {
+            throw new ValidationException('Field `bid_strategy_id` is required.');
         }
 
         if (!isset($input['banners'])) {
@@ -155,6 +157,7 @@ final class CampaignUpdateDTO
             $conversions = $this->prepareConversionCollection($campaignId, $input['conversions'] ?? []);
             $budget =
                 new Budget($input['budget'], $input['max_cpm'] ?? null, $input['max_cpc'] ?? null);
+            $bidStrategyId = new Id($input['bid_strategy_id']);
 
             return new Campaign(
                 $campaignId,
@@ -165,7 +168,8 @@ final class CampaignUpdateDTO
                 $budget,
                 $banners,
                 $filters,
-                $conversions
+                $conversions,
+                $bidStrategyId
             );
         } catch (InvalidArgumentException|DateTimeException|TypeError $exception) {
             throw new ValidationException($exception->getMessage());

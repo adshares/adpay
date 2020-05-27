@@ -4,6 +4,7 @@ namespace Adshares\AdPay\Application\Command;
 
 use Adshares\AdPay\Application\Exception\FetchingException;
 use Adshares\AdPay\Domain\Model\PaymentReport;
+use Adshares\AdPay\Domain\Repository\BidStrategyRepository;
 use Adshares\AdPay\Domain\Repository\CampaignRepository;
 use Adshares\AdPay\Domain\Repository\EventRepository;
 use Adshares\AdPay\Domain\Repository\PaymentReportRepository;
@@ -25,6 +26,9 @@ final class ReportCalculateCommand
     /** @var CampaignRepository */
     private $campaignRepository;
 
+    /** @var BidStrategyRepository */
+    private $bidStrategyRepository;
+
     /** @var EventRepository */
     private $eventRepository;
 
@@ -35,12 +39,14 @@ final class ReportCalculateCommand
         PaymentReportRepository $paymentReportRepository,
         PaymentRepository $paymentRepository,
         CampaignRepository $campaignRepository,
+        BidStrategyRepository $bidStrategyRepository,
         EventRepository $eventRepository,
         LoggerInterface $logger
     ) {
         $this->paymentReportRepository = $paymentReportRepository;
         $this->paymentRepository = $paymentRepository;
         $this->campaignRepository = $campaignRepository;
+        $this->bidStrategyRepository = $bidStrategyRepository;
         $this->eventRepository = $eventRepository;
         $this->logger = $logger;
     }
@@ -93,11 +99,12 @@ final class ReportCalculateCommand
     private function createCalculator(): PaymentCalculator
     {
         $campaigns = $this->campaignRepository->fetchAll();
+        $bidStrategies = $this->bidStrategyRepository->fetchAll();
         $config = [
             'humanScoreThreshold' => $_ENV['HUMAN_SCORE_THRESHOLD'] ?? null,
             'conversionHumanScoreThreshold' => $_ENV['CONVERSION_HUMAN_SCORE_THRESHOLD'] ?? null,
         ];
 
-        return new PaymentCalculator($campaigns, $config);
+        return new PaymentCalculator($campaigns, $bidStrategies, $config);
     }
 }

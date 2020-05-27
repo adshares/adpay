@@ -41,7 +41,8 @@ final class CampaignCollectionTest extends TestCase
             new Budget(100),
             new BannerCollection(),
             [],
-            new ConversionCollection()
+            new ConversionCollection(),
+            new Id('43c567e1396b4cadb52223a51796fd02')
         );
     }
 }

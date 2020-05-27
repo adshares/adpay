@@ -2,9 +2,7 @@
 
 namespace Adshares\AdPay\Domain\Model;
 
-use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Domain\ValueObject\Limit;
 use Adshares\AdPay\Domain\ValueObject\LimitType;
 use DateTimeInterface;
 

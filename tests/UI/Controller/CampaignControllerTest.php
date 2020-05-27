@@ -29,6 +29,7 @@ final class CampaignControllerTest extends WebTestCase
                             'is_repeatable' => false,
                         ],
                     ],
+                    'bid_strategy_id' => 'fff567e1396b4cadb52223a51796fd02',
                 ],
             ],
         ];

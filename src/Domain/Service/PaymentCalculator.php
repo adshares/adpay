@@ -3,6 +3,8 @@
 namespace Adshares\AdPay\Domain\Service;
 
 use Adshares\AdPay\Domain\Model\Banner;
+use Adshares\AdPay\Domain\Model\BidStrategy;
+use Adshares\AdPay\Domain\Model\BidStrategyCollection;
 use Adshares\AdPay\Domain\Model\Campaign;
 use Adshares\AdPay\Domain\Model\CampaignCollection;
 use Adshares\AdPay\Domain\Model\Conversion;
@@ -19,6 +21,12 @@ final class PaymentCalculator
     private $conversionHumanScoreThreshold = 0.4;
 
     /** @var array */
+    private $bidStrategies = [];
+
+    /** @var array */
+    private $bidStrategiesForCampaigns = [];
+
+    /** @var array */
     private $campaigns = [];
 
     /** @var array */
@@ -27,11 +35,20 @@ final class PaymentCalculator
     /** @var array */
     private $conversions = [];
 
-    public function __construct(CampaignCollection $campaigns, array $config = [])
+    public function __construct(CampaignCollection $campaigns, BidStrategyCollection $bidStrategies, array $config = [])
     {
         $this->humanScoreThreshold = (float)($config['humanScoreThreshold'] ?? $this->humanScoreThreshold);
         $this->conversionHumanScoreThreshold =
             (float)($config['conversionHumanScoreThreshold'] ?? $this->conversionHumanScoreThreshold);
+
+        foreach ($bidStrategies as $bidStrategy) {
+            /** @var BidStrategy $bidStrategy */
+            $category = $bidStrategy->getCategory();
+            $lastSeparatorIndex = strrpos($category, ':');
+            $value = substr($category, 1 + $lastSeparatorIndex);
+            $category = substr($category, 0, $lastSeparatorIndex);
+            $this->bidStrategies[$bidStrategy->getId()->toString()][$category][$value] = $bidStrategy->getRank();
+        }
 
         foreach ($campaigns as $campaign) {
             /** @var Campaign $campaign */
@@ -95,7 +112,6 @@ final class PaymentCalculator
         /** @var Conversion $conversion */
         $conversion = $isConversion ? ($this->conversions[$event['conversion_id']] ?? null) : null;
 
-        $eventTime = DateTimeHelper::fromString($event['time']);
         $caseTime = DateTimeHelper::fromString($event['case_time']);
 
         if ($campaign === null) {
@@ -113,10 +129,8 @@ final class PaymentCalculator
             && $conversion->getDeletedAt() < $caseTime) {
             $status = PaymentStatus::CONVERSION_NOT_FOUND;
         } elseif ($isConversion
-            && in_array(
-                $event['payment_status'],
-                [PaymentStatus::CAMPAIGN_OUTDATED, PaymentStatus::INVALID_TARGETING]
-            )) {
+            && in_array($event['payment_status'], [PaymentStatus::CAMPAIGN_OUTDATED, PaymentStatus::INVALID_TARGETING])
+        ) {
             $status = $event['payment_status'];
         } elseif ($campaign->getTimeStart() > $caseTime) {
             $status = PaymentStatus::CAMPAIGN_OUTDATED;
@@ -146,9 +160,19 @@ final class PaymentCalculator
                 $value = $value * $factor;
             }
         } elseif ($event['type'] === EventType::CLICK) {
-            $value = $campaign->getClickCost() * $pageRank * $factor / $userCount;
+            $value =
+                $campaign->getClickCost()
+                * $pageRank
+                * $this->getBidStrategyRank($campaign, $event)
+                * $factor
+                / $userCount;
         } elseif ($event['type'] === EventType::VIEW) {
-            $value = $campaign->getViewCost() * $pageRank * $factor / $userCount;
+            $value =
+                $campaign->getViewCost()
+                * $pageRank
+                * $this->getBidStrategyRank($campaign, $event)
+                * $factor
+                / $userCount;
         }
 
         return $value;
@@ -158,9 +182,6 @@ final class PaymentCalculator
     {
         $campaignId = $event['campaign_id'];
         $userId = $event['user_id'];
-
-        /** @var Campaign $campaign */
-        $campaign = $this->campaigns[$campaignId];
 
         if (!array_key_exists($campaignId, $matrix)) {
             $matrix[$campaignId] = [
@@ -213,5 +234,76 @@ final class PaymentCalculator
             'status' => $status,
             'value' => $value,
         ];
+    }
+
+    private function getBidStrategyRank(Campaign $campaign, array $event): float
+    {
+        $bidStrategyForCampaign = $this->getBidStrategyForCampaign($campaign);
+        $keywords = $event['keywords'];
+
+        $bidStrategyRank = 1;
+        foreach ($bidStrategyForCampaign as $category => $valueToRankMap) {
+            if (!isset($keywords[$category])) {
+                continue;
+            }
+
+            foreach ($keywords[$category] as $value) {
+                if (isset($valueToRankMap[$value])) {
+                    $bidStrategyRank *= $valueToRankMap[$value];
+                    break;
+                }
+            }
+        }
+
+        return $bidStrategyRank;
+    }
+
+    private function getBidStrategyForCampaign(Campaign $campaign): array
+    {
+        $campaignId = $campaign->getId()->toString();
+        if (isset($this->bidStrategiesForCampaigns[$campaignId])) {
+            return $this->bidStrategiesForCampaigns[$campaignId];
+        }
+
+        $bidStrategyForCampaign = [];
+
+        $bidStrategyId = $campaign->getBidStrategyId()->toString();
+        if (isset($this->bidStrategies[$bidStrategyId])) {
+            $bidStrategy = $this->bidStrategies[$bidStrategyId];
+            $requiredFilters = $campaign->getRequireFilters();
+            foreach ($bidStrategy as $category => $valueToRankMap) {
+                if (!isset($requiredFilters[$category])) {
+                    $bidStrategyForCampaign[$category] = $valueToRankMap;
+
+                    continue;
+                }
+
+                $valuesIntersection = array_intersect($requiredFilters[$category], array_keys($valueToRankMap));
+
+                if (empty($valuesIntersection)) {
+                    continue;
+                }
+
+                $maxRank = 0;
+                foreach ($valuesIntersection as $value) {
+                    $maxRank = max($maxRank, $valueToRankMap[$value]);
+                }
+
+                if (0 === $maxRank) {
+                    continue;
+                }
+
+                $rankNormalizingFactor = 1 / $maxRank;
+                $valueToRankNormalizedMap = [];
+                foreach ($valuesIntersection as $value) {
+                    $valueToRankNormalizedMap[$value] = $valueToRankMap[$value] * $rankNormalizingFactor;
+                }
+                $bidStrategyForCampaign[$category] = $valueToRankNormalizedMap;
+            }
+        }
+
+        $this->bidStrategiesForCampaigns[$campaignId] = $bidStrategyForCampaign;
+
+        return $bidStrategyForCampaign;
     }
 }
