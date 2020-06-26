@@ -150,4 +150,12 @@ final class DoctrineBidStrategyRepositoryTest extends RepositoryTestCase
             new BidStrategy(new Id('f1c567e1396b4cadb52223a51796fd01'), 'user:country:st', 0.99)
         ));
     }
+
+    public function testDeletingException(): void
+    {
+        $this->expectException(DomainRepositoryException::class);
+
+        $repository = new DoctrineBidStrategyRepository($this->failedConnection(), new NullLogger());
+        $repository->deleteAll(new IdCollection());
+    }
 }
