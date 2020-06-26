@@ -88,7 +88,7 @@ final class DoctrineBidStrategyRepositoryTest extends RepositoryTestCase
             }
         );
         $this->assertEmpty($list);
-    } 
+    }
 
     public function testUpdate(): void
     {

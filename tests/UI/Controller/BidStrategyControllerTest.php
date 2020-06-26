@@ -46,7 +46,7 @@ final class BidStrategyControllerTest extends WebTestCase
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
 
         $parameters = [
-            'bid-strategies' => [
+            'bid_strategies' => [
                 [
                     'id' => 'invalid',
                 ],
@@ -61,7 +61,7 @@ final class BidStrategyControllerTest extends WebTestCase
     public function testDeleteBidStrategy(): void
     {
         $parameters = [
-            'bid-strategies' => [
+            'bid_strategies' => [
                 '43c567e1396b4cadb52223a51796fd01',
                 'fff567e1396b4cadb52223a51796fd02',
             ],
@@ -90,7 +90,7 @@ final class BidStrategyControllerTest extends WebTestCase
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
 
         $parameters = [
-            'bid-strategies' => [
+            'bid_strategies' => [
                 'invalid',
             ],
         ];
