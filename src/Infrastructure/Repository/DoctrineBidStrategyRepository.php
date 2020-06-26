@@ -6,30 +6,13 @@ use Adshares\AdPay\Domain\Exception\DomainRepositoryException;
 use Adshares\AdPay\Domain\Model\BidStrategy;
 use Adshares\AdPay\Domain\Model\BidStrategyCollection;
 use Adshares\AdPay\Domain\Repository\BidStrategyRepository;
+use Adshares\AdPay\Domain\ValueObject\IdCollection;
 use Adshares\AdPay\Infrastructure\Mapper\BidStrategyMapper;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 
 final class DoctrineBidStrategyRepository extends DoctrineModelUpdater implements BidStrategyRepository
 {
-    public function fetchAll(): BidStrategyCollection
-    {
-        $query = sprintf('SELECT * FROM %s', BidStrategyMapper::table());
-
-        try {
-            $rows = $this->db->fetchAll($query);
-        } catch (DBALException $exception) {
-            throw new DomainRepositoryException($exception->getMessage());
-        }
-
-        $bidStrategies = new BidStrategyCollection();
-        foreach ($rows as $row) {
-            $bidStrategies->add(BidStrategyMapper::fill($row));
-        }
-
-        return $bidStrategies;
-    }
-
     public function saveAll(BidStrategyCollection $bidStrategies): int
     {
         if (0 === $bidStrategies->count()) {
@@ -70,5 +53,37 @@ final class DoctrineBidStrategyRepository extends DoctrineModelUpdater implement
         }
 
         return $count;
+    }
+
+    public function deleteAll(IdCollection $ids): int
+    {
+        try {
+            $result = $this->softDelete(BidStrategyMapper::table(), $ids->toBinArray(), 'bid_strategy_id');
+        } catch (DBALException $exception) {
+            throw new DomainRepositoryException($exception->getMessage());
+        }
+
+        return $result;
+    }
+
+    public function fetchAll(): BidStrategyCollection
+    {
+        $query = sprintf(
+            'SELECT * FROM %s WHERE deleted_at IS NULL OR deleted_at > NOW() - INTERVAL 32 DAY',
+            BidStrategyMapper::table()
+        );
+
+        try {
+            $rows = $this->db->fetchAll($query);
+        } catch (DBALException $exception) {
+            throw new DomainRepositoryException($exception->getMessage());
+        }
+
+        $bidStrategies = new BidStrategyCollection();
+        foreach ($rows as $row) {
+            $bidStrategies->add(BidStrategyMapper::fill($row));
+        }
+
+        return $bidStrategies;
     }
 }

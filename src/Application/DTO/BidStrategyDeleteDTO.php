@@ -8,22 +8,22 @@ use Adshares\AdPay\Domain\ValueObject\Id;
 use Adshares\AdPay\Domain\ValueObject\IdCollection;
 use TypeError;
 
-final class CampaignDeleteDTO
+final class BidStrategyDeleteDTO
 {
     private $ids;
 
     public function __construct(array $input)
     {
-        if (!isset($input['campaigns'])) {
-            throw new ValidationException('Field `campaigns` is required.');
+        if (!isset($input['bid_strategies'])) {
+            throw new ValidationException('Field `bid_strategies` is required.');
         }
-        if (!is_array($input['campaigns'])) {
-            throw new ValidationException('Field `campaigns` must be an array.');
+        if (!is_array($input['bid_strategies'])) {
+            throw new ValidationException('Field `bid_strategies` must be an array.');
         }
 
         $collection = new IdCollection();
         try {
-            foreach ($input['campaigns'] as $id) {
+            foreach ($input['bid_strategies'] as $id) {
                 $collection->add(new Id($id));
             }
         } catch (InvalidArgumentException|TypeError $exception) {

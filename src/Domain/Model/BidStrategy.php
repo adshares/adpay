@@ -4,6 +4,7 @@ namespace Adshares\AdPay\Domain\Model;
 
 use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
 use Adshares\AdPay\Domain\ValueObject\Id;
+use DateTimeInterface;
 
 final class BidStrategy
 {
@@ -18,7 +19,10 @@ final class BidStrategy
     /** @var float */
     private $rank;
 
-    public function __construct(Id $id, string $category, float $rank)
+    /** @var DateTimeInterface|null */
+    private $deletedAt;
+
+    public function __construct(Id $id, string $category, float $rank, DateTimeInterface $deletedAt = null)
     {
         if (strlen($category) > self::CATEGORY_LENGTH_MAXIMUM) {
             throw InvalidArgumentException::fromArgument(
@@ -39,6 +43,7 @@ final class BidStrategy
         $this->id = $id;
         $this->category = $category;
         $this->rank = $rank;
+        $this->deletedAt = $deletedAt;
     }
 
     public function getId(): Id
@@ -54,5 +59,10 @@ final class BidStrategy
     public function getRank(): float
     {
         return $this->rank;
+    }
+
+    public function getDeletedAt(): ?DateTimeInterface
+    {
+        return $this->deletedAt;
     }
 }

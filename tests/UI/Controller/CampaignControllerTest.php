@@ -81,7 +81,6 @@ final class CampaignControllerTest extends WebTestCase
         $client = self::createClient();
         $client->request('DELETE', '/api/v1/campaigns', [], [], [], json_encode($parameters));
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
-        $this->assertTrue(true);
     }
 
     public function testEmptyDeleteCampaign(): void
