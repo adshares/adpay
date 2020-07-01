@@ -6,6 +6,7 @@ use Adshares\AdPay\Domain\Exception\DomainRepositoryException;
 use Adshares\AdPay\Domain\Model\BidStrategy;
 use Adshares\AdPay\Domain\Model\BidStrategyCollection;
 use Adshares\AdPay\Domain\ValueObject\Id;
+use Adshares\AdPay\Domain\ValueObject\IdCollection;
 use Adshares\AdPay\Infrastructure\Repository\DoctrineBidStrategyRepository;
 use Psr\Log\NullLogger;
 
@@ -41,6 +42,52 @@ final class DoctrineBidStrategyRepositoryTest extends RepositoryTestCase
 
         $this->assertEquals(2, $result);
         $this->assertCount(3, $repository->fetchAll());
+    }
+
+    public function testDeleting(): void
+    {
+        $repository = new DoctrineBidStrategyRepository($this->connection, new NullLogger());
+
+        $repository->saveAll(
+            new BidStrategyCollection(
+                new BidStrategy(new Id('f1c567e1396b4cadb52223a51796fd01'), 'user:country:st', 0.99),
+                new BidStrategy(new Id('f1c567e1396b4cadb52223a51796fd02'), 'user:country:us', 0.6),
+                new BidStrategy(new Id('f1c567e1396b4cadb52223a51796fd03'), 'user:country:in', 0.4)
+            )
+        );
+
+        $list = array_filter(
+            $repository->fetchAll()->toArray(),
+            function (BidStrategy $bidStrategy) {
+                return $bidStrategy->getDeletedAt() === null;
+            }
+        );
+        $this->assertCount(3, $list);
+
+        $this->assertEquals(1, $repository->deleteAll(new IdCollection(new Id('f1c567e1396b4cadb52223a51796fd02'))));
+
+        $list = array_filter(
+            $repository->fetchAll()->toArray(),
+            function (BidStrategy $bidStrategy) {
+                return $bidStrategy->getDeletedAt() === null;
+            }
+        );
+        $this->assertCount(2, $list);
+
+        $this->assertEquals(
+            2,
+            $repository->deleteAll(
+                new IdCollection(new Id('f1c567e1396b4cadb52223a51796fd01'), new Id('f1c567e1396b4cadb52223a51796fd03'))
+            )
+        );
+
+        $list = array_filter(
+            $repository->fetchAll()->toArray(),
+            function (BidStrategy $bidStrategy) {
+                return $bidStrategy->getDeletedAt() === null;
+            }
+        );
+        $this->assertEmpty($list);
     }
 
     public function testUpdate(): void
@@ -102,5 +149,13 @@ final class DoctrineBidStrategyRepositoryTest extends RepositoryTestCase
         $repository->saveAll(new BidStrategyCollection(
             new BidStrategy(new Id('f1c567e1396b4cadb52223a51796fd01'), 'user:country:st', 0.99)
         ));
+    }
+
+    public function testDeletingException(): void
+    {
+        $this->expectException(DomainRepositoryException::class);
+
+        $repository = new DoctrineBidStrategyRepository($this->failedConnection(), new NullLogger());
+        $repository->deleteAll(new IdCollection());
     }
 }

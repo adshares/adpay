@@ -32,6 +32,12 @@ services:
             $bidStrategyRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineBidStrategyRepository'
             $logger: '@logger'
 
+    Adshares\AdPay\Application\Command\BidStrategyDeleteCommand:
+        public: true
+        arguments:
+            $bidStrategyRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineBidStrategyRepository'
+            $logger: '@logger'
+
     Adshares\AdPay\Application\Command\CampaignUpdateCommand:
         public: true
         arguments:

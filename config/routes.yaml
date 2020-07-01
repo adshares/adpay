@@ -7,6 +7,15 @@ api_post_bid_strategies:
     defaults:
         _format: json
 
+api_delete_bid_strategies:
+    path: /api/v{version}/bid-strategies
+    controller: Adshares\AdPay\UI\Controller\BidStrategyController::deleteBidStrategies
+    methods: DELETE
+    requirements:
+        version: '1'
+    defaults:
+        _format: json
+
 api_post_campaigns:
     path: /api/v{version}/campaigns
     controller: Adshares\AdPay\UI\Controller\CampaignController::updateCampaigns
