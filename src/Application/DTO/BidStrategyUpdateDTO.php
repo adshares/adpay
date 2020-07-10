@@ -64,8 +64,12 @@ final class BidStrategyUpdateDTO
                 throw new ValidationException('Field `details[][category]` is required.');
             }
 
-            if (empty($input['rank'])) {
+            if (!isset($input['rank'])) {
                 throw new ValidationException('Field `details[][rank]` is required.');
+            }
+
+            if (!is_numeric($input['rank'])) {
+                throw new ValidationException('Field `details[][rank]` must be a number.');
             }
         }
     }
@@ -77,7 +81,7 @@ final class BidStrategyUpdateDTO
             try {
                 $id = new Id($bidStrategy['id']);
                 foreach ($bidStrategy['details'] as $bidStrategyDetail) {
-                    $model = new BidStrategy($id, $bidStrategyDetail['category'], $bidStrategyDetail['rank']);
+                    $model = new BidStrategy($id, $bidStrategyDetail['category'], (float)$bidStrategyDetail['rank']);
 
                     $collection->add($model);
                 }
