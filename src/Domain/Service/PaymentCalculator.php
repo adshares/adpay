@@ -85,7 +85,7 @@ final class PaymentCalculator
         foreach ($matrix as $campaignId => $item) {
             /** @var Campaign $campaign */
             $campaign = $this->campaigns[$campaignId];
-            $uniqueViewCount = $item[EventType::VIEW];
+            $uniqueViewCount = count($item[EventType::VIEW]);
             $avgViewCost = $item['costs_' . EventType::VIEW] / $uniqueViewCount;
             $cpmScale = $campaign->getViewCost() / $avgViewCost;
             $scaledCosts = $item['costs'] + $item['costs_' . EventType::VIEW] * ($cpmScale - 1);
