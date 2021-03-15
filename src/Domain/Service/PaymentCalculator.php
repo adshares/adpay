@@ -85,10 +85,14 @@ final class PaymentCalculator
         foreach ($matrix as $campaignId => $item) {
             /** @var Campaign $campaign */
             $campaign = $this->campaigns[$campaignId];
-            $factor = $item['costs'] > $campaign->getBudgetValue() ? $campaign->getBudgetValue() / $item['costs'] : 1;
+            $uniqueViewCount = $item[EventType::VIEW];
+            $avgViewCost = $item['costs_' . EventType::VIEW] / $uniqueViewCount;
+            $cpmScale = $campaign->getViewCost() / $avgViewCost;
+            $scaledCosts = $item['costs'] + $item['costs_' . EventType::VIEW] * ($cpmScale - 1);
+            $factor = $scaledCosts > $campaign->getBudgetValue() ? $campaign->getBudgetValue() / $scaledCosts : 1;
 
             foreach ($item['events'] as $event) {
-                $value = $this->getEventCost($event, $factor, $item[$event['type']][$event['user_id']] ?? 1);
+                $value = $this->getEventCost($event, $factor, $item[$event['type']][$event['user_id']] ?? 1, $cpmScale);
                 yield self::createPayment(
                     $event['type'],
                     $event['id'],
@@ -145,7 +149,7 @@ final class PaymentCalculator
         return $status;
     }
 
-    private function getEventCost(array $event, float $factor = 1.0, int $userCount = 1): float
+    private function getEventCost(array $event, float $factor = 1.0, int $userCount = 1, float $cmpScale = 1.0): float
     {
         /** @var Campaign $campaign */
         $campaign = $this->campaigns[$event['campaign_id']];
@@ -172,6 +176,7 @@ final class PaymentCalculator
                 * $pageRank
                 * $this->getBidStrategyRank($campaign, $event)
                 * $factor
+                * $cmpScale
                 / $userCount;
         }
 
@@ -190,6 +195,8 @@ final class PaymentCalculator
                 EventType::VIEW => [],
                 EventType::CLICK => [],
                 'costs' => 0,
+                'costs_' . EventType::VIEW => 0,
+                'costs_' . EventType::CLICK => 0,
             ];
         }
 
@@ -217,7 +224,9 @@ final class PaymentCalculator
         } else {
             if (!array_key_exists($userId, $matrix[$campaignId][$event['type']])) {
                 $matrix[$campaignId][$event['type']][$userId] = 1;
-                $matrix[$campaignId]['costs'] += $this->getEventCost($event);
+                $cost = $this->getEventCost($event);
+                $matrix[$campaignId]['costs'] += $cost;
+                $matrix[$campaignId]['costs_' . $event['type']] += $cost;
             } else {
                 $matrix[$campaignId][$event['type']][$userId]++;
             }
