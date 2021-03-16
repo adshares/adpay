@@ -86,8 +86,8 @@ final class PaymentCalculator
             /** @var Campaign $campaign */
             $campaign = $this->campaigns[$campaignId];
             $uniqueViewCount = count($item[EventType::VIEW]);
-            $avgViewCost = $item['costs_' . EventType::VIEW] / $uniqueViewCount;
-            $cpmScale = $campaign->getViewCost() / $avgViewCost;
+            $avgViewCost = $uniqueViewCount > 0 ? $item['costs_' . EventType::VIEW] / $uniqueViewCount : 0;
+            $cpmScale = $avgViewCost > 0 ? $campaign->getViewCost() / $avgViewCost : 1;
             $scaledCosts = $item['costs'] + $item['costs_' . EventType::VIEW] * ($cpmScale - 1);
             $factor = $scaledCosts > $campaign->getBudgetValue() ? $campaign->getBudgetValue() / $scaledCosts : 1;
 
