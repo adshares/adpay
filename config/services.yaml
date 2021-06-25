@@ -2,7 +2,7 @@
 # Files in the packages/ subdirectory configure your dependencies.
 
 # Put parameters here that don't need to change on each machine where the app is deployed
-# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     api_version: 'v1'
 
@@ -25,6 +25,9 @@ services:
 
     Adshares\AdPay\Infrastructure\Repository\:
         resource: '../src/Infrastructure/Repository'
+
+    Adshares\AdPay\Application\Command\:
+        resource: '../src/Application/Command'
 
     Adshares\AdPay\Application\Command\BidStrategyUpdateCommand:
         public: true

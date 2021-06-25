@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Tests\Domain\Service;
 
@@ -651,8 +653,10 @@ final class PaymentCalculatorTest extends TestCase
         $result = [];
 
         foreach ($payments as $payment) {
-            if ($payment['event_type'] === $event['type']
-                && $payment['event_id'] === $event['id']) {
+            if (
+                $payment['event_type'] === $event['type']
+                && $payment['event_id'] === $event['id']
+            ) {
                 $result = $payment;
             }
         }

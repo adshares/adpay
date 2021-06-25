@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Infrastructure\Repository;
 
@@ -96,11 +98,11 @@ abstract class DoctrineModelUpdater
         }
 
         $columns = array_keys(reset($data));
-        $set = '('.implode(', ', array_fill(0, count($columns), '?')).')';
+        $set = '(' . implode(', ', array_fill(0, count($columns), '?')) . ')';
 
         return $this->db->executeUpdate(
-            'INSERT INTO '.$table.' ('.implode(', ', $columns).')'.
-            ' VALUES '.implode(',', array_fill(0, count($data), $set)),
+            'INSERT INTO ' . $table . ' (' . implode(', ', $columns) . ')' .
+            ' VALUES ' . implode(',', array_fill(0, count($data), $set)),
             array_merge(...array_map('array_values', $data)),
             array_merge(...array_fill(0, count($data), $this->extractTypeValues($columns, $types)))
         );

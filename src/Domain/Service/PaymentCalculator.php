@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Domain\Service;
 
@@ -128,11 +130,14 @@ final class PaymentCalculator
             $status = PaymentStatus::BANNER_NOT_FOUND;
         } elseif ($isConversion && $conversion === null) {
             $status = PaymentStatus::CONVERSION_NOT_FOUND;
-        } elseif ($isConversion
+        } elseif (
+            $isConversion
             && $conversion->getDeletedAt() !== null
-            && $conversion->getDeletedAt() < $caseTime) {
+            && $conversion->getDeletedAt() < $caseTime
+        ) {
             $status = PaymentStatus::CONVERSION_NOT_FOUND;
-        } elseif ($isConversion
+        } elseif (
+            $isConversion
             && in_array($event['payment_status'], [PaymentStatus::CAMPAIGN_OUTDATED, PaymentStatus::INVALID_TARGETING])
         ) {
             $status = $event['payment_status'];

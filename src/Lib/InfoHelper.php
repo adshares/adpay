@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Lib;
 
@@ -14,7 +16,7 @@ final class InfoHelper
                 $value = implode(',', $value);
             }
             if (strpos((string)$value, ' ') !== false) {
-                $value = '"'.$value.'"';
+                $value = '"' . $value . '"';
             }
             $response .= sprintf("%s=%s\n", $key, $value);
         }

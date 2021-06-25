@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Tests\UI\Controller;
 
@@ -45,7 +47,6 @@ final class CampaignControllerTest extends WebTestCase
         $client->request('POST', '/api/v1/campaigns');
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
 
-        $client = self::createClient();
         $client->request('POST', '/api/v1/campaigns', [], [], [], json_encode([]));
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
     }
@@ -64,7 +65,6 @@ final class CampaignControllerTest extends WebTestCase
             ],
         ];
 
-        $client = self::createClient();
         $client->request('POST', '/api/v1/campaigns', [], [], [], json_encode($parameters));
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
     }
@@ -89,7 +89,6 @@ final class CampaignControllerTest extends WebTestCase
         $client->request('DELETE', '/api/v1/campaigns');
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
 
-        $client = self::createClient();
         $client->request('DELETE', '/api/v1/campaigns', [], [], [], json_encode([]));
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
     }
@@ -106,7 +105,6 @@ final class CampaignControllerTest extends WebTestCase
             ],
         ];
 
-        $client = self::createClient();
         $client->request('DELETE', '/api/v1/campaigns', [], [], [], json_encode($parameters));
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
     }

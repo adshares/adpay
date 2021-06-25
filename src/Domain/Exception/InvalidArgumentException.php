@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Domain\Exception;
 
@@ -10,7 +12,7 @@ class InvalidArgumentException extends BaseInvalidArgumentException
     {
         $message = sprintf('Given %s (%s) is invalid.', $name, $value);
         if (!empty($restrictions)) {
-            $message .= ' '.$restrictions;
+            $message .= ' ' . $restrictions;
         }
 
         return new self($message);

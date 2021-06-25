@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Tests\Domain\ValueObject;
 
@@ -57,7 +59,7 @@ final class PaymentStatusTest extends TestCase
         $this->assertTrue($status->isProcessed());
         $this->assertFalse($status->isAccepted());
         $this->assertTrue($status->isRejected());
-        $this->assertEquals('rejected:'.$label, $status->toString());
+        $this->assertEquals('rejected:' . $label, $status->toString());
     }
 
     public function rejectedStatusProvider(): array

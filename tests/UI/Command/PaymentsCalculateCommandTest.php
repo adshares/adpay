@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Tests\UI\Command;
 
@@ -6,7 +8,7 @@ use Adshares\AdPay\Domain\Model\PaymentReport;
 use Adshares\AdPay\Domain\ValueObject\PaymentReportStatus;
 use Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository;
 use Psr\Log\NullLogger;
-use Symfony\Component\Lock\Factory;
+use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Lock\Store\FlockStore;
 use Symfony\Component\Lock\Store\SemaphoreStore;
 
@@ -63,7 +65,7 @@ final class PaymentsCalculateCommandTest extends CommandTestCase
     public function testLock(): void
     {
         $store = SemaphoreStore::isSupported() ? new SemaphoreStore() : new FlockStore();
-        $lock = (new Factory($store))->createLock(self::$command);
+        $lock = (new LockFactory($store))->createLock(self::$command);
         self::assertTrue($lock->acquire());
 
         $this->executeCommand([], 1, 'The command is already running in another process.');

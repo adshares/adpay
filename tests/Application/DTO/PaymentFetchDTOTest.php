@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Tests\Application\DTO;
 
@@ -50,7 +52,7 @@ final class PaymentFetchDTOTest extends TestCase
         return [
             'id' => $id,
             'report_id' => 123,
-            'event_id' => 'aac567e1396b4cadb52223a51796fdb'.$id,
+            'event_id' => 'aac567e1396b4cadb52223a51796fdb' . $id,
             'event_type' => 'view',
             'status' => 1,
             'value' => 10000,
