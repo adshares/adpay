@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2021-06-01
+### Added
+- Scale CMP
+- Bid strategy soft delete/update
+
 ## [1.1.3] - 2020-01-07
 ### Added 
 - CPA only pages support
@@ -33,7 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rewriting from Python to PHP
 
 
-[Unreleased]: https://github.com/adshares/adpay/compare/v1.1.3...HEAD
+[Unreleased]: https://github.com/adshares/adpay/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/adshares/adpay/compare/v1.1.3...v1.2.0
 [1.1.3]: https://github.com/adshares/adpay/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/adshares/adpay/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/adshares/adpay/compare/v1.1.0...v1.1.1
