@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Adshares\AdPay\Infrastructure\Mapper;
 
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 
 class PaymentMapper
 {
@@ -27,12 +27,12 @@ class PaymentMapper
     public static function types(): array
     {
         return [
-            'id' => Type::INTEGER,
-            'report_id' => Type::INTEGER,
-            'event_id' => Type::BINARY,
-            'event_type' => Type::STRING,
-            'status' => Type::INTEGER,
-            'value' => Type::INTEGER,
+            'id' => Types::INTEGER,
+            'report_id' => Types::INTEGER,
+            'event_id' => Types::BINARY,
+            'event_type' => Types::STRING,
+            'status' => Types::INTEGER,
+            'value' => Types::INTEGER,
         ];
     }
 

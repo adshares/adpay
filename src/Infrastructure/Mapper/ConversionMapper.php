@@ -8,7 +8,7 @@ use Adshares\AdPay\Domain\Model\Conversion;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use Adshares\AdPay\Domain\ValueObject\LimitType;
 use Adshares\AdPay\Lib\DateTimeHelper;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 
 class ConversionMapper
 {
@@ -31,12 +31,12 @@ class ConversionMapper
     public static function types(): array
     {
         return [
-            'id' => Type::BINARY,
-            'campaign_id' => Type::BINARY,
-            'limit_type' => Type::STRING,
-            'value' => Type::INTEGER,
-            'is_repeatable' => Type::BOOLEAN,
-            'deleted_at' => TYPE::DATETIME,
+            'id' => Types::BINARY,
+            'campaign_id' => Types::BINARY,
+            'limit_type' => Types::STRING,
+            'value' => Types::INTEGER,
+            'is_repeatable' => Types::BOOLEAN,
+            'deleted_at' => Types::DATETIME_MUTABLE,
         ];
     }
 

@@ -16,7 +16,7 @@ use Adshares\AdPay\Domain\ValueObject\IdCollection;
 use Adshares\AdPay\Infrastructure\Mapper\BannerMapper;
 use Adshares\AdPay\Infrastructure\Mapper\CampaignMapper;
 use Adshares\AdPay\Infrastructure\Mapper\ConversionMapper;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception as DBALException;
 
 final class DoctrineCampaignRepository extends DoctrineModelUpdater implements CampaignRepository
 {
@@ -85,9 +85,9 @@ final class DoctrineCampaignRepository extends DoctrineModelUpdater implements C
         $query = 'SELECT * FROM %s WHERE deleted_at IS NULL OR deleted_at > NOW() - INTERVAL 32 DAY';
 
         try {
-            $campaignRows = $this->db->fetchAll(sprintf($query, CampaignMapper::table()));
-            $bannerRows = $this->db->fetchAll(sprintf($query, BannerMapper::table()));
-            $conversionRows = $this->db->fetchAll(sprintf($query, ConversionMapper::table()));
+            $campaignRows = $this->db->fetchAllAssociative(sprintf($query, CampaignMapper::table()));
+            $bannerRows = $this->db->fetchAllAssociative(sprintf($query, BannerMapper::table()));
+            $conversionRows = $this->db->fetchAllAssociative(sprintf($query, ConversionMapper::table()));
         } catch (DBALException $exception) {
             throw new DomainRepositoryException($exception->getMessage());
         }

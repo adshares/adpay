@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Adshares\AdPay\Infrastructure\Mapper;
 
 use Adshares\AdPay\Domain\Model\Event;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 
 abstract class EventMapper
 {
@@ -38,22 +38,22 @@ abstract class EventMapper
     public static function types(): array
     {
         return [
-            'id' => Type::BINARY,
-            'time' => Type::DATETIME,
-            'case_id' => Type::BINARY,
-            'case_time' => Type::DATETIME,
-            'publisher_id' => Type::BINARY,
-            'zone_id' => Type::BINARY,
-            'advertiser_id' => Type::BINARY,
-            'campaign_id' => Type::BINARY,
-            'banner_id' => Type::BINARY,
-            'impression_id' => Type::BINARY,
-            'tracking_id' => Type::BINARY,
-            'user_id' => Type::BINARY,
-            'human_score' => Type::FLOAT,
-            'page_rank' => Type::FLOAT,
-            'keywords' => Type::JSON,
-            'context' => Type::JSON,
+            'id' => Types::BINARY,
+            'time' => Types::DATETIME_MUTABLE,
+            'case_id' => Types::BINARY,
+            'case_time' => Types::DATETIME_MUTABLE,
+            'publisher_id' => Types::BINARY,
+            'zone_id' => Types::BINARY,
+            'advertiser_id' => Types::BINARY,
+            'campaign_id' => Types::BINARY,
+            'banner_id' => Types::BINARY,
+            'impression_id' => Types::BINARY,
+            'tracking_id' => Types::BINARY,
+            'user_id' => Types::BINARY,
+            'human_score' => Types::FLOAT,
+            'page_rank' => Types::FLOAT,
+            'keywords' => Types::JSON,
+            'context' => Types::JSON,
         ];
     }
 
