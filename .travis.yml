@@ -4,13 +4,12 @@ services: mysql
 
 env:
   global:
-    - MIN_PHP=7.2
+    - MIN_PHP=7.4
     - DATABASE_URL=mysql://travis@127.0.0.1:3306/adpay_test
 
 matrix:
   include:
-    - php: "7.2"
-    - php: "7.3"
+    - php: "7.4"
   fast_finish: true
 
 cache:
@@ -30,14 +29,6 @@ script:
   - composer test-ci
   - git fetch --unshallow
   - sonar-scanner
-
-notifications:
-  email: false
-  slack:
-    rooms:
-      - secure: "eSRA9ymsTLvqgDmcyrekeb23g8bfb7HrJF80qZxQSvJA/b5TBfMpOa9HOE/Gm/3PIcWf3odpyybrFTwXpCuQ5OXRWK8wvwe+4WoyPV1iJeJMEU2r8gMSWxcXktgavUYWOBpvzoE0uUUbtt5gP6X+CDoIibls/P1vO81eGOoI3jKPNBaJRita/WwQzltxwRhCDE100rkFbHGX2TQ3UV32zeegUVGGrmCzA87/c7hz1FFsWrCVz5GjTEf6iAoDTfwrVD6ym8XtQKjKN+nVuDFEsiPwA5SmTKg/HDbTYg41xUsbE2hr3iDwhMNkl38XITfw6WzIYVdYPO4OPlBHoR973Ao1FFQWIrzsfINC2ogn4SnexPyk/m/gNG9y3l7ammRO5fVKrXdidXLisdlDQ0NrgyqtQRss0u6Lpk81ksFgI1e/Ffei3/0LJfuvKgtX7/dUnzDxnGmvrJUvUtbaXiqpulOoCTVrTdN8XqV4fB+qnadYhBGmksCQhFERwCF09AS9+dSQElPTHoa/3qo4Ftnud6OCgkdSjK+9d83Gh7u1WezqctQdgc2s5SKmTmkt3cg11qqVtVtYh32qpoUOiJkm2LH0EZMgibsnTbevMYVvPiCrLfUz7SE9asJrNFQfuoX6pDhvCN7tKPFechMnqmJoFWh4o4DKJxE5iFfjPeWzWCg="
-    on_success: change
-    on_failure: always
 
 addons:
   sonarcloud:
