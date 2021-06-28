@@ -202,6 +202,7 @@ final class PaymentCalculator
                 'costs' => 0,
                 'costs_' . EventType::VIEW => 0,
                 'costs_' . EventType::CLICK => 0,
+                'avg' => [],
             ];
         }
 
@@ -227,13 +228,19 @@ final class PaymentCalculator
                 $matrix[$campaignId]['costs'] += $event['conversion_value'];
             }
         } else {
+            $cost = $this->getEventCost($event);
             if (!array_key_exists($userId, $matrix[$campaignId][$event['type']])) {
                 $matrix[$campaignId][$event['type']][$userId] = 1;
-                $cost = $this->getEventCost($event);
-                $matrix[$campaignId]['costs'] += $cost;
                 $matrix[$campaignId]['costs_' . $event['type']] += $cost;
+                $matrix[$campaignId]['costs'] += $cost;
+                $matrix[$campaignId]['avg'][$event['type']][$userId] = $cost;
             } else {
-                $matrix[$campaignId][$event['type']][$userId]++;
+                $prevCount = $matrix[$campaignId][$event['type']][$userId]++;
+                $prevAvgCost = $matrix[$campaignId]['avg'][$event['type']][$userId];
+                $avgCost = ($prevAvgCost * $prevCount + $cost) / ($prevCount + 1);
+                $matrix[$campaignId]['costs_' . $event['type']] += ($avgCost - $prevAvgCost);
+                $matrix[$campaignId]['costs'] += ($avgCost - $prevAvgCost);
+                $matrix[$campaignId]['avg'][$event['type']][$userId] = $avgCost;
             }
         }
 
