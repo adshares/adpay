@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Upgrade to PHP 7.4
 - Upgrade to Composer 2
 - Upgrade to Symfony 5
+### Fixed
+- Scale CMP for the same user
 
 ## [1.2.0] - 2021-06-28
 ### Changed
