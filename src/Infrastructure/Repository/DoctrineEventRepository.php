@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Infrastructure\Repository;
 
@@ -13,9 +15,10 @@ use Adshares\AdPay\Infrastructure\Mapper\ConversionEventMapper;
 use Adshares\AdPay\Infrastructure\Mapper\EventMapper;
 use Adshares\AdPay\Infrastructure\Mapper\ViewEventMapper;
 use DateTimeInterface;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Driver\Exception as DBALDriverException;
+use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 
 final class DoctrineEventRepository extends DoctrineModelUpdater implements EventRepository
 {
@@ -50,18 +53,18 @@ final class DoctrineEventRepository extends DoctrineModelUpdater implements Even
 
         try {
             $result = $this->db->executeQuery(sprintf($query, ViewEventMapper::table()), $params, $types);
-            while ($row = $result->fetch()) {
+            while ($row = $result->fetchAssociative()) {
                 yield ViewEventMapper::fillRaw($row);
             }
             $result = $this->db->executeQuery(sprintf($query, ClickEventMapper::table()), $params, $types);
-            while ($row = $result->fetch()) {
+            while ($row = $result->fetchAssociative()) {
                 yield ClickEventMapper::fillRaw($row);
             }
             $result = $this->db->executeQuery(sprintf($query, ConversionEventMapper::table()), $params, $types);
-            while ($row = $result->fetch()) {
+            while ($row = $result->fetchAssociative()) {
                 yield ConversionEventMapper::fillRaw($row);
             }
-        } catch (DBALException $exception) {
+        } catch (DBALException | DBALDriverException $exception) {
             throw new DomainRepositoryException($exception->getMessage());
         }
 
@@ -127,7 +130,7 @@ final class DoctrineEventRepository extends DoctrineModelUpdater implements Even
         $query = sprintf('DELETE FROM %s WHERE 1=1', $table);
         $query .= self::timeCondition($timeStart, $timeEnd, $params, $types);
 
-        return $this->db->executeUpdate($query, $params, $types);
+        return $this->db->executeStatement($query, $params, $types);
     }
 
     private static function timeCondition(
@@ -135,18 +138,18 @@ final class DoctrineEventRepository extends DoctrineModelUpdater implements Even
         ?DateTimeInterface $timeEnd,
         array &$params,
         array &$types
-    ) {
+    ): string {
         $query = '';
 
         if ($timeStart !== null) {
             $query .= ' AND time >= ?';
             $params[] = $timeStart;
-            $types[] = Type::DATETIME;
+            $types[] = Types::DATETIME_MUTABLE;
         }
         if ($timeEnd !== null) {
             $query .= ' AND time <= ?';
             $params[] = $timeEnd;
-            $types[] = Type::DATETIME;
+            $types[] = Types::DATETIME_MUTABLE;
         }
 
         return $query;

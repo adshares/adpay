@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Application\DTO;
 
@@ -171,7 +173,7 @@ final class CampaignUpdateDTO
                 $conversions,
                 $bidStrategyId
             );
-        } catch (InvalidArgumentException|DateTimeException|TypeError $exception) {
+        } catch (InvalidArgumentException | DateTimeException | TypeError $exception) {
             throw new ValidationException($exception->getMessage());
         }
     }

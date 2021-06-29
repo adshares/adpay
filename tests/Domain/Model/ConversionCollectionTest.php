@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Tests\Domain\Model;
 
@@ -31,7 +33,7 @@ final class ConversionCollectionTest extends TestCase
     private static function createConversion(int $id): Conversion
     {
         return new Conversion(
-            new Id('0000000000000000000000000000000'.(string)$id),
+            new Id('0000000000000000000000000000000' . (string)$id),
             new Id('43c567e1396b4cadb52223a51796fd01'),
             LimitType::createInBudget()
         );

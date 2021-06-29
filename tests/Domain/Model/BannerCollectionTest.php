@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Tests\Domain\Model;
 
@@ -31,7 +33,7 @@ final class BannerCollectionTest extends TestCase
     private static function createBanner(int $id): Banner
     {
         return new Banner(
-            new Id('0000000000000000000000000000000'.(string)$id),
+            new Id('0000000000000000000000000000000' . (string)$id),
             new Id('43c567e1396b4cadb52223a51796fd01'),
             '100x100',
             BannerType::createImage()

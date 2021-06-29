@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Lib;
 
@@ -16,7 +18,7 @@ final class DateTimeHelper
                 throw new RuntimeException('Timestamp equals 0');
             }
 
-            return new DateTimeImmutable('@'.$timestamp);
+            return new DateTimeImmutable('@' . $timestamp);
         } catch (Throwable $exception) {
             throw new DateTimeException(
                 str_replace('DateTimeImmutable::__construct(): ', '', $exception->getMessage())

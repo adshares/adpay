@@ -1,11 +1,13 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Infrastructure\Mapper;
 
 use Adshares\AdPay\Domain\Model\ConversionEvent;
 use Adshares\AdPay\Domain\Model\Event;
 use Adshares\AdPay\Domain\ValueObject\EventType;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 
 class ConversionEventMapper extends EventMapper
 {
@@ -33,10 +35,10 @@ class ConversionEventMapper extends EventMapper
         return array_merge(
             parent::types(),
             [
-                'group_id' => Type::BINARY,
-                'conversion_id' => Type::BINARY,
-                'conversion_value' => Type::INTEGER,
-                'payment_status' => Type::INTEGER,
+                'group_id' => Types::BINARY,
+                'conversion_id' => Types::BINARY,
+                'conversion_value' => Types::INTEGER,
+                'payment_status' => Types::INTEGER,
             ]
         );
     }

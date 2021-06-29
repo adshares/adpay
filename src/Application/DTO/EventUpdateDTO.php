@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Application\DTO;
 
@@ -141,7 +143,7 @@ abstract class EventUpdateDTO
                 $collection->add($event);
             }
             $this->viewEvents = $collection;
-        } catch (InvalidArgumentException|DateTimeException|TypeError $exception) {
+        } catch (InvalidArgumentException | DateTimeException | TypeError $exception) {
             throw new ValidationException($exception->getMessage());
         }
     }

@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Tests\UI\Controller;
 
@@ -43,7 +45,6 @@ final class EventControllerTest extends WebTestCase
         $client->request('POST', '/api/v1/events/views');
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
 
-        $client = self::createClient();
         $client->request('POST', '/api/v1/events/views', [], [], [], json_encode([]));
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
     }
@@ -64,7 +65,6 @@ final class EventControllerTest extends WebTestCase
             ],
         ];
 
-        $client = self::createClient();
         $client->request('POST', '/api/v1/events/views', [], [], [], json_encode($parameters));
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
     }
@@ -106,7 +106,6 @@ final class EventControllerTest extends WebTestCase
         $client->request('POST', '/api/v1/events/clicks');
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
 
-        $client = self::createClient();
         $client->request('POST', '/api/v1/events/clicks', [], [], [], json_encode([]));
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
     }
@@ -127,7 +126,6 @@ final class EventControllerTest extends WebTestCase
             ],
         ];
 
-        $client = self::createClient();
         $client->request('POST', '/api/v1/events/clicks', [], [], [], json_encode($parameters));
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
     }
@@ -172,7 +170,6 @@ final class EventControllerTest extends WebTestCase
         $client->request('POST', '/api/v1/events/conversions');
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
 
-        $client = self::createClient();
         $client->request('POST', '/api/v1/events/conversions', [], [], [], json_encode([]));
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
     }
@@ -193,7 +190,6 @@ final class EventControllerTest extends WebTestCase
             ],
         ];
 
-        $client = self::createClient();
         $client->request('POST', '/api/v1/events/conversions', [], [], [], json_encode($parameters));
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
     }

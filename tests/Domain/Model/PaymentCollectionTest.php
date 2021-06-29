@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Tests\Domain\Model;
 
@@ -33,7 +35,7 @@ final class PaymentCollectionTest extends TestCase
     {
         return new Payment(
             EventType::createView(),
-            new Id('43c567e1396b4cadb52223a51796fd0'.$id),
+            new Id('43c567e1396b4cadb52223a51796fd0' . $id),
             new PaymentStatus(PaymentStatus::ACCEPTED)
         );
     }

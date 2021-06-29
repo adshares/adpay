@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Application\DTO;
 
@@ -85,7 +87,7 @@ final class BidStrategyUpdateDTO
 
                     $collection->add($model);
                 }
-            } catch (InvalidArgumentException|TypeError $exception) {
+            } catch (InvalidArgumentException | TypeError $exception) {
                 throw new ValidationException($exception->getMessage());
             }
         }

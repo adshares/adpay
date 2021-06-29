@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Tests\UI\Controller;
 
@@ -34,7 +36,6 @@ final class BidStrategyControllerTest extends WebTestCase
         $client->request('POST', '/api/v1/bid-strategies');
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
 
-        $client = self::createClient();
         $client->request('POST', '/api/v1/bid-strategies', [], [], [], json_encode([]));
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
     }
@@ -53,7 +54,6 @@ final class BidStrategyControllerTest extends WebTestCase
             ],
         ];
 
-        $client = self::createClient();
         $client->request('POST', '/api/v1/bid-strategies', [], [], [], json_encode($parameters));
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
     }
@@ -78,7 +78,6 @@ final class BidStrategyControllerTest extends WebTestCase
         $client->request('DELETE', '/api/v1/bid-strategies');
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
 
-        $client = self::createClient();
         $client->request('DELETE', '/api/v1/bid-strategies', [], [], [], json_encode([]));
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
     }
@@ -95,7 +94,6 @@ final class BidStrategyControllerTest extends WebTestCase
             ],
         ];
 
-        $client = self::createClient();
         $client->request('DELETE', '/api/v1/bid-strategies', [], [], [], json_encode($parameters));
         $this->assertEquals(422, $client->getResponse()->getStatusCode());
     }

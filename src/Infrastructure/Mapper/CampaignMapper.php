@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Infrastructure\Mapper;
 
@@ -8,7 +10,7 @@ use Adshares\AdPay\Domain\Model\ConversionCollection;
 use Adshares\AdPay\Domain\ValueObject\Budget;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use Adshares\AdPay\Lib\DateTimeHelper;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 
 class CampaignMapper
 {
@@ -36,16 +38,16 @@ class CampaignMapper
     public static function types(): array
     {
         return [
-            'id' => Type::BINARY,
-            'advertiser_id' => Type::BINARY,
-            'time_start' => Type::DATETIME,
-            'time_end' => Type::DATETIME,
-            'filters' => Type::JSON,
-            'budget' => Type::INTEGER,
-            'max_cpm' => Type::INTEGER,
-            'max_cpc' => Type::INTEGER,
-            'bid_strategy_id' => Type::BINARY,
-            'deleted_at' => TYPE::DATETIME,
+            'id' => Types::BINARY,
+            'advertiser_id' => Types::BINARY,
+            'time_start' => Types::DATETIME_MUTABLE,
+            'time_end' => Types::DATETIME_MUTABLE,
+            'filters' => Types::JSON,
+            'budget' => Types::INTEGER,
+            'max_cpm' => Types::INTEGER,
+            'max_cpc' => Types::INTEGER,
+            'bid_strategy_id' => Types::BINARY,
+            'deleted_at' => Types::DATETIME_MUTABLE,
         ];
     }
 

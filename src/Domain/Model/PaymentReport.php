@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Domain\Model;
 
@@ -152,9 +154,11 @@ final class PaymentReport
 
         $complete = [[self::INTERVAL_START, self::INTERVAL_END]];
 
-        if ($complete === $this->intervals[EventType::VIEW]
+        if (
+            $complete === $this->intervals[EventType::VIEW]
             && $complete === $this->intervals[EventType::CLICK]
-            && $complete === $this->intervals[EventType::CONVERSION]) {
+            && $complete === $this->intervals[EventType::CONVERSION]
+        ) {
             $this->status = PaymentReportStatus::createComplete();
         }
     }

@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\UI\Controller;
 
@@ -15,7 +17,7 @@ use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class PaymentController extends AbstractController
 {
-    const MAX_LIMIT = 100000;
+    public const MAX_LIMIT = 100000;
 
     /** @var PaymentFetchCommand */
     private $paymentFetchCommand;

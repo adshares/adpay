@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Tests\UI\Command;
 
@@ -15,7 +17,7 @@ use Adshares\AdPay\Infrastructure\Repository\DoctrineEventRepository;
 use Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository;
 use DateTime;
 use Psr\Log\NullLogger;
-use Symfony\Component\Lock\Factory;
+use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Lock\Store\FlockStore;
 use Symfony\Component\Lock\Store\SemaphoreStore;
 
@@ -37,16 +39,16 @@ final class HistoryClearCommandTest extends CommandTestCase
 
     public function testPeriod(): void
     {
-        $this->executeCommand([], 0, 'Clearing payments and events older than '.self::periodToDate(48 * 3600));
+        $this->executeCommand([], 0, 'Clearing payments and events older than ' . self::periodToDate(48 * 3600));
         $this->executeCommand(
             ['--period' => 'PT0H'],
             0,
-            'Clearing payments and events older than '.self::periodToDate(0)
+            'Clearing payments and events older than ' . self::periodToDate(0)
         );
         $this->executeCommand(
             ['--period' => 'P1D'],
             0,
-            'Clearing payments and events older than '.self::periodToDate(24 * 3600)
+            'Clearing payments and events older than ' . self::periodToDate(24 * 3600)
         );
     }
 
@@ -85,7 +87,7 @@ final class HistoryClearCommandTest extends CommandTestCase
     public function testLock(): void
     {
         $store = SemaphoreStore::isSupported() ? new SemaphoreStore() : new FlockStore();
-        $lock = (new Factory($store))->createLock(self::$command);
+        $lock = (new LockFactory($store))->createLock(self::$command);
         self::assertTrue($lock->acquire());
 
         $this->executeCommand([], 1, 'The command is already running in another process.');
@@ -116,7 +118,7 @@ final class HistoryClearCommandTest extends CommandTestCase
         for ($i = 0; $i < $limit; ++$i) {
             $collection->add(
                 new ViewEvent(
-                    new Id('aaa567e1396b4cadb52223a51796fd0'.$i),
+                    new Id('aaa567e1396b4cadb52223a51796fd0' . $i),
                     new DateTime('-50 hours'),
                     new ImpressionCase(
                         new Id('fff567e1396b4cadb52223a51796fd01'),

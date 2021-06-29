@@ -1,10 +1,12 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Infrastructure\Mapper;
 
 use Adshares\AdPay\Domain\Model\PaymentReport;
 use Adshares\AdPay\Domain\ValueObject\PaymentReportStatus;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 
 class PaymentReportMapper
 {
@@ -25,9 +27,9 @@ class PaymentReportMapper
     public static function types(): array
     {
         return [
-            'id' => Type::INTEGER,
-            'status' => Type::INTEGER,
-            'intervals' => Type::JSON,
+            'id' => Types::INTEGER,
+            'status' => Types::INTEGER,
+            'intervals' => Types::JSON,
         ];
     }
 

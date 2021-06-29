@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Infrastructure\Repository;
 
@@ -10,7 +12,7 @@ use Adshares\AdPay\Domain\ValueObject\PaymentReportStatus;
 use Adshares\AdPay\Infrastructure\Mapper\PaymentReportMapper;
 use DateTimeInterface;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception as DBALException;
 
 final class DoctrinePaymentReportRepository extends DoctrineModelUpdater implements PaymentReportRepository
 {
@@ -18,7 +20,10 @@ final class DoctrinePaymentReportRepository extends DoctrineModelUpdater impleme
     {
         try {
             $result =
-                $this->db->fetchAssoc(sprintf('SELECT * FROM %s WHERE id = ?', PaymentReportMapper::table()), [$id]);
+                $this->db->fetchAssociative(
+                    sprintf('SELECT * FROM %s WHERE id = ?', PaymentReportMapper::table()),
+                    [$id]
+                );
         } catch (DBALException $exception) {
             throw new DomainRepositoryException($exception->getMessage());
         }
@@ -37,12 +42,11 @@ final class DoctrinePaymentReportRepository extends DoctrineModelUpdater impleme
     {
         $conditions = [];
         foreach ($statuses as $status) {
-            /** @var $status PaymentReportStatus */
             $conditions[] = $status->getStatus();
         }
 
         try {
-            $result = $this->db->fetchAll(
+            $result = $this->db->fetchAllAssociative(
                 sprintf('SELECT * FROM %s WHERE status IN (?)', PaymentReportMapper::table()),
                 [$conditions],
                 [Connection::PARAM_STR_ARRAY]
@@ -90,7 +94,7 @@ final class DoctrinePaymentReportRepository extends DoctrineModelUpdater impleme
             }
 
             $this->db->beginTransaction();
-            $r = $this->db->executeUpdate($query, $params, $types);
+            $r = $this->db->executeStatement($query, $params, $types);
             $this->db->commit();
             return $r;
         } catch (DBALException $exception) {

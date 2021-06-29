@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Tests\Infrastructure\Repository;
 
@@ -266,7 +268,7 @@ final class DoctrineEventRepositoryTest extends RepositoryTestCase
     private static function viewEvent(int $timestamp, int $id): ViewEvent
     {
         return new ViewEvent(
-            new Id('f1c567e1396b4cadb52223a51796fd0'.$id),
+            new Id('f1c567e1396b4cadb52223a51796fd0' . $id),
             DateTimeHelper::fromTimestamp($timestamp),
             self::impressionCase($timestamp)
         );
@@ -275,7 +277,7 @@ final class DoctrineEventRepositoryTest extends RepositoryTestCase
     private static function clickEvent(int $timestamp, int $id): ClickEvent
     {
         return new ClickEvent(
-            new Id('f1c567e1396b4cadb52223a51796fd0'.$id),
+            new Id('f1c567e1396b4cadb52223a51796fd0' . $id),
             DateTimeHelper::fromTimestamp($timestamp),
             self::impressionCase($timestamp - 1)
         );
@@ -284,7 +286,7 @@ final class DoctrineEventRepositoryTest extends RepositoryTestCase
     private static function conversionEvent(int $timestamp, int $id): ConversionEvent
     {
         return new ConversionEvent(
-            new Id('f1c567e1396b4cadb52223a51796fd0'.$id),
+            new Id('f1c567e1396b4cadb52223a51796fd0' . $id),
             DateTimeHelper::fromTimestamp($timestamp),
             self::impressionCase($timestamp - 10),
             new Id('f2c567e1396b4cadb52223a51796fd01'),

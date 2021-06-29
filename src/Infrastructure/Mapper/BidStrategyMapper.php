@@ -1,11 +1,13 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Infrastructure\Mapper;
 
 use Adshares\AdPay\Domain\Model\BidStrategy;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use Adshares\AdPay\Lib\DateTimeHelper;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 
 class BidStrategyMapper
 {
@@ -27,10 +29,10 @@ class BidStrategyMapper
     public static function types(): array
     {
         return [
-            'bid_strategy_id' => Type::BINARY,
-            'category' => Type::STRING,
-            'rank' => Type::DECIMAL,
-            'deleted_at' => TYPE::DATETIME,
+            'bid_strategy_id' => Types::BINARY,
+            'category' => Types::STRING,
+            'rank' => Types::DECIMAL,
+            'deleted_at' => Types::DATETIME_MUTABLE,
         ];
     }
 

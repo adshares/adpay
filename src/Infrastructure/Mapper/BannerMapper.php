@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Infrastructure\Mapper;
 
@@ -6,7 +8,7 @@ use Adshares\AdPay\Domain\Model\Banner;
 use Adshares\AdPay\Domain\ValueObject\BannerType;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use Adshares\AdPay\Lib\DateTimeHelper;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 
 class BannerMapper
 {
@@ -29,11 +31,11 @@ class BannerMapper
     public static function types(): array
     {
         return [
-            'id' => Type::BINARY,
-            'campaign_id' => Type::BINARY,
-            'size' => Type::STRING,
-            'type' => Type::STRING,
-            'deleted_at' => TYPE::DATETIME,
+            'id' => Types::BINARY,
+            'campaign_id' => Types::BINARY,
+            'size' => Types::STRING,
+            'type' => Types::STRING,
+            'deleted_at' => Types::DATETIME_MUTABLE,
         ];
     }
 

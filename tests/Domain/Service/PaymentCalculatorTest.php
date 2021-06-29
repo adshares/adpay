@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Tests\Domain\Service;
 
@@ -476,12 +478,56 @@ final class PaymentCalculatorTest extends TestCase
     {
         $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
 
+        // one event
         $this->assertEquals(
             [
-                '10000000000000000000000000000001' => self::CAMPAIGN_CPV / 4,
+                '10000000000000000000000000000001' => self::CAMPAIGN_CPV,
             ],
-            $this->values($campaigns, [self::viewEvent(['page_rank' => 0.25])])
+            $this->values(
+                $campaigns,
+                [
+                    self::viewEvent(['page_rank' => 0.4]),
+                ]
+            )
         );
+
+        // two users
+        $this->assertEquals(
+            [
+                '10000000000000000000000000000001' => self::CAMPAIGN_CPV * 0.8,
+                '10000000000000000000000000000002' => self::CAMPAIGN_CPV * 1.2,
+            ],
+            $this->values(
+                $campaigns,
+                [
+                    self::viewEvent(['page_rank' => 0.4]),
+                    self::viewEvent(
+                        [
+                            'id' => '10000000000000000000000000000002',
+                            'user_id' => 'a0000000000000000000000000000002',
+                            'page_rank' => 0.6
+                        ]
+                    )
+                ]
+            )
+        );
+
+        // same user
+        $this->assertEquals(
+            [
+                '10000000000000000000000000000001' => self::CAMPAIGN_CPV * 0.4,
+                '10000000000000000000000000000002' => self::CAMPAIGN_CPV * 0.6,
+            ],
+            $this->values(
+                $campaigns,
+                [
+                    self::viewEvent(['page_rank' => 0.4]),
+                    self::viewEvent(['id' => '10000000000000000000000000000002', 'page_rank' => 0.6])
+                ]
+            )
+        );
+
+        // click event
         $this->assertEquals(
             [
                 '10000000000000000000000000000001' => self::CAMPAIGN_CPV,
@@ -489,6 +535,8 @@ final class PaymentCalculatorTest extends TestCase
             ],
             $this->values($campaigns, [self::viewEvent(), self::clickEvent(['page_rank' => 0.5])])
         );
+
+        // conversion
         $this->assertEquals(
             ['10000000000000000000000000000003' => self::CONVERSION_VALUE],
             $this->values($campaigns, [self::conversionEvent(['page_rank' => 0.5])])
@@ -545,29 +593,103 @@ final class PaymentCalculatorTest extends TestCase
     {
         $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
         $bidStrategies = new BidStrategyCollection(
-            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'e1:e1_v3', 0.6)
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'e1:e1_v3', 0.4),
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'e1:e1_v4', 0.6)
         );
-        $events = [self::viewEvent()];
 
-        $result = self::valuesWithCustomBidStrategy($campaigns, $bidStrategies, $events);
 
-        $this->assertEquals(self::CAMPAIGN_CPV * 0.6, $result['10000000000000000000000000000001']);
+        // one event
+        $this->assertEquals(
+            [
+                '10000000000000000000000000000001' => self::CAMPAIGN_CPV,
+            ],
+            $this->valuesWithCustomBidStrategy($campaigns, $bidStrategies, [self::viewEvent()])
+        );
+
+        // two users
+        $cpmScale = 2.0; // 1 / ((0.4 + 0.6) / 2)
+        $this->assertEquals(
+            [
+                '10000000000000000000000000000001' => self::CAMPAIGN_CPV * $cpmScale * 0.4,
+                '10000000000000000000000000000002' => self::CAMPAIGN_CPV * $cpmScale * 0.6,
+            ],
+            $this->valuesWithCustomBidStrategy(
+                $campaigns,
+                $bidStrategies,
+                [
+                    self::viewEvent(),
+                    self::viewEvent(
+                        [
+                            'id' => '10000000000000000000000000000002',
+                            'user_id' => 'a0000000000000000000000000000002',
+                            'keywords' => ['r1' => ['r1_v1'], 'e1' => ['e1_v4']],
+                        ]
+                    )
+                ]
+            )
+        );
+
+        // same user
+        $this->assertEquals(
+            [
+                '10000000000000000000000000000001' => self::CAMPAIGN_CPV * $cpmScale * 0.4 / 2,
+                '10000000000000000000000000000002' => self::CAMPAIGN_CPV * $cpmScale * 0.6 / 2,
+            ],
+            $this->valuesWithCustomBidStrategy(
+                $campaigns,
+                $bidStrategies,
+                [
+                    self::viewEvent(),
+                    self::viewEvent(
+                        [
+                            'id' => '10000000000000000000000000000002',
+                            'keywords' => ['r1' => ['r1_v1'], 'e1' => ['e1_v4']],
+                        ]
+                    )
+                ]
+            )
+        );
     }
 
     public function testBidStrategies(): void
     {
         $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
         $bidStrategies = new BidStrategyCollection(
-            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v1', 0.6),
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v1', 0.8),
             new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v2', 1),
             new BidStrategy(new Id(self::BID_STRATEGY_ID), 'e1:e1_v3', 0.5),
-            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'c1:c1_v1', 0.5)
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'c1:c1_v1', 0.6)
         );
-        $events = [self::viewEvent()];
 
-        $result = self::valuesWithCustomBidStrategy($campaigns, $bidStrategies, $events);
-
-        $this->assertEquals(self::CAMPAIGN_CPV * 0.6 * 0.5, $result['10000000000000000000000000000001']);
+        $cpmScale = 1.5; // 1 / ((0.4 + 1 + 0.6) / 3)
+        $this->assertEquals(
+            [
+                '10000000000000000000000000000001' => self::CAMPAIGN_CPV * $cpmScale * 0.8 * 0.5,
+                '10000000000000000000000000000002' => self::CAMPAIGN_CPV * $cpmScale * 1.0,
+                '10000000000000000000000000000003' => self::CAMPAIGN_CPV * $cpmScale * 1.0 * 0.6,
+            ],
+            $this->valuesWithCustomBidStrategy(
+                $campaigns,
+                $bidStrategies,
+                [
+                    self::viewEvent(),
+                    self::viewEvent(
+                        [
+                            'id' => '10000000000000000000000000000002',
+                            'user_id' => 'a0000000000000000000000000000002',
+                            'keywords' => ['r1' => ['r1_v2']],
+                        ]
+                    ),
+                    self::viewEvent(
+                        [
+                            'id' => '10000000000000000000000000000003',
+                            'user_id' => 'a0000000000000000000000000000003',
+                            'keywords' => ['r1' => ['r1_v2'], 'c1' => ['c1_v1']],
+                        ]
+                    ),
+                ]
+            )
+        );
     }
 
     public function testBidStrategyNotMatchingCampaignFilters(): void
@@ -601,26 +723,33 @@ final class PaymentCalculatorTest extends TestCase
         $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
         $bidStrategies = new BidStrategyCollection(
             new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v1', 0.6),
-            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v2', 0.3)
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v2', 0.2)
         );
-        $events = [
-            self::viewEvent(),
-            self::viewEvent(
+
+        $cpmScale = 2.5; // 1 / ((0.6 + 0.2) / 2)
+        $this->assertEquals(
+            [
+                '10000000000000000000000000000001' => self::CAMPAIGN_CPV * $cpmScale * 0.6,
+                '10000000000000000000000000000002' => self::CAMPAIGN_CPV * $cpmScale * 0.2,
+            ],
+            $this->valuesWithCustomBidStrategy(
+                $campaigns,
+                $bidStrategies,
                 [
-                    'id' => '10000000000000000000000000000002',
-                    'case_id' => '20000000000000000000000000000002',
-                    'impression_id' => '80000000000000000000000000000002',
-                    'tracking_id' => '90000000000000000000000000000002',
-                    'user_id' => 'a0000000000000000000000000000002',
-                    'keywords' => ['r1' => ['r1_v2'], 'e1' => ['e1_v3']],
+                    self::viewEvent(),
+                    self::viewEvent(
+                        [
+                            'id' => '10000000000000000000000000000002',
+                            'case_id' => '20000000000000000000000000000002',
+                            'impression_id' => '80000000000000000000000000000002',
+                            'tracking_id' => '90000000000000000000000000000002',
+                            'user_id' => 'a0000000000000000000000000000002',
+                            'keywords' => ['r1' => ['r1_v2'], 'e1' => ['e1_v3']],
+                        ]
+                    ),
                 ]
-            ),
-        ];
-
-        $result = self::valuesWithCustomBidStrategy($campaigns, $bidStrategies, $events);
-
-        $this->assertEquals(self::CAMPAIGN_CPV, $result['10000000000000000000000000000001']);
-        $this->assertEquals(self::CAMPAIGN_CPV / 2, $result['10000000000000000000000000000002']);
+            )
+        );
     }
 
     private function statusForAll(
@@ -651,8 +780,10 @@ final class PaymentCalculatorTest extends TestCase
         $result = [];
 
         foreach ($payments as $payment) {
-            if ($payment['event_type'] === $event['type']
-                && $payment['event_id'] === $event['id']) {
+            if (
+                $payment['event_type'] === $event['type']
+                && $payment['event_id'] === $event['id']
+            ) {
                 $result = $payment;
             }
         }

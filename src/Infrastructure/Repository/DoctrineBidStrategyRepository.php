@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Infrastructure\Repository;
 
@@ -9,7 +11,7 @@ use Adshares\AdPay\Domain\Repository\BidStrategyRepository;
 use Adshares\AdPay\Domain\ValueObject\IdCollection;
 use Adshares\AdPay\Infrastructure\Mapper\BidStrategyMapper;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception as DBALException;
 
 final class DoctrineBidStrategyRepository extends DoctrineModelUpdater implements BidStrategyRepository
 {
@@ -74,7 +76,7 @@ final class DoctrineBidStrategyRepository extends DoctrineModelUpdater implement
         );
 
         try {
-            $rows = $this->db->fetchAll($query);
+            $rows = $this->db->fetchAllAssociative($query);
         } catch (DBALException $exception) {
             throw new DomainRepositoryException($exception->getMessage());
         }

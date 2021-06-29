@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Tests\Application\Command;
 
@@ -128,7 +130,7 @@ class ReportCalculateCommandTest extends TestCase
     private static function event(int $id): array
     {
         return [
-            'id' => '1000000000000000000000000000000'.$id,
+            'id' => '1000000000000000000000000000000' . $id,
             'type' => EventType::VIEW,
             'time' => '2019-10-21 08:08:49',
             'case_id' => '20000000000000000000000000000001',

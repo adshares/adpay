@@ -1,9 +1,11 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Tests\Infrastructure\Repository;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception as DBALException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 abstract class RepositoryTestCase extends KernelTestCase
@@ -27,10 +29,10 @@ abstract class RepositoryTestCase extends KernelTestCase
     {
         $connection = $this->createMock(Connection::class);
         $connection->method('executeQuery')->willThrowException(new DBALException());
-        $connection->method('executeUpdate')->willThrowException(new DBALException());
-        $connection->method('fetchAssoc')->willThrowException(new DBALException());
-        $connection->method('fetchColumn')->willThrowException(new DBALException());
-        $connection->method('fetchAll')->willThrowException(new DBALException());
+        $connection->method('executeStatement')->willThrowException(new DBALException());
+        $connection->method('fetchAssociative')->willThrowException(new DBALException());
+        $connection->method('fetchOne')->willThrowException(new DBALException());
+        $connection->method('fetchAllAssociative')->willThrowException(new DBALException());
 
         return $connection;
     }

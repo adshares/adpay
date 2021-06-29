@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Application\DTO;
 
@@ -26,7 +28,7 @@ final class CampaignDeleteDTO
             foreach ($input['campaigns'] as $id) {
                 $collection->add(new Id($id));
             }
-        } catch (InvalidArgumentException|TypeError $exception) {
+        } catch (InvalidArgumentException | TypeError $exception) {
             throw new ValidationException($exception->getMessage());
         }
         $this->ids = $collection;

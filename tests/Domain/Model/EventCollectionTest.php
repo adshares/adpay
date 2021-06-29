@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Tests\Domain\Model;
 
@@ -82,7 +84,7 @@ final class EventCollectionTest extends TestCase
         $mock = $this->getMockForAbstractClass(
             'Adshares\AdPay\Domain\Model\Event',
             [
-                new Id('0000000000000000000000000000000'.(string)$id),
+                new Id('0000000000000000000000000000000' . (string)$id),
                 EventType::createView(),
                 new DateTime(),
                 new ImpressionCase(

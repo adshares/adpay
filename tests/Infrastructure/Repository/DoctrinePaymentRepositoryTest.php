@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Adshares\AdPay\Tests\Infrastructure\Repository;
 
@@ -144,7 +146,7 @@ final class DoctrinePaymentRepositoryTest extends RepositoryTestCase
     private static function payment(int $id): array
     {
         return [
-            'event_id' => '100000000000000000000000000000'.$id,
+            'event_id' => '100000000000000000000000000000' . $id,
             'event_type' => 'view',
             'status' => 0,
             'value' => 100,
