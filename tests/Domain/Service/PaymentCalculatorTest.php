@@ -718,30 +718,141 @@ final class PaymentCalculatorTest extends TestCase
         $this->assertEquals(self::CAMPAIGN_CPV, $result['10000000000000000000000000000001']);
     }
 
+    public function testBidStrategiesDefaultValue(): void
+    {
+        $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
+        $bidStrategies1 = new BidStrategyCollection(
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v1', 2),
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v4', 1)
+        );
+        $bidStrategies2 = new BidStrategyCollection(
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:*', 2),
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v4', 1)
+        );
+
+        $events = [
+            self::viewEvent(
+                [
+                    'keywords' => ['r1' => ['r1_v4'], 'e1' => []],
+                ]
+            ),
+            self::viewEvent(
+                [
+                    'id' => '10000000000000000000000000000002',
+                    'case_id' => '20000000000000000000000000000002',
+                    'impression_id' => '80000000000000000000000000000002',
+                    'tracking_id' => '90000000000000000000000000000002',
+                    'user_id' => 'a0000000000000000000000000000002',
+                    'keywords' => ['r1' => ['r1_v1'], 'e1' => []],
+                ]
+            ),
+        ];
+
+        $this->assertEquals(
+            $this->valuesWithCustomBidStrategy(
+                $campaigns,
+                $bidStrategies1,
+                $events
+            )
+            ,
+            $this->valuesWithCustomBidStrategy(
+                $campaigns,
+                $bidStrategies2,
+                $events
+            )
+        );
+    }
+
+    public function testBidStrategiesMissingValue(): void
+    {
+        $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
+        $bidStrategies1 = new BidStrategyCollection(
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v1', 2),
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v4', 1)
+        );
+        $bidStrategies2 = new BidStrategyCollection(
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'z1:', 2),
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v4', 1)
+        );
+
+        $events = [
+            self::viewEvent(
+                [
+                    'keywords' => ['r1' => ['r1_v4'], 'z1' => ['asd']],
+                ]
+            ),
+            self::viewEvent(
+                [
+                    'id' => '10000000000000000000000000000002',
+                    'case_id' => '20000000000000000000000000000002',
+                    'impression_id' => '80000000000000000000000000000002',
+                    'tracking_id' => '90000000000000000000000000000002',
+                    'user_id' => 'a0000000000000000000000000000002',
+                    'keywords' => ['r1' => ['r1_v1'], 'e1' => []],
+                ]
+            ),
+        ];
+
+        $this->assertEquals(
+            $this->valuesWithCustomBidStrategy(
+                $campaigns,
+                $bidStrategies2,
+                $events
+            )
+            ,
+            $this->valuesWithCustomBidStrategy(
+                $campaigns,
+                $bidStrategies1,
+                $events
+            )
+        );
+
+    }
+
     public function testBidStrategiesWithNormalization(): void
     {
         $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
         $bidStrategies = new BidStrategyCollection(
-            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v1', 0.6),
-            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v2', 0.2)
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'e1:*', 0),
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'e1:e1_v3', 2),
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'e1:e1_v4', 2),
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v4', 10),
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v1', 6),
+            new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v2', 2)
         );
 
-        $cpmScale = 2.5; // 1 / ((0.6 + 0.2) / 2)
+        $cpmScale = self::CAMPAIGN_CPV / ((100+40) / 2);
+
         $this->assertEquals(
             [
-                '10000000000000000000000000000001' => self::CAMPAIGN_CPV * $cpmScale * 0.6,
-                '10000000000000000000000000000002' => self::CAMPAIGN_CPV * $cpmScale * 0.2,
+                '10000000000000000000000000000001' => floor(self::CAMPAIGN_CPV * $cpmScale * 1),
+                '10000000000000000000000000000002' => floor(self::CAMPAIGN_CPV * $cpmScale * 0.6 / 2 ),
+                '10000000000000000000000000000003' => floor(self::CAMPAIGN_CPV * $cpmScale * 0.2 / 2),
             ],
             $this->valuesWithCustomBidStrategy(
                 $campaigns,
                 $bidStrategies,
                 [
-                    self::viewEvent(),
+                    self::viewEvent(
+                        [
+                            'keywords' => ['r1' => ['r1_v4'], 'e1' => ['e1_v4'], 'z1' => ['x']],
+                        ]
+                    ),
                     self::viewEvent(
                         [
                             'id' => '10000000000000000000000000000002',
                             'case_id' => '20000000000000000000000000000002',
                             'impression_id' => '80000000000000000000000000000002',
+                            'tracking_id' => '90000000000000000000000000000002',
+                            'user_id' => 'a0000000000000000000000000000002',
+                            'keywords' => ['r1' => ['r1_v1'], 'e1' => ['e1_v3']],
+                        ]
+                    ),
+                    self::viewEvent(
+                        [
+                            'id' => '10000000000000000000000000000003',
+                            'case_id' => '20000000000000000000000000000003',
+                            'impression_id' => '80000000000000000000000000000003',
                             'tracking_id' => '90000000000000000000000000000002',
                             'user_id' => 'a0000000000000000000000000000002',
                             'keywords' => ['r1' => ['r1_v2'], 'e1' => ['e1_v3']],
@@ -816,7 +927,7 @@ final class PaymentCalculatorTest extends TestCase
 
     private static function campaign(array $mergeData = [], array $banners = [], array $conversions = []): Campaign
     {
-        $filters = ['require' => ['r1' => ['r1_v1', 'r1_v2']], 'exclude' => ['e1' => ['e1_v1', 'e1_v2']]];
+        $filters = ['require' => ['r1' => ['r1_v1', 'r1_v2', 'r1_v4']], 'exclude' => ['e1' => ['e1_v1', 'e1_v2']]];
 
         $data = array_merge(
             [
