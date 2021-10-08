@@ -113,7 +113,7 @@ final class BidStrategyUpdateDTOTest extends TestCase
                                 self::simpleBidStrategyDetail(
                                     [
                                         'category' => 'user:country:in',
-                                        'rank' => 1,
+                                        'rank' => 1.5,
                                     ]
                                 ),
                             ],
@@ -140,7 +140,7 @@ final class BidStrategyUpdateDTOTest extends TestCase
             [[self::simpleBidStrategy(['details' => [self::simpleBidStrategyDetail(['category' => 0])]])]],
             [[self::simpleBidStrategy(['details' => [self::simpleBidStrategyDetail([], 'rank')]])]],
             [[self::simpleBidStrategy(['details' => [self::simpleBidStrategyDetail(['rank' => null])]])]],
-            [[self::simpleBidStrategy(['details' => [self::simpleBidStrategyDetail(['rank' => 2])]])]],
+            [[self::simpleBidStrategy(['details' => [self::simpleBidStrategyDetail(['rank' => -1])]])]],
             [[self::simpleBidStrategy(['details' => [self::simpleBidStrategyDetail(['rank' => 'ab'])]])]],
         ];
     }

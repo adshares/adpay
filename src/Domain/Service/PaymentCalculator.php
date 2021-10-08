@@ -262,17 +262,24 @@ final class PaymentCalculator
         $bidStrategyForCampaign = $this->getBidStrategyForCampaign($campaign);
         $keywords = $event['keywords'];
 
-        $bidStrategyRank = 1;
+        $bidStrategyRank = 1.0;
         foreach ($bidStrategyForCampaign as $category => $valueToRankMap) {
+
             if (!isset($keywords[$category])) {
+                if (isset($valueToRankMap[''])) {
+                    $bidStrategyRank *= $valueToRankMap[''];
+                }
                 continue;
             }
 
             foreach ($keywords[$category] as $value) {
                 if (isset($valueToRankMap[$value])) {
                     $bidStrategyRank *= $valueToRankMap[$value];
-                    break;
+                    continue 2;
                 }
+            }
+            if (isset($valueToRankMap['*'])) {
+                $bidStrategyRank *= $valueToRankMap['*'];
             }
         }
 
@@ -300,6 +307,12 @@ final class PaymentCalculator
                 }
 
                 $valuesIntersection = array_intersect($requiredFilters[$category], array_keys($valueToRankMap));
+                if(isset($valueToRankMap[''])) {
+                    $valuesIntersection[] = '';
+                }
+                if(isset($valueToRankMap['*'])) {
+                    $valuesIntersection[] = '*';
+                }
 
                 if (empty($valuesIntersection)) {
                     continue;

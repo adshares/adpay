@@ -42,7 +42,7 @@ final class BidStrategyTest extends TestCase
 
         $bidStrategyId = '43c567e1396b4cadb52223a51796fd01';
         $category = 'user:country:st';
-        $rank = 2;
+        $rank = -1;
 
         new BidStrategy(new Id($bidStrategyId), $category, $rank);
     }

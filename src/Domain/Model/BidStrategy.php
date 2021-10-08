@@ -34,11 +34,11 @@ final class BidStrategy
             );
         }
 
-        if ($rank < 0 || $rank > 1) {
+        if ($rank < 0) {
             throw InvalidArgumentException::fromArgument(
                 'rank',
                 (string)$rank,
-                'The value must be in range <0, 1>'
+                'The value cannot be negative'
             );
         }
 

@@ -10,9 +10,11 @@ use Adshares\AdPay\Domain\Exception\InvalidDataException;
 use Adshares\AdPay\Domain\Repository\EventRepository;
 use Adshares\AdPay\Domain\Repository\PaymentReportRepository;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Command\LockableTrait;
 
 final class EventUpdateCommand
 {
+    use LockableTrait;
     private const HOUR = 3600;
 
     /** @var EventRepository */
@@ -51,9 +53,11 @@ final class EventUpdateCommand
             $start = max(0, $noticeStart - $timestamp);
             $end = min(self::HOUR - 1, $noticeEnd - $timestamp);
 
+            $this->lock("PaymentReport.{$timestamp}", true);
             $report = $this->paymentReportRepository->fetch($timestamp);
             $report->addInterval($type, $start, $end);
             $this->paymentReportRepository->save($report);
+            $this->release();
 
             $timestamp += self::HOUR;
         }

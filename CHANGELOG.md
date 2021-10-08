@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.2] - 2021-10-08
+### Changed
+- Allow rank greater than 0, default values for any and missing category
+
 ## [1.2.1] - 2021-06-29
 ### Fixed
 - Symfony configuration
@@ -58,7 +62,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rewriting from Python to PHP
 
 
-[Unreleased]: https://github.com/adshares/adpay/compare/v1.2.1...HEAD
+[Unreleased]: https://github.com/adshares/adpay/compare/v1.2.2...HEAD
+[1.2.2]: https://github.com/adshares/adpay/compare/v1.2.1...v1.2.2
 [1.2.1]: https://github.com/adshares/adpay/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/adshares/adpay/compare/v1.1.4...v1.2.0
 [1.1.4]: https://github.com/adshares/adpay/compare/v1.1.3...v1.1.4
