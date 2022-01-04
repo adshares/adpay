@@ -34,7 +34,7 @@ composer dump-env dev
 vi .env.local.php
 php bin/console doctrine:database:create
 php bin/console doctrine:migration:migrate
-php bin/console server:run
+composer dev
 ```
 
 ### Production
