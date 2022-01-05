@@ -23,11 +23,9 @@ class PaymentsCalculateCommand extends Command
 
     protected static $defaultName = 'ops:payments:calculate';
 
-    /** @var ReportFetchCommand */
-    private $reportFetchCommand;
+    private ReportFetchCommand $reportFetchCommand;
 
-    /** @var ReportCalculateCommand */
-    private $reportCalculateCommand;
+    private ReportCalculateCommand $reportCalculateCommand;
 
     public function __construct(
         ReportFetchCommand $reportFetchCommand,
@@ -93,7 +91,7 @@ class PaymentsCalculateCommand extends Command
         }
     }
 
-    private static function getReportInfo(int $timestamp)
+    private static function getReportInfo(int $timestamp): string
     {
         $interval = 3600;
 
@@ -114,7 +112,7 @@ class PaymentsCalculateCommand extends Command
         $io->comment(self::getReportInfo($timestamp));
 
         try {
-            $count = $this->reportCalculateCommand->execute((int)$timestamp, $force);
+            $count = $this->reportCalculateCommand->execute($timestamp, $force);
         } catch (FetchingException $exception) {
             $io->warning($exception->getMessage());
 

@@ -16,26 +16,19 @@ use Adshares\AdPay\Lib\DateTimeHelper;
 
 final class PaymentCalculator
 {
-    /** @var float */
-    private $humanScoreThreshold = 0.5;
+    private float $humanScoreThreshold = 0.5;
 
-    /** @var float */
-    private $conversionHumanScoreThreshold = 0.4;
+    private float $conversionHumanScoreThreshold = 0.4;
 
-    /** @var array */
-    private $bidStrategies = [];
+    private array $bidStrategies = [];
 
-    /** @var array */
-    private $bidStrategiesForCampaigns = [];
+    private array $bidStrategiesForCampaigns = [];
 
-    /** @var array */
-    private $campaigns = [];
+    private array $campaigns = [];
 
-    /** @var array */
-    private $banners = [];
+    private array $banners = [];
 
-    /** @var array */
-    private $conversions = [];
+    private array $conversions = [];
 
     public function __construct(CampaignCollection $campaigns, BidStrategyCollection $bidStrategies, array $config = [])
     {
@@ -154,7 +147,7 @@ final class PaymentCalculator
         return $status;
     }
 
-    private function getEventCost(array $event, float $factor = 1.0, int $userCount = 1, float $cmpScale = 1.0): float
+    private function getEventCost(array $event, float $factor = 1.0, int $userCount = 1, float $cpmScale = 1.0): float
     {
         /** @var Campaign $campaign */
         $campaign = $this->campaigns[$event['campaign_id']];
@@ -181,7 +174,7 @@ final class PaymentCalculator
                 * $pageRank
                 * $this->getBidStrategyRank($campaign, $event)
                 * $factor
-                * $cmpScale
+                * $cpmScale
                 / $userCount;
         }
 
@@ -247,7 +240,7 @@ final class PaymentCalculator
         $matrix[$campaignId]['events'][] = $event;
     }
 
-    private static function createPayment(string $eventType, string $eventId, int $status, ?int $value = null)
+    private static function createPayment(string $eventType, string $eventId, int $status, ?int $value = null): array
     {
         return [
             'event_type' => $eventType,
@@ -264,7 +257,6 @@ final class PaymentCalculator
 
         $bidStrategyRank = 1.0;
         foreach ($bidStrategyForCampaign as $category => $valueToRankMap) {
-
             if (!isset($keywords[$category])) {
                 if (isset($valueToRankMap[''])) {
                     $bidStrategyRank *= $valueToRankMap[''];
@@ -307,10 +299,10 @@ final class PaymentCalculator
                 }
 
                 $valuesIntersection = array_intersect($requiredFilters[$category], array_keys($valueToRankMap));
-                if(isset($valueToRankMap[''])) {
+                if (isset($valueToRankMap[''])) {
                     $valuesIntersection[] = '';
                 }
-                if(isset($valueToRankMap['*'])) {
+                if (isset($valueToRankMap['*'])) {
                     $valuesIntersection[] = '*';
                 }
 
