@@ -39,7 +39,7 @@ final class PaymentCalculatorTest extends TestCase
 
     private const BANNER_ID = '70000000000000000000000000000001';
 
-    private const BANNER_SZIE = '100x200';
+    private const BANNER_SIZE = '100x200';
 
     private const USER_ID = 'a0000000000000000000000000000001';
 
@@ -340,6 +340,38 @@ final class PaymentCalculatorTest extends TestCase
                         ]
                     ),
                 ]
+            )
+        );
+    }
+
+    public function testViewEventsOfOneUserDifferentPageRanks(): void
+    {
+        $campaigns = new CampaignCollection(
+            self::campaign(
+                [],
+                [self::banner()],
+            ),
+        );
+
+        $this->assertEquals(
+            [
+                '10000000000000000000000000000001' => 50,
+                '10000000000000000000000000000011' => 33,
+                '10000000000000000000000000000021' => 16,
+            ],
+            $this->values(
+                $campaigns,
+                [
+                    self::viewEvent(['page_rank' => 0.3]),
+                    self::viewEvent([
+                        'id' => '10000000000000000000000000000011',
+                        'page_rank' => 0.2,
+                    ]),
+                    self::viewEvent([
+                        'id' => '10000000000000000000000000000021',
+                        'page_rank' => 0.1,
+                    ]),
+                ],
             )
         );
     }
@@ -971,7 +1003,7 @@ final class PaymentCalculatorTest extends TestCase
             [
                 'id' => self::BANNER_ID,
                 'campaign_id' => self::CAMPAIGN_ID,
-                'size' => self::BANNER_SZIE,
+                'size' => self::BANNER_SIZE,
                 'type' => BannerType::IMAGE,
                 'deleted_at' => null,
             ],
