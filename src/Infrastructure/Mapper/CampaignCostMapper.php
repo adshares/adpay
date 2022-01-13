@@ -22,7 +22,7 @@ class CampaignCostMapper
             'campaign_id' => $campaignCost->getCampaignId()->toBin(),
             'score' => $campaignCost->getScore(),
             'max_cpm' => $campaignCost->getMaxCpm(),
-            'cpm_factor' => $campaignCost->getMaxCpm(),
+            'cpm_factor' => $campaignCost->getCpmFactor(),
             'view' => $campaignCost->getViews(),
             'view_cost' => $campaignCost->getViewsCost(),
             'click' => $campaignCost->getClicks(),

@@ -102,7 +102,7 @@ class PaymentCalculator
             $campaign = $this->campaigns[$campaignId];
             $uniqueViewCount = count($item[EventType::VIEW]);
             $avgViewCost = $uniqueViewCount > 0 ? $item['costs_' . EventType::VIEW] / $uniqueViewCount : 0;
-            $cpmScale = $avgViewCost > 0 ? $campaign->getViewCost() / $avgViewCost : 1;
+            $cpmScale = $avgViewCost > 0 ? $this->viewCostByCampaignId[$campaignId] / $avgViewCost : 1;
             $scaledCosts = $item['costs'] + $item['costs_' . EventType::VIEW] * ($cpmScale - 1);
             $factor = $scaledCosts > $campaign->getBudgetValue() ? $campaign->getBudgetValue() / $scaledCosts : 1;
 
@@ -385,13 +385,13 @@ class PaymentCalculator
     {
         /** @var Campaign $campaign */
         $campaign = $this->campaigns[$campaignId];
-        $maxCpm = $campaign->getBudget()->getMaxCpm();
+        $maxCpm = $campaign->getMaxCpm();
         $cpmFactor = 1.0;
         if ($maxCpm === null) {
             if (
                 ($campaignCost = $this->campaignCostRepository->fetch($this->reportId, $campaign->getId())) !== null
             ) {
-                $uniqueViews = count($item);
+                $uniqueViews = count($item[EventType::VIEW]);
                 $score = $campaignCost->getViewsCost() !== 0 ? $uniqueViews ** 2 / $campaignCost->getViewsCost() : 0;
                 $previousScore = $campaignCost->getScore();
                 $this->campaignCosts[$campaignId]['score'] = $score;

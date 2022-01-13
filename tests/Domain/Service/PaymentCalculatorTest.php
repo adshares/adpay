@@ -10,6 +10,8 @@ use Adshares\AdPay\Domain\Model\BidStrategy;
 use Adshares\AdPay\Domain\Model\BidStrategyCollection;
 use Adshares\AdPay\Domain\Model\Campaign;
 use Adshares\AdPay\Domain\Model\CampaignCollection;
+use Adshares\AdPay\Domain\Model\CampaignCost;
+use Adshares\AdPay\Domain\Model\CampaignCostCollection;
 use Adshares\AdPay\Domain\Model\Conversion;
 use Adshares\AdPay\Domain\Model\ConversionCollection;
 use Adshares\AdPay\Domain\Repository\CampaignCostRepository;
@@ -897,6 +899,49 @@ final class PaymentCalculatorTest extends TestCase
                 ]
             )
         );
+    }
+
+    public function testAutoCpmEmptyHistory(): void
+    {
+        $reportId = 0;
+        $config = new PaymentCalculatorConfig();
+        $campaigns = new CampaignCollection(
+            self::campaign(['max_cpm' => null,'max_cpc' => null,], [self::banner()], [self::conversion()])
+        );
+        $bidStrategies = new BidStrategyCollection();
+        $repository = $this->createMock(CampaignCostRepository::class);
+        $repository
+            ->expects($this->once())
+            ->method('fetch')
+            ->with($reportId, new Id(self::CAMPAIGN_ID))
+            ->willReturn(null);
+        $repository
+            ->expects($this->once())
+            ->method('saveAll')
+            ->willReturnCallback(function (...$parameter) use ($reportId, $config) {
+                $this->assertTrue($parameter && $parameter[0] instanceof CampaignCostCollection);
+                $this->assertTrue(count($parameter[0]) > 0);
+
+                /** @var CampaignCost $campaignCost */
+                $campaignCost = $parameter[0]->first();
+                $this->assertEquals($reportId, $campaignCost->getReportId());
+                $this->assertEquals(self::CAMPAIGN_ID, $campaignCost->getCampaignId()->toString());
+                $this->assertNull($campaignCost->getScore());
+                $this->assertEquals($config->getServerCpm(), $campaignCost->getMaxCpm());
+                $this->assertEquals(1.0, $campaignCost->getCpmFactor());
+                $this->assertEquals(1, $campaignCost->getViews());
+                $this->assertEquals((int)($config->getServerCpm() / 1000), $campaignCost->getViewsCost());
+                $this->assertEquals(0, $campaignCost->getClicks());
+                $this->assertEquals(0, $campaignCost->getClicksCost());
+                $this->assertEquals(0, $campaignCost->getConversions());
+                $this->assertEquals(0, $campaignCost->getConversionsCost());
+
+                return count($parameter[0]);
+            });
+
+        $payments = (new PaymentCalculator($campaigns, $bidStrategies, $repository, $config))
+            ->calculate($reportId, [self::viewEvent()]);
+        $this->assertCount(1, $payments);
     }
 
     private function statusForAll(
