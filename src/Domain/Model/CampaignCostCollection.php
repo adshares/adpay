@@ -6,9 +6,9 @@ namespace Adshares\AdPay\Domain\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-final class HistoricalCpmCollection extends ArrayCollection
+final class CampaignCostCollection extends ArrayCollection
 {
-    public function __construct(HistoricalCpm ...$elements)
+    public function __construct(CampaignCost ...$elements)
     {
         parent::__construct($elements);
     }

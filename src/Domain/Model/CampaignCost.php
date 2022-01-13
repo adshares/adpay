@@ -6,7 +6,7 @@ namespace Adshares\AdPay\Domain\Model;
 
 use Adshares\AdPay\Domain\ValueObject\Id;
 
-final class HistoricalCpm
+final class CampaignCost
 {
     private int $reportId;
     private Id $campaignId;

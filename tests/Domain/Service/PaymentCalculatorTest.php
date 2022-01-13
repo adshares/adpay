@@ -12,7 +12,7 @@ use Adshares\AdPay\Domain\Model\Campaign;
 use Adshares\AdPay\Domain\Model\CampaignCollection;
 use Adshares\AdPay\Domain\Model\Conversion;
 use Adshares\AdPay\Domain\Model\ConversionCollection;
-use Adshares\AdPay\Domain\Repository\HistoricalCpmRepository;
+use Adshares\AdPay\Domain\Repository\CampaignCostRepository;
 use Adshares\AdPay\Domain\Service\PaymentCalculator;
 use Adshares\AdPay\Domain\ValueObject\BannerType;
 use Adshares\AdPay\Domain\ValueObject\Budget;
@@ -61,7 +61,7 @@ final class PaymentCalculatorTest extends TestCase
         $payments = (new PaymentCalculator(
             $campaigns,
             $bidStrategies,
-            $this->getMockedHistoricalCpmRepository(),
+            $this->getMockedCampaignCostRepository(),
             new PaymentCalculatorConfig()
         ))->calculate($reportId, [self::viewEvent(), self::clickEvent()]);
 
@@ -927,7 +927,7 @@ final class PaymentCalculatorTest extends TestCase
         $payments = (new PaymentCalculator(
             $campaigns,
             $bidStrategies,
-            $this->getMockedHistoricalCpmRepository(),
+            $this->getMockedCampaignCostRepository(),
             new PaymentCalculatorConfig($config)
         ))->calculate($reportId, [$event]);
         $result = [];
@@ -959,7 +959,7 @@ final class PaymentCalculatorTest extends TestCase
         $payments = (new PaymentCalculator(
             $campaigns,
             $bidStrategies,
-            $this->getMockedHistoricalCpmRepository(),
+            $this->getMockedCampaignCostRepository(),
             new PaymentCalculatorConfig($config)
         ))->calculate($reportId, $events);
         $result = [];
@@ -1119,11 +1119,11 @@ final class PaymentCalculatorTest extends TestCase
         ];
     }
 
-    private function getMockedHistoricalCpmRepository(): HistoricalCpmRepository
+    private function getMockedCampaignCostRepository(): CampaignCostRepository
     {
-        $historicalCpmRepository = $this->createMock(HistoricalCpmRepository::class);
-        $historicalCpmRepository->expects($this->never())->method('fetch');
+        $repository = $this->createMock(CampaignCostRepository::class);
+        $repository->expects($this->never())->method('fetch');
 
-        return $historicalCpmRepository;
+        return $repository;
     }
 }

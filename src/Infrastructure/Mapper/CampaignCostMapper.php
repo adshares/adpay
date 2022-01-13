@@ -4,31 +4,31 @@ declare(strict_types=1);
 
 namespace Adshares\AdPay\Infrastructure\Mapper;
 
-use Adshares\AdPay\Domain\Model\HistoricalCpm;
+use Adshares\AdPay\Domain\Model\CampaignCost;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use Doctrine\DBAL\Types\Types;
 
-class HistoricalCpmMapper
+class CampaignCostMapper
 {
     public static function table(): string
     {
         return 'campaign_costs';
     }
 
-    public static function map(HistoricalCpm $historicalCpm): array
+    public static function map(CampaignCost $campaignCost): array
     {
         return [
-            'report_id' => $historicalCpm->getReportId(),
-            'campaign_id' => $historicalCpm->getCampaignId()->toBin(),
-            'score' => $historicalCpm->getScore(),
-            'max_cpm' => $historicalCpm->getMaxCpm(),
-            'cpm_factor' => $historicalCpm->getMaxCpm(),
-            'view' => $historicalCpm->getViews(),
-            'view_cost' => $historicalCpm->getViewsCost(),
-            'click' => $historicalCpm->getClicks(),
-            'click_cost' => $historicalCpm->getClicksCost(),
-            'conversion' => $historicalCpm->getConversions(),
-            'conversion_cost' => $historicalCpm->getConversionsCost(),
+            'report_id' => $campaignCost->getReportId(),
+            'campaign_id' => $campaignCost->getCampaignId()->toBin(),
+            'score' => $campaignCost->getScore(),
+            'max_cpm' => $campaignCost->getMaxCpm(),
+            'cpm_factor' => $campaignCost->getMaxCpm(),
+            'view' => $campaignCost->getViews(),
+            'view_cost' => $campaignCost->getViewsCost(),
+            'click' => $campaignCost->getClicks(),
+            'click_cost' => $campaignCost->getClicksCost(),
+            'conversion' => $campaignCost->getConversions(),
+            'conversion_cost' => $campaignCost->getConversionsCost(),
         ];
     }
 
@@ -50,9 +50,9 @@ class HistoricalCpmMapper
         ];
     }
 
-    public static function fill(array $row): HistoricalCpm
+    public static function fill(array $row): CampaignCost
     {
-        return new HistoricalCpm(
+        return new CampaignCost(
             (int)$row['report_id'],
             Id::fromBin($row['campaign_id']),
             isset($row['score']) ? (float)$row['score'] : null,

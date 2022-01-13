@@ -6,7 +6,7 @@ namespace Adshares\AdPay\Domain\Service;
 
 use Adshares\AdPay\Domain\Repository\BidStrategyRepository;
 use Adshares\AdPay\Domain\Repository\CampaignRepository;
-use Adshares\AdPay\Domain\Repository\HistoricalCpmRepository;
+use Adshares\AdPay\Domain\Repository\CampaignCostRepository;
 use Adshares\AdPay\Domain\ValueObject\PaymentCalculatorConfig;
 
 class PaymentCalculatorFactory
@@ -15,19 +15,19 @@ class PaymentCalculatorFactory
 
     private BidStrategyRepository $bidStrategyRepository;
 
-    private HistoricalCpmRepository $historicalCpmRepository;
+    private CampaignCostRepository $campaignCostRepository;
 
     private PaymentCalculatorConfig $config;
 
     public function __construct(
         CampaignRepository $campaignRepository,
         BidStrategyRepository $bidStrategyRepository,
-        HistoricalCpmRepository $historicalCpmRepository,
+        CampaignCostRepository $campaignCostRepository,
         PaymentCalculatorConfig $config
     ) {
         $this->campaignRepository = $campaignRepository;
         $this->bidStrategyRepository = $bidStrategyRepository;
-        $this->historicalCpmRepository = $historicalCpmRepository;
+        $this->campaignCostRepository = $campaignCostRepository;
         $this->config = $config;
     }
 
@@ -39,7 +39,7 @@ class PaymentCalculatorFactory
         return new PaymentCalculator(
             $campaigns,
             $bidStrategies,
-            $this->historicalCpmRepository,
+            $this->campaignCostRepository,
             $this->config
         );
     }

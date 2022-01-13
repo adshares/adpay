@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace Adshares\AdPay\Infrastructure\Repository;
 
 use Adshares\AdPay\Domain\Exception\DomainRepositoryException;
-use Adshares\AdPay\Domain\Model\HistoricalCpm;
-use Adshares\AdPay\Domain\Model\HistoricalCpmCollection;
-use Adshares\AdPay\Domain\Repository\HistoricalCpmRepository;
+use Adshares\AdPay\Domain\Model\CampaignCost;
+use Adshares\AdPay\Domain\Model\CampaignCostCollection;
+use Adshares\AdPay\Domain\Repository\CampaignCostRepository;
 use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Infrastructure\Mapper\HistoricalCpmMapper;
+use Adshares\AdPay\Infrastructure\Mapper\CampaignCostMapper;
 use DateTimeInterface;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Types\Types;
 
-final class DoctrineHistoricalCpmRepository extends DoctrineModelUpdater implements HistoricalCpmRepository
+final class DoctrineCampaignCostRepository extends DoctrineModelUpdater implements CampaignCostRepository
 {
-    public function fetch(int $reportId, Id $campaignId): ?HistoricalCpm
+    public function fetch(int $reportId, Id $campaignId): ?CampaignCost
     {
         try {
             $row =
@@ -30,7 +30,7 @@ WHERE report_id < :report_id
 ORDER BY report_id DESC
 LIMIT 1;
 SQL,
-                        HistoricalCpmMapper::table()
+                        CampaignCostMapper::table()
                     ),
                     ['report_id' => $reportId, 'campaign_id' => $campaignId->toBin()],
                     ['report_id' => Types::INTEGER, 'campaign_id' => Types::BINARY],
@@ -39,39 +39,43 @@ SQL,
             throw new DomainRepositoryException($exception->getMessage());
         }
 
-        return $row !== false ? HistoricalCpmMapper::fill($row) : null;
+        return $row !== false ? CampaignCostMapper::fill($row) : null;
     }
 
-    public function saveAll(HistoricalCpmCollection $historicalCpmCollection): void
+    public function saveAll(CampaignCostCollection $campaignCostCollection): int
     {
+        $count = 0;
         try {
-            foreach ($historicalCpmCollection as $historicalCpm) {
-                $id = $this->fetchHistoricalCpmId($historicalCpm->getReportId(), $historicalCpm->getCampaignId());
+            foreach ($campaignCostCollection as $campaignCost) {
+                $id = $this->fetchId($campaignCost->getReportId(), $campaignCost->getCampaignId());
 
                 if ($id === null) {
                     $this->db->insert(
-                        HistoricalCpmMapper::table(),
-                        HistoricalCpmMapper::map($historicalCpm),
-                        HistoricalCpmMapper::types()
+                        CampaignCostMapper::table(),
+                        CampaignCostMapper::map($campaignCost),
+                        CampaignCostMapper::types()
                     );
                 } else {
                     $this->db->update(
-                        HistoricalCpmMapper::table(),
-                        HistoricalCpmMapper::map($historicalCpm),
+                        CampaignCostMapper::table(),
+                        CampaignCostMapper::map($campaignCost),
                         ['id' => $id],
-                        HistoricalCpmMapper::types()
+                        CampaignCostMapper::types()
                     );
                 }
+                ++$count;
             }
         } catch (DBALException $exception) {
             throw new DomainRepositoryException($exception->getMessage());
         }
+
+        return $count;
     }
 
     /**
      * @throws DBALException
      */
-    private function fetchHistoricalCpmId(int $reportId, Id $campaignId): ?int
+    private function fetchId(int $reportId, Id $campaignId): ?int
     {
         $id = $this->db->fetchOne(
             sprintf(
@@ -79,7 +83,7 @@ SQL,
 SELECT id FROM %s
 WHERE report_id=:report_id AND campaign_id=:campaign_id
 SQL,
-                HistoricalCpmMapper::table()
+                CampaignCostMapper::table()
             ),
             ['report_id' => $reportId, 'campaign_id' => $campaignId->toBin()],
             ['report_id' => Types::INTEGER, 'campaign_id' => Types::BINARY],
@@ -91,8 +95,8 @@ SQL,
     public function deleteByTime(DateTimeInterface $timeEnd): int
     {
         try {
-            $query = sprintf('DELETE FROM %s WHERE created_at <= ?', HistoricalCpmMapper::table());
-            $params = [$timeEnd->getTimestamp()];
+            $query = sprintf('DELETE FROM %s WHERE updated_at <= ?', CampaignCostMapper::table());
+            $params = [$timeEnd];
             $types = [Types::DATETIME_MUTABLE];
 
             $this->db->beginTransaction();

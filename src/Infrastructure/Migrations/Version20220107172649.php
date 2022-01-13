@@ -33,7 +33,8 @@ CREATE TABLE campaign_costs
     click_cost      BIGINT UNSIGNED NOT NULL,
     conversion      INT UNSIGNED    NOT NULL,
     conversion_cost BIGINT UNSIGNED NOT NULL,
-    CONSTRAINT cpm_report_id_campaign_id_index
+    INDEX campaign_costs_updated_at (updated_at),
+    CONSTRAINT campaign_costs_report_id_campaign_id_index
         UNIQUE (report_id, campaign_id)
 );
 SQL

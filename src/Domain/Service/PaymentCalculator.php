@@ -10,12 +10,12 @@ use Adshares\AdPay\Domain\Model\BidStrategyCollection;
 use Adshares\AdPay\Domain\Model\Campaign;
 use Adshares\AdPay\Domain\Model\CampaignCollection;
 use Adshares\AdPay\Domain\Model\Conversion;
-use Adshares\AdPay\Domain\Model\HistoricalCpmCollection;
-use Adshares\AdPay\Domain\Repository\HistoricalCpmRepository;
+use Adshares\AdPay\Domain\Model\CampaignCostCollection;
+use Adshares\AdPay\Domain\Repository\CampaignCostRepository;
 use Adshares\AdPay\Domain\ValueObject\EventType;
 use Adshares\AdPay\Domain\ValueObject\PaymentCalculatorConfig;
 use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
-use Adshares\AdPay\Infrastructure\Mapper\HistoricalCpmMapper;
+use Adshares\AdPay\Infrastructure\Mapper\CampaignCostMapper;
 use Adshares\AdPay\Lib\DateTimeHelper;
 
 class PaymentCalculator
@@ -26,7 +26,7 @@ class PaymentCalculator
 
     private int $reportId;
 
-    private HistoricalCpmRepository $historicalCpmRepository;
+    private CampaignCostRepository $campaignCostRepository;
 
     private PaymentCalculatorConfig $config;
 
@@ -47,10 +47,10 @@ class PaymentCalculator
     public function __construct(
         CampaignCollection $campaigns,
         BidStrategyCollection $bidStrategies,
-        HistoricalCpmRepository $historicalCpmRepository,
+        CampaignCostRepository $campaignCostRepository,
         PaymentCalculatorConfig $config
     ) {
-        $this->historicalCpmRepository = $historicalCpmRepository;
+        $this->campaignCostRepository = $campaignCostRepository;
         $this->config = $config;
 
         foreach ($bidStrategies as $bidStrategy) {
@@ -389,20 +389,20 @@ class PaymentCalculator
         $cpmFactor = 1.0;
         if ($maxCpm === null) {
             if (
-                ($historicalCpm = $this->historicalCpmRepository->fetch($this->reportId, $campaign->getId())) !== null
+                ($campaignCost = $this->campaignCostRepository->fetch($this->reportId, $campaign->getId())) !== null
             ) {
                 $uniqueViews = count($item);
-                $score = $historicalCpm->getViewsCost() !== 0 ? $uniqueViews ** 2 / $historicalCpm->getViewsCost() : 0;
-                $previousScore = $historicalCpm->getScore();
+                $score = $campaignCost->getViewsCost() !== 0 ? $uniqueViews ** 2 / $campaignCost->getViewsCost() : 0;
+                $previousScore = $campaignCost->getScore();
                 $this->campaignCosts[$campaignId]['score'] = $score;
 
                 if (
-                    ($campaign->getBudgetValue() * $this->config->getBudgetFactor() < $historicalCpm->getViewsCost())
+                    ($campaign->getBudgetValue() * $this->config->getBudgetFactor() < $campaignCost->getViewsCost())
                     || $previousScore === null
                 ) {
                     $cpmFactor = self::CPM_INCREASING_FACTOR;
                 } else {
-                    $wasCpmDecreasedEarlier = $historicalCpm->getCpmFactor() < 1.0;
+                    $wasCpmDecreasedEarlier = $campaignCost->getCpmFactor() < 1.0;
                     if ($score > $previousScore) {
                         $cpmFactor =
                             $wasCpmDecreasedEarlier ? self::CPM_DECREASING_FACTOR : self::CPM_INCREASING_FACTOR;
@@ -411,7 +411,7 @@ class PaymentCalculator
                             $wasCpmDecreasedEarlier ? self::CPM_INCREASING_FACTOR : self::CPM_DECREASING_FACTOR;
                     }
                 }
-                $maxCpm = (1000 * $historicalCpm->getViewsCost() / $historicalCpm->getViews()) * $cpmFactor;
+                $maxCpm = (1000 * $campaignCost->getViewsCost() / $campaignCost->getViews()) * $cpmFactor;
             } else {
                 $maxCpm = $this->config->getServerCpm();
             }
@@ -429,12 +429,12 @@ class PaymentCalculator
             return;
         }
 
-        $collection = new HistoricalCpmCollection();
+        $collection = new CampaignCostCollection();
         foreach ($this->campaignCosts as $campaignCost) {
             $campaignCost['campaign_id'] = ($campaignCost['campaign_id'])->toBin();
-            $collection->add(HistoricalCpmMapper::fill($campaignCost));
+            $collection->add(CampaignCostMapper::fill($campaignCost));
         }
 
-        $this->historicalCpmRepository->saveAll($collection);
+        $this->campaignCostRepository->saveAll($collection);
     }
 }
