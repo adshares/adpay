@@ -77,9 +77,8 @@ services:
         arguments:
             $paymentReportRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository'
             $paymentRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentRepository'
-            $campaignRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineCampaignRepository'
-            $bidStrategyRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineBidStrategyRepository'
             $eventRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineEventRepository'
+            $paymentCalculatorFactory: '@Adshares\AdPay\Domain\Service\PaymentCalculatorFactory'
             $logger: '@logger'
 
     Adshares\AdPay\Application\Command\ReportDeleteCommand:
@@ -94,6 +93,22 @@ services:
             $paymentReportRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository'
             $paymentRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentRepository'
             $logger: '@logger'
+
+    Adshares\AdPay\Domain\ValueObject\PaymentCalculatorConfig:
+        arguments:
+            $config: {
+                humanScoreThreshold: '%env(float:HUMAN_SCORE_THRESHOLD)%',
+                conversionHumanScoreThreshold: '%env(float:CONVERSION_HUMAN_SCORE_THRESHOLD)%',
+                budgetFactor: '%env(float:BUDGET_FACTOR)%',
+                serverCpm: '%env(int:SERVER_CPM)%'
+            }
+
+    Adshares\AdPay\Domain\Service\PaymentCalculatorFactory:
+        arguments:
+            $campaignRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineCampaignRepository'
+            $bidStrategyRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineBidStrategyRepository'
+            $historicalCpmRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineHistoricalCpmRepository'
+            $config: '@Adshares\AdPay\Domain\ValueObject\PaymentCalculatorConfig'
 
     Adshares\AdPay\UI\Controller\:
         resource: '../src/UI/Controller'

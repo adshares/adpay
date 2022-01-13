@@ -12,12 +12,14 @@ use Adshares\AdPay\Domain\Model\Campaign;
 use Adshares\AdPay\Domain\Model\CampaignCollection;
 use Adshares\AdPay\Domain\Model\Conversion;
 use Adshares\AdPay\Domain\Model\ConversionCollection;
+use Adshares\AdPay\Domain\Repository\HistoricalCpmRepository;
 use Adshares\AdPay\Domain\Service\PaymentCalculator;
 use Adshares\AdPay\Domain\ValueObject\BannerType;
 use Adshares\AdPay\Domain\ValueObject\Budget;
 use Adshares\AdPay\Domain\ValueObject\EventType;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use Adshares\AdPay\Domain\ValueObject\LimitType;
+use Adshares\AdPay\Domain\ValueObject\PaymentCalculatorConfig;
 use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
 use Adshares\AdPay\Lib\DateTimeHelper;
 use DateTimeInterface;
@@ -53,10 +55,15 @@ final class PaymentCalculatorTest extends TestCase
 
     public function testPaymentList(): void
     {
+        $reportId = 0;
         $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
         $bidStrategies = new BidStrategyCollection();
-        $payments =
-            (new PaymentCalculator($campaigns, $bidStrategies))->calculate([self::viewEvent(), self::clickEvent()]);
+        $payments = (new PaymentCalculator(
+            $campaigns,
+            $bidStrategies,
+            $this->getMockedHistoricalCpmRepository(),
+            new PaymentCalculatorConfig()
+        ))->calculate($reportId, [self::viewEvent(), self::clickEvent()]);
 
         $list = [];
         array_push($list, ...$payments);
@@ -785,8 +792,7 @@ final class PaymentCalculatorTest extends TestCase
                 $campaigns,
                 $bidStrategies1,
                 $events
-            )
-            ,
+            ),
             $this->valuesWithCustomBidStrategy(
                 $campaigns,
                 $bidStrategies2,
@@ -830,15 +836,13 @@ final class PaymentCalculatorTest extends TestCase
                 $campaigns,
                 $bidStrategies2,
                 $events
-            )
-            ,
+            ),
             $this->valuesWithCustomBidStrategy(
                 $campaigns,
                 $bidStrategies1,
                 $events
             )
         );
-
     }
 
     public function testBidStrategiesWithNormalization(): void
@@ -853,12 +857,12 @@ final class PaymentCalculatorTest extends TestCase
             new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v2', 2)
         );
 
-        $cpmScale = self::CAMPAIGN_CPV / ((100+40) / 2);
+        $cpmScale = self::CAMPAIGN_CPV / ((100 + 40) / 2);
 
         $this->assertEquals(
             [
                 '10000000000000000000000000000001' => floor(self::CAMPAIGN_CPV * $cpmScale * 1),
-                '10000000000000000000000000000002' => floor(self::CAMPAIGN_CPV * $cpmScale * 0.6 / 2 ),
+                '10000000000000000000000000000002' => floor(self::CAMPAIGN_CPV * $cpmScale * 0.6 / 2),
                 '10000000000000000000000000000003' => floor(self::CAMPAIGN_CPV * $cpmScale * 0.2 / 2),
             ],
             $this->valuesWithCustomBidStrategy(
@@ -918,8 +922,14 @@ final class PaymentCalculatorTest extends TestCase
 
     private function single(CampaignCollection $campaigns, array $event, array $config = []): array
     {
+        $reportId = 0;
         $bidStrategies = new BidStrategyCollection();
-        $payments = (new PaymentCalculator($campaigns, $bidStrategies, $config))->calculate([$event]);
+        $payments = (new PaymentCalculator(
+            $campaigns,
+            $bidStrategies,
+            $this->getMockedHistoricalCpmRepository(),
+            new PaymentCalculatorConfig($config)
+        ))->calculate($reportId, [$event]);
         $result = [];
 
         foreach ($payments as $payment) {
@@ -945,7 +955,13 @@ final class PaymentCalculatorTest extends TestCase
         array $events,
         array $config = []
     ): array {
-        $payments = (new PaymentCalculator($campaigns, $bidStrategies, $config))->calculate($events);
+        $reportId = 0;
+        $payments = (new PaymentCalculator(
+            $campaigns,
+            $bidStrategies,
+            $this->getMockedHistoricalCpmRepository(),
+            new PaymentCalculatorConfig($config)
+        ))->calculate($reportId, $events);
         $result = [];
 
         foreach ($payments as $payment) {
@@ -1101,5 +1117,13 @@ final class PaymentCalculatorTest extends TestCase
             'keywords' => ['r1' => ['r1_v1'], 'e1' => ['e1_v3']],
             'context' => [],
         ];
+    }
+
+    private function getMockedHistoricalCpmRepository(): HistoricalCpmRepository
+    {
+        $historicalCpmRepository = $this->createMock(HistoricalCpmRepository::class);
+        $historicalCpmRepository->expects($this->never())->method('fetch');
+
+        return $historicalCpmRepository;
     }
 }

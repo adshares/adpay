@@ -9,7 +9,6 @@ use Adshares\AdPay\Domain\Model\EventCollection;
 use Adshares\AdPay\Domain\Model\ViewEvent;
 use Adshares\AdPay\Domain\ValueObject\EventType;
 use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
 use Adshares\AdPay\Lib\DateTimeHelper;
 use DateTimeInterface;
 

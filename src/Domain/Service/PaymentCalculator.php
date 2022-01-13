@@ -10,15 +10,25 @@ use Adshares\AdPay\Domain\Model\BidStrategyCollection;
 use Adshares\AdPay\Domain\Model\Campaign;
 use Adshares\AdPay\Domain\Model\CampaignCollection;
 use Adshares\AdPay\Domain\Model\Conversion;
+use Adshares\AdPay\Domain\Model\HistoricalCpmCollection;
+use Adshares\AdPay\Domain\Repository\HistoricalCpmRepository;
 use Adshares\AdPay\Domain\ValueObject\EventType;
+use Adshares\AdPay\Domain\ValueObject\PaymentCalculatorConfig;
 use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
+use Adshares\AdPay\Infrastructure\Mapper\HistoricalCpmMapper;
 use Adshares\AdPay\Lib\DateTimeHelper;
 
-final class PaymentCalculator
+class PaymentCalculator
 {
-    private float $humanScoreThreshold = 0.5;
+    private const CPM_INCREASING_FACTOR = 1.1;
 
-    private float $conversionHumanScoreThreshold = 0.4;
+    private const CPM_DECREASING_FACTOR = 0.9;
+
+    private int $reportId;
+
+    private HistoricalCpmRepository $historicalCpmRepository;
+
+    private PaymentCalculatorConfig $config;
 
     private array $bidStrategies = [];
 
@@ -30,13 +40,18 @@ final class PaymentCalculator
 
     private array $conversions = [];
 
-    private array $uniqueViewsByCampaignId = [];
+    private array $viewCostByCampaignId = [];
 
-    public function __construct(CampaignCollection $campaigns, BidStrategyCollection $bidStrategies, array $config = [])
-    {
-        $this->humanScoreThreshold = (float)($config['humanScoreThreshold'] ?? $this->humanScoreThreshold);
-        $this->conversionHumanScoreThreshold =
-            (float)($config['conversionHumanScoreThreshold'] ?? $this->conversionHumanScoreThreshold);
+    private array $campaignCosts = [];
+
+    public function __construct(
+        CampaignCollection $campaigns,
+        BidStrategyCollection $bidStrategies,
+        HistoricalCpmRepository $historicalCpmRepository,
+        PaymentCalculatorConfig $config
+    ) {
+        $this->historicalCpmRepository = $historicalCpmRepository;
+        $this->config = $config;
 
         foreach ($bidStrategies as $bidStrategy) {
             /** @var BidStrategy $bidStrategy */
@@ -61,8 +76,10 @@ final class PaymentCalculator
         }
     }
 
-    public function calculate(iterable $events): iterable
+    public function calculate(int $reportId, iterable $events): iterable
     {
+        $this->reportId = $reportId;
+        $this->campaignCosts = [];
         $matrix = [];
         foreach ($events as $event) {
             $status = $this->validateEvent($event);
@@ -78,37 +95,56 @@ final class PaymentCalculator
 
             $this->fillMatrix($matrix, $event);
         }
-        foreach ($matrix as $campaignId => $item) {
-            $this->uniqueViewsByCampaignId[$campaignId] = count($item[EventType::VIEW]);
-        }
         $this->fillNonConversionCosts($matrix);
 
         foreach ($matrix as $campaignId => $item) {
             /** @var Campaign $campaign */
             $campaign = $this->campaigns[$campaignId];
-            $uniqueViewCount = $this->uniqueViewsByCampaignId[$campaignId];
+            $uniqueViewCount = count($item[EventType::VIEW]);
             $avgViewCost = $uniqueViewCount > 0 ? $item['costs_' . EventType::VIEW] / $uniqueViewCount : 0;
             $cpmScale = $avgViewCost > 0 ? $campaign->getViewCost() / $avgViewCost : 1;
             $scaledCosts = $item['costs'] + $item['costs_' . EventType::VIEW] * ($cpmScale - 1);
             $factor = $scaledCosts > $campaign->getBudgetValue() ? $campaign->getBudgetValue() / $scaledCosts : 1;
 
+            $costs = [
+                EventType::VIEW => 0,
+                EventType::CLICK => 0,
+                EventType::CONVERSION => 0,
+            ];
             foreach ($item['events'] as $event) {
-                $value = $this->getEventCost($event, $factor, $item[$event['type']][$event['user_id']] ?? 1, $cpmScale);
+                $value =
+                    (int)$this->getEventCost($event, $factor, $item[$event['type']][$event['user_id']] ?? 1, $cpmScale);
+                $costs[$event['type']] += $value;
+
                 yield self::createPayment(
                     $event['type'],
                     $event['id'],
                     PaymentStatus::ACCEPTED,
-                    (int)$value
+                    $value
                 );
             }
+            $this->campaignCosts[$campaignId] = array_merge(
+                $this->campaignCosts[$campaignId],
+                [
+                    EventType::VIEW => $uniqueViewCount,
+                    EventType::CLICK => count($item[EventType::CLICK]),
+                    EventType::CONVERSION => count($item[EventType::CONVERSION]),
+                    EventType::VIEW . '_cost' => $costs[EventType::VIEW],
+                    EventType::CLICK . '_cost' => $costs[EventType::CLICK],
+                    EventType::CONVERSION . '_cost' => $costs[EventType::CONVERSION],
+                ]
+            );
         }
+
+        $this->storeCampaignCosts();
     }
 
     private function validateEvent(array $event): int
     {
         $status = PaymentStatus::ACCEPTED;
         $isConversion = $event['type'] === EventType::CONVERSION;
-        $humanScoreThreshold = $isConversion ? $this->conversionHumanScoreThreshold : $this->humanScoreThreshold;
+        $humanScoreThreshold =
+            $isConversion ? $this->config->getConversionHumanScoreThreshold() : $this->config->getHumanScoreThreshold();
 
         /** @var Campaign $campaign */
         $campaign = $this->campaigns[$event['campaign_id']] ?? null;
@@ -176,7 +212,7 @@ final class PaymentCalculator
                 / $userCount;
         } elseif ($event['type'] === EventType::VIEW) {
             $value =
-                $campaign->getViewCost()
+                $this->viewCostByCampaignId[$event['campaign_id']]
                 * $pageRank
                 * $this->getBidStrategyRank($campaign, $event)
                 * $factor
@@ -195,7 +231,7 @@ final class PaymentCalculator
         if (!array_key_exists($campaignId, $matrix)) {
             $matrix[$campaignId] = [
                 'events' => [],
-                'conversions' => [],
+                EventType::CONVERSION => [],
                 EventType::VIEW => [],
                 EventType::CLICK => [],
                 'costs' => 0,
@@ -209,15 +245,15 @@ final class PaymentCalculator
             /** @var Conversion $conversion */
             $conversion = $this->conversions[$conversionId];
 
-            if (!array_key_exists($conversionId, $matrix[$campaignId]['conversions'])) {
-                $matrix[$campaignId]['conversions'][$conversionId] = [];
+            if (!array_key_exists($conversionId, $matrix[$campaignId][EventType::CONVERSION])) {
+                $matrix[$campaignId][EventType::CONVERSION][$conversionId] = [];
             }
 
             if (!$conversion->isRepeatable()) {
-                if (!array_key_exists($userId, $matrix[$campaignId]['conversions'][$conversionId])) {
-                    $matrix[$campaignId]['conversions'][$conversionId][$userId] = $event['group_id'];
+                if (!array_key_exists($userId, $matrix[$campaignId][EventType::CONVERSION][$conversionId])) {
+                    $matrix[$campaignId][EventType::CONVERSION][$conversionId][$userId] = $event['group_id'];
                 }
-                if ($matrix[$campaignId]['conversions'][$conversionId][$userId] !== $event['group_id']) {
+                if ($matrix[$campaignId][EventType::CONVERSION][$conversionId][$userId] !== $event['group_id']) {
                     $event['conversion_value'] = 0;
                 }
             }
@@ -239,6 +275,8 @@ final class PaymentCalculator
     private function fillNonConversionCosts(array &$matrix): void
     {
         foreach ($matrix as $campaignId => $item) {
+            $this->computeViewCost($campaignId, $item);
+
             foreach ($item['events'] as $event) {
                 if ($event['type'] !== EventType::CONVERSION) {
                     $count = $matrix[$campaignId][$event['type']][$event['user_id']];
@@ -341,5 +379,62 @@ final class PaymentCalculator
         $this->bidStrategiesForCampaigns[$campaignId] = $bidStrategyForCampaign;
 
         return $bidStrategyForCampaign;
+    }
+
+    private function computeViewCost(string $campaignId, $item): void
+    {
+        /** @var Campaign $campaign */
+        $campaign = $this->campaigns[$campaignId];
+        $maxCpm = $campaign->getBudget()->getMaxCpm();
+        $cpmFactor = 1.0;
+        if ($maxCpm === null) {
+            if (
+                ($historicalCpm = $this->historicalCpmRepository->fetch($this->reportId, $campaign->getId())) !== null
+            ) {
+                $uniqueViews = count($item);
+                $score = $historicalCpm->getViewsCost() !== 0 ? $uniqueViews ** 2 / $historicalCpm->getViewsCost() : 0;
+                $previousScore = $historicalCpm->getScore();
+                $this->campaignCosts[$campaignId]['score'] = $score;
+
+                if (
+                    ($campaign->getBudgetValue() * $this->config->getBudgetFactor() < $historicalCpm->getViewsCost())
+                    || $previousScore === null
+                ) {
+                    $cpmFactor = self::CPM_INCREASING_FACTOR;
+                } else {
+                    $wasCpmDecreasedEarlier = $historicalCpm->getCpmFactor() < 1.0;
+                    if ($score > $previousScore) {
+                        $cpmFactor =
+                            $wasCpmDecreasedEarlier ? self::CPM_DECREASING_FACTOR : self::CPM_INCREASING_FACTOR;
+                    } else {
+                        $cpmFactor =
+                            $wasCpmDecreasedEarlier ? self::CPM_INCREASING_FACTOR : self::CPM_DECREASING_FACTOR;
+                    }
+                }
+                $maxCpm = (1000 * $historicalCpm->getViewsCost() / $historicalCpm->getViews()) * $cpmFactor;
+            } else {
+                $maxCpm = $this->config->getServerCpm();
+            }
+        }
+        $this->campaignCosts[$campaignId]['report_id'] = $this->reportId;
+        $this->campaignCosts[$campaignId]['campaign_id'] = $campaign->getId();
+        $this->campaignCosts[$campaignId]['max_cpm'] = $maxCpm;
+        $this->campaignCosts[$campaignId]['cpm_factor'] = $cpmFactor;
+        $this->viewCostByCampaignId[$campaignId] = (int)($maxCpm / 1000);
+    }
+
+    private function storeCampaignCosts(): void
+    {
+        if (!$this->campaignCosts) {
+            return;
+        }
+
+        $collection = new HistoricalCpmCollection();
+        foreach ($this->campaignCosts as $campaignCost) {
+            $campaignCost['campaign_id'] = ($campaignCost['campaign_id'])->toBin();
+            $collection->add(HistoricalCpmMapper::fill($campaignCost));
+        }
+
+        $this->historicalCpmRepository->saveAll($collection);
     }
 }
