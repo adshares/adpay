@@ -396,9 +396,12 @@ class PaymentCalculator
                 $previousScore = $campaignCost->getScore();
                 $this->campaignCosts[$campaignId]['score'] = $score;
 
-                if (
-                    ($campaign->getBudgetValue() * $this->config->getBudgetFactor() < $campaignCost->getViewsCost())
-                    || $previousScore === null
+                if ($previousScore === null) {
+                    $cpmFactor = $uniqueViews > $campaignCost->getViews()
+                        ? self::CPM_DECREASING_FACTOR
+                        : self::CPM_INCREASING_FACTOR;
+                } elseif (
+                    $campaign->getBudgetValue() * $this->config->getBudgetFactor() > $campaignCost->getViewsCost()
                 ) {
                     $cpmFactor = self::CPM_INCREASING_FACTOR;
                 } else {
@@ -411,7 +414,7 @@ class PaymentCalculator
                             $wasCpmDecreasedEarlier ? self::CPM_INCREASING_FACTOR : self::CPM_DECREASING_FACTOR;
                     }
                 }
-                $maxCpm = (1000 * $campaignCost->getViewsCost() / $campaignCost->getViews()) * $cpmFactor;
+                $maxCpm = (int)((1000 * $campaignCost->getViewsCost() / $campaignCost->getViews()) * $cpmFactor);
             } else {
                 $maxCpm = $this->config->getServerCpm();
             }
