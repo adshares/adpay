@@ -401,7 +401,7 @@ class PaymentCalculator
                         ? self::CPM_DECREASING_FACTOR
                         : self::CPM_INCREASING_FACTOR;
                 } elseif (
-                    $campaign->getBudgetValue() * $this->config->getBudgetFactor() > $campaignCost->getViewsCost()
+                    $campaign->getBudgetValue() * $this->config->getAutoCpmBudgetThreshold() > $campaignCost->getViewsCost()
                 ) {
                     $cpmFactor = self::CPM_INCREASING_FACTOR;
                 } else {
@@ -416,7 +416,7 @@ class PaymentCalculator
                 }
                 $maxCpm = (int)((1000 * $campaignCost->getViewsCost() / $campaignCost->getViews()) * $cpmFactor);
             } else {
-                $maxCpm = $this->config->getServerCpm();
+                $maxCpm = $this->config->getAutoCpmDefault();
             }
         }
         $this->campaignCosts[$campaignId]['report_id'] = $this->reportId;

@@ -10,9 +10,9 @@ final class PaymentCalculatorConfig
 
     private float $conversionHumanScoreThreshold = 0.4;
 
-    private float $budgetFactor = 0.2;
+    private float $autoCpmBudgetThreshold = 0.2;
 
-    private int $serverCpm = 7 * 10 ** 11;
+    private int $autoCpmDefault = 7 * 10 ** 11;
 
     public function __construct(
         array $config = []
@@ -20,8 +20,8 @@ final class PaymentCalculatorConfig
         $this->humanScoreThreshold = (float)($config['humanScoreThreshold'] ?? $this->humanScoreThreshold);
         $this->conversionHumanScoreThreshold =
                 (float)($config['conversionHumanScoreThreshold'] ?? $this->conversionHumanScoreThreshold);
-        $this->budgetFactor = (float)($config['budgetFactor'] ?? $this->budgetFactor);
-        $this->serverCpm = (int)($config['serverCpm'] ?? $this->serverCpm);
+        $this->autoCpmBudgetThreshold = (float)($config['autoCpmBudgetThreshold'] ?? $this->autoCpmBudgetThreshold);
+        $this->autoCpmDefault = (int)($config['autoCpmDefault'] ?? $this->autoCpmDefault);
     }
 
     public function getHumanScoreThreshold(): float
@@ -34,13 +34,13 @@ final class PaymentCalculatorConfig
         return $this->conversionHumanScoreThreshold;
     }
 
-    public function getBudgetFactor(): float
+    public function getAutoCpmBudgetThreshold(): float
     {
-        return $this->budgetFactor;
+        return $this->autoCpmBudgetThreshold;
     }
 
-    public function getServerCpm(): int
+    public function getAutoCpmDefault(): int
     {
-        return $this->serverCpm;
+        return $this->autoCpmDefault;
     }
 }

@@ -99,8 +99,8 @@ services:
             $config: {
                 humanScoreThreshold: '%env(float:HUMAN_SCORE_THRESHOLD)%',
                 conversionHumanScoreThreshold: '%env(float:CONVERSION_HUMAN_SCORE_THRESHOLD)%',
-                budgetFactor: '%env(float:BUDGET_FACTOR)%',
-                serverCpm: '%env(int:SERVER_CPM)%'
+                autoCpmBudgetThreshold: '%env(float:AUTO_CPM_BUDGET_THRESHOLD)%',
+                autoCpmDefault: '%env(int:AUTO_CPM_DEFAULT)%'
             }
 
     Adshares\AdPay\Domain\Service\PaymentCalculatorFactory:

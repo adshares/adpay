@@ -927,10 +927,10 @@ final class PaymentCalculatorTest extends TestCase
                 $this->assertEquals($reportId, $campaignCost->getReportId());
                 $this->assertEquals(self::CAMPAIGN_ID, $campaignCost->getCampaignId()->toString());
                 $this->assertNull($campaignCost->getScore());
-                $this->assertEquals($config->getServerCpm(), $campaignCost->getMaxCpm());
+                $this->assertEquals($config->getAutoCpmDefault(), $campaignCost->getMaxCpm());
                 $this->assertEquals(1.0, $campaignCost->getCpmFactor());
                 $this->assertEquals(1, $campaignCost->getViews());
-                $this->assertEquals((int)($config->getServerCpm() / 1000), $campaignCost->getViewsCost());
+                $this->assertEquals((int)($config->getAutoCpmDefault() / 1000), $campaignCost->getViewsCost());
                 $this->assertEquals(0, $campaignCost->getClicks());
                 $this->assertEquals(0, $campaignCost->getClicksCost());
                 $this->assertEquals(0, $campaignCost->getConversions());
@@ -962,10 +962,10 @@ final class PaymentCalculatorTest extends TestCase
                     $reportId - 3600,
                     new Id(self::CAMPAIGN_ID),
                     null,
-                    $config->getServerCpm(),
+                    $config->getAutoCpmDefault(),
                     1.0,
                     1000,
-                    $config->getServerCpm(),
+                    $config->getAutoCpmDefault(),
                     0,
                     0,
                     0,
@@ -984,7 +984,7 @@ final class PaymentCalculatorTest extends TestCase
                 $this->assertEquals($reportId, $campaignCost->getReportId());
                 $this->assertEquals(self::CAMPAIGN_ID, $campaignCost->getCampaignId()->toString());
                 $this->assertNotNull($campaignCost->getScore());
-                $this->assertGreaterThan($config->getServerCpm(), $campaignCost->getMaxCpm());
+                $this->assertGreaterThan($config->getAutoCpmDefault(), $campaignCost->getMaxCpm());
                 $this->assertGreaterThan(1.0, $campaignCost->getCpmFactor());
                 $this->assertEquals(500, $campaignCost->getViews());
                 $this->assertEquals(self::CAMPAIGN_BUDGET, $campaignCost->getViewsCost());
@@ -1023,9 +1023,9 @@ final class PaymentCalculatorTest extends TestCase
 
         $repository = $this->createMock(CampaignCostRepository::class);
         $previousViews = 5100;
-        $previousScore = $previousViews ** 2 / (4900 * $config->getServerCpm() / 1000);
-        $previousMaxCpm = (int)(1.1 * $config->getServerCpm());
-        $previousViewsCost = (int)($previousViews * 1.1 * $config->getServerCpm() / 1000);
+        $previousScore = $previousViews ** 2 / (4900 * $config->getAutoCpmDefault() / 1000);
+        $previousMaxCpm = (int)(1.1 * $config->getAutoCpmDefault());
+        $previousViewsCost = (int)($previousViews * 1.1 * $config->getAutoCpmDefault() / 1000);
 
         $views = $previousViews;
 
@@ -1126,7 +1126,7 @@ final class PaymentCalculatorTest extends TestCase
 
             $cpm = $campaignCost != null
                 ? (int)(1000 * $campaignCost->getViewsCost() / $campaignCost->getViews())
-                : $config->getServerCpm();
+                : $config->getAutoCpmDefault();
 
             if ($loop > 0) {
                 echo sprintf(
