@@ -23,12 +23,12 @@ class CampaignCostMapper
             'score' => $campaignCost->getScore(),
             'max_cpm' => $campaignCost->getMaxCpm(),
             'cpm_factor' => $campaignCost->getCpmFactor(),
-            'view' => $campaignCost->getViews(),
-            'view_cost' => $campaignCost->getViewsCost(),
-            'click' => $campaignCost->getClicks(),
-            'click_cost' => $campaignCost->getClicksCost(),
-            'conversion' => $campaignCost->getConversions(),
-            'conversion_cost' => $campaignCost->getConversionsCost(),
+            'views' => $campaignCost->getViews(),
+            'views_cost' => $campaignCost->getViewsCost(),
+            'clicks' => $campaignCost->getClicks(),
+            'clicks_cost' => $campaignCost->getClicksCost(),
+            'conversions' => $campaignCost->getConversions(),
+            'conversions_cost' => $campaignCost->getConversionsCost(),
         ];
     }
 
@@ -41,12 +41,12 @@ class CampaignCostMapper
             'score' => Types::FLOAT,
             'max_cpm' => Types::INTEGER,
             'cpm_factor' => Types::FLOAT,
-            'view' => Types::INTEGER,
-            'view_cost' => Types::INTEGER,
-            'click' => Types::INTEGER,
-            'click_cost' => Types::INTEGER,
-            'conversion' => Types::INTEGER,
-            'conversion_cost' => Types::INTEGER,
+            'views' => Types::INTEGER,
+            'views_cost' => Types::INTEGER,
+            'clicks' => Types::INTEGER,
+            'clicks_cost' => Types::INTEGER,
+            'conversions' => Types::INTEGER,
+            'conversions_cost' => Types::INTEGER,
         ];
     }
 
@@ -58,12 +58,12 @@ class CampaignCostMapper
             isset($row['score']) ? (float)$row['score'] : null,
             (int)$row['max_cpm'],
             (float)$row['cpm_factor'],
-            (int)$row['view'],
-            (int)$row['view_cost'],
-            (int)$row['click'],
-            (int)$row['click_cost'],
-            (int)$row['conversion'],
-            (int)$row['conversion_cost'],
+            (int)$row['views'],
+            (int)$row['views_cost'],
+            (int)$row['clicks'],
+            (int)$row['clicks_cost'],
+            (int)$row['conversions'],
+            (int)$row['conversions_cost'],
         );
     }
 }

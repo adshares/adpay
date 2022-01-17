@@ -123,17 +123,10 @@ class PaymentCalculator
                     $value
                 );
             }
-            $this->campaignCosts[$campaignId] = array_merge(
-                $this->campaignCosts[$campaignId],
-                [
-                    EventType::VIEW => $uniqueViewCount,
-                    EventType::CLICK => count($item[EventType::CLICK]),
-                    EventType::CONVERSION => count($item[EventType::CONVERSION]),
-                    EventType::VIEW . '_cost' => $costs[EventType::VIEW],
-                    EventType::CLICK . '_cost' => $costs[EventType::CLICK],
-                    EventType::CONVERSION . '_cost' => $costs[EventType::CONVERSION],
-                ]
-            );
+            foreach ([EventType::VIEW, EventType::CLICK, EventType::CONVERSION] as $eventType) {
+                $this->campaignCosts[$campaignId][$eventType . 's'] = count($item[$eventType]);
+                $this->campaignCosts[$campaignId][$eventType . 's_cost'] = $costs[$eventType];
+            }
         }
 
         $this->storeCampaignCosts();

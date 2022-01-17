@@ -104,6 +104,7 @@ SQL,
             $this->db->commit();
             return $r;
         } catch (DBALException $exception) {
+            $this->db->rollBack();
             throw new DomainRepositoryException($exception->getMessage());
         }
     }
