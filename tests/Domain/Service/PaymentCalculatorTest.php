@@ -918,12 +918,12 @@ final class PaymentCalculatorTest extends TestCase
         $repository
             ->expects($this->once())
             ->method('saveAll')
-            ->willReturnCallback(function (...$parameter) use ($reportId, $config) {
-                $this->assertTrue($parameter && $parameter[0] instanceof CampaignCostCollection);
-                $this->assertTrue(count($parameter[0]) > 0);
+            ->willReturnCallback(function ($campaignCostCollection) use ($reportId, $config) {
+                $this->assertTrue($campaignCostCollection instanceof CampaignCostCollection);
+                $this->assertCount(1, $campaignCostCollection);
 
                 /** @var CampaignCost $campaignCost */
-                $campaignCost = $parameter[0]->first();
+                $campaignCost = $campaignCostCollection->first();
                 $this->assertEquals($reportId, $campaignCost->getReportId());
                 $this->assertEquals(self::CAMPAIGN_ID, $campaignCost->getCampaignId()->toString());
                 $this->assertNull($campaignCost->getScore());
@@ -936,7 +936,7 @@ final class PaymentCalculatorTest extends TestCase
                 $this->assertEquals(0, $campaignCost->getConversions());
                 $this->assertEquals(0, $campaignCost->getConversionsCost());
 
-                return count($parameter[0]);
+                return 1;
             });
 
         $payments = (new PaymentCalculator($campaigns, $bidStrategies, $repository, $config))
@@ -975,12 +975,12 @@ final class PaymentCalculatorTest extends TestCase
         $repository
             ->expects($this->once())
             ->method('saveAll')
-            ->willReturnCallback(function (...$parameter) use ($reportId, $config) {
-                $this->assertTrue($parameter && $parameter[0] instanceof CampaignCostCollection);
-                $this->assertTrue(count($parameter[0]) > 0);
+            ->willReturnCallback(function ($campaignCostCollection) use ($reportId, $config) {
+                $this->assertTrue($campaignCostCollection instanceof CampaignCostCollection);
+                $this->assertCount(1, $campaignCostCollection);
 
                 /** @var CampaignCost $campaignCost */
-                $campaignCost = $parameter[0]->first();
+                $campaignCost = $campaignCostCollection->first();
                 $this->assertEquals($reportId, $campaignCost->getReportId());
                 $this->assertEquals(self::CAMPAIGN_ID, $campaignCost->getCampaignId()->toString());
                 $this->assertNotNull($campaignCost->getScore());
@@ -993,7 +993,71 @@ final class PaymentCalculatorTest extends TestCase
                 $this->assertEquals(0, $campaignCost->getConversions());
                 $this->assertEquals(0, $campaignCost->getConversionsCost());
 
-                return count($parameter[0]);
+                return 1;
+            });
+
+        $payments = (new PaymentCalculator($campaigns, $bidStrategies, $repository, $config))
+            ->calculate($reportId, self::uniqueViewEvents(500));
+        $count = 0;
+        $cost = 0;
+        foreach ($payments as $payment) {
+            ++$count;
+            $cost += $payment['value'];
+        }
+        $this->assertEquals(500, $count);
+        $this->assertEquals(self::CAMPAIGN_BUDGET, $cost);
+    }
+
+    public function testAutoCpmNoViews(): void
+    {
+        $reportId = 7200;
+        $config = new PaymentCalculatorConfig();
+        $campaigns = new CampaignCollection(
+            self::campaign(['max_cpm' => null, 'max_cpc' => null], [self::banner()], [self::conversion()])
+        );
+        $bidStrategies = new BidStrategyCollection();
+        $repository = $this->createMock(CampaignCostRepository::class);
+        $repository
+            ->expects($this->once())
+            ->method('fetch')
+            ->with($reportId, new Id(self::CAMPAIGN_ID))
+            ->willReturn(
+                new CampaignCost(
+                    $reportId - 3600,
+                    new Id(self::CAMPAIGN_ID),
+                    0,
+                    $config->getAutoCpmDefault(),
+                    1.0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                )
+            );
+        $repository
+            ->expects($this->once())
+            ->method('saveAll')
+            ->willReturnCallback(function ($campaignCostCollection) use ($reportId, $config) {
+                $this->assertTrue($campaignCostCollection instanceof CampaignCostCollection);
+                $this->assertCount(1, $campaignCostCollection);
+
+                /** @var CampaignCost $campaignCost */
+                $campaignCost = $campaignCostCollection->first();
+                $this->assertEquals($reportId, $campaignCost->getReportId());
+                $this->assertEquals(self::CAMPAIGN_ID, $campaignCost->getCampaignId()->toString());
+                $this->assertEquals(0.0, $campaignCost->getScore());
+                $this->assertGreaterThan($config->getAutoCpmDefault(), $campaignCost->getMaxCpm());
+                $this->assertGreaterThan(1.0, $campaignCost->getCpmFactor());
+                $this->assertEquals(500, $campaignCost->getViews());
+                $this->assertEquals(self::CAMPAIGN_BUDGET, $campaignCost->getViewsCost());
+                $this->assertEquals(0, $campaignCost->getClicks());
+                $this->assertEquals(0, $campaignCost->getClicksCost());
+                $this->assertEquals(0, $campaignCost->getConversions());
+                $this->assertEquals(0, $campaignCost->getConversionsCost());
+
+                return 1;
             });
 
         $payments = (new PaymentCalculator($campaigns, $bidStrategies, $repository, $config))
@@ -1050,12 +1114,12 @@ final class PaymentCalculatorTest extends TestCase
         $repository
             ->expects($this->once())
             ->method('saveAll')
-            ->willReturnCallback(function (...$parameter) use ($reportId, $config, $previousCampaignCost) {
-                $this->assertTrue($parameter && $parameter[0] instanceof CampaignCostCollection);
-                $this->assertTrue(count($parameter[0]) > 0);
+            ->willReturnCallback(function ($campaignCostCollection) use ($reportId, $config, $previousCampaignCost) {
+                $this->assertTrue($campaignCostCollection instanceof CampaignCostCollection);
+                $this->assertCount(1, $campaignCostCollection);
 
                 /** @var CampaignCost $campaignCost */
-                $campaignCost = $parameter[0]->first();
+                $campaignCost = $campaignCostCollection->first();
                 $this->assertEquals($reportId, $campaignCost->getReportId());
                 $this->assertEquals(self::CAMPAIGN_ID, $campaignCost->getCampaignId()->toString());
                 $this->assertLessThan($previousCampaignCost->getScore(), $campaignCost->getScore());
@@ -1068,7 +1132,7 @@ final class PaymentCalculatorTest extends TestCase
                 $this->assertEquals(0, $campaignCost->getConversions());
                 $this->assertEquals(0, $campaignCost->getConversionsCost());
 
-                return count($parameter[0]);
+                return 1;
             });
 
         $payments = (new PaymentCalculator($campaigns, $bidStrategies, $repository, $config))

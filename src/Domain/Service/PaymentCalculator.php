@@ -396,12 +396,10 @@ class PaymentCalculator
                 $previousScore = $campaignCost->getScore();
                 $this->campaignCosts[$campaignId]['score'] = $score;
 
-                if ($previousScore === null) {
-                    $cpmFactor = $uniqueViews > $campaignCost->getViews()
-                        ? self::CPM_DECREASING_FACTOR
-                        : self::CPM_INCREASING_FACTOR;
-                } elseif (
-                    $campaign->getBudgetValue() * $this->config->getAutoCpmBudgetThreshold() > $campaignCost->getViewsCost()
+                if (
+                    $previousScore === null
+                    || $campaign->getBudgetValue() * $this->config->getAutoCpmBudgetThreshold()
+                    > $campaignCost->getViewsCost()
                 ) {
                     $cpmFactor = self::CPM_INCREASING_FACTOR;
                 } else {
@@ -414,7 +412,12 @@ class PaymentCalculator
                             $wasCpmDecreasedEarlier ? self::CPM_INCREASING_FACTOR : self::CPM_DECREASING_FACTOR;
                     }
                 }
-                $maxCpm = (int)((1000 * $campaignCost->getViewsCost() / $campaignCost->getViews()) * $cpmFactor);
+
+                if ($campaignCost->getViewsCost() > 0 && $campaignCost->getViews() > 0) {
+                    $maxCpm = (int)((1000 * $campaignCost->getViewsCost() / $campaignCost->getViews()) * $cpmFactor);
+                } else {
+                    $maxCpm = (int)($campaignCost->getMaxCpm() * $cpmFactor);
+                }
             } else {
                 $maxCpm = $this->config->getAutoCpmDefault();
             }
