@@ -145,5 +145,4 @@ final class CampaignCost
     {
         $this->conversionsCost = $conversionsCost;
     }
-
 }
