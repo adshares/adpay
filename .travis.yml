@@ -1,26 +1,23 @@
+dist: bionic
 language: php
 sudo: false
 services: mysql
+php:
+  - 7.4
+cache:
+  directories:
+    - $HOME/.composer/cache/files
 
 env:
   global:
     - MIN_PHP=7.4
     - DATABASE_URL=mysql://travis@127.0.0.1:3306/adpay_test
 
-matrix:
-  include:
-    - php: "7.4"
-  fast_finish: true
-
-cache:
-  directories:
-    - $HOME/.composer/cache/files
-
 before_install:
   - composer self-update
 
 install:
-  - composer install
+  - composer install --no-interaction
   - php bin/console doctrine:database:create --env=test
   - php bin/console doctrine:migrations:migrate -n --env=test
 

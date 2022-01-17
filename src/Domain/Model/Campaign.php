@@ -111,13 +111,6 @@ final class Campaign
         return $this->budget->getMaxCpm();
     }
 
-    public function getViewCost(): int
-    {
-        $cpm = $this->budget->getMaxCpm();
-
-        return $cpm !== null ? (int)($cpm / 1000) : 0;
-    }
-
     public function getMaxCpc(): ?int
     {
         return $this->budget->getMaxCpc();

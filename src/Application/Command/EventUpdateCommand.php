@@ -15,16 +15,14 @@ use Symfony\Component\Console\Command\LockableTrait;
 final class EventUpdateCommand
 {
     use LockableTrait;
+
     private const HOUR = 3600;
 
-    /** @var EventRepository */
-    private $eventRepository;
+    private EventRepository $eventRepository;
 
-    /** @var PaymentReportRepository */
-    private $paymentReportRepository;
+    private PaymentReportRepository $paymentReportRepository;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         EventRepository $eventRepository,
