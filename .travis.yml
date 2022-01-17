@@ -2,8 +2,6 @@ dist: bionic
 language: php
 sudo: false
 services: mysql
-git:
-  depth: false
 php:
   - 7.4
 cache:
