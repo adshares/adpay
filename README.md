@@ -19,7 +19,7 @@ It accepts requests from [AdServer](https://github.com/adshares/adserver) intern
 [![Quality Status](https://sonarcloud.io/api/project_badges/measure?project=adshares-adpay&metric=alert_status)](https://sonarcloud.io/dashboard?id=adshares-adpay)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=adshares-adpay&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=adshares-adpay)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=adshares-adpay&metric=security_rating)](https://sonarcloud.io/dashboard?id=adshares-adpay)
-[![Build Status](https://travis-ci.org/adshares/adpay.svg?branch=master)](https://travis-ci.org/adshares/adpay)
+[![Build Status](https://app.travis-ci.com/adshares/adpay.svg?branch=master)](https://app.travis-ci.com/github/adshares/adpay)
 
 
 ## Quick Start
