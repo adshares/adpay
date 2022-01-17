@@ -102,7 +102,7 @@
         "qa-check": [
             "php bin/console lint:yaml config",
             "parallel-lint --no-colors --blame --exclude vendor --exclude bin  .",
-            "phpcs -s config src tests",
+            "phpcs -s",
             "deptrac --no-ansi"
         ],
         "test": "phpunit --testsuite Domain,Lib,Application,Infrastructure",
