@@ -9,13 +9,13 @@ use Adshares\AdPay\Domain\Model\BidStrategy;
 use Adshares\AdPay\Domain\Model\BidStrategyCollection;
 use Adshares\AdPay\Domain\Model\Campaign;
 use Adshares\AdPay\Domain\Model\CampaignCollection;
+use Adshares\AdPay\Domain\Model\CampaignCost;
 use Adshares\AdPay\Domain\Model\Conversion;
 use Adshares\AdPay\Domain\Model\CampaignCostCollection;
 use Adshares\AdPay\Domain\Repository\CampaignCostRepository;
 use Adshares\AdPay\Domain\ValueObject\EventType;
 use Adshares\AdPay\Domain\ValueObject\PaymentCalculatorConfig;
 use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
-use Adshares\AdPay\Infrastructure\Mapper\CampaignCostMapper;
 use Adshares\AdPay\Lib\DateTimeHelper;
 
 class PaymentCalculator
@@ -123,10 +123,13 @@ class PaymentCalculator
                     $value
                 );
             }
-            foreach ([EventType::VIEW, EventType::CLICK, EventType::CONVERSION] as $eventType) {
-                $this->campaignCosts[$campaignId][$eventType . 's'] = count($item[$eventType]);
-                $this->campaignCosts[$campaignId][$eventType . 's_cost'] = $costs[$eventType];
-            }
+
+            $this->campaignCosts[$campaignId]->setViews(count($item[EventType::VIEW]));
+            $this->campaignCosts[$campaignId]->setClicks(count($item[EventType::CLICK]));
+            $this->campaignCosts[$campaignId]->setConversions(count($item[EventType::CONVERSION]));
+            $this->campaignCosts[$campaignId]->setViewsCost($costs[EventType::VIEW]);
+            $this->campaignCosts[$campaignId]->setClicksCost($costs[EventType::CLICK]);
+            $this->campaignCosts[$campaignId]->setConversionsCost($costs[EventType::CONVERSION]);
         }
 
         $this->storeCampaignCosts();
@@ -378,6 +381,7 @@ class PaymentCalculator
     {
         /** @var Campaign $campaign */
         $campaign = $this->campaigns[$campaignId];
+        $this->campaignCosts[$campaignId] = new CampaignCost($this->reportId, $campaign->getId());
         $maxCpm = $campaign->getMaxCpm();
         $cpmFactor = 1.0;
         if ($maxCpm === null) {
@@ -387,7 +391,7 @@ class PaymentCalculator
                 $uniqueViews = count($item[EventType::VIEW]);
                 $score = $campaignCost->getViewsCost() !== 0 ? $uniqueViews ** 2 / $campaignCost->getViewsCost() : 0;
                 $previousScore = $campaignCost->getScore();
-                $this->campaignCosts[$campaignId]['score'] = $score;
+                $this->campaignCosts[$campaignId]->setScore($score);
 
                 if (
                     $previousScore === null
@@ -415,10 +419,8 @@ class PaymentCalculator
                 $maxCpm = $this->config->getAutoCpmDefault();
             }
         }
-        $this->campaignCosts[$campaignId]['report_id'] = $this->reportId;
-        $this->campaignCosts[$campaignId]['campaign_id'] = $campaign->getId();
-        $this->campaignCosts[$campaignId]['max_cpm'] = $maxCpm;
-        $this->campaignCosts[$campaignId]['cpm_factor'] = $cpmFactor;
+        $this->campaignCosts[$campaignId]->setMaxCpm($maxCpm);
+        $this->campaignCosts[$campaignId]->setCpmFactor($cpmFactor);
         $this->viewCostByCampaignId[$campaignId] = (int)($maxCpm / 1000);
     }
 
@@ -430,8 +432,7 @@ class PaymentCalculator
 
         $collection = new CampaignCostCollection();
         foreach ($this->campaignCosts as $campaignCost) {
-            $campaignCost['campaign_id'] = ($campaignCost['campaign_id'])->toBin();
-            $collection->add(CampaignCostMapper::fill($campaignCost));
+            $collection->add($campaignCost);
         }
 
         $this->campaignCostRepository->saveAll($collection);

@@ -23,15 +23,15 @@ final class CampaignCost
     public function __construct(
         int $reportId,
         Id $campaignId,
-        ?float $score,
-        int $maxCpm,
-        float $cpmFactor,
-        int $views,
-        int $viewsCost,
-        int $clicks,
-        int $clicksCost,
-        int $conversions,
-        int $conversionsCost
+        ?float $score = null,
+        int $maxCpm = 0,
+        float $cpmFactor = 1.0,
+        int $views = 0,
+        int $viewsCost = 0,
+        int $clicks = 0,
+        int $clicksCost = 0,
+        int $conversions = 0,
+        int $conversionsCost = 0
     ) {
         $this->reportId = $reportId;
         $this->campaignId = $campaignId;
@@ -61,9 +61,19 @@ final class CampaignCost
         return $this->score;
     }
 
+    public function setScore(?float $score): void
+    {
+        $this->score = $score;
+    }
+
     public function getMaxCpm(): int
     {
         return $this->maxCpm;
+    }
+
+    public function setMaxCpm(int $maxCpm): void
+    {
+        $this->maxCpm = $maxCpm;
     }
 
     public function getCpmFactor(): float
@@ -71,9 +81,19 @@ final class CampaignCost
         return $this->cpmFactor;
     }
 
+    public function setCpmFactor(float $cpmFactor): void
+    {
+        $this->cpmFactor = $cpmFactor;
+    }
+
     public function getViews(): int
     {
         return $this->views;
+    }
+
+    public function setViews(int $views): void
+    {
+        $this->views = $views;
     }
 
     public function getViewsCost(): int
@@ -81,9 +101,19 @@ final class CampaignCost
         return $this->viewsCost;
     }
 
+    public function setViewsCost(int $viewsCost): void
+    {
+        $this->viewsCost = $viewsCost;
+    }
+
     public function getClicks(): int
     {
         return $this->clicks;
+    }
+
+    public function setClicks(int $clicks): void
+    {
+        $this->clicks = $clicks;
     }
 
     public function getClicksCost(): int
@@ -91,13 +121,29 @@ final class CampaignCost
         return $this->clicksCost;
     }
 
+    public function setClicksCost(int $clicksCost): void
+    {
+        $this->clicksCost = $clicksCost;
+    }
+
     public function getConversions(): int
     {
         return $this->conversions;
+    }
+
+    public function setConversions(int $conversions): void
+    {
+        $this->conversions = $conversions;
     }
 
     public function getConversionsCost(): int
     {
         return $this->conversionsCost;
     }
+
+    public function setConversionsCost(int $conversionsCost): void
+    {
+        $this->conversionsCost = $conversionsCost;
+    }
+
 }
