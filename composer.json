@@ -108,7 +108,10 @@
         "test": "phpunit",
         "test-coverage": "XDEBUG_MODE=coverage phpunit --coverage-text",
         "test-ci": "@test-coverage --coverage-clover ./var/phpunit/coverage.xml --log-junit ./var/phpunit/logfile.xml",
-        "dev": "/bin/bash -c '(source .env && if [ -f \".env.local\" ]; then source .env.local; fi && php -S ${APP_HOST}:${APP_PORT} -t public dev-router.php)'"
+        "dev": [
+            "Composer\\Config::disableProcessTimeout",
+            "/bin/bash -c '(source .env && if [ -f \".env.local\" ]; then source .env.local; fi && php -S ${APP_HOST}:${APP_PORT} -t public dev-router.php)'"
+        ]
     },
     "conflict": {
         "symfony/symfony": "*"
