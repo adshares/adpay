@@ -10,14 +10,18 @@ use Adshares\AdPay\Domain\Model\BidStrategy;
 use Adshares\AdPay\Domain\Model\BidStrategyCollection;
 use Adshares\AdPay\Domain\Model\Campaign;
 use Adshares\AdPay\Domain\Model\CampaignCollection;
+use Adshares\AdPay\Domain\Model\CampaignCost;
+use Adshares\AdPay\Domain\Model\CampaignCostCollection;
 use Adshares\AdPay\Domain\Model\Conversion;
 use Adshares\AdPay\Domain\Model\ConversionCollection;
+use Adshares\AdPay\Domain\Repository\CampaignCostRepository;
 use Adshares\AdPay\Domain\Service\PaymentCalculator;
 use Adshares\AdPay\Domain\ValueObject\BannerType;
 use Adshares\AdPay\Domain\ValueObject\Budget;
 use Adshares\AdPay\Domain\ValueObject\EventType;
 use Adshares\AdPay\Domain\ValueObject\Id;
 use Adshares\AdPay\Domain\ValueObject\LimitType;
+use Adshares\AdPay\Domain\ValueObject\PaymentCalculatorConfig;
 use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
 use Adshares\AdPay\Lib\DateTimeHelper;
 use DateTimeInterface;
@@ -39,7 +43,7 @@ final class PaymentCalculatorTest extends TestCase
 
     private const BANNER_ID = '70000000000000000000000000000001';
 
-    private const BANNER_SZIE = '100x200';
+    private const BANNER_SIZE = '100x200';
 
     private const USER_ID = 'a0000000000000000000000000000001';
 
@@ -53,10 +57,15 @@ final class PaymentCalculatorTest extends TestCase
 
     public function testPaymentList(): void
     {
+        $reportId = 0;
         $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
         $bidStrategies = new BidStrategyCollection();
-        $payments =
-            (new PaymentCalculator($campaigns, $bidStrategies))->calculate([self::viewEvent(), self::clickEvent()]);
+        $payments = (new PaymentCalculator(
+            $campaigns,
+            $bidStrategies,
+            $this->getMockedCampaignCostRepository(),
+            new PaymentCalculatorConfig()
+        ))->calculate($reportId, [self::viewEvent(), self::clickEvent()]);
 
         $list = [];
         array_push($list, ...$payments);
@@ -340,6 +349,38 @@ final class PaymentCalculatorTest extends TestCase
                         ]
                     ),
                 ]
+            )
+        );
+    }
+
+    public function testViewEventsOfOneUserDifferentPageRanks(): void
+    {
+        $campaigns = new CampaignCollection(
+            self::campaign(
+                [],
+                [self::banner()],
+            ),
+        );
+
+        $this->assertEquals(
+            [
+                '10000000000000000000000000000001' => 50,
+                '10000000000000000000000000000011' => 33,
+                '10000000000000000000000000000021' => 16,
+            ],
+            $this->values(
+                $campaigns,
+                [
+                    self::viewEvent(['page_rank' => 0.3]),
+                    self::viewEvent([
+                        'id' => '10000000000000000000000000000011',
+                        'page_rank' => 0.2,
+                    ]),
+                    self::viewEvent([
+                        'id' => '10000000000000000000000000000021',
+                        'page_rank' => 0.1,
+                    ]),
+                ],
             )
         );
     }
@@ -753,8 +794,7 @@ final class PaymentCalculatorTest extends TestCase
                 $campaigns,
                 $bidStrategies1,
                 $events
-            )
-            ,
+            ),
             $this->valuesWithCustomBidStrategy(
                 $campaigns,
                 $bidStrategies2,
@@ -798,15 +838,13 @@ final class PaymentCalculatorTest extends TestCase
                 $campaigns,
                 $bidStrategies2,
                 $events
-            )
-            ,
+            ),
             $this->valuesWithCustomBidStrategy(
                 $campaigns,
                 $bidStrategies1,
                 $events
             )
         );
-
     }
 
     public function testBidStrategiesWithNormalization(): void
@@ -821,12 +859,12 @@ final class PaymentCalculatorTest extends TestCase
             new BidStrategy(new Id(self::BID_STRATEGY_ID), 'r1:r1_v2', 2)
         );
 
-        $cpmScale = self::CAMPAIGN_CPV / ((100+40) / 2);
+        $cpmScale = self::CAMPAIGN_CPV / ((100 + 40) / 2);
 
         $this->assertEquals(
             [
                 '10000000000000000000000000000001' => floor(self::CAMPAIGN_CPV * $cpmScale * 1),
-                '10000000000000000000000000000002' => floor(self::CAMPAIGN_CPV * $cpmScale * 0.6 / 2 ),
+                '10000000000000000000000000000002' => floor(self::CAMPAIGN_CPV * $cpmScale * 0.6 / 2),
                 '10000000000000000000000000000003' => floor(self::CAMPAIGN_CPV * $cpmScale * 0.2 / 2),
             ],
             $this->valuesWithCustomBidStrategy(
@@ -863,6 +901,316 @@ final class PaymentCalculatorTest extends TestCase
         );
     }
 
+    public function testAutoCpmEmptyHistory(): void
+    {
+        $reportId = 0;
+        $config = new PaymentCalculatorConfig();
+        $campaigns = new CampaignCollection(
+            self::campaign(['max_cpm' => null, 'max_cpc' => null], [self::banner()], [self::conversion()])
+        );
+        $bidStrategies = new BidStrategyCollection();
+        $repository = $this->createMock(CampaignCostRepository::class);
+        $repository
+            ->expects($this->once())
+            ->method('fetch')
+            ->with($reportId, new Id(self::CAMPAIGN_ID))
+            ->willReturn(null);
+        $repository
+            ->expects($this->once())
+            ->method('saveAll')
+            ->willReturnCallback(function ($campaignCostCollection) use ($reportId, $config) {
+                $this->assertTrue($campaignCostCollection instanceof CampaignCostCollection);
+                $this->assertCount(1, $campaignCostCollection);
+
+                /** @var CampaignCost $campaignCost */
+                $campaignCost = $campaignCostCollection->first();
+                $this->assertEquals($reportId, $campaignCost->getReportId());
+                $this->assertEquals(self::CAMPAIGN_ID, $campaignCost->getCampaignId()->toString());
+                $this->assertNull($campaignCost->getScore());
+                $this->assertEquals($config->getAutoCpmDefault(), $campaignCost->getMaxCpm());
+                $this->assertEquals(1.0, $campaignCost->getCpmFactor());
+                $this->assertEquals(1, $campaignCost->getViews());
+                $this->assertEquals((int)($config->getAutoCpmDefault() / 1000), $campaignCost->getViewsCost());
+                $this->assertEquals(0, $campaignCost->getClicks());
+                $this->assertEquals(0, $campaignCost->getClicksCost());
+                $this->assertEquals(0, $campaignCost->getConversions());
+                $this->assertEquals(0, $campaignCost->getConversionsCost());
+
+                return 1;
+            });
+
+        $payments = (new PaymentCalculator($campaigns, $bidStrategies, $repository, $config))
+            ->calculate($reportId, [self::viewEvent()]);
+        $this->assertCount(1, $payments);
+    }
+
+    public function testAutoCpmNoScore(): void
+    {
+        $reportId = 7200;
+        $config = new PaymentCalculatorConfig();
+        $campaigns = new CampaignCollection(
+            self::campaign(['max_cpm' => null, 'max_cpc' => null], [self::banner()], [self::conversion()])
+        );
+        $bidStrategies = new BidStrategyCollection();
+        $repository = $this->createMock(CampaignCostRepository::class);
+        $repository
+            ->expects($this->once())
+            ->method('fetch')
+            ->with($reportId, new Id(self::CAMPAIGN_ID))
+            ->willReturn(
+                new CampaignCost(
+                    $reportId - 3600,
+                    new Id(self::CAMPAIGN_ID),
+                    null,
+                    $config->getAutoCpmDefault(),
+                    1.0,
+                    1000,
+                    $config->getAutoCpmDefault(),
+                    0,
+                    0,
+                    0,
+                    0
+                )
+            );
+        $repository
+            ->expects($this->once())
+            ->method('saveAll')
+            ->willReturnCallback(function ($campaignCostCollection) use ($reportId, $config) {
+                $this->assertTrue($campaignCostCollection instanceof CampaignCostCollection);
+                $this->assertCount(1, $campaignCostCollection);
+
+                /** @var CampaignCost $campaignCost */
+                $campaignCost = $campaignCostCollection->first();
+                $this->assertEquals($reportId, $campaignCost->getReportId());
+                $this->assertEquals(self::CAMPAIGN_ID, $campaignCost->getCampaignId()->toString());
+                $this->assertNotNull($campaignCost->getScore());
+                $this->assertGreaterThan($config->getAutoCpmDefault(), $campaignCost->getMaxCpm());
+                $this->assertGreaterThan(1.0, $campaignCost->getCpmFactor());
+                $this->assertEquals(500, $campaignCost->getViews());
+                $this->assertEquals(self::CAMPAIGN_BUDGET, $campaignCost->getViewsCost());
+                $this->assertEquals(0, $campaignCost->getClicks());
+                $this->assertEquals(0, $campaignCost->getClicksCost());
+                $this->assertEquals(0, $campaignCost->getConversions());
+                $this->assertEquals(0, $campaignCost->getConversionsCost());
+
+                return 1;
+            });
+
+        $payments = (new PaymentCalculator($campaigns, $bidStrategies, $repository, $config))
+            ->calculate($reportId, self::uniqueViewEvents(500));
+        $count = 0;
+        $cost = 0;
+        foreach ($payments as $payment) {
+            ++$count;
+            $cost += $payment['value'];
+        }
+        $this->assertEquals(500, $count);
+        $this->assertEquals(self::CAMPAIGN_BUDGET, $cost);
+    }
+
+    public function testAutoCpmNoViews(): void
+    {
+        $reportId = 7200;
+        $config = new PaymentCalculatorConfig();
+        $campaigns = new CampaignCollection(
+            self::campaign(['max_cpm' => null, 'max_cpc' => null], [self::banner()], [self::conversion()])
+        );
+        $bidStrategies = new BidStrategyCollection();
+        $repository = $this->createMock(CampaignCostRepository::class);
+        $repository
+            ->expects($this->once())
+            ->method('fetch')
+            ->with($reportId, new Id(self::CAMPAIGN_ID))
+            ->willReturn(
+                new CampaignCost(
+                    $reportId - 3600,
+                    new Id(self::CAMPAIGN_ID),
+                    0,
+                    $config->getAutoCpmDefault(),
+                    1.0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                )
+            );
+        $repository
+            ->expects($this->once())
+            ->method('saveAll')
+            ->willReturnCallback(function ($campaignCostCollection) use ($reportId, $config) {
+                $this->assertTrue($campaignCostCollection instanceof CampaignCostCollection);
+                $this->assertCount(1, $campaignCostCollection);
+
+                /** @var CampaignCost $campaignCost */
+                $campaignCost = $campaignCostCollection->first();
+                $this->assertEquals($reportId, $campaignCost->getReportId());
+                $this->assertEquals(self::CAMPAIGN_ID, $campaignCost->getCampaignId()->toString());
+                $this->assertEquals(0.0, $campaignCost->getScore());
+                $this->assertGreaterThan($config->getAutoCpmDefault(), $campaignCost->getMaxCpm());
+                $this->assertGreaterThan(1.0, $campaignCost->getCpmFactor());
+                $this->assertEquals(500, $campaignCost->getViews());
+                $this->assertEquals(self::CAMPAIGN_BUDGET, $campaignCost->getViewsCost());
+                $this->assertEquals(0, $campaignCost->getClicks());
+                $this->assertEquals(0, $campaignCost->getClicksCost());
+                $this->assertEquals(0, $campaignCost->getConversions());
+                $this->assertEquals(0, $campaignCost->getConversionsCost());
+
+                return 1;
+            });
+
+        $payments = (new PaymentCalculator($campaigns, $bidStrategies, $repository, $config))
+            ->calculate($reportId, self::uniqueViewEvents(500));
+        $count = 0;
+        $cost = 0;
+        foreach ($payments as $payment) {
+            ++$count;
+            $cost += $payment['value'];
+        }
+        $this->assertEquals(500, $count);
+        $this->assertEquals(self::CAMPAIGN_BUDGET, $cost);
+    }
+
+    public function testAutoCpmNoViewIncreaseOnGreaterCpm(): void
+    {
+        $reportId = 7200;
+        $config = new PaymentCalculatorConfig();
+        $campaigns = new CampaignCollection(
+            self::campaign(
+                ['budget' => 190 * 10 ** 11, 'max_cpm' => null, 'max_cpc' => null],
+                [self::banner()],
+                [self::conversion()],
+            )
+        );
+        $bidStrategies = new BidStrategyCollection();
+
+        $repository = $this->createMock(CampaignCostRepository::class);
+        $previousViews = 5100;
+        $previousScore = $previousViews ** 2 / (4900 * $config->getAutoCpmDefault() / 1000);
+        $previousMaxCpm = (int)(1.1 * $config->getAutoCpmDefault());
+        $previousViewsCost = (int)($previousViews * 1.1 * $config->getAutoCpmDefault() / 1000);
+
+        $views = $previousViews;
+
+        $previousCampaignCost = new CampaignCost(
+            $reportId - 3600,
+            new Id(self::CAMPAIGN_ID),
+            $previousScore,
+            $previousMaxCpm,
+            1.1,
+            $previousViews,
+            $previousViewsCost,
+            0,
+            0,
+            0,
+            0
+        );
+        $repository
+            ->expects($this->once())
+            ->method('fetch')
+            ->with($reportId, new Id(self::CAMPAIGN_ID))
+            ->willReturn($previousCampaignCost);
+        $repository
+            ->expects($this->once())
+            ->method('saveAll')
+            ->willReturnCallback(function ($campaignCostCollection) use ($reportId, $config, $previousCampaignCost) {
+                $this->assertTrue($campaignCostCollection instanceof CampaignCostCollection);
+                $this->assertCount(1, $campaignCostCollection);
+
+                /** @var CampaignCost $campaignCost */
+                $campaignCost = $campaignCostCollection->first();
+                $this->assertEquals($reportId, $campaignCost->getReportId());
+                $this->assertEquals(self::CAMPAIGN_ID, $campaignCost->getCampaignId()->toString());
+                $this->assertLessThan($previousCampaignCost->getScore(), $campaignCost->getScore());
+                $this->assertLessThan($previousCampaignCost->getMaxCpm(), $campaignCost->getMaxCpm());
+                $this->assertLessThan(1.0, $campaignCost->getCpmFactor());
+                $this->assertEquals($previousCampaignCost->getViews(), $campaignCost->getViews());
+                $this->assertLessThan($previousCampaignCost->getViewsCost(), $campaignCost->getViewsCost());
+                $this->assertEquals(0, $campaignCost->getClicks());
+                $this->assertEquals(0, $campaignCost->getClicksCost());
+                $this->assertEquals(0, $campaignCost->getConversions());
+                $this->assertEquals(0, $campaignCost->getConversionsCost());
+
+                return 1;
+            });
+
+        $payments = (new PaymentCalculator($campaigns, $bidStrategies, $repository, $config))
+            ->calculate($reportId, self::uniqueViewEvents($views));
+        $this->assertCount($views, $payments);
+    }
+
+    /**
+     * This function can be used to check how auto cpm works in long term.
+     */
+    private function testAutoCpm(): void
+    {
+        function viewsByCpm($cpm): int
+        {
+            return (int)(10000 / (1 + M_E ** (8 - 0.01 * $cpm / 10 ** 9)));
+        }
+
+//        for ($i = 0; $i < 100; $i++) {
+//            $t[] = (5 + $i / 2) * 10 ** 11;
+//        }
+//        foreach ($t as $cpm) {
+//            $viewsByCpm = viewsByCpm($cpm);
+//            $cost = $viewsByCpm * $cpm / 1000;
+//        }
+
+        $config = new PaymentCalculatorConfig();
+        $campaigns = new CampaignCollection(
+            self::campaign(
+                ['budget' => 140 * 10 ** 11, 'max_cpm' => null, 'max_cpc' => null,],
+                [self::banner()],
+                [self::conversion()],
+            )
+        );
+        $bidStrategies = new BidStrategyCollection();
+        /** @var CampaignCost $campaignCost */
+        $campaignCost = null;
+        $previousCpm = 0;
+        $views = 0;
+        for ($loop = 0; $loop < 50; $loop++) {
+            $reportId = ($loop + 1) * 3600;
+
+            $repository = $this->createMock(CampaignCostRepository::class);
+            $repository
+                ->expects($this->once())
+                ->method('fetch')
+                ->willReturn($campaignCost);
+            $repository
+                ->expects($this->once())
+                ->method('saveAll')
+                ->willReturnCallback(function ($campaignCostCollection) use (&$campaignCost) {
+                    $this->assertCount(1, $campaignCostCollection);
+                    $campaignCost = $campaignCostCollection[0];
+                    return 1;
+                });
+
+            $cpm = $campaignCost != null
+                ? (int)(1000 * $campaignCost->getViewsCost() / $campaignCost->getViews())
+                : $config->getAutoCpmDefault();
+
+            if ($loop > 0) {
+                echo sprintf(
+                    "%3d\t%6.3f\t%+.3f\t%5d\t%7.3f\n",
+                    $loop,
+                    $cpm / 10 ** 11,
+                    ($cpm - $previousCpm) / 10 ** 11,
+                    $views,
+                    $campaignCost->getViewsCost() / 10 ** 11
+                );
+            }
+            $views = viewsByCpm($cpm);
+            $previousCpm = $cpm;
+
+            $payments = (new PaymentCalculator($campaigns, $bidStrategies, $repository, $config))
+                ->calculate($reportId, self::uniqueViewEvents($views));
+            $this->assertCount($views, $payments);
+        }
+    }
+
     private function statusForAll(
         int $status,
         array $eventData = [],
@@ -886,8 +1234,14 @@ final class PaymentCalculatorTest extends TestCase
 
     private function single(CampaignCollection $campaigns, array $event, array $config = []): array
     {
+        $reportId = 0;
         $bidStrategies = new BidStrategyCollection();
-        $payments = (new PaymentCalculator($campaigns, $bidStrategies, $config))->calculate([$event]);
+        $payments = (new PaymentCalculator(
+            $campaigns,
+            $bidStrategies,
+            $this->getMockedCampaignCostRepository(),
+            new PaymentCalculatorConfig($config)
+        ))->calculate($reportId, [$event]);
         $result = [];
 
         foreach ($payments as $payment) {
@@ -913,7 +1267,13 @@ final class PaymentCalculatorTest extends TestCase
         array $events,
         array $config = []
     ): array {
-        $payments = (new PaymentCalculator($campaigns, $bidStrategies, $config))->calculate($events);
+        $reportId = 0;
+        $payments = (new PaymentCalculator(
+            $campaigns,
+            $bidStrategies,
+            $this->getMockedCampaignCostRepository(),
+            new PaymentCalculatorConfig($config)
+        ))->calculate($reportId, $events);
         $result = [];
 
         foreach ($payments as $payment) {
@@ -971,7 +1331,7 @@ final class PaymentCalculatorTest extends TestCase
             [
                 'id' => self::BANNER_ID,
                 'campaign_id' => self::CAMPAIGN_ID,
-                'size' => self::BANNER_SZIE,
+                'size' => self::BANNER_SIZE,
                 'type' => BannerType::IMAGE,
                 'deleted_at' => null,
             ],
@@ -1019,6 +1379,19 @@ final class PaymentCalculatorTest extends TestCase
             ],
             $mergeData
         );
+    }
+
+    private static function uniqueViewEvents($count): array
+    {
+        $events = [];
+        for ($i = 0; $i < $count; $i++) {
+            $id = str_pad((string)$i, 31, '0', STR_PAD_LEFT);
+            $events[] = self::viewEvent([
+                'id' => '1' . $id,
+                'user_id' => 'a' . $id,
+            ]);
+        }
+        return $events;
     }
 
     private static function clickEvent(array $mergeData = []): array
@@ -1069,5 +1442,13 @@ final class PaymentCalculatorTest extends TestCase
             'keywords' => ['r1' => ['r1_v1'], 'e1' => ['e1_v3']],
             'context' => [],
         ];
+    }
+
+    private function getMockedCampaignCostRepository(): CampaignCostRepository
+    {
+        $repository = $this->createMock(CampaignCostRepository::class);
+        $repository->expects($this->never())->method('fetch');
+
+        return $repository;
     }
 }

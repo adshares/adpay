@@ -8,5 +8,4 @@ use RuntimeException;
 
 class FetchingException extends RuntimeException
 {
-
 }

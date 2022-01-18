@@ -6,16 +6,15 @@ namespace Adshares\AdPay\Tests\Application\Command;
 
 use Adshares\AdPay\Application\Command\ReportCalculateCommand;
 use Adshares\AdPay\Application\Exception\FetchingException;
-use Adshares\AdPay\Domain\Model\BidStrategyCollection;
-use Adshares\AdPay\Domain\Model\CampaignCollection;
 use Adshares\AdPay\Domain\Model\PaymentReport;
-use Adshares\AdPay\Domain\Repository\BidStrategyRepository;
-use Adshares\AdPay\Domain\Repository\CampaignRepository;
 use Adshares\AdPay\Domain\Repository\EventRepository;
 use Adshares\AdPay\Domain\Repository\PaymentReportRepository;
 use Adshares\AdPay\Domain\Repository\PaymentRepository;
+use Adshares\AdPay\Domain\Service\PaymentCalculator;
+use Adshares\AdPay\Domain\Service\PaymentCalculatorFactory;
 use Adshares\AdPay\Domain\ValueObject\EventType;
 use Adshares\AdPay\Domain\ValueObject\PaymentReportStatus;
+use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
@@ -60,27 +59,22 @@ class ReportCalculateCommandTest extends TestCase
         $paymentRepository->expects($this->never())->method('deleteByReportId');
         $paymentRepository->expects($this->never())->method('saveAllRaw');
 
-        $campaignRepository = $this->createMock(CampaignRepository::class);
-        $campaignRepository->expects($this->never())->method('fetchAll');
-
-        $bidStrategyRepository = $this->createMock(BidStrategyRepository::class);
-        $bidStrategyRepository->expects($this->never())->method('fetchAll');
-
         $eventRepository = $this->createMock(EventRepository::class);
         $eventRepository->expects($this->never())->method('fetchByTime');
 
+        $paymentCalculatorFactory = $this->createMock(PaymentCalculatorFactory::class);
+        $paymentCalculatorFactory->expects($this->never())->method('createPaymentCalculator');
+
         /** @var PaymentReportRepository $paymentReportRepository */
         /** @var PaymentRepository $paymentRepository */
-        /** @var CampaignRepository $campaignRepository */
-        /** @var BidStrategyRepository $bidStrategyRepository */
         /** @var EventRepository $eventRepository */
+        /** @var PaymentCalculatorFactory $paymentCalculatorFactory */
 
         $command = new ReportCalculateCommand(
             $paymentReportRepository,
             $paymentRepository,
-            $campaignRepository,
-            $bidStrategyRepository,
             $eventRepository,
+            $paymentCalculatorFactory,
             new NullLogger()
         );
 
@@ -97,34 +91,42 @@ class ReportCalculateCommandTest extends TestCase
         $paymentRepository->expects($this->once())->method('deleteByReportId')->with($report->getId());
         $paymentRepository->expects($this->exactly((int)floor(count($events) / 1000) + 1))->method('saveAllRaw');
 
-        $campaignRepository = $this->createMock(CampaignRepository::class);
-        $campaignRepository->expects($this->once())->method('fetchAll')->willReturn(new CampaignCollection());
-
-        $bidStrategyRepository = $this->createMock(BidStrategyRepository::class);
-        $bidStrategyRepository->expects($this->once())->method('fetchAll')->willReturn(new BidStrategyCollection());
-
         $eventRepository = $this->createMock(EventRepository::class);
         $eventRepository->expects($this->once())
             ->method('fetchByTime')
             ->with($report->getTimeStart(), $report->getTimeEnd())
             ->willReturn($events);
 
-        /** @var PaymentReportRepository $paymentReportRepository */
-        /** @var PaymentRepository $paymentRepository */
-        /** @var CampaignRepository $campaignRepository */
-        /** @var BidStrategyRepository $bidStrategyRepository */
-        /** @var EventRepository $eventRepository */
-
-        $command = new ReportCalculateCommand(
-            $paymentReportRepository,
-            $paymentRepository,
-            $campaignRepository,
-            $bidStrategyRepository,
-            $eventRepository,
-            new NullLogger()
+        $paymentCalculator = $this->createMock(PaymentCalculator::class);
+        $paymentCalculator->expects($this->once())->method('calculate')->willReturnCallback(
+            function ($reportId, $events) {
+                foreach ($events as $event) {
+                    yield [
+                        'event_type' => $event['type'],
+                        'event_id' => $event['id'],
+                        'status' => PaymentStatus::CAMPAIGN_NOT_FOUND,
+                        'value' => null,
+                    ];
+                }
+            }
+        );
+        $paymentCalculatorFactory = $this->createMock(PaymentCalculatorFactory::class);
+        $paymentCalculatorFactory->expects($this->once())->method('createPaymentCalculator')->willReturn(
+            $paymentCalculator
         );
 
-        return $command;
+        /** @var PaymentReportRepository $paymentReportRepository */
+        /** @var PaymentRepository $paymentRepository */
+        /** @var EventRepository $eventRepository */
+        /** @var PaymentCalculatorFactory $paymentCalculatorFactory */
+
+        return new ReportCalculateCommand(
+            $paymentReportRepository,
+            $paymentRepository,
+            $eventRepository,
+            $paymentCalculatorFactory,
+            new NullLogger()
+        );
     }
 
     private static function event(int $id): array
