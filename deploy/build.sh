@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
-# Usage: build.sh [<location-of-functions-file-to-include> [<work-dir>]]
-[[ -z ${1:-""} ]] && set -eu || source ${1}/_functions.sh --vendor
-cd ${2:-"."}
 
-echo "=== Building ${APP_VERSION} of ${SERVICE_NAME} ==="
+# Usage: build.sh [<work-dir>]
+cd ${1:-"."}
 
-composer install --no-dev --optimize-autoloader
-php bin/console doctrine:migrations:migrate --no-interaction
+composer install --no-dev --no-interaction
+if [ $? -ne 0 ]; then exit 1; fi
