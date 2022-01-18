@@ -105,9 +105,9 @@
             "phpcs -s",
             "deptrac --no-ansi"
         ],
-        "test": "phpunit --testsuite Domain,Lib,Application,Infrastructure",
-        "test-coverage": "@test --coverage-text",
-        "test-ci": "phpunit --configuration phpunit-ci.xml",
+        "test": "phpunit",
+        "test-coverage": "XDEBUG_MODE=coverage phpunit --coverage-text",
+        "test-ci": "@test-coverage --coverage-clover ./var/phpunit/coverage.xml --log-junit ./var/phpunit/logfile.xml",
         "dev": "/bin/bash -c '(source .env && if [ -f \".env.local\" ]; then source .env.local; fi && php -S ${APP_HOST}:${APP_PORT} -t public dev-router.php)'"
     },
     "conflict": {
