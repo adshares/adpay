@@ -1123,10 +1123,10 @@ final class PaymentCalculatorTest extends TestCase
                 $this->assertEquals($reportId, $campaignCost->getReportId());
                 $this->assertEquals(self::CAMPAIGN_ID, $campaignCost->getCampaignId()->toString());
                 $this->assertLessThan($previousCampaignCost->getScore(), $campaignCost->getScore());
-                $this->assertLessThan($previousCampaignCost->getMaxCpm(), $campaignCost->getMaxCpm());
-                $this->assertLessThan(1.0, $campaignCost->getCpmFactor());
+                $this->assertGreaterThan($previousCampaignCost->getMaxCpm(), $campaignCost->getMaxCpm());
+                $this->assertGreaterThan(1.0, $campaignCost->getCpmFactor());
                 $this->assertEquals($previousCampaignCost->getViews(), $campaignCost->getViews());
-                $this->assertLessThan($previousCampaignCost->getViewsCost(), $campaignCost->getViewsCost());
+                $this->assertGreaterThan($previousCampaignCost->getViewsCost(), $campaignCost->getViewsCost());
                 $this->assertEquals(0, $campaignCost->getClicks());
                 $this->assertEquals(0, $campaignCost->getClicksCost());
                 $this->assertEquals(0, $campaignCost->getConversions());

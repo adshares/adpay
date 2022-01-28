@@ -400,13 +400,20 @@ class PaymentCalculator
                 ) {
                     $cpmFactor = self::CPM_INCREASING_FACTOR;
                 } else {
-                    $wasCpmDecreasedEarlier = $campaignCost->getCpmFactor() < 1.0;
-                    if ($score > $previousScore) {
-                        $cpmFactor =
-                            $wasCpmDecreasedEarlier ? self::CPM_DECREASING_FACTOR : self::CPM_INCREASING_FACTOR;
+                    if (
+                        $campaignCost->getCpmFactor() < 1.0 && $uniqueViews >= $campaignCost->getViews()
+                        || $campaignCost->getCpmFactor() > 1.0 && $uniqueViews <= $campaignCost->getViews()
+                    ) {
+                        $cpmFactor = $campaignCost->getCpmFactor();
                     } else {
-                        $cpmFactor =
-                            $wasCpmDecreasedEarlier ? self::CPM_INCREASING_FACTOR : self::CPM_DECREASING_FACTOR;
+                        $wasCpmDecreasedEarlier = $campaignCost->getCpmFactor() < 1.0;
+                        if ($score > $previousScore) {
+                            $cpmFactor
+                                = $wasCpmDecreasedEarlier ? self::CPM_DECREASING_FACTOR : self::CPM_INCREASING_FACTOR;
+                        } else {
+                            $cpmFactor
+                                = $wasCpmDecreasedEarlier ? self::CPM_INCREASING_FACTOR : self::CPM_DECREASING_FACTOR;
+                        }
                     }
                 }
 
