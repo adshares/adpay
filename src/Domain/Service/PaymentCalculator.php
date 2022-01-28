@@ -400,7 +400,8 @@ class PaymentCalculator
                 ) {
                     $cpmFactor = self::CPM_INCREASING_FACTOR;
                 } else {
-                    if ($campaignCost->getCpmFactor() < 1.0 && $uniqueViews >= $campaignCost->getViews()
+                    if (
+                        $campaignCost->getCpmFactor() < 1.0 && $uniqueViews >= $campaignCost->getViews()
                         || $campaignCost->getCpmFactor() > 1.0 && $uniqueViews <= $campaignCost->getViews()
                     ) {
                         $cpmFactor = $campaignCost->getCpmFactor();
