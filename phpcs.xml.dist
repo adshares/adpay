@@ -9,17 +9,18 @@
     <arg name="extensions" value="php"/>
 
     <rule ref="PHPCompatibility"/>
-    <rule ref="PSR12"/>
+    <rule ref="PSR12">
+        <exclude-pattern>/src/Kernel.php</exclude-pattern>
+        <exclude-pattern>/tests/bootstrap.php</exclude-pattern>
+    </rule>
     <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
         <properties>
             <property name="spacesCountAroundEqualsSign" value="0"/>
         </properties>
+        <exclude-pattern>/src/Kernel.php</exclude-pattern>
+        <exclude-pattern>/tests/bootstrap.php</exclude-pattern>
     </rule>
 
-    <file>bin/</file>
-    <file>config/</file>
-    <file>public/</file>
     <file>src/</file>
     <file>tests/</file>
-
 </ruleset>
