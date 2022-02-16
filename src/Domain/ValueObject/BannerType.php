@@ -14,15 +14,15 @@ final class BannerType
 
     public const DIRECT = 'direct';
 
-    /** @var string */
-    private $type;
+    public const VIDEO = 'video';
+
+    private string $type;
 
     public function __construct(string $type)
     {
-        if ($type !== self::IMAGE && $type !== self::HTML && $type !== self::DIRECT) {
+        if ($type !== self::IMAGE && $type !== self::HTML && $type !== self::DIRECT && $type !== self::VIDEO) {
             throw InvalidArgumentException::fromArgument('type', $type);
         }
-
         $this->type = $type;
     }
 
