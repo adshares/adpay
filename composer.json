@@ -101,7 +101,7 @@
         ],
         "qa-check": [
             "php bin/console lint:yaml config",
-            "parallel-lint --no-colors --blame --exclude vendor --exclude bin  .",
+            "parallel-lint --no-colors --blame --exclude vendor --exclude bin .",
             "phpcs -s",
             "deptrac --no-ansi"
         ],
