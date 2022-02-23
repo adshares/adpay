@@ -16,11 +16,13 @@ final class BannerType
 
     public const VIDEO = 'video';
 
+    public const MODEL = 'model';
+
     private string $type;
 
     public function __construct(string $type)
     {
-        if ($type !== self::IMAGE && $type !== self::HTML && $type !== self::DIRECT && $type !== self::VIDEO) {
+        if (!in_array($type, [self::IMAGE, self::HTML, self::DIRECT, self::VIDEO, self::MODEL])) {
             throw InvalidArgumentException::fromArgument('type', $type);
         }
         $this->type = $type;
