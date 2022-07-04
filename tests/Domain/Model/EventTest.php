@@ -10,7 +10,6 @@ use App\Domain\Model\ImpressionCase;
 use App\Domain\ValueObject\Context;
 use App\Domain\ValueObject\EventType;
 use App\Domain\ValueObject\Id;
-use App\Domain\ValueObject\PaymentStatus;
 use App\Lib\DateTimeHelper;
 use DateTimeInterface;
 use PHPUnit\Framework\TestCase;
@@ -58,7 +57,7 @@ final class EventTest extends TestCase
 
         /* @var $event Event */
         $event = $this->getMockForAbstractClass(
-            'App\Domain\Model\Event',
+            Event::class,
             [
                 new Id($eventId),
                 EventType::createView(),
@@ -102,7 +101,7 @@ final class EventTest extends TestCase
 
         /* @var $event Event */
         $event = $this->getMockForAbstractClass(
-            'App\Domain\Model\Event',
+            Event::class,
             [
                 new Id($eventId),
                 EventType::createView(),

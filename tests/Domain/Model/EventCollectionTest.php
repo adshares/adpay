@@ -82,7 +82,7 @@ final class EventCollectionTest extends TestCase
     {
         /* @var $mock Event */
         $mock = $this->getMockForAbstractClass(
-            'App\Domain\Model\Event',
+            Event::class,
             [
                 new Id('0000000000000000000000000000000' . (string)$id),
                 EventType::createView(),
