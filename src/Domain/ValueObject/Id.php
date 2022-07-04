@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Domain\ValueObject;
+namespace App\Domain\ValueObject;
 
-use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
+use App\Domain\Exception\InvalidArgumentException;
 
 use function preg_match;
 

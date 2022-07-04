@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\UI\Controller;
+namespace App\UI\Controller;
 
-use Adshares\AdPay\Application\Command\BidStrategyDeleteCommand;
-use Adshares\AdPay\Application\Command\BidStrategyUpdateCommand;
-use Adshares\AdPay\Application\DTO\BidStrategyDeleteDTO;
-use Adshares\AdPay\Application\DTO\BidStrategyUpdateDTO;
-use Adshares\AdPay\Application\Exception\ValidationException;
+use App\Application\Command\BidStrategyDeleteCommand;
+use App\Application\Command\BidStrategyUpdateCommand;
+use App\Application\DTO\BidStrategyDeleteDTO;
+use App\Application\DTO\BidStrategyUpdateDTO;
+use App\Application\Exception\ValidationException;
+use App\Domain\ValueObject\PaymentCalculatorConfig;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,14 +19,11 @@ use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class BidStrategyController extends AbstractController
 {
-    /** @var BidStrategyUpdateCommand */
-    private $updateCommand;
+    private BidStrategyUpdateCommand $updateCommand;
 
-    /** @var BidStrategyUpdateCommand */
-    private $deleteCommand;
+    private BidStrategyDeleteCommand $deleteCommand;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         BidStrategyUpdateCommand $updateCommand,

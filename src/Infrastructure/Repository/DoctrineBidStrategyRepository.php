@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Infrastructure\Repository;
+namespace App\Infrastructure\Repository;
 
-use Adshares\AdPay\Domain\Exception\DomainRepositoryException;
-use Adshares\AdPay\Domain\Model\BidStrategy;
-use Adshares\AdPay\Domain\Model\BidStrategyCollection;
-use Adshares\AdPay\Domain\Repository\BidStrategyRepository;
-use Adshares\AdPay\Domain\ValueObject\IdCollection;
-use Adshares\AdPay\Infrastructure\Mapper\BidStrategyMapper;
+use App\Domain\Exception\DomainRepositoryException;
+use App\Domain\Model\BidStrategy;
+use App\Domain\Model\BidStrategyCollection;
+use App\Domain\Repository\BidStrategyRepository;
+use App\Domain\ValueObject\IdCollection;
+use App\Infrastructure\Mapper\BidStrategyMapper;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DBALException;
 

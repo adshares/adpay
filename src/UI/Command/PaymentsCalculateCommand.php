@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\UI\Command;
+namespace App\UI\Command;
 
-use Adshares\AdPay\Application\Command\ReportCalculateCommand;
-use Adshares\AdPay\Application\Command\ReportFetchCommand;
-use Adshares\AdPay\Application\Exception\FetchingException;
-use Adshares\AdPay\Lib\DateTimeHelper;
-use Adshares\AdPay\Lib\Exception\DateTimeException;
+use App\Application\Command\ReportCalculateCommand;
+use App\Application\Command\ReportFetchCommand;
+use App\Application\Exception\FetchingException;
+use App\Lib\DateTimeHelper;
+use App\Lib\Exception\DateTimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputArgument;
@@ -45,14 +45,14 @@ class PaymentsCalculateCommand extends Command
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force calculation of incomplete report');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
         if (!$this->lock()) {
             $io->warning('The command is already running in another process.');
 
-            return 1;
+            return self::FAILURE;
         }
 
         $date = $input->getArgument('date');
@@ -68,7 +68,7 @@ class PaymentsCalculateCommand extends Command
                     $io->error($exception->getMessage());
                     $this->release();
 
-                    return 1;
+                    return self::FAILURE;
                 }
             }
 
@@ -77,7 +77,7 @@ class PaymentsCalculateCommand extends Command
 
         $this->release();
 
-        return 0;
+        return self::SUCCESS;
     }
 
     private function calculateAll(SymfonyStyle $io)

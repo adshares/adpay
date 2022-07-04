@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\UI\Controller;
+namespace App\Tests\UI\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 

@@ -2,19 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Application\Command;
+namespace App\Application\Command;
 
-use Adshares\AdPay\Application\DTO\BidStrategyDeleteDTO;
-use Adshares\AdPay\Domain\Repository\BidStrategyRepository;
+use App\Application\DTO\BidStrategyDeleteDTO;
+use App\Domain\Repository\BidStrategyRepository;
 use Psr\Log\LoggerInterface;
 
 final class BidStrategyDeleteCommand
 {
-    /** @var BidStrategyRepository */
-    private $bidStrategyRepository;
+    private BidStrategyRepository $bidStrategyRepository;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         BidStrategyRepository $bidStrategyRepository,

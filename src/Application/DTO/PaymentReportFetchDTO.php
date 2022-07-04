@@ -2,15 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Application\DTO;
+namespace App\Application\DTO;
 
-use Adshares\AdPay\Domain\Model\PaymentReport;
-use Adshares\AdPay\Domain\Model\PaymentReportCollection;
+use App\Domain\Model\PaymentReport;
+use App\Domain\Model\PaymentReportCollection;
 
 final class PaymentReportFetchDTO
 {
-    /** @var PaymentReportCollection */
-    private $reports;
+    private PaymentReportCollection $reports;
 
     public function __construct(PaymentReportCollection $reports)
     {

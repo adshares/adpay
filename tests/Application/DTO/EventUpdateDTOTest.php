@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Application\DTO;
+namespace App\Tests\Application\DTO;
 
-use Adshares\AdPay\Application\DTO\EventUpdateDTO;
-use Adshares\AdPay\Application\Exception\ValidationException;
-use Adshares\AdPay\Domain\Model\Event;
-use Adshares\AdPay\Domain\ValueObject\EventType;
+use App\Application\DTO\EventUpdateDTO;
+use App\Application\Exception\ValidationException;
+use App\Domain\Model\Event;
+use App\Domain\ValueObject\EventType;
 use PHPUnit\Framework\TestCase;
 
 abstract class EventUpdateDTOTest extends TestCase

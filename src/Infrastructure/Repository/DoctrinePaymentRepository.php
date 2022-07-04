@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Infrastructure\Repository;
+namespace App\Infrastructure\Repository;
 
-use Adshares\AdPay\Domain\Exception\DomainRepositoryException;
-use Adshares\AdPay\Domain\Repository\PaymentRepository;
-use Adshares\AdPay\Infrastructure\Mapper\PaymentMapper;
+use App\Domain\Exception\DomainRepositoryException;
+use App\Domain\Repository\PaymentRepository;
+use App\Infrastructure\Mapper\PaymentMapper;
 use Doctrine\DBAL\Driver\Exception as DBALDriverException;
 use Doctrine\DBAL\Exception as DBALException;
 

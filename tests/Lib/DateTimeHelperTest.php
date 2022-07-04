@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Lib;
+namespace App\Tests\Lib;
 
-use Adshares\AdPay\Lib\DateTimeHelper;
-use Adshares\AdPay\Lib\Exception\DateTimeException;
+use App\Lib\DateTimeHelper;
+use App\Lib\Exception\DateTimeException;
 use PHPUnit\Framework\TestCase;
 use DateTimeInterface;
 

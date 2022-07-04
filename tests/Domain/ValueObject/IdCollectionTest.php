@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Domain\ValueObject;
+namespace App\Tests\Domain\ValueObject;
 
-use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Domain\ValueObject\IdCollection;
+use App\Domain\ValueObject\Id;
+use App\Domain\ValueObject\IdCollection;
 use PHPUnit\Framework\TestCase;
 
 final class IdCollectionTest extends TestCase

@@ -2,27 +2,27 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Application\DTO;
+namespace App\Application\DTO;
 
-use Adshares\AdPay\Application\Exception\ValidationException;
-use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
-use Adshares\AdPay\Domain\Model\Banner;
-use Adshares\AdPay\Domain\Model\BannerCollection;
-use Adshares\AdPay\Domain\Model\Campaign;
-use Adshares\AdPay\Domain\Model\CampaignCollection;
-use Adshares\AdPay\Domain\Model\Conversion;
-use Adshares\AdPay\Domain\Model\ConversionCollection;
-use Adshares\AdPay\Domain\ValueObject\BannerType;
-use Adshares\AdPay\Domain\ValueObject\Budget;
-use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Domain\ValueObject\LimitType;
-use Adshares\AdPay\Lib\DateTimeHelper;
-use Adshares\AdPay\Lib\Exception\DateTimeException;
+use App\Application\Exception\ValidationException;
+use App\Domain\Exception\InvalidArgumentException;
+use App\Domain\Model\Banner;
+use App\Domain\Model\BannerCollection;
+use App\Domain\Model\Campaign;
+use App\Domain\Model\CampaignCollection;
+use App\Domain\Model\Conversion;
+use App\Domain\Model\ConversionCollection;
+use App\Domain\ValueObject\BannerType;
+use App\Domain\ValueObject\Budget;
+use App\Domain\ValueObject\Id;
+use App\Domain\ValueObject\LimitType;
+use App\Lib\DateTimeHelper;
+use App\Lib\Exception\DateTimeException;
 use TypeError;
 
 final class CampaignUpdateDTO
 {
-    private $campaigns;
+    private CampaignCollection $campaigns;
 
     public function __construct(array $input)
     {

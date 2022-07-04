@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Application\Command;
+namespace App\Tests\Application\Command;
 
-use Adshares\AdPay\Application\Command\EventDeleteCommand;
-use Adshares\AdPay\Domain\Repository\EventRepository;
-use Adshares\AdPay\Domain\ValueObject\EventType;
+use App\Application\Command\EventDeleteCommand;
+use App\Domain\Repository\EventRepository;
+use App\Domain\ValueObject\EventType;
 use DateTime;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;

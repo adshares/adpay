@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Infrastructure\Repository;
+namespace App\Infrastructure\Repository;
 
-use Adshares\AdPay\Domain\Exception\DomainRepositoryException;
-use Adshares\AdPay\Domain\Model\Banner;
-use Adshares\AdPay\Domain\Model\BannerCollection;
-use Adshares\AdPay\Domain\Model\Campaign;
-use Adshares\AdPay\Domain\Model\CampaignCollection;
-use Adshares\AdPay\Domain\Model\Conversion;
-use Adshares\AdPay\Domain\Model\ConversionCollection;
-use Adshares\AdPay\Domain\Repository\CampaignRepository;
-use Adshares\AdPay\Domain\ValueObject\IdCollection;
-use Adshares\AdPay\Infrastructure\Mapper\BannerMapper;
-use Adshares\AdPay\Infrastructure\Mapper\CampaignMapper;
-use Adshares\AdPay\Infrastructure\Mapper\ConversionMapper;
+use App\Domain\Exception\DomainRepositoryException;
+use App\Domain\Model\Banner;
+use App\Domain\Model\BannerCollection;
+use App\Domain\Model\Campaign;
+use App\Domain\Model\CampaignCollection;
+use App\Domain\Model\Conversion;
+use App\Domain\Model\ConversionCollection;
+use App\Domain\Repository\CampaignRepository;
+use App\Domain\ValueObject\IdCollection;
+use App\Infrastructure\Mapper\BannerMapper;
+use App\Infrastructure\Mapper\CampaignMapper;
+use App\Infrastructure\Mapper\ConversionMapper;
 use Doctrine\DBAL\Exception as DBALException;
 
 final class DoctrineCampaignRepository extends DoctrineModelUpdater implements CampaignRepository

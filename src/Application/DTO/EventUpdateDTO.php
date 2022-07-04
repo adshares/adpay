@@ -2,26 +2,25 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Application\DTO;
+namespace App\Application\DTO;
 
-use Adshares\AdPay\Application\Exception\ValidationException;
-use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
-use Adshares\AdPay\Domain\Model\Event;
-use Adshares\AdPay\Domain\Model\EventCollection;
-use Adshares\AdPay\Domain\Model\Impression;
-use Adshares\AdPay\Domain\Model\ImpressionCase;
-use Adshares\AdPay\Domain\ValueObject\Context;
-use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Lib\DateTimeHelper;
-use Adshares\AdPay\Lib\Exception\DateTimeException;
+use App\Application\Exception\ValidationException;
+use App\Domain\Exception\InvalidArgumentException;
+use App\Domain\Model\Event;
+use App\Domain\Model\EventCollection;
+use App\Domain\Model\Impression;
+use App\Domain\Model\ImpressionCase;
+use App\Domain\ValueObject\Context;
+use App\Domain\ValueObject\Id;
+use App\Lib\DateTimeHelper;
+use App\Lib\Exception\DateTimeException;
 use DateTime;
 use DateTimeInterface;
 use TypeError;
 
 abstract class EventUpdateDTO
 {
-    /* @var EventCollection */
-    protected $viewEvents;
+    protected EventCollection $viewEvents;
 
     public function __construct(array $input)
     {

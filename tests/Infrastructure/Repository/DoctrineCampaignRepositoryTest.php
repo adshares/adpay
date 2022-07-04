@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Infrastructure\Repository;
+namespace App\Tests\Infrastructure\Repository;
 
-use Adshares\AdPay\Domain\Exception\DomainRepositoryException;
-use Adshares\AdPay\Domain\Model\Banner;
-use Adshares\AdPay\Domain\Model\BannerCollection;
-use Adshares\AdPay\Domain\Model\Campaign;
-use Adshares\AdPay\Domain\Model\CampaignCollection;
-use Adshares\AdPay\Domain\Model\Conversion;
-use Adshares\AdPay\Domain\Model\ConversionCollection;
-use Adshares\AdPay\Domain\ValueObject\BannerType;
-use Adshares\AdPay\Domain\ValueObject\Budget;
-use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Domain\ValueObject\IdCollection;
-use Adshares\AdPay\Domain\ValueObject\LimitType;
-use Adshares\AdPay\Infrastructure\Repository\DoctrineCampaignRepository;
+use App\Domain\Exception\DomainRepositoryException;
+use App\Domain\Model\Banner;
+use App\Domain\Model\BannerCollection;
+use App\Domain\Model\Campaign;
+use App\Domain\Model\CampaignCollection;
+use App\Domain\Model\Conversion;
+use App\Domain\Model\ConversionCollection;
+use App\Domain\ValueObject\BannerType;
+use App\Domain\ValueObject\Budget;
+use App\Domain\ValueObject\Id;
+use App\Domain\ValueObject\IdCollection;
+use App\Domain\ValueObject\LimitType;
+use App\Infrastructure\Repository\DoctrineCampaignRepository;
 use DateTime;
 use Psr\Log\NullLogger;
 

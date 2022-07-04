@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Application\DTO;
+namespace App\Application\DTO;
 
-use Adshares\AdPay\Application\Exception\ValidationException;
-use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
-use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Domain\ValueObject\IdCollection;
+use App\Application\Exception\ValidationException;
+use App\Domain\Exception\InvalidArgumentException;
+use App\Domain\ValueObject\Id;
+use App\Domain\ValueObject\IdCollection;
 use TypeError;
 
 abstract class BasicDeleteDTO

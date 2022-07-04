@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Application\Command;
+namespace App\Tests\Application\Command;
 
-use Adshares\AdPay\Application\Command\ReportCalculateCommand;
-use Adshares\AdPay\Application\Exception\FetchingException;
-use Adshares\AdPay\Domain\Model\PaymentReport;
-use Adshares\AdPay\Domain\Repository\EventRepository;
-use Adshares\AdPay\Domain\Repository\PaymentReportRepository;
-use Adshares\AdPay\Domain\Repository\PaymentRepository;
-use Adshares\AdPay\Domain\Service\PaymentCalculator;
-use Adshares\AdPay\Domain\Service\PaymentCalculatorFactory;
-use Adshares\AdPay\Domain\ValueObject\EventType;
-use Adshares\AdPay\Domain\ValueObject\PaymentReportStatus;
-use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
+use App\Application\Command\ReportCalculateCommand;
+use App\Application\Exception\FetchingException;
+use App\Domain\Model\PaymentReport;
+use App\Domain\Repository\EventRepository;
+use App\Domain\Repository\PaymentReportRepository;
+use App\Domain\Repository\PaymentRepository;
+use App\Domain\Service\PaymentCalculator;
+use App\Domain\Service\PaymentCalculatorFactory;
+use App\Domain\ValueObject\EventType;
+use App\Domain\ValueObject\PaymentReportStatus;
+use App\Domain\ValueObject\PaymentStatus;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 

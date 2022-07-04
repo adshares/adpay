@@ -2,15 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Application\DTO;
+namespace App\Application\DTO;
 
 final class PaymentFetchDTO
 {
-    /** @var bool */
-    private $calculated;
+    private bool $calculated;
 
-    /** @var iterable */
-    private $payments;
+    private iterable $payments;
 
     public function __construct(bool $calculated, iterable $payments)
     {

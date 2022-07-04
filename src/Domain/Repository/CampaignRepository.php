@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Domain\Repository;
+namespace App\Domain\Repository;
 
-use Adshares\AdPay\Domain\Model\CampaignCollection;
-use Adshares\AdPay\Domain\ValueObject\IdCollection;
+use App\Domain\Model\CampaignCollection;
+use App\Domain\ValueObject\IdCollection;
 
 interface CampaignRepository
 {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Domain\ValueObject;
+namespace App\Tests\Domain\ValueObject;
 
-use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
-use Adshares\AdPay\Domain\ValueObject\BannerType;
+use App\Domain\Exception\InvalidArgumentException;
+use App\Domain\ValueObject\BannerType;
 use PHPUnit\Framework\TestCase;
 
 final class BannerTypeTest extends TestCase

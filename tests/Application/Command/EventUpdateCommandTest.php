@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Application\Command;
+namespace App\Tests\Application\Command;
 
-use Adshares\AdPay\Application\Command\EventUpdateCommand;
-use Adshares\AdPay\Application\DTO\ClickEventUpdateDTO;
-use Adshares\AdPay\Application\DTO\ViewEventUpdateDTO;
-use Adshares\AdPay\Application\Exception\ValidationException;
-use Adshares\AdPay\Domain\Exception\InvalidDataException;
-use Adshares\AdPay\Domain\Model\PaymentReport;
-use Adshares\AdPay\Domain\Repository\EventRepository;
-use Adshares\AdPay\Domain\Repository\PaymentReportRepository;
-use Adshares\AdPay\Domain\ValueObject\EventType;
-use Adshares\AdPay\Domain\ValueObject\PaymentReportStatus;
+use App\Application\Command\EventUpdateCommand;
+use App\Application\DTO\ClickEventUpdateDTO;
+use App\Application\DTO\ViewEventUpdateDTO;
+use App\Application\Exception\ValidationException;
+use App\Domain\Exception\InvalidDataException;
+use App\Domain\Model\PaymentReport;
+use App\Domain\Repository\EventRepository;
+use App\Domain\Repository\PaymentReportRepository;
+use App\Domain\ValueObject\EventType;
+use App\Domain\ValueObject\PaymentReportStatus;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 

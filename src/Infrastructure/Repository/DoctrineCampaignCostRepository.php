@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Infrastructure\Repository;
+namespace App\Infrastructure\Repository;
 
-use Adshares\AdPay\Domain\Exception\DomainRepositoryException;
-use Adshares\AdPay\Domain\Model\CampaignCost;
-use Adshares\AdPay\Domain\Model\CampaignCostCollection;
-use Adshares\AdPay\Domain\Repository\CampaignCostRepository;
-use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Infrastructure\Mapper\CampaignCostMapper;
+use App\Domain\Exception\DomainRepositoryException;
+use App\Domain\Model\CampaignCost;
+use App\Domain\Model\CampaignCostCollection;
+use App\Domain\Repository\CampaignCostRepository;
+use App\Domain\ValueObject\Id;
+use App\Infrastructure\Mapper\CampaignCostMapper;
 use DateTimeInterface;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Types\Types;

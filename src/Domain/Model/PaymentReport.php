@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Domain\Model;
+namespace App\Domain\Model;
 
-use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
-use Adshares\AdPay\Domain\ValueObject\EventType;
-use Adshares\AdPay\Domain\ValueObject\PaymentReportStatus;
-use Adshares\AdPay\Lib\DateTimeHelper;
+use App\Domain\Exception\InvalidArgumentException;
+use App\Domain\ValueObject\EventType;
+use App\Domain\ValueObject\PaymentReportStatus;
+use App\Lib\DateTimeHelper;
 use DateTimeInterface;
 
 final class PaymentReport

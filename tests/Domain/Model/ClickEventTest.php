@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Domain\Model;
+namespace App\Tests\Domain\Model;
 
-use Adshares\AdPay\Domain\Model\ClickEvent;
-use Adshares\AdPay\Domain\Model\Impression;
-use Adshares\AdPay\Domain\Model\ImpressionCase;
-use Adshares\AdPay\Domain\ValueObject\Context;
-use Adshares\AdPay\Domain\ValueObject\EventType;
-use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Lib\DateTimeHelper;
+use App\Domain\Model\ClickEvent;
+use App\Domain\Model\Impression;
+use App\Domain\Model\ImpressionCase;
+use App\Domain\ValueObject\Context;
+use App\Domain\ValueObject\EventType;
+use App\Domain\ValueObject\Id;
+use App\Lib\DateTimeHelper;
 use DateTimeInterface;
 use PHPUnit\Framework\TestCase;
 

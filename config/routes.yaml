@@ -1,6 +1,6 @@
 api_post_bid_strategies:
     path: /api/v{version}/bid-strategies
-    controller: Adshares\AdPay\UI\Controller\BidStrategyController::updateBidStrategies
+    controller: App\UI\Controller\BidStrategyController::updateBidStrategies
     methods: POST
     requirements:
         version: '1'
@@ -9,7 +9,7 @@ api_post_bid_strategies:
 
 api_delete_bid_strategies:
     path: /api/v{version}/bid-strategies
-    controller: Adshares\AdPay\UI\Controller\BidStrategyController::deleteBidStrategies
+    controller: App\UI\Controller\BidStrategyController::deleteBidStrategies
     methods: DELETE
     requirements:
         version: '1'
@@ -18,7 +18,7 @@ api_delete_bid_strategies:
 
 api_post_campaigns:
     path: /api/v{version}/campaigns
-    controller: Adshares\AdPay\UI\Controller\CampaignController::updateCampaigns
+    controller: App\UI\Controller\CampaignController::updateCampaigns
     methods: POST
     requirements:
         version: '1'
@@ -27,7 +27,7 @@ api_post_campaigns:
 
 api_delete_campaigns:
     path: /api/v{version}/campaigns
-    controller: Adshares\AdPay\UI\Controller\CampaignController::deleteCampaigns
+    controller: App\UI\Controller\CampaignController::deleteCampaigns
     methods: DELETE
     requirements:
         version: '1'
@@ -36,7 +36,7 @@ api_delete_campaigns:
 
 api_post_views:
     path: /api/v{version}/events/views
-    controller: Adshares\AdPay\UI\Controller\EventController::updateViews
+    controller: App\UI\Controller\EventController::updateViews
     methods: POST
     requirements:
         version: '1'
@@ -45,7 +45,7 @@ api_post_views:
 
 api_post_clicks:
     path: /api/v{version}/events/clicks
-    controller: Adshares\AdPay\UI\Controller\EventController::updateClicks
+    controller: App\UI\Controller\EventController::updateClicks
     methods: POST
     requirements:
         version: '1'
@@ -54,7 +54,7 @@ api_post_clicks:
 
 api_post_conversions:
     path: /api/v{version}/events/conversions
-    controller: Adshares\AdPay\UI\Controller\EventController::updateConversions
+    controller: App\UI\Controller\EventController::updateConversions
     methods: POST
     requirements:
         version: '1'
@@ -63,7 +63,7 @@ api_post_conversions:
 
 api_get_payments:
     path: /api/v{version}/payments/{timestamp}
-    controller: Adshares\AdPay\UI\Controller\PaymentController::find
+    controller: App\UI\Controller\PaymentController::find
     methods: GET
     requirements:
         version: '1'
@@ -73,7 +73,7 @@ api_get_payments:
 
 info:
     path: /info.{_format}
-    controller: Adshares\AdPay\UI\Controller\InfoController::info
+    controller: App\UI\Controller\InfoController::info
     methods: GET
     defaults:
         _format: 'json'

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Infrastructure\Mapper;
+namespace App\Infrastructure\Mapper;
 
-use Adshares\AdPay\Domain\Model\Event;
+use App\Domain\Model\Event;
 use Doctrine\DBAL\Types\Types;
 
 abstract class EventMapper

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Application\Exception;
+namespace App\Application\Exception;
 
 use RuntimeException;
 

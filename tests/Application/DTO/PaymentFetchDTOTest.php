@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Application\DTO;
+namespace App\Tests\Application\DTO;
 
-use Adshares\AdPay\Application\DTO\PaymentFetchDTO;
+use App\Application\DTO\PaymentFetchDTO;
 use PHPUnit\Framework\TestCase;
 
 final class PaymentFetchDTOTest extends TestCase

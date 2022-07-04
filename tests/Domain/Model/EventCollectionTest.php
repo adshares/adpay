@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Domain\Model;
+namespace App\Tests\Domain\Model;
 
-use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
-use Adshares\AdPay\Domain\Model\Event;
-use Adshares\AdPay\Domain\Model\EventCollection;
-use Adshares\AdPay\Domain\Model\Impression;
-use Adshares\AdPay\Domain\Model\ImpressionCase;
-use Adshares\AdPay\Domain\ValueObject\Context;
-use Adshares\AdPay\Domain\ValueObject\EventType;
-use Adshares\AdPay\Domain\ValueObject\Id;
+use App\Domain\Exception\InvalidArgumentException;
+use App\Domain\Model\Event;
+use App\Domain\Model\EventCollection;
+use App\Domain\Model\Impression;
+use App\Domain\Model\ImpressionCase;
+use App\Domain\ValueObject\Context;
+use App\Domain\ValueObject\EventType;
+use App\Domain\ValueObject\Id;
 use DateTime;
 use PHPUnit\Framework\TestCase;
 
@@ -82,7 +82,7 @@ final class EventCollectionTest extends TestCase
     {
         /* @var $mock Event */
         $mock = $this->getMockForAbstractClass(
-            'Adshares\AdPay\Domain\Model\Event',
+            'App\Domain\Model\Event',
             [
                 new Id('0000000000000000000000000000000' . (string)$id),
                 EventType::createView(),

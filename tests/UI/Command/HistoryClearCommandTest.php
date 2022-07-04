@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\UI\Command;
+namespace App\Tests\UI\Command;
 
-use Adshares\AdPay\Domain\Model\EventCollection;
-use Adshares\AdPay\Domain\Model\Impression;
-use Adshares\AdPay\Domain\Model\ImpressionCase;
-use Adshares\AdPay\Domain\Model\PaymentReport;
-use Adshares\AdPay\Domain\Model\ViewEvent;
-use Adshares\AdPay\Domain\ValueObject\Context;
-use Adshares\AdPay\Domain\ValueObject\EventType;
-use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Domain\ValueObject\PaymentReportStatus;
-use Adshares\AdPay\Infrastructure\Repository\DoctrineEventRepository;
-use Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository;
+use App\Domain\Model\EventCollection;
+use App\Domain\Model\Impression;
+use App\Domain\Model\ImpressionCase;
+use App\Domain\Model\PaymentReport;
+use App\Domain\Model\ViewEvent;
+use App\Domain\ValueObject\Context;
+use App\Domain\ValueObject\EventType;
+use App\Domain\ValueObject\Id;
+use App\Domain\ValueObject\PaymentReportStatus;
+use App\Infrastructure\Repository\DoctrineEventRepository;
+use App\Infrastructure\Repository\DoctrinePaymentReportRepository;
 use DateTime;
 use Psr\Log\NullLogger;
 use Symfony\Component\Lock\LockFactory;

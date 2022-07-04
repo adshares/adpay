@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Application\Command;
+namespace App\Tests\Application\Command;
 
-use Adshares\AdPay\Application\Command\CampaignDeleteCommand;
-use Adshares\AdPay\Application\DTO\CampaignDeleteDTO;
-use Adshares\AdPay\Domain\Repository\CampaignRepository;
+use App\Application\Command\CampaignDeleteCommand;
+use App\Application\DTO\CampaignDeleteDTO;
+use App\Domain\Repository\CampaignRepository;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
