@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\UI\Controller;
+namespace App\UI\Controller;
 
-use Adshares\AdPay\Application\Command\PaymentFetchCommand;
-use Adshares\AdPay\Application\Command\ReportCalculateCommand;
-use Adshares\AdPay\Application\Exception\FetchingException;
+use App\Application\Command\PaymentFetchCommand;
+use App\Application\Command\ReportCalculateCommand;
+use App\Application\Exception\FetchingException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,14 +19,11 @@ class PaymentController extends AbstractController
 {
     public const MAX_LIMIT = 100000;
 
-    /** @var PaymentFetchCommand */
-    private $paymentFetchCommand;
+    private PaymentFetchCommand $paymentFetchCommand;
 
-    /** @var ReportCalculateCommand */
-    private $paymentCalculateCommand;
+    private ReportCalculateCommand $paymentCalculateCommand;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         PaymentFetchCommand $paymentFetchCommand,

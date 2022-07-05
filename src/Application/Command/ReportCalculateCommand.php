@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Application\Command;
+namespace App\Application\Command;
 
-use Adshares\AdPay\Application\Exception\FetchingException;
-use Adshares\AdPay\Domain\Model\PaymentReport;
-use Adshares\AdPay\Domain\Repository\EventRepository;
-use Adshares\AdPay\Domain\Repository\PaymentReportRepository;
-use Adshares\AdPay\Domain\Repository\PaymentRepository;
-use Adshares\AdPay\Domain\Service\PaymentCalculatorFactory;
+use App\Application\Exception\FetchingException;
+use App\Domain\Model\PaymentReport;
+use App\Domain\Repository\EventRepository;
+use App\Domain\Repository\PaymentReportRepository;
+use App\Domain\Repository\PaymentRepository;
+use App\Domain\Service\PaymentCalculatorFactory;
 use DateTimeInterface;
 use Psr\Log\LoggerInterface;
 

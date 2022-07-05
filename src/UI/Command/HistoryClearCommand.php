@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\UI\Command;
+namespace App\UI\Command;
 
-use Adshares\AdPay\Application\Command\EventDeleteCommand;
-use Adshares\AdPay\Application\Command\ReportDeleteCommand;
+use App\Application\Command\EventDeleteCommand;
+use App\Application\Command\ReportDeleteCommand;
+use DateInterval;
 use DateTimeImmutable;
+use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,11 +22,9 @@ class HistoryClearCommand extends Command
 
     protected static $defaultName = 'ops:history:clear';
 
-    /** @var ReportDeleteCommand */
-    private $paymentReportDeleteCommand;
+    private ReportDeleteCommand $paymentReportDeleteCommand;
 
-    /** @var EventDeleteCommand */
-    private $eventDeleteCommand;
+    private EventDeleteCommand $eventDeleteCommand;
 
     public function __construct(
         ReportDeleteCommand $paymentReportDeleteCommand,
@@ -44,14 +44,14 @@ class HistoryClearCommand extends Command
             ->addOption('period', 'p', InputOption::VALUE_REQUIRED, 'Period to be remove', 'PT48H');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
         if (!$this->lock()) {
             $io->warning('The command is already running in another process.');
 
-            return 1;
+            return self::FAILURE;
         }
 
         $period = $input->getOption('period');
@@ -61,14 +61,14 @@ class HistoryClearCommand extends Command
             if ($before !== null) {
                 $dateTo = new DateTimeImmutable((string)$before);
             } else {
-                $dateTo = (new DateTimeImmutable())->sub(new \DateInterval((string)$period));
+                $dateTo = (new DateTimeImmutable())->sub(new DateInterval((string)$period));
                 $dateTo = $dateTo->setTime((int)$dateTo->format('H'), 0);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $io->error($e->getMessage());
             $this->release();
 
-            return 1;
+            return self::FAILURE;
         }
 
         $io->comment(sprintf('Clearing payments and events older than %s', $dateTo->format('c')));
@@ -80,6 +80,6 @@ class HistoryClearCommand extends Command
 
         $this->release();
 
-        return 0;
+        return self::SUCCESS;
     }
 }

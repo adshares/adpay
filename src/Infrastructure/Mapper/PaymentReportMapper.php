@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Infrastructure\Mapper;
+namespace App\Infrastructure\Mapper;
 
-use Adshares\AdPay\Domain\Model\PaymentReport;
-use Adshares\AdPay\Domain\ValueObject\PaymentReportStatus;
+use App\Domain\Model\PaymentReport;
+use App\Domain\ValueObject\PaymentReportStatus;
 use Doctrine\DBAL\Types\Types;
 
 class PaymentReportMapper

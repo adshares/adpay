@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Infrastructure\Repository;
+namespace App\Tests\Infrastructure\Repository;
 
-use Adshares\AdPay\Domain\Exception\DomainRepositoryException;
-use Adshares\AdPay\Domain\Exception\InvalidDataException;
-use Adshares\AdPay\Domain\Model\ClickEvent;
-use Adshares\AdPay\Domain\Model\ConversionEvent;
-use Adshares\AdPay\Domain\Model\EventCollection;
-use Adshares\AdPay\Domain\Model\Impression;
-use Adshares\AdPay\Domain\Model\ImpressionCase;
-use Adshares\AdPay\Domain\Model\ViewEvent;
-use Adshares\AdPay\Domain\ValueObject\Context;
-use Adshares\AdPay\Domain\ValueObject\EventType;
-use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
-use Adshares\AdPay\Infrastructure\Repository\DoctrineEventRepository;
-use Adshares\AdPay\Lib\DateTimeHelper;
+use App\Domain\Exception\DomainRepositoryException;
+use App\Domain\Exception\InvalidDataException;
+use App\Domain\Model\ClickEvent;
+use App\Domain\Model\ConversionEvent;
+use App\Domain\Model\EventCollection;
+use App\Domain\Model\Impression;
+use App\Domain\Model\ImpressionCase;
+use App\Domain\Model\ViewEvent;
+use App\Domain\ValueObject\Context;
+use App\Domain\ValueObject\EventType;
+use App\Domain\ValueObject\Id;
+use App\Domain\ValueObject\PaymentStatus;
+use App\Infrastructure\Repository\DoctrineEventRepository;
+use App\Lib\DateTimeHelper;
 use DateTime;
 use Psr\Log\NullLogger;
 

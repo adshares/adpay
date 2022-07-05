@@ -2,20 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Application\Command;
+namespace App\Application\Command;
 
-use Adshares\AdPay\Domain\Repository\EventRepository;
-use Adshares\AdPay\Domain\ValueObject\EventType;
+use App\Domain\Repository\EventRepository;
+use App\Domain\ValueObject\EventType;
 use DateTimeInterface;
 use Psr\Log\LoggerInterface;
 
 final class EventDeleteCommand
 {
-    /** @var EventRepository */
-    private $eventRepository;
+    private EventRepository $eventRepository;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         EventRepository $eventRepository,

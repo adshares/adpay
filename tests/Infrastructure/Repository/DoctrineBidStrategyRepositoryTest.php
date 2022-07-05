@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Infrastructure\Repository;
+namespace App\Tests\Infrastructure\Repository;
 
-use Adshares\AdPay\Domain\Exception\DomainRepositoryException;
-use Adshares\AdPay\Domain\Model\BidStrategy;
-use Adshares\AdPay\Domain\Model\BidStrategyCollection;
-use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Domain\ValueObject\IdCollection;
-use Adshares\AdPay\Infrastructure\Repository\DoctrineBidStrategyRepository;
+use App\Domain\Exception\DomainRepositoryException;
+use App\Domain\Model\BidStrategy;
+use App\Domain\Model\BidStrategyCollection;
+use App\Domain\ValueObject\Id;
+use App\Domain\ValueObject\IdCollection;
+use App\Infrastructure\Repository\DoctrineBidStrategyRepository;
 use Psr\Log\NullLogger;
 
 final class DoctrineBidStrategyRepositoryTest extends RepositoryTestCase

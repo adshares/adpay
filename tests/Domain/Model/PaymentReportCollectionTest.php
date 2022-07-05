@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Domain\Model;
+namespace App\Tests\Domain\Model;
 
-use Adshares\AdPay\Domain\Model\PaymentReport;
-use Adshares\AdPay\Domain\Model\PaymentReportCollection;
-use Adshares\AdPay\Domain\ValueObject\PaymentReportStatus;
+use App\Domain\Model\PaymentReport;
+use App\Domain\Model\PaymentReportCollection;
+use App\Domain\ValueObject\PaymentReportStatus;
 use PHPUnit\Framework\TestCase;
 
 final class PaymentReportCollectionTest extends TestCase

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Domain\Repository;
+namespace App\Domain\Repository;
 
 interface PaymentRepository
 {

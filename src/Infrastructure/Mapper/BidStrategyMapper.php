@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Infrastructure\Mapper;
+namespace App\Infrastructure\Mapper;
 
-use Adshares\AdPay\Domain\Model\BidStrategy;
-use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Lib\DateTimeHelper;
+use App\Domain\Model\BidStrategy;
+use App\Domain\ValueObject\Id;
+use App\Lib\DateTimeHelper;
 use Doctrine\DBAL\Types\Types;
 
 class BidStrategyMapper

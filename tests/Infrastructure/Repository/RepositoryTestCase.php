@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Infrastructure\Repository;
+namespace App\Tests\Infrastructure\Repository;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DBALException;

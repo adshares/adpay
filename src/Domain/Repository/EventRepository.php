@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Domain\Repository;
+namespace App\Domain\Repository;
 
-use Adshares\AdPay\Domain\Exception\InvalidDataException;
-use Adshares\AdPay\Domain\Model\EventCollection;
-use Adshares\AdPay\Domain\ValueObject\EventType;
+use App\Domain\Exception\InvalidDataException;
+use App\Domain\Model\EventCollection;
+use App\Domain\ValueObject\EventType;
 use DateTimeInterface;
 
 interface EventRepository

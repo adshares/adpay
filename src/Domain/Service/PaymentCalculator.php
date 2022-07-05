@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Domain\Service;
+namespace App\Domain\Service;
 
-use Adshares\AdPay\Domain\Model\Banner;
-use Adshares\AdPay\Domain\Model\BidStrategy;
-use Adshares\AdPay\Domain\Model\BidStrategyCollection;
-use Adshares\AdPay\Domain\Model\Campaign;
-use Adshares\AdPay\Domain\Model\CampaignCollection;
-use Adshares\AdPay\Domain\Model\CampaignCost;
-use Adshares\AdPay\Domain\Model\Conversion;
-use Adshares\AdPay\Domain\Model\CampaignCostCollection;
-use Adshares\AdPay\Domain\Repository\CampaignCostRepository;
-use Adshares\AdPay\Domain\ValueObject\EventType;
-use Adshares\AdPay\Domain\ValueObject\PaymentCalculatorConfig;
-use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
-use Adshares\AdPay\Lib\DateTimeHelper;
+use App\Domain\Model\Banner;
+use App\Domain\Model\BidStrategy;
+use App\Domain\Model\BidStrategyCollection;
+use App\Domain\Model\Campaign;
+use App\Domain\Model\CampaignCollection;
+use App\Domain\Model\CampaignCost;
+use App\Domain\Model\Conversion;
+use App\Domain\Model\CampaignCostCollection;
+use App\Domain\Repository\CampaignCostRepository;
+use App\Domain\ValueObject\EventType;
+use App\Domain\ValueObject\PaymentCalculatorConfig;
+use App\Domain\ValueObject\PaymentStatus;
+use App\Lib\DateTimeHelper;
 
 class PaymentCalculator
 {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Application\Command;
+namespace App\Tests\Application\Command;
 
-use Adshares\AdPay\Application\Command\ReportDeleteCommand;
-use Adshares\AdPay\Domain\Repository\PaymentReportRepository;
+use App\Application\Command\ReportDeleteCommand;
+use App\Domain\Repository\PaymentReportRepository;
 use DateTime;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Domain\Model;
+namespace App\Domain\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
 

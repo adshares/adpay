@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Infrastructure\Mapper;
+namespace App\Infrastructure\Mapper;
 
-use Adshares\AdPay\Domain\ValueObject\EventType;
+use App\Domain\ValueObject\EventType;
 
 class ClickEventMapper extends EventMapper
 {

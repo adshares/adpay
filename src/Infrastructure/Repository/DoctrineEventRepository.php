@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Infrastructure\Repository;
+namespace App\Infrastructure\Repository;
 
-use Adshares\AdPay\Domain\Exception\DomainRepositoryException;
-use Adshares\AdPay\Domain\Exception\InvalidDataException;
-use Adshares\AdPay\Domain\Model\Event;
-use Adshares\AdPay\Domain\Model\EventCollection;
-use Adshares\AdPay\Domain\Repository\EventRepository;
-use Adshares\AdPay\Domain\ValueObject\EventType;
-use Adshares\AdPay\Infrastructure\Mapper\ClickEventMapper;
-use Adshares\AdPay\Infrastructure\Mapper\ConversionEventMapper;
-use Adshares\AdPay\Infrastructure\Mapper\EventMapper;
-use Adshares\AdPay\Infrastructure\Mapper\ViewEventMapper;
+use App\Domain\Exception\DomainRepositoryException;
+use App\Domain\Exception\InvalidDataException;
+use App\Domain\Model\Event;
+use App\Domain\Model\EventCollection;
+use App\Domain\Repository\EventRepository;
+use App\Domain\ValueObject\EventType;
+use App\Infrastructure\Mapper\ClickEventMapper;
+use App\Infrastructure\Mapper\ConversionEventMapper;
+use App\Infrastructure\Mapper\EventMapper;
+use App\Infrastructure\Mapper\ViewEventMapper;
 use DateTimeInterface;
 use Doctrine\DBAL\Driver\Exception as DBALDriverException;
 use Doctrine\DBAL\Exception as DBALException;

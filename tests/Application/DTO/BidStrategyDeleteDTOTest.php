@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Application\DTO;
+namespace App\Tests\Application\DTO;
 
-use Adshares\AdPay\Application\DTO\BidStrategyDeleteDTO;
-use Adshares\AdPay\Application\Exception\ValidationException;
+use App\Application\DTO\BidStrategyDeleteDTO;
+use App\Application\Exception\ValidationException;
 use PHPUnit\Framework\TestCase;
 
 final class BidStrategyDeleteDTOTest extends TestCase

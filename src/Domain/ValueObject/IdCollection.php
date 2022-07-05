@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Domain\ValueObject;
+namespace App\Domain\ValueObject;
 
 use Doctrine\Common\Collections\ArrayCollection;
 

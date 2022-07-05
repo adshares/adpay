@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Infrastructure\Repository;
+namespace App\Infrastructure\Repository;
 
-use Adshares\AdPay\Domain\ValueObject\Id;
+use App\Domain\ValueObject\Id;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\ParameterType;

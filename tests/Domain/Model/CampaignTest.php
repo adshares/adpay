@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Domain\Model;
+namespace App\Tests\Domain\Model;
 
-use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
-use Adshares\AdPay\Domain\Model\BannerCollection;
-use Adshares\AdPay\Domain\Model\Campaign;
-use Adshares\AdPay\Domain\Model\ConversionCollection;
-use Adshares\AdPay\Domain\ValueObject\Budget;
-use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Lib\DateTimeHelper;
+use App\Domain\Exception\InvalidArgumentException;
+use App\Domain\Model\BannerCollection;
+use App\Domain\Model\Campaign;
+use App\Domain\Model\ConversionCollection;
+use App\Domain\ValueObject\Budget;
+use App\Domain\ValueObject\Id;
+use App\Lib\DateTimeHelper;
 use DateTime;
 use DateTimeInterface;
 use PHPUnit\Framework\TestCase;

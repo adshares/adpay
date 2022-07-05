@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Domain\Repository;
+namespace App\Domain\Repository;
 
-use Adshares\AdPay\Domain\Model\CampaignCost;
-use Adshares\AdPay\Domain\Model\CampaignCostCollection;
-use Adshares\AdPay\Domain\ValueObject\Id;
+use App\Domain\Model\CampaignCost;
+use App\Domain\Model\CampaignCostCollection;
+use App\Domain\ValueObject\Id;
 use DateTimeInterface;
 
 interface CampaignCostRepository

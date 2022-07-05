@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Domain\Model;
+namespace App\Tests\Domain\Model;
 
-use Adshares\AdPay\Domain\Model\BidStrategy;
-use Adshares\AdPay\Domain\Model\BidStrategyCollection;
-use Adshares\AdPay\Domain\ValueObject\Id;
+use App\Domain\Model\BidStrategy;
+use App\Domain\Model\BidStrategyCollection;
+use App\Domain\ValueObject\Id;
 use PHPUnit\Framework\TestCase;
 
 final class BidStrategyCollectionTest extends TestCase

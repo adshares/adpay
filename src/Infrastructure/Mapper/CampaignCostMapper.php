@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Infrastructure\Mapper;
+namespace App\Infrastructure\Mapper;
 
-use Adshares\AdPay\Domain\Model\CampaignCost;
-use Adshares\AdPay\Domain\ValueObject\Id;
+use App\Domain\Model\CampaignCost;
+use App\Domain\ValueObject\Id;
 use Doctrine\DBAL\Types\Types;
 
 class CampaignCostMapper

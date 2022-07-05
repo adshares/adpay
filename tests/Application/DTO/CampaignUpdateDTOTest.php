@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Application\DTO;
+namespace App\Tests\Application\DTO;
 
-use Adshares\AdPay\Application\DTO\CampaignUpdateDTO;
-use Adshares\AdPay\Application\Exception\ValidationException;
-use Adshares\AdPay\Domain\Model\Banner;
-use Adshares\AdPay\Domain\Model\Campaign;
-use Adshares\AdPay\Domain\Model\Conversion;
+use App\Application\DTO\CampaignUpdateDTO;
+use App\Application\Exception\ValidationException;
+use App\Domain\Model\Banner;
+use App\Domain\Model\Campaign;
+use App\Domain\Model\Conversion;
 use DateTime;
 use PHPUnit\Framework\TestCase;
 
