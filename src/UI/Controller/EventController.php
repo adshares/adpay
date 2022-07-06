@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\UI\Controller;
+namespace App\UI\Controller;
 
-use Adshares\AdPay\Application\Command\EventUpdateCommand;
-use Adshares\AdPay\Application\DTO\ClickEventUpdateDTO;
-use Adshares\AdPay\Application\DTO\ConversionEventUpdateDTO;
-use Adshares\AdPay\Application\DTO\EventUpdateDTO;
-use Adshares\AdPay\Application\DTO\ViewEventUpdateDTO;
-use Adshares\AdPay\Application\Exception\ValidationException;
+use App\Application\Command\EventUpdateCommand;
+use App\Application\DTO\ClickEventUpdateDTO;
+use App\Application\DTO\ConversionEventUpdateDTO;
+use App\Application\DTO\EventUpdateDTO;
+use App\Application\DTO\ViewEventUpdateDTO;
+use App\Application\Exception\ValidationException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,11 +19,9 @@ use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class EventController extends AbstractController
 {
-    /** @var EventUpdateCommand */
-    private $eventUpdateCommand;
+    private EventUpdateCommand $eventUpdateCommand;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(EventUpdateCommand $eventUpdateCommand, LoggerInterface $logger)
     {

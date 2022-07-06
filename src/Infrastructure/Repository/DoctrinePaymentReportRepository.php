@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Infrastructure\Repository;
+namespace App\Infrastructure\Repository;
 
-use Adshares\AdPay\Domain\Exception\DomainRepositoryException;
-use Adshares\AdPay\Domain\Model\PaymentReport;
-use Adshares\AdPay\Domain\Model\PaymentReportCollection;
-use Adshares\AdPay\Domain\Repository\PaymentReportRepository;
-use Adshares\AdPay\Domain\ValueObject\PaymentReportStatus;
-use Adshares\AdPay\Infrastructure\Mapper\PaymentReportMapper;
+use App\Domain\Exception\DomainRepositoryException;
+use App\Domain\Model\PaymentReport;
+use App\Domain\Model\PaymentReportCollection;
+use App\Domain\Repository\PaymentReportRepository;
+use App\Domain\ValueObject\PaymentReportStatus;
+use App\Infrastructure\Mapper\PaymentReportMapper;
 use DateTimeInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DBALException;

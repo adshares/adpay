@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Infrastructure\Mapper;
+namespace App\Infrastructure\Mapper;
 
-use Adshares\AdPay\Domain\Model\ConversionEvent;
-use Adshares\AdPay\Domain\Model\Event;
-use Adshares\AdPay\Domain\ValueObject\EventType;
+use App\Domain\Model\ConversionEvent;
+use App\Domain\Model\Event;
+use App\Domain\ValueObject\EventType;
 use Doctrine\DBAL\Types\Types;
 
 class ConversionEventMapper extends EventMapper

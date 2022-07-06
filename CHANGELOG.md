@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2022-07-05
+### Changed
+- Support PHP 8.1
+- Upgrade to Symfony 5.4
+
 ## [1.3.3] - 2022-02-23
 ### Added
 - Support model type banners
@@ -70,7 +75,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rewriting from Python to PHP
 
 
-[Unreleased]: https://github.com/adshares/adpay/compare/v1.3.3...HEAD
+[Unreleased]: https://github.com/adshares/adpay/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/adshares/adpay/compare/v1.3.3...v1.4.0
 [1.3.3]: https://github.com/adshares/adpay/compare/v1.3.2...v1.3.3
 [1.3.2]: https://github.com/adshares/adpay/compare/v1.3.1...v1.3.2
 [1.3.1]: https://github.com/adshares/adpay/compare/v1.3.0...v1.3.1

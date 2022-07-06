@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Infrastructure\Repository;
+namespace App\Tests\Infrastructure\Repository;
 
-use Adshares\AdPay\Domain\Exception\DomainRepositoryException;
-use Adshares\AdPay\Domain\Model\CampaignCost;
-use Adshares\AdPay\Domain\Model\CampaignCostCollection;
-use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Infrastructure\Repository\DoctrineCampaignCostRepository;
+use App\Domain\Exception\DomainRepositoryException;
+use App\Domain\Model\CampaignCost;
+use App\Domain\Model\CampaignCostCollection;
+use App\Domain\ValueObject\Id;
+use App\Infrastructure\Repository\DoctrineCampaignCostRepository;
 use DateTime;
 use Psr\Log\NullLogger;
 

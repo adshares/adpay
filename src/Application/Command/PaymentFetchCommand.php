@@ -2,25 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Application\Command;
+namespace App\Application\Command;
 
-use Adshares\AdPay\Application\DTO\PaymentFetchDTO;
-use Adshares\AdPay\Application\Exception\FetchingException;
-use Adshares\AdPay\Domain\Model\PaymentReport;
-use Adshares\AdPay\Domain\Repository\PaymentReportRepository;
-use Adshares\AdPay\Domain\Repository\PaymentRepository;
+use App\Application\DTO\PaymentFetchDTO;
+use App\Application\Exception\FetchingException;
+use App\Domain\Model\PaymentReport;
+use App\Domain\Repository\PaymentReportRepository;
+use App\Domain\Repository\PaymentRepository;
 use Psr\Log\LoggerInterface;
 
 final class PaymentFetchCommand
 {
-    /** @var PaymentReportRepository */
-    private $paymentReportRepository;
+    private PaymentReportRepository $paymentReportRepository;
 
-    /** @var PaymentRepository */
-    private $paymentRepository;
+    private PaymentRepository $paymentRepository;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         PaymentReportRepository $paymentReportRepository,

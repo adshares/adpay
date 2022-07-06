@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\UI\Controller;
+namespace App\UI\Controller;
 
-use Adshares\AdPay\Application\Command\CampaignDeleteCommand;
-use Adshares\AdPay\Application\Command\CampaignUpdateCommand;
-use Adshares\AdPay\Application\DTO\CampaignDeleteDTO;
-use Adshares\AdPay\Application\DTO\CampaignUpdateDTO;
-use Adshares\AdPay\Application\Exception\ValidationException;
+use App\Application\Command\CampaignDeleteCommand;
+use App\Application\Command\CampaignUpdateCommand;
+use App\Application\DTO\CampaignDeleteDTO;
+use App\Application\DTO\CampaignUpdateDTO;
+use App\Application\Exception\ValidationException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,14 +18,11 @@ use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class CampaignController extends AbstractController
 {
-    /** @var CampaignUpdateCommand */
-    private $updateCommand;
+    private CampaignUpdateCommand $updateCommand;
 
-    /** @var CampaignDeleteCommand */
-    private $deleteCommand;
+    private CampaignDeleteCommand $deleteCommand;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         CampaignUpdateCommand $updateCommand,

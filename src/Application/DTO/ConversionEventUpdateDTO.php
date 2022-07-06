@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Application\DTO;
+namespace App\Application\DTO;
 
-use Adshares\AdPay\Application\Exception\ValidationException;
-use Adshares\AdPay\Domain\Model\ConversionEvent;
-use Adshares\AdPay\Domain\Model\Event;
-use Adshares\AdPay\Domain\Model\EventCollection;
-use Adshares\AdPay\Domain\ValueObject\EventType;
-use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Domain\ValueObject\PaymentStatus;
-use Adshares\AdPay\Lib\DateTimeHelper;
+use App\Application\Exception\ValidationException;
+use App\Domain\Model\ConversionEvent;
+use App\Domain\Model\Event;
+use App\Domain\Model\EventCollection;
+use App\Domain\ValueObject\EventType;
+use App\Domain\ValueObject\Id;
+use App\Domain\ValueObject\PaymentStatus;
+use App\Lib\DateTimeHelper;
 use DateTimeInterface;
 
 final class ConversionEventUpdateDTO extends EventUpdateDTO

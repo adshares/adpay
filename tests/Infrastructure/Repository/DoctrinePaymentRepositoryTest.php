@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Infrastructure\Repository;
+namespace App\Tests\Infrastructure\Repository;
 
-use Adshares\AdPay\Domain\Exception\DomainRepositoryException;
-use Adshares\AdPay\Domain\Model\PaymentReport;
-use Adshares\AdPay\Domain\ValueObject\PaymentReportStatus;
-use Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository;
-use Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentRepository;
+use App\Domain\Exception\DomainRepositoryException;
+use App\Domain\Model\PaymentReport;
+use App\Domain\ValueObject\PaymentReportStatus;
+use App\Infrastructure\Repository\DoctrinePaymentReportRepository;
+use App\Infrastructure\Repository\DoctrinePaymentRepository;
 use Psr\Log\NullLogger;
 
 final class DoctrinePaymentRepositoryTest extends RepositoryTestCase

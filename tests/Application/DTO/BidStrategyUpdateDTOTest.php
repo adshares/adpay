@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Application\DTO;
+namespace App\Tests\Application\DTO;
 
-use Adshares\AdPay\Application\DTO\BidStrategyUpdateDTO;
-use Adshares\AdPay\Application\Exception\ValidationException;
-use Adshares\AdPay\Domain\Model\BidStrategy;
+use App\Application\DTO\BidStrategyUpdateDTO;
+use App\Application\Exception\ValidationException;
+use App\Domain\Model\BidStrategy;
 use PHPUnit\Framework\TestCase;
 
 final class BidStrategyUpdateDTOTest extends TestCase

@@ -12,89 +12,18 @@ services:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
-    Adshares\AdPay\UI\Command\:
-        resource: '../src/UI/Command'
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
 
-#    Adshares\AdSelect\UI\EventListener\ApiExceptionListenerSubscriber:
-#        arguments:
-#            $env: '%env(APP_ENV)%'
-#            $logger: '@logger'
-#        tags:
-#            - { name: kernel.event_subscriber }
-
-
-    Adshares\AdPay\Infrastructure\Repository\:
-        resource: '../src/Infrastructure/Repository'
-
-    Adshares\AdPay\Application\Command\:
-        resource: '../src/Application/Command'
-
-    Adshares\AdPay\Application\Command\BidStrategyUpdateCommand:
-        public: true
-        arguments:
-            $bidStrategyRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineBidStrategyRepository'
-            $logger: '@logger'
-
-    Adshares\AdPay\Application\Command\BidStrategyDeleteCommand:
-        public: true
-        arguments:
-            $bidStrategyRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineBidStrategyRepository'
-            $logger: '@logger'
-
-    Adshares\AdPay\Application\Command\CampaignUpdateCommand:
-        public: true
-        arguments:
-            $campaignRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineCampaignRepository'
-            $logger: '@logger'
-
-    Adshares\AdPay\Application\Command\CampaignDeleteCommand:
-        public: true
-        arguments:
-            $campaignRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineCampaignRepository'
-            $logger: '@logger'
-
-    Adshares\AdPay\Application\Command\EventUpdateCommand:
-        public: true
-        arguments:
-            $eventRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineEventRepository'
-            $paymentReportRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository'
-            $logger: '@logger'
-
-    Adshares\AdPay\Application\Command\EventDeleteCommand:
-        public: true
-        arguments:
-            $eventRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineEventRepository'
-            $logger: '@logger'
-
-    Adshares\AdPay\Application\Command\ReportFetchCommand:
-        public: true
-        arguments:
-            $paymentReportRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository'
-            $logger: '@logger'
-
-    Adshares\AdPay\Application\Command\ReportCalculateCommand:
-        public: true
-        arguments:
-            $paymentReportRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository'
-            $paymentRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentRepository'
-            $eventRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineEventRepository'
-            $paymentCalculatorFactory: '@Adshares\AdPay\Domain\Service\PaymentCalculatorFactory'
-            $logger: '@logger'
-
-    Adshares\AdPay\Application\Command\ReportDeleteCommand:
-        public: true
-        arguments:
-            $paymentReportRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository'
-            $logger: '@logger'
-
-    Adshares\AdPay\Application\Command\PaymentFetchCommand:
-        public: true
-        arguments:
-            $paymentReportRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository'
-            $paymentRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentRepository'
-            $logger: '@logger'
-
-    Adshares\AdPay\Domain\ValueObject\PaymentCalculatorConfig:
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+    App\Domain\ValueObject\PaymentCalculatorConfig:
         arguments:
             $config: {
                 humanScoreThreshold: '%env(float:HUMAN_SCORE_THRESHOLD)%',
@@ -102,26 +31,3 @@ services:
                 autoCpmBudgetThreshold: '%env(float:AUTO_CPM_BUDGET_THRESHOLD)%',
                 autoCpmDefault: '%env(int:AUTO_CPM_DEFAULT)%'
             }
-
-    Adshares\AdPay\Domain\Service\PaymentCalculatorFactory:
-        arguments:
-            $campaignRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineCampaignRepository'
-            $bidStrategyRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineBidStrategyRepository'
-            $campaignCostRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineCampaignCostRepository'
-            $config: '@Adshares\AdPay\Domain\ValueObject\PaymentCalculatorConfig'
-
-    Adshares\AdPay\UI\Controller\:
-        resource: '../src/UI/Controller'
-        tags: ['controller.service_arguments']
-
-#    Adshares\AdPay\UI\Controller\CampaignController:
-#        public: true
-#        arguments:
-#            $campaignRepository: '@Adshares\AdPay\Infrastructure\Repository\DoctrineCampaignRepository'
-#            $logger: '@logger'
-#
-#    Adshares\AdPay\UI\Controller\EventController:
-#        public: true
-#        arguments:
-#            $eventUpdater: '@Adshares\AdPay\Application\Service\EventUpdater'
-#            $logger: '@logger'

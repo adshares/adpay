@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Application\DTO;
+namespace App\Application\DTO;
 
-use Adshares\AdPay\Domain\Model\ClickEvent;
-use Adshares\AdPay\Domain\Model\Event;
-use Adshares\AdPay\Domain\Model\EventCollection;
-use Adshares\AdPay\Domain\ValueObject\EventType;
-use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Lib\DateTimeHelper;
+use App\Domain\Model\ClickEvent;
+use App\Domain\Model\Event;
+use App\Domain\Model\EventCollection;
+use App\Domain\ValueObject\EventType;
+use App\Domain\ValueObject\Id;
+use App\Lib\DateTimeHelper;
 use DateTimeInterface;
 
 final class ClickEventUpdateDTO extends EventUpdateDTO

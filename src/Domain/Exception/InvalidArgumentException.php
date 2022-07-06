@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Domain\Exception;
+namespace App\Domain\Exception;
 
 use InvalidArgumentException as BaseInvalidArgumentException;
 

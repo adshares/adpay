@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Application\Command;
+namespace App\Application\Command;
 
 use DateTime;
 

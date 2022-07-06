@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Application\Command;
+namespace App\Tests\Application\Command;
 
-use Adshares\AdPay\Application\Command\ReportFetchCommand;
-use Adshares\AdPay\Domain\Model\PaymentReport;
-use Adshares\AdPay\Domain\Model\PaymentReportCollection;
-use Adshares\AdPay\Domain\Repository\PaymentReportRepository;
-use Adshares\AdPay\Domain\ValueObject\PaymentReportStatus;
+use App\Application\Command\ReportFetchCommand;
+use App\Domain\Model\PaymentReport;
+use App\Domain\Model\PaymentReportCollection;
+use App\Domain\Repository\PaymentReportRepository;
+use App\Domain\ValueObject\PaymentReportStatus;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 

@@ -2,19 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Application\Command;
+namespace App\Application\Command;
 
-use Adshares\AdPay\Application\DTO\CampaignDeleteDTO;
-use Adshares\AdPay\Domain\Repository\CampaignRepository;
+use App\Application\DTO\CampaignDeleteDTO;
+use App\Domain\Repository\CampaignRepository;
 use Psr\Log\LoggerInterface;
 
 final class CampaignDeleteCommand
 {
-    /** @var CampaignRepository */
-    private $campaignRepository;
+    private CampaignRepository $campaignRepository;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         CampaignRepository $campaignRepository,

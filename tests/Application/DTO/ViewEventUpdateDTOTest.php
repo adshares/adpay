@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Application\DTO;
+namespace App\Tests\Application\DTO;
 
-use Adshares\AdPay\Application\DTO\EventUpdateDTO;
-use Adshares\AdPay\Application\DTO\ViewEventUpdateDTO;
-use Adshares\AdPay\Domain\ValueObject\EventType;
+use App\Application\DTO\EventUpdateDTO;
+use App\Application\DTO\ViewEventUpdateDTO;
+use App\Domain\ValueObject\EventType;
 
 final class ViewEventUpdateDTOTest extends EventUpdateDTOTest
 {

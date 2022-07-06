@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Domain\Service;
+namespace App\Domain\Service;
 
-use Adshares\AdPay\Domain\Repository\BidStrategyRepository;
-use Adshares\AdPay\Domain\Repository\CampaignRepository;
-use Adshares\AdPay\Domain\Repository\CampaignCostRepository;
-use Adshares\AdPay\Domain\ValueObject\PaymentCalculatorConfig;
+use App\Domain\Repository\BidStrategyRepository;
+use App\Domain\Repository\CampaignRepository;
+use App\Domain\Repository\CampaignCostRepository;
+use App\Domain\ValueObject\PaymentCalculatorConfig;
 
 class PaymentCalculatorFactory
 {

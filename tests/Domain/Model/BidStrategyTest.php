@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Domain\Model;
+namespace App\Tests\Domain\Model;
 
-use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
-use Adshares\AdPay\Domain\Model\BidStrategy;
-use Adshares\AdPay\Domain\ValueObject\Id;
+use App\Domain\Exception\InvalidArgumentException;
+use App\Domain\Model\BidStrategy;
+use App\Domain\ValueObject\Id;
 use PHPUnit\Framework\TestCase;
 
 final class BidStrategyTest extends TestCase

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Domain\Model;
+namespace App\Tests\Domain\Model;
 
-use Adshares\AdPay\Domain\Model\Impression;
-use Adshares\AdPay\Domain\Model\ImpressionCase;
-use Adshares\AdPay\Domain\ValueObject\Context;
-use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Lib\DateTimeHelper;
+use App\Domain\Model\Impression;
+use App\Domain\Model\ImpressionCase;
+use App\Domain\ValueObject\Context;
+use App\Domain\ValueObject\Id;
+use App\Lib\DateTimeHelper;
 use PHPUnit\Framework\TestCase;
 
 final class ImpressionCaseTest extends TestCase

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Domain\Model;
+namespace App\Domain\Model;
 
-use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Domain\ValueObject\LimitType;
+use App\Domain\ValueObject\Id;
+use App\Domain\ValueObject\LimitType;
 use DateTimeInterface;
 
 final class Conversion

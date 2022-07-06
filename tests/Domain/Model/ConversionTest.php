@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Domain\Model;
+namespace App\Tests\Domain\Model;
 
-use Adshares\AdPay\Domain\Model\Conversion;
-use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Domain\ValueObject\LimitType;
-use Adshares\AdPay\Lib\DateTimeHelper;
+use App\Domain\Model\Conversion;
+use App\Domain\ValueObject\Id;
+use App\Domain\ValueObject\LimitType;
+use App\Lib\DateTimeHelper;
 use DateTimeInterface;
 use PHPUnit\Framework\TestCase;
 

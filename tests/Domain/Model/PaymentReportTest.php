@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Domain\Model;
+namespace App\Tests\Domain\Model;
 
-use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
-use Adshares\AdPay\Domain\Model\PaymentReport;
-use Adshares\AdPay\Domain\ValueObject\EventType;
-use Adshares\AdPay\Domain\ValueObject\PaymentReportStatus;
+use App\Domain\Exception\InvalidArgumentException;
+use App\Domain\Model\PaymentReport;
+use App\Domain\ValueObject\EventType;
+use App\Domain\ValueObject\PaymentReportStatus;
 use PHPUnit\Framework\TestCase;
 
 final class PaymentReportTest extends TestCase

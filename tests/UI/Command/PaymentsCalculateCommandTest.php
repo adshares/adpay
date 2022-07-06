@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\UI\Command;
+namespace App\Tests\UI\Command;
 
-use Adshares\AdPay\Domain\Model\PaymentReport;
-use Adshares\AdPay\Domain\ValueObject\PaymentReportStatus;
-use Adshares\AdPay\Infrastructure\Repository\DoctrinePaymentReportRepository;
+use App\Domain\Model\PaymentReport;
+use App\Domain\ValueObject\PaymentReportStatus;
+use App\Infrastructure\Repository\DoctrinePaymentReportRepository;
 use Psr\Log\NullLogger;
 use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Lock\Store\FlockStore;

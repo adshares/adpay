@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Application\DTO;
+namespace App\Application\DTO;
 
 final class CampaignDeleteDTO extends BasicDeleteDTO
 {

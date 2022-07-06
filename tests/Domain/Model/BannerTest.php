@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Domain\Model;
+namespace App\Tests\Domain\Model;
 
-use Adshares\AdPay\Domain\Model\Banner;
-use Adshares\AdPay\Domain\ValueObject\BannerType;
-use Adshares\AdPay\Domain\ValueObject\Id;
-use Adshares\AdPay\Lib\DateTimeHelper;
+use App\Domain\Model\Banner;
+use App\Domain\ValueObject\BannerType;
+use App\Domain\ValueObject\Id;
+use App\Lib\DateTimeHelper;
 use DateTimeInterface;
 use PHPUnit\Framework\TestCase;
 

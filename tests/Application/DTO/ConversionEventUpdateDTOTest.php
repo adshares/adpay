@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Application\DTO;
+namespace App\Tests\Application\DTO;
 
-use Adshares\AdPay\Application\DTO\ConversionEventUpdateDTO;
-use Adshares\AdPay\Application\DTO\EventUpdateDTO;
-use Adshares\AdPay\Domain\Model\ConversionEvent;
-use Adshares\AdPay\Domain\ValueObject\EventType;
+use App\Application\DTO\ConversionEventUpdateDTO;
+use App\Application\DTO\EventUpdateDTO;
+use App\Domain\Model\ConversionEvent;
+use App\Domain\ValueObject\EventType;
 
 final class ConversionEventUpdateDTOTest extends EventUpdateDTOTest
 {

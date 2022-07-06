@@ -2,19 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Application\DTO;
+namespace App\Application\DTO;
 
-use Adshares\AdPay\Application\Exception\ValidationException;
-use Adshares\AdPay\Domain\Exception\InvalidArgumentException;
-use Adshares\AdPay\Domain\Model\BidStrategy;
-use Adshares\AdPay\Domain\Model\BidStrategyCollection;
-use Adshares\AdPay\Domain\ValueObject\Id;
+use App\Application\Exception\ValidationException;
+use App\Domain\Exception\InvalidArgumentException;
+use App\Domain\Model\BidStrategy;
+use App\Domain\Model\BidStrategyCollection;
+use App\Domain\ValueObject\Id;
 use TypeError;
 
 final class BidStrategyUpdateDTO
 {
-    /** @var BidStrategyCollection */
-    private $bidStrategies;
+    private BidStrategyCollection $bidStrategies;
 
     public function __construct(array $input)
     {

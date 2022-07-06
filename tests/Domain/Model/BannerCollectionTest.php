@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Tests\Domain\Model;
+namespace App\Tests\Domain\Model;
 
-use Adshares\AdPay\Domain\Model\Banner;
-use Adshares\AdPay\Domain\Model\BannerCollection;
-use Adshares\AdPay\Domain\ValueObject\BannerType;
-use Adshares\AdPay\Domain\ValueObject\Id;
+use App\Domain\Model\Banner;
+use App\Domain\Model\BannerCollection;
+use App\Domain\ValueObject\BannerType;
+use App\Domain\ValueObject\Id;
 use PHPUnit\Framework\TestCase;
 
 final class BannerCollectionTest extends TestCase

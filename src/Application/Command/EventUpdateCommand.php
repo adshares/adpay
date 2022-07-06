@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdPay\Application\Command;
+namespace App\Application\Command;
 
-use Adshares\AdPay\Application\DTO\EventUpdateDTO;
-use Adshares\AdPay\Application\Exception\ValidationException;
-use Adshares\AdPay\Domain\Exception\InvalidDataException;
-use Adshares\AdPay\Domain\Repository\EventRepository;
-use Adshares\AdPay\Domain\Repository\PaymentReportRepository;
+use App\Application\DTO\EventUpdateDTO;
+use App\Application\Exception\ValidationException;
+use App\Domain\Exception\InvalidDataException;
+use App\Domain\Repository\EventRepository;
+use App\Domain\Repository\PaymentReportRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\LockableTrait;
 
