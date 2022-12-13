@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.4.1] - 2022-12-13
 ### Added
 - Medium and vendor support
 
@@ -77,7 +79,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rewriting from Python to PHP
 
 
-[Unreleased]: https://github.com/adshares/adpay/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/adshares/adpay/compare/v1.4.1...HEAD
+[1.4.1]: https://github.com/adshares/adpay/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/adshares/adpay/compare/v1.3.3...v1.4.0
 [1.3.3]: https://github.com/adshares/adpay/compare/v1.3.2...v1.3.3
 [1.3.2]: https://github.com/adshares/adpay/compare/v1.3.1...v1.3.2
