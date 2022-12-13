@@ -3,14 +3,14 @@ language: php
 sudo: false
 services: mysql
 php:
-  - 7.4
+  - 8.1
 cache:
   directories:
     - $HOME/.composer/cache/files
 
 env:
   global:
-    - MIN_PHP=7.4
+    - MIN_PHP=8.1
     - DATABASE_URL=mysql://travis@127.0.0.1:3306/adpay_test
 
 before_install:
