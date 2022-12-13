@@ -41,6 +41,34 @@ final class CampaignControllerTest extends WebTestCase
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
     }
 
+    public function testUpdateMetaverseCampaign(): void
+    {
+        $parameters = [
+            'campaigns' => [
+                [
+                    'id' => '43c567e1396b4cadb52223a51796fd01',
+                    'advertiser_id' => 'fff567e1396b4cadb52223a51796fd02',
+                    'medium' => 'metaverse',
+                    'vendor' => 'my-metaverse',
+                    'time_start' => 123123,
+                    'budget' => 10000,
+                    'banners' => [
+                        [
+                            'id' => '43c567e1396b4cadb52223a51796fd02',
+                            'size' => '220x345',
+                            'type' => 'image',
+                        ],
+                    ],
+                    'bid_strategy_id' => 'fff567e1396b4cadb52223a51796fd02',
+                ],
+            ],
+        ];
+
+        $client = self::createClient();
+        $client->request('POST', '/api/v1/campaigns', [], [], [], json_encode($parameters));
+        $this->assertEquals(204, $client->getResponse()->getStatusCode());
+    }
+
     public function testEmptyUpdateCampaign(): void
     {
         $client = self::createClient();

@@ -10,6 +10,7 @@ use App\Domain\Model\CampaignCollection;
 use App\Domain\Model\ConversionCollection;
 use App\Domain\ValueObject\Budget;
 use App\Domain\ValueObject\Id;
+use App\Domain\ValueObject\Medium;
 use PHPUnit\Framework\TestCase;
 use DateTime;
 
@@ -38,6 +39,8 @@ final class CampaignCollectionTest extends TestCase
         return new Campaign(
             new Id('0000000000000000000000000000000' . (string)$id),
             new Id('43c567e1396b4cadb52223a51796fd01'),
+            Medium::Web,
+            null,
             new DateTime(),
             new DateTime(),
             new Budget(100),

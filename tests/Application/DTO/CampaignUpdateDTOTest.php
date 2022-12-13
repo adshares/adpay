@@ -157,6 +157,7 @@ final class CampaignUpdateDTOTest extends TestCase
                 'banners' => [$bannersInput],
                 'filters' => ['require' => ['a'], 'exclude' => ['b']],
                 'conversions' => [$conversionInput],
+                'medium' => 'metaverse',
             ]
         );
         $dto = new CampaignUpdateDTO(['campaigns' => [$input]]);
@@ -176,6 +177,7 @@ final class CampaignUpdateDTOTest extends TestCase
         $this->assertEquals($input['max_cpm'], $campaign->getMaxCpm());
         $this->assertEquals($input['max_cpc'], $campaign->getMaxCpc());
         $this->assertEquals($input['filters'], $campaign->getFilters());
+        $this->assertTrue($campaign->isMetaverse());
 
         $this->assertEquals($input['id'], $banner->getCampaignId());
         $this->assertEquals($bannersInput['id'], $banner->getId());
@@ -186,6 +188,16 @@ final class CampaignUpdateDTOTest extends TestCase
         $this->assertEquals($conversionInput['id'], $conversion->getId());
         $this->assertEquals($conversionInput['limit_type'], $conversion->getLimitType());
         $this->assertEquals($conversionInput['is_repeatable'], $conversion->isRepeatable());
+    }
+
+    public function testDefaultMedium(): void
+    {
+        $input = self::simpleCampaign([], 'medium');
+        $dto = new CampaignUpdateDTO(['campaigns' => [$input]]);
+
+        /* @var $campaign Campaign */
+        $campaign = $dto->getCampaigns()->first();
+        $this->assertTrue($campaign->isWeb());
     }
 
     public function validCampaignsDataProvider(): array
@@ -203,6 +215,10 @@ final class CampaignUpdateDTOTest extends TestCase
             [[self::simpleCampaign(['max_cpc' => null])]],
             [[self::simpleCampaign(['max_cpc' => 0])]],
             [[self::simpleCampaign(['max_cpc' => 100])]],
+            [[self::simpleCampaign(['medium' => 'metaverse'])]],
+            [[self::simpleCampaign([], 'medium')]],
+            [[self::simpleCampaign(['vendor' => 'dummy'])]],
+            [[self::simpleCampaign(['medium' => 'metaverse', 'vendor' => 'dummy'])]],
         ];
     }
 
@@ -229,6 +245,7 @@ final class CampaignUpdateDTOTest extends TestCase
             [[self::simpleCampaign(['max_cpc' => 'invalid_value'])]],
             [[self::simpleCampaign([], 'banners')]],
             [[self::simpleCampaign([], 'bid_strategy_id')]],
+            [[self::simpleCampaign(['medium' => 'dummy'])]],
         ];
     }
 
@@ -357,6 +374,7 @@ final class CampaignUpdateDTOTest extends TestCase
             [
                 'id' => '43c567e1396b4cadb52223a51796fd01',
                 'advertiser_id' => 'fff567e1396b4cadb52223a51796fd02',
+                'medium' => 'web',
                 'time_start' => (new DateTime())->getTimestamp(),
                 'budget' => 10000,
                 'banners' => [self::simpleBanner()],
