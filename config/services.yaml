@@ -29,6 +29,7 @@ services:
             $config: {
                 humanScoreThreshold: '%env(float:HUMAN_SCORE_THRESHOLD)%',
                 conversionHumanScoreThreshold: '%env(float:CONVERSION_HUMAN_SCORE_THRESHOLD)%',
+                metaverseHumanScoreThreshold: '%env(float:METAVERSE_HUMAN_SCORE_THRESHOLD)%',
                 autoCpmBudgetThreshold: '%env(float:AUTO_CPM_BUDGET_THRESHOLD)%',
                 autoCpmDefault: '%env(int:AUTO_CPM_DEFAULT)%'
             }

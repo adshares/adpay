@@ -22,6 +22,8 @@ final class PaymentCalculatorConfig
         $this->humanScoreThreshold = (float)($config['humanScoreThreshold'] ?? $this->humanScoreThreshold);
         $this->conversionHumanScoreThreshold =
             (float)($config['conversionHumanScoreThreshold'] ?? $this->conversionHumanScoreThreshold);
+        $this->metaverseHumanScoreThreshold =
+            (float)($config['metaverseHumanScoreThreshold'] ?? $this->metaverseHumanScoreThreshold);
         $this->autoCpmBudgetThreshold = (float)($config['autoCpmBudgetThreshold'] ?? $this->autoCpmBudgetThreshold);
         $this->autoCpmDefault = (int)($config['autoCpmDefault'] ?? $this->autoCpmDefault);
     }
