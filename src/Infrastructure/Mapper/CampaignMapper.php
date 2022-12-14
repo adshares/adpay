@@ -9,6 +9,7 @@ use App\Domain\Model\Campaign;
 use App\Domain\Model\ConversionCollection;
 use App\Domain\ValueObject\Budget;
 use App\Domain\ValueObject\Id;
+use App\Domain\ValueObject\Medium;
 use App\Lib\DateTimeHelper;
 use Doctrine\DBAL\Types\Types;
 
@@ -24,6 +25,8 @@ class CampaignMapper
         return [
             'id' => $campaign->getId()->toBin(),
             'advertiser_id' => $campaign->getAdvertiserId()->toBin(),
+            'medium' => $campaign->getMedium()->value,
+            'vendor' => $campaign->getVendor(),
             'time_start' => $campaign->getTimeStart(),
             'time_end' => $campaign->getTimeEnd(),
             'filters' => $campaign->getFilters(),
@@ -40,6 +43,8 @@ class CampaignMapper
         return [
             'id' => Types::BINARY,
             'advertiser_id' => Types::BINARY,
+            'medium' => Types::STRING,
+            'vendor' => Types::STRING,
             'time_start' => Types::DATETIME_MUTABLE,
             'time_end' => Types::DATETIME_MUTABLE,
             'filters' => Types::JSON,
@@ -62,6 +67,8 @@ class CampaignMapper
         return new Campaign(
             Id::fromBin($row['id']),
             Id::fromBin($row['advertiser_id']),
+            Medium::tryFrom($row['medium']),
+            $row['vendor'],
             DateTimeHelper::fromString($row['time_start']),
             $row['time_end'] !== null ? DateTimeHelper::fromString($row['time_end']) : null,
             $budget,

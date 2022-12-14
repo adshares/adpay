@@ -7,51 +7,27 @@ namespace App\Domain\Model;
 use App\Domain\Exception\InvalidArgumentException;
 use App\Domain\ValueObject\Budget;
 use App\Domain\ValueObject\Id;
+use App\Domain\ValueObject\Medium;
 use DateTimeInterface;
 
 final class Campaign
 {
-    /** @var Id */
-    private $id;
-
-    /** @var Id */
-    private $advertiserId;
-
-    /** @var DateTimeInterface */
-    private $timeStart;
-
-    /** @var DateTimeInterface|null */
-    private $timeEnd;
-
-    /** @var Budget */
-    private $budget;
-
-    /** @var BannerCollection */
-    private $banners;
-
     /** @var array<string> */
     private $filters;
 
-    /** @var ConversionCollection */
-    private $conversions;
-
-    /** @var Id */
-    private $bidStrategyId;
-
-    /** @var DateTimeInterface|null */
-    private $deletedAt;
-
     public function __construct(
-        Id $id,
-        Id $advertiserId,
-        DateTimeInterface $timeStart,
-        ?DateTimeInterface $timeEnd,
-        Budget $budget,
-        BannerCollection $banners,
+        private readonly Id $id,
+        private readonly Id $advertiserId,
+        private readonly Medium $medium,
+        private readonly ?string $vendor,
+        private readonly DateTimeInterface $timeStart,
+        private readonly ?DateTimeInterface $timeEnd,
+        private readonly Budget $budget,
+        private readonly BannerCollection $banners,
         array $filters,
-        ConversionCollection $conversions,
-        Id $bidStrategyId,
-        DateTimeInterface $deletedAt = null
+        private readonly ConversionCollection $conversions,
+        private readonly Id $bidStrategyId,
+        private readonly ?DateTimeInterface $deletedAt = null
     ) {
         if ($timeEnd !== null && $timeStart > $timeEnd) {
             throw InvalidArgumentException::fromArgument(
@@ -60,20 +36,10 @@ final class Campaign
                 sprintf('Time start must be greater than end date (%s).', $timeEnd->format(DateTimeInterface::ATOM))
             );
         }
-
-        $this->id = $id;
-        $this->advertiserId = $advertiserId;
-        $this->timeStart = $timeStart;
-        $this->timeEnd = $timeEnd;
-        $this->budget = $budget;
-        $this->banners = $banners;
         $this->filters = [
             'exclude' => $filters['exclude'] ?? [],
             'require' => $filters['require'] ?? [],
         ];
-        $this->conversions = $conversions;
-        $this->bidStrategyId = $bidStrategyId;
-        $this->deletedAt = $deletedAt;
     }
 
     public function getId(): Id
@@ -84,6 +50,26 @@ final class Campaign
     public function getAdvertiserId(): Id
     {
         return $this->advertiserId;
+    }
+
+    public function getMedium(): Medium
+    {
+        return $this->medium;
+    }
+
+    public function isWeb(): bool
+    {
+        return Medium::Web === $this->medium;
+    }
+
+    public function isMetaverse(): bool
+    {
+        return Medium::Metaverse === $this->medium;
+    }
+
+    public function getVendor(): ?string
+    {
+        return $this->vendor;
     }
 
     public function getTimeStart(): DateTimeInterface

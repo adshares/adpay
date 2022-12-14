@@ -10,6 +10,7 @@ use App\Domain\Model\Campaign;
 use App\Domain\Model\ConversionCollection;
 use App\Domain\ValueObject\Budget;
 use App\Domain\ValueObject\Id;
+use App\Domain\ValueObject\Medium;
 use App\Lib\DateTimeHelper;
 use DateTime;
 use DateTimeInterface;
@@ -21,6 +22,8 @@ final class CampaignTest extends TestCase
     {
         $campaignId = '43c567e1396b4cadb52223a51796fd01';
         $advertiserId = 'ffc567e1396b4cadb52223a51796fd02';
+        $medium = Medium::Web;
+        $vendor = null;
         $timeStart = '2019-01-01T12:00:00+00:00';
         $timeEnd = '2019-03-03T09:00:00+00:00';
         $bidStrategyId = '43c567e1396b4cadb52223a51796fd02';
@@ -39,6 +42,8 @@ final class CampaignTest extends TestCase
         $campaign = new Campaign(
             new Id($campaignId),
             new Id($advertiserId),
+            $medium,
+            $vendor,
             DateTimeHelper::fromString($timeStart),
             DateTimeHelper::fromString($timeEnd),
             $budget,
@@ -51,6 +56,8 @@ final class CampaignTest extends TestCase
         $this->assertInstanceOf(Campaign::class, $campaign);
         $this->assertEquals($campaignId, $campaign->getId());
         $this->assertEquals($advertiserId, $campaign->getAdvertiserId());
+        $this->assertEquals($medium, $campaign->getMedium());
+        $this->assertEquals($vendor, $campaign->getVendor());
         $this->assertEquals($timeStart, $campaign->getTimeStart()->format(DateTimeInterface::ATOM));
         $this->assertEquals($timeEnd, $campaign->getTimeEnd()->format(DateTimeInterface::ATOM));
         $this->assertEquals($budget, $campaign->getBudget());
@@ -62,10 +69,17 @@ final class CampaignTest extends TestCase
         $this->assertEquals($conversions, $campaign->getConversions());
         $this->assertEquals($bidStrategyId, $campaign->getBidStrategyId());
         $this->assertNull($campaign->getDeletedAt());
+        $this->assertTrue($campaign->isWeb());
+        $this->assertFalse($campaign->isMetaverse());
+
+        $mMedium = Medium::Metaverse;
+        $mVendor = 'my-metaverse';
 
         $campaign = new Campaign(
             new Id($campaignId),
             new Id($advertiserId),
+            $mMedium,
+            $mVendor,
             DateTimeHelper::fromString($timeStart),
             DateTimeHelper::fromString($timeEnd),
             $budget,
@@ -76,7 +90,11 @@ final class CampaignTest extends TestCase
             DateTimeHelper::fromString($deletedAt)
         );
 
+        $this->assertEquals($mMedium, $campaign->getMedium());
+        $this->assertEquals($mVendor, $campaign->getVendor());
         $this->assertEquals($deletedAt, $campaign->getDeletedAt()->format(DateTimeInterface::ATOM));
+        $this->assertFalse($campaign->isWeb());
+        $this->assertTrue($campaign->isMetaverse());
     }
 
     public function testEmptyFilters(): void
@@ -84,6 +102,8 @@ final class CampaignTest extends TestCase
         $campaign = new Campaign(
             new Id('43c567e1396b4cadb52223a51796fd01'),
             new Id('43c567e1396b4cadb52223a51796fd0f'),
+            Medium::Web,
+            null,
             new DateTime(),
             new DateTime(),
             new Budget(100),
@@ -105,6 +125,8 @@ final class CampaignTest extends TestCase
         new Campaign(
             new Id('43c567e1396b4cadb52223a51796fd01'),
             new Id('43c567e1396b4cadb52223a51796fd01'),
+            Medium::Web,
+            null,
             DateTimeHelper::fromString('2019-01-02T12:00:00+00:00'),
             DateTimeHelper::fromString('2019-01-01T12:00:00+00:00'),
             new Budget(10),
@@ -123,6 +145,8 @@ final class CampaignTest extends TestCase
         $campaign = new Campaign(
             new Id('43c567e1396b4cadb52223a51796fd01'),
             new Id('43c567e1396b4cadb52223a51796fd01'),
+            Medium::Web,
+            null,
             DateTimeHelper::fromString('2019-01-02T12:00:00+00:00'),
             DateTimeHelper::fromString('2019-01-03T12:00:00+00:00'),
             new Budget(10),

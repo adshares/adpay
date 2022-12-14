@@ -21,6 +21,7 @@ use App\Domain\ValueObject\Budget;
 use App\Domain\ValueObject\EventType;
 use App\Domain\ValueObject\Id;
 use App\Domain\ValueObject\LimitType;
+use App\Domain\ValueObject\Medium;
 use App\Domain\ValueObject\PaymentCalculatorConfig;
 use App\Domain\ValueObject\PaymentStatus;
 use App\Lib\DateTimeHelper;
@@ -208,6 +209,45 @@ final class PaymentCalculatorTest extends TestCase
         $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
         $payment = $this->single($campaigns, self::conversionEvent(['human_score' => 0.4]));
         $this->assertEquals(PaymentStatus::ACCEPTED, $payment['status']);
+
+        $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
+        $payment = $this->single($campaigns, self::conversionEvent(['human_score' => 0.39]));
+        $this->assertEquals(PaymentStatus::HUMAN_SCORE_TOO_LOW, $payment['status']);
+    }
+
+    public function testHumanScoreForMetaverse(): void
+    {
+        $data = ['medium' => Medium::Metaverse->value];
+
+        $this->statusForAll(PaymentStatus::HUMAN_SCORE_TOO_LOW, ['human_score' => 0], $data);
+        $this->statusForAll(PaymentStatus::HUMAN_SCORE_TOO_LOW, ['human_score' => 0.3], $data);
+        $this->statusForAll(PaymentStatus::HUMAN_SCORE_TOO_LOW, ['human_score' => 0.399], $data);
+        $this->statusForAll(PaymentStatus::ACCEPTED, ['human_score' => 0.4], $data);
+        $this->statusForAll(PaymentStatus::ACCEPTED, ['human_score' => 0.51], $data);
+
+        $campaigns = new CampaignCollection(self::campaign($data, [self::banner()], [self::conversion()]));
+        $payment = $this->single($campaigns, self::viewEvent(['human_score' => 0.4]));
+        $this->assertEquals(PaymentStatus::ACCEPTED, $payment['status']);
+
+        $campaigns = new CampaignCollection(self::campaign($data, [self::banner()], [self::conversion()]));
+        $payment = $this->single($campaigns, self::viewEvent(['human_score' => 0.39]));
+        $this->assertEquals(PaymentStatus::HUMAN_SCORE_TOO_LOW, $payment['status']);
+
+        $campaigns = new CampaignCollection(self::campaign($data, [self::banner()], [self::conversion()]));
+        $payment = $this->single($campaigns, self::clickEvent(['human_score' => 0.4]));
+        $this->assertEquals(PaymentStatus::ACCEPTED, $payment['status']);
+
+        $campaigns = new CampaignCollection(self::campaign($data, [self::banner()], [self::conversion()]));
+        $payment = $this->single($campaigns, self::clickEvent(['human_score' => 0.39]));
+        $this->assertEquals(PaymentStatus::HUMAN_SCORE_TOO_LOW, $payment['status']);
+
+        $campaigns = new CampaignCollection(self::campaign($data, [self::banner()], [self::conversion()]));
+        $payment = $this->single($campaigns, self::conversionEvent(['human_score' => 0.4]));
+        $this->assertEquals(PaymentStatus::ACCEPTED, $payment['status']);
+
+        $campaigns = new CampaignCollection(self::campaign($data, [self::banner()], [self::conversion()]));
+        $payment = $this->single($campaigns, self::conversionEvent(['human_score' => 0.39]));
+        $this->assertEquals(PaymentStatus::HUMAN_SCORE_TOO_LOW, $payment['status']);
     }
 
     public function testHumanScoreThreshold(): void
@@ -1293,6 +1333,8 @@ final class PaymentCalculatorTest extends TestCase
             [
                 'id' => self::CAMPAIGN_ID,
                 'advertiser_id' => self::ADVERTISER_ID,
+                'medium' => Medium::Web->value,
+                'vendor' => null,
                 'time_start' => self::TIME - 7 * 24 * 3600,
                 'time_end' => null,
                 'filters' => $filters,
@@ -1314,6 +1356,8 @@ final class PaymentCalculatorTest extends TestCase
         return new Campaign(
             new Id($data['id']),
             new Id($data['advertiser_id']),
+            Medium::tryFrom($data['medium']),
+            $data['vendor'],
             DateTimeHelper::fromTimestamp($data['time_start']),
             $data['time_end'] !== null ? DateTimeHelper::fromTimestamp($data['time_end']) : null,
             $budget,

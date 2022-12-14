@@ -139,8 +139,6 @@ class PaymentCalculator
     {
         $status = PaymentStatus::ACCEPTED;
         $isConversion = $event['type'] === EventType::CONVERSION;
-        $humanScoreThreshold =
-            $isConversion ? $this->config->getConversionHumanScoreThreshold() : $this->config->getHumanScoreThreshold();
 
         /** @var Campaign $campaign */
         $campaign = $this->campaigns[$event['campaign_id']] ?? null;
@@ -149,11 +147,18 @@ class PaymentCalculator
         /** @var Conversion $conversion */
         $conversion = $isConversion ? ($this->conversions[$event['conversion_id']] ?? null) : null;
 
-        $caseTime = DateTimeHelper::fromString($event['case_time']);
+        if (null === $campaign) {
+            return PaymentStatus::CAMPAIGN_NOT_FOUND;
+        }
 
-        if ($campaign === null) {
-            $status = PaymentStatus::CAMPAIGN_NOT_FOUND;
-        } elseif ($campaign->getDeletedAt() !== null && $campaign->getDeletedAt() < $caseTime) {
+        $caseTime = DateTimeHelper::fromString($event['case_time']);
+        $humanScoreThreshold = match (true) {
+            $isConversion => $this->config->getConversionHumanScoreThreshold(),
+            $campaign->isMetaverse() => $this->config->getMetaverseHumanScoreThreshold(),
+            default => $this->config->getHumanScoreThreshold(),
+        };
+
+        if ($campaign->getDeletedAt() !== null && $campaign->getDeletedAt() < $caseTime) {
             $status = PaymentStatus::CAMPAIGN_NOT_FOUND;
         } elseif ($banner === null) {
             $status = PaymentStatus::BANNER_NOT_FOUND;

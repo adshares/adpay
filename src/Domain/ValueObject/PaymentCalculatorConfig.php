@@ -10,6 +10,8 @@ final class PaymentCalculatorConfig
 
     private float $conversionHumanScoreThreshold = 0.4;
 
+    private float $metaverseHumanScoreThreshold = 0.4;
+
     private float $autoCpmBudgetThreshold = 0.2;
 
     private int $autoCpmDefault = 7 * 10 ** 11;
@@ -19,7 +21,9 @@ final class PaymentCalculatorConfig
     ) {
         $this->humanScoreThreshold = (float)($config['humanScoreThreshold'] ?? $this->humanScoreThreshold);
         $this->conversionHumanScoreThreshold =
-                (float)($config['conversionHumanScoreThreshold'] ?? $this->conversionHumanScoreThreshold);
+            (float)($config['conversionHumanScoreThreshold'] ?? $this->conversionHumanScoreThreshold);
+        $this->metaverseHumanScoreThreshold =
+            (float)($config['metaverseHumanScoreThreshold'] ?? $this->metaverseHumanScoreThreshold);
         $this->autoCpmBudgetThreshold = (float)($config['autoCpmBudgetThreshold'] ?? $this->autoCpmBudgetThreshold);
         $this->autoCpmDefault = (int)($config['autoCpmDefault'] ?? $this->autoCpmDefault);
     }
@@ -32,6 +36,11 @@ final class PaymentCalculatorConfig
     public function getConversionHumanScoreThreshold(): float
     {
         return $this->conversionHumanScoreThreshold;
+    }
+
+    public function getMetaverseHumanScoreThreshold(): float
+    {
+        return $this->metaverseHumanScoreThreshold;
     }
 
     public function getAutoCpmBudgetThreshold(): float

@@ -16,6 +16,7 @@ use App\Domain\ValueObject\Budget;
 use App\Domain\ValueObject\Id;
 use App\Domain\ValueObject\IdCollection;
 use App\Domain\ValueObject\LimitType;
+use App\Domain\ValueObject\Medium;
 use App\Infrastructure\Repository\DoctrineCampaignRepository;
 use DateTime;
 use Psr\Log\NullLogger;
@@ -261,6 +262,8 @@ final class DoctrineCampaignRepositoryTest extends RepositoryTestCase
         return new Campaign(
             new Id($id),
             new Id('f2c567e1396b4cadb52223a51796fd01'),
+            Medium::Web,
+            null,
             new DateTime(),
             null,
             new Budget(10000),

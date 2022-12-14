@@ -16,6 +16,7 @@ use App\Domain\ValueObject\BannerType;
 use App\Domain\ValueObject\Budget;
 use App\Domain\ValueObject\Id;
 use App\Domain\ValueObject\LimitType;
+use App\Domain\ValueObject\Medium;
 use App\Lib\DateTimeHelper;
 use App\Lib\Exception\DateTimeException;
 use TypeError;
@@ -154,6 +155,8 @@ final class CampaignUpdateDTO
         try {
             $campaignId = new Id($input['id']);
             $advertiserId = new Id($input['advertiser_id']);
+            $medium = Medium::tryFrom($input['medium'] ?? Medium::Web->value);
+            $vendor = $input['vendor'] ?? null;
             $banners = $this->prepareBannerCollection($campaignId, $input['banners']);
             $filters = $this->prepareFilters($input['filters'] ?? []);
             $conversions = $this->prepareConversionCollection($campaignId, $input['conversions'] ?? []);
@@ -164,6 +167,8 @@ final class CampaignUpdateDTO
             return new Campaign(
                 $campaignId,
                 $advertiserId,
+                $medium,
+                $vendor,
                 DateTimeHelper::fromTimestamp($input['time_start']),
                 isset($input['time_end']) ? DateTimeHelper::fromTimestamp($input['time_end'])
                     : null,
