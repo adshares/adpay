@@ -62,12 +62,21 @@ api_post_conversions:
         _format: json
 
 api_get_payments:
-    path: /api/v{version}/payments/{timestamp}
+    path: /api/v{version}/reports/{timestamp}/payments
     controller: App\UI\Controller\PaymentController::find
     methods: GET
     requirements:
         version: '1'
         timestamp: '\d+'
+    defaults:
+        _format: json
+
+api_get_reports:
+    path: /api/v{version}/reports
+    controller: App\UI\Controller\ReportController::find
+    methods: GET
+    requirements:
+        version: '1'
     defaults:
         _format: json
 

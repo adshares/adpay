@@ -11,38 +11,18 @@ use Psr\Log\LoggerInterface;
 
 final class ReportFetchCommand
 {
-    private PaymentReportRepository $paymentReportRepository;
-
-    private LoggerInterface $logger;
-
     public function __construct(
-        PaymentReportRepository $paymentReportRepository,
-        LoggerInterface $logger
+        private readonly PaymentReportRepository $paymentReportRepository,
+        private readonly LoggerInterface $logger
     ) {
-        $this->paymentReportRepository = $paymentReportRepository;
-        $this->logger = $logger;
     }
 
-    public function execute(
-        bool $calculated = true,
-        bool $complete = false,
-        bool $incomplete = false
-    ): PaymentReportFetchDTO {
-        $this->logger->debug('Running fetch report command');
-
-        $statuses = [];
-        if ($calculated) {
-            $statuses[] = PaymentReportStatus::createCalculated();
-        }
-        if ($complete) {
-            $statuses[] = PaymentReportStatus::createComplete();
-        }
-        if ($incomplete) {
-            $statuses[] = PaymentReportStatus::createIncomplete();
-        }
-
-        $reports = $this->paymentReportRepository->fetchByStatus(...$statuses);
-
+    public function execute(int ...$ids): PaymentReportFetchDTO
+    {
+        $this->logger->debug('Running fetch reports command');
+        $reports = empty($ids) ?
+            $this->paymentReportRepository->fetchAll() :
+            $this->paymentReportRepository->fetchById(...$ids);
         return new PaymentReportFetchDTO($reports);
     }
 }
