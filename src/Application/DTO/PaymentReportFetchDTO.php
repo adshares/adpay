@@ -9,11 +9,8 @@ use App\Domain\Model\PaymentReportCollection;
 
 final class PaymentReportFetchDTO
 {
-    private PaymentReportCollection $reports;
-
-    public function __construct(PaymentReportCollection $reports)
+    public function __construct(private readonly PaymentReportCollection $reports)
     {
-        $this->reports = $reports;
     }
 
     public function getReportIds(): array
@@ -23,7 +20,19 @@ final class PaymentReportFetchDTO
             /** @var $report PaymentReport */
             $ids[] = $report->getId();
         }
-
         return $ids;
+    }
+
+    public function getReports(): array
+    {
+        $list = [];
+        foreach ($this->reports as $report) {
+            /** @var $report PaymentReport */
+            $list[] = [
+                'id' => $report->getId(),
+                'status' => $report->getStatus()->toString(),
+            ];
+        }
+        return $list;
     }
 }

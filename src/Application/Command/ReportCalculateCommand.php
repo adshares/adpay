@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Command;
 
-use App\Application\Exception\FetchingException;
+use App\Application\Exception\ReportNotCompleteException;
 use App\Domain\Model\PaymentReport;
 use App\Domain\Repository\EventRepository;
 use App\Domain\Repository\PaymentReportRepository;
@@ -17,28 +17,13 @@ final class ReportCalculateCommand
 {
     private const BATCH_SIZE = 1000;
 
-    private PaymentReportRepository $paymentReportRepository;
-
-    private PaymentRepository $paymentRepository;
-
-    private EventRepository $eventRepository;
-
-    private PaymentCalculatorFactory $paymentCalculatorFactory;
-
-    private LoggerInterface $logger;
-
     public function __construct(
-        PaymentReportRepository $paymentReportRepository,
-        PaymentRepository $paymentRepository,
-        EventRepository $eventRepository,
-        PaymentCalculatorFactory $paymentCalculatorFactory,
-        LoggerInterface $logger
+        private readonly PaymentReportRepository $paymentReportRepository,
+        private readonly PaymentRepository $paymentRepository,
+        private readonly EventRepository $eventRepository,
+        private readonly PaymentCalculatorFactory $paymentCalculatorFactory,
+        private readonly LoggerInterface $logger
     ) {
-        $this->paymentReportRepository = $paymentReportRepository;
-        $this->paymentRepository = $paymentRepository;
-        $this->eventRepository = $eventRepository;
-        $this->paymentCalculatorFactory = $paymentCalculatorFactory;
-        $this->logger = $logger;
     }
 
     public function execute(int $timestamp, bool $force = false): int
@@ -46,10 +31,10 @@ final class ReportCalculateCommand
         $this->logger->debug(sprintf('Running calculate payments command %s', $force ? '[forced]' : ''));
 
         $reportId = PaymentReport::timestampToId($timestamp);
-        $report = $this->paymentReportRepository->fetch($reportId);
+        $report = $this->paymentReportRepository->fetchOrCreate($reportId);
 
         if (!$report->isComplete() && !$force) {
-            throw new FetchingException(sprintf('Report #%d is not complete yet.', $reportId));
+            throw new ReportNotCompleteException($reportId);
         }
 
         $this->logger->info(

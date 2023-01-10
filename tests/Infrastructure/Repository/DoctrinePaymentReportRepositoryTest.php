@@ -27,17 +27,35 @@ final class DoctrinePaymentReportRepositoryTest extends RepositoryTestCase
         $repository->save(new PaymentReport(5, PaymentReportStatus::createIncomplete()));
         $repository->save(new PaymentReport(6, PaymentReportStatus::createComplete()));
 
-        $report = $repository->fetch(1);
-        $this->assertEquals(1, $report->getId());
-        $this->assertEquals(PaymentReportStatus::CALCULATED, $report->getStatus()->getStatus());
+        $report1 = $repository->fetch(1);
+        $this->assertEquals(1, $report1->getId());
+        $this->assertEquals(PaymentReportStatus::CALCULATED, $report1->getStatus()->getStatus());
         $this->assertEquals(
             [
                 EventType::VIEW => [[2, 1000]],
                 EventType::CLICK => [],
                 EventType::CONVERSION => [],
             ],
-            $report->getIntervals()
+            $report1->getIntervals()
         );
+
+        $report2 = $repository->fetchOrCreate(1);
+        $this->assertEquals(1, $report2->getId());
+        $this->assertEquals(PaymentReportStatus::CALCULATED, $report2->getStatus()->getStatus());
+        $this->assertEquals(
+            [
+                EventType::VIEW => [[2, 1000]],
+                EventType::CLICK => [],
+                EventType::CONVERSION => [],
+            ],
+            $report2->getIntervals()
+        );
+
+        $this->assertCount(6, $repository->fetchAll());
+
+        $this->assertCount(0, $repository->fetchById(11));
+        $this->assertCount(3, $repository->fetchById(3, 5, 1));
+        $this->assertCount(2, $repository->fetchById(1, 11, 6));
 
         $this->assertCount(0, $repository->fetchByStatus());
         $this->assertCount(3, $repository->fetchByStatus(PaymentReportStatus::createCalculated()));
@@ -65,6 +83,14 @@ final class DoctrinePaymentReportRepositoryTest extends RepositoryTestCase
         $repository = new DoctrinePaymentReportRepository($this->connection, new NullLogger());
 
         $report = $repository->fetch(123);
+        $this->assertNull($report);
+    }
+
+    public function testCreatingNoneExistsReport(): void
+    {
+        $repository = new DoctrinePaymentReportRepository($this->connection, new NullLogger());
+
+        $report = $repository->fetchOrCreate(123);
         $this->assertEquals(123, $report->getId());
         $this->assertEquals(PaymentReportStatus::INCOMPLETE, $report->getStatus()->getStatus());
         $this->assertEquals(
@@ -76,7 +102,9 @@ final class DoctrinePaymentReportRepositoryTest extends RepositoryTestCase
             $report->getIntervals()
         );
 
+        $this->assertCount(1, $repository->fetchAll());
         $this->assertCount(1, $repository->fetchByStatus(PaymentReportStatus::createIncomplete()));
+        $this->assertCount(1, $repository->fetchById(123));
     }
 
     public function testDeleting(): void
@@ -103,14 +131,7 @@ final class DoctrinePaymentReportRepositoryTest extends RepositoryTestCase
             0,
             $repository->deleteByTime(DateTimeHelper::fromTimestamp($timestamp + 1))
         );
-        $this->assertCount(
-            5,
-            $repository->fetchByStatus(
-                PaymentReportStatus::createCalculated(),
-                PaymentReportStatus::createIncomplete(),
-                PaymentReportStatus::createComplete()
-            )
-        );
+        $this->assertCount(5, $repository->fetchAll());
         $this->assertCount(2, self::iterableToArray($paymentRepository->fetchByReportId($timestamp)));
         $this->assertEquals(
             3,
@@ -119,26 +140,13 @@ final class DoctrinePaymentReportRepositoryTest extends RepositoryTestCase
                 DateTimeHelper::fromTimestamp($timestamp - 3600)
             )
         );
-        $this->assertCount(
-            2,
-            $repository->fetchByStatus(
-                PaymentReportStatus::createCalculated(),
-                PaymentReportStatus::createIncomplete(),
-                PaymentReportStatus::createComplete()
-            )
-        );
+        $this->assertCount(2, $repository->fetchAll());
         $this->assertCount(2, self::iterableToArray($paymentRepository->fetchByReportId($timestamp)));
         $this->assertEquals(
             2,
             $repository->deleteByTime(null, DateTimeHelper::fromTimestamp($timestamp))
         );
-        $this->assertEmpty(
-            $repository->fetchByStatus(
-                PaymentReportStatus::createCalculated(),
-                PaymentReportStatus::createIncomplete(),
-                PaymentReportStatus::createComplete()
-            )
-        );
+        $this->assertEmpty($repository->fetchAll());
         $this->assertEmpty(self::iterableToArray($paymentRepository->fetchByReportId($timestamp)));
     }
 
@@ -153,15 +161,27 @@ final class DoctrinePaymentReportRepositoryTest extends RepositoryTestCase
     public function testFetchingException(): void
     {
         $this->expectException(DomainRepositoryException::class);
-
         $repository = new DoctrinePaymentReportRepository($this->failedConnection(), new NullLogger());
         $repository->fetch(1);
+    }
+
+    public function testFetchingAllException(): void
+    {
+        $this->expectException(DomainRepositoryException::class);
+        $repository = new DoctrinePaymentReportRepository($this->failedConnection(), new NullLogger());
+        $repository->fetchAll();
+    }
+
+    public function testFetchingByIdException(): void
+    {
+        $this->expectException(DomainRepositoryException::class);
+        $repository = new DoctrinePaymentReportRepository($this->failedConnection(), new NullLogger());
+        $repository->fetchById(1);
     }
 
     public function testFetchingByStatusException(): void
     {
         $this->expectException(DomainRepositoryException::class);
-
         $repository = new DoctrinePaymentReportRepository($this->failedConnection(), new NullLogger());
         $repository->fetchByStatus(PaymentReportStatus::createCalculated());
     }
@@ -169,7 +189,6 @@ final class DoctrinePaymentReportRepositoryTest extends RepositoryTestCase
     public function testDeleteingException(): void
     {
         $this->expectException(DomainRepositoryException::class);
-
         $repository = new DoctrinePaymentReportRepository($this->failedConnection(), new NullLogger());
         $repository->deleteByTime(new DateTime());
     }

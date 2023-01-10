@@ -11,7 +11,13 @@ use DateTimeInterface;
 
 interface PaymentReportRepository
 {
-    public function fetch(int $id): PaymentReport;
+    public function fetch(int $id): ?PaymentReport;
+
+    public function fetchOrCreate(int $id): PaymentReport;
+
+    public function fetchAll(): PaymentReportCollection;
+
+    public function fetchById(int ...$ids): PaymentReportCollection;
 
     public function fetchByStatus(PaymentReportStatus ...$statuses): PaymentReportCollection;
 

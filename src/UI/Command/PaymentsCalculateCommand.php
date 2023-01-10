@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\UI\Command;
 
 use App\Application\Command\ReportCalculateCommand;
-use App\Application\Command\ReportFetchCommand;
+use App\Application\Command\ReportFetchCompletedCommand;
 use App\Application\Exception\FetchingException;
 use App\Lib\DateTimeHelper;
 use App\Lib\Exception\DateTimeException;
@@ -23,12 +23,12 @@ class PaymentsCalculateCommand extends Command
 
     protected static $defaultName = 'ops:payments:calculate';
 
-    private ReportFetchCommand $reportFetchCommand;
+    private ReportFetchCompletedCommand $reportFetchCommand;
 
     private ReportCalculateCommand $reportCalculateCommand;
 
     public function __construct(
-        ReportFetchCommand $reportFetchCommand,
+        ReportFetchCompletedCommand $reportFetchCommand,
         ReportCalculateCommand $reportCalculateCommand,
         string $name = null
     ) {
@@ -82,7 +82,7 @@ class PaymentsCalculateCommand extends Command
 
     private function calculateAll(SymfonyStyle $io)
     {
-        $dto = $this->reportFetchCommand->execute(false, true, false);
+        $dto = $this->reportFetchCommand->execute();
         $ids = $dto->getReportIds();
 
         $io->comment(sprintf('Found %d complete reports.', count($ids)));
