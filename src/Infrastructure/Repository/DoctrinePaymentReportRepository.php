@@ -51,7 +51,7 @@ final class DoctrinePaymentReportRepository extends DoctrineModelUpdater impleme
         foreach ($ids as $id) {
             $conditions[] = $id;
         }
-        return $this->fetchQuery('id IN (?)', [$conditions], [Connection::PARAM_STR_ARRAY]);
+        return $this->fetchQuery('id IN (?)', [$conditions], [Connection::PARAM_INT_ARRAY]);
     }
 
     public function fetchByStatus(PaymentReportStatus ...$statuses): PaymentReportCollection
@@ -60,7 +60,7 @@ final class DoctrinePaymentReportRepository extends DoctrineModelUpdater impleme
         foreach ($statuses as $status) {
             $conditions[] = $status->getStatus();
         }
-        return $this->fetchQuery('status IN (?)', [$conditions], [Connection::PARAM_STR_ARRAY]);
+        return $this->fetchQuery('status IN (?)', [$conditions], [Connection::PARAM_INT_ARRAY]);
     }
 
     public function save(PaymentReport $report): void
