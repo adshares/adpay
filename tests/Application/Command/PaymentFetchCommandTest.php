@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Application\Command;
 
 use App\Application\Command\PaymentFetchCommand;
-use App\Application\Exception\FetchingException;
+use App\Application\Exception\ReportNotFoundException;
+use App\Application\Exception\ReportNotCompleteException;
 use App\Domain\Model\PaymentReport;
 use App\Domain\Repository\PaymentReportRepository;
 use App\Domain\Repository\PaymentRepository;
@@ -26,6 +27,18 @@ class PaymentFetchCommandTest extends TestCase
 
         $this->assertTrue($dto->isCalculated());
         $this->assertCount(2, $dto->getPayments());
+    }
+
+    public function testNoneExistReport()
+    {
+        $this->expectException(ReportNotFoundException::class);
+
+        $reportId = 1571403600;
+        $paymentReportRepository = $this->emptyPaymentReportRepository($reportId);
+        $paymentRepository = $this->emptyPaymentRepository();
+
+        $command = new PaymentFetchCommand($paymentReportRepository, $paymentRepository, new NullLogger());
+        $command->execute($reportId);
     }
 
     public function testPadding()
@@ -56,7 +69,7 @@ class PaymentFetchCommandTest extends TestCase
 
     public function testIncomplete()
     {
-        $this->expectException(FetchingException::class);
+        $this->expectException(ReportNotCompleteException::class);
 
         $reportId = 1571403600;
         $paymentReportRepository = $this->paymentReportRepository($reportId, PaymentReportStatus::INCOMPLETE);
@@ -75,6 +88,18 @@ class PaymentFetchCommandTest extends TestCase
             ->method('fetch')
             ->with($id)
             ->willReturn(new PaymentReport($id, new PaymentReportStatus($status)));
+
+        /** @var PaymentReportRepository $repository */
+        return $repository;
+    }
+
+    private function emptyPaymentReportRepository(int $id): PaymentReportRepository
+    {
+        $repository = $this->createMock(PaymentReportRepository::class);
+        $repository->expects($this->once())
+            ->method('fetch')
+            ->with($id)
+            ->willReturn(null);
 
         /** @var PaymentReportRepository $repository */
         return $repository;

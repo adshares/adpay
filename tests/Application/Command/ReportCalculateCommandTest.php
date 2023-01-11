@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Application\Command;
 
 use App\Application\Command\ReportCalculateCommand;
-use App\Application\Exception\FetchingException;
+use App\Application\Exception\ReportNotCompleteException;
 use App\Domain\Model\PaymentReport;
 use App\Domain\Repository\EventRepository;
 use App\Domain\Repository\PaymentReportRepository;
@@ -45,12 +45,12 @@ class ReportCalculateCommandTest extends TestCase
 
     public function testIncompleteReport()
     {
-        $this->expectException(FetchingException::class);
+        $this->expectException(ReportNotCompleteException::class);
         $report = new PaymentReport(1571659200, PaymentReportStatus::createIncomplete());
 
         $paymentReportRepository = $this->createMock(PaymentReportRepository::class);
         $paymentReportRepository->expects($this->once())
-            ->method('fetch')
+            ->method('fetchOrCreate')
             ->with($report->getId())
             ->willReturn($report);
         $paymentReportRepository->expects($this->never())->method('save');
@@ -84,12 +84,24 @@ class ReportCalculateCommandTest extends TestCase
     private function reportCalculateCommand(PaymentReport $report, array $events): ReportCalculateCommand
     {
         $paymentReportRepository = $this->createMock(PaymentReportRepository::class);
-        $paymentReportRepository->expects($this->once())->method('fetch')->with($report->getId())->willReturn($report);
-        $paymentReportRepository->expects($this->once())->method('save')->with($report);
+        $paymentReportRepository
+            ->expects($this->once())
+            ->method('fetchOrCreate')
+            ->with($report->getId())
+            ->willReturn($report);
+        $paymentReportRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with($report);
 
         $paymentRepository = $this->createMock(PaymentRepository::class);
-        $paymentRepository->expects($this->once())->method('deleteByReportId')->with($report->getId());
-        $paymentRepository->expects($this->exactly((int)floor(count($events) / 1000) + 1))->method('saveAllRaw');
+        $paymentRepository
+            ->expects($this->once())
+            ->method('deleteByReportId')
+            ->with($report->getId());
+        $paymentRepository
+            ->expects($this->exactly((int)floor(count($events) / 1000) + 1))
+            ->method('saveAllRaw');
 
         $eventRepository = $this->createMock(EventRepository::class);
         $eventRepository->expects($this->once())
@@ -111,9 +123,10 @@ class ReportCalculateCommandTest extends TestCase
             }
         );
         $paymentCalculatorFactory = $this->createMock(PaymentCalculatorFactory::class);
-        $paymentCalculatorFactory->expects($this->once())->method('createPaymentCalculator')->willReturn(
-            $paymentCalculator
-        );
+        $paymentCalculatorFactory
+            ->expects($this->once())
+            ->method('createPaymentCalculator')
+            ->willReturn($paymentCalculator);
 
         /** @var PaymentReportRepository $paymentReportRepository */
         /** @var PaymentRepository $paymentRepository */

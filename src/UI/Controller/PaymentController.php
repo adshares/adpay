@@ -7,6 +7,8 @@ namespace App\UI\Controller;
 use App\Application\Command\PaymentFetchCommand;
 use App\Application\Command\ReportCalculateCommand;
 use App\Application\Exception\FetchingException;
+use App\Application\Exception\ReportNotFoundException;
+use App\Application\Exception\ReportNotCompleteException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,53 +16,26 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class PaymentController extends AbstractController
 {
-    public const MAX_LIMIT = 100000;
+    use PaginationAwareTrait;
 
-    private PaymentFetchCommand $paymentFetchCommand;
-
-    private ReportCalculateCommand $paymentCalculateCommand;
-
-    private LoggerInterface $logger;
+    private const MAX_LIMIT = 100000;
 
     public function __construct(
-        PaymentFetchCommand $paymentFetchCommand,
-        ReportCalculateCommand $paymentCalculateCommand,
-        LoggerInterface $logger
+        private readonly PaymentFetchCommand $paymentFetchCommand,
+        private readonly ReportCalculateCommand $paymentCalculateCommand,
+        private readonly LoggerInterface $logger
     ) {
-        $this->paymentFetchCommand = $paymentFetchCommand;
-        $this->paymentCalculateCommand = $paymentCalculateCommand;
-        $this->logger = $logger;
-    }
-
-    private function validateRequest(Request $request): void
-    {
-        $limit = $request->get('limit');
-        $offset = $request->get('offset');
-
-        if ($limit !== null) {
-            if (!preg_match('/^\d+$/', $limit)) {
-                throw new UnprocessableEntityHttpException('Limit must be numeric');
-            }
-            if ((int)$limit > self::MAX_LIMIT) {
-                throw new UnprocessableEntityHttpException(sprintf('Limit must be lower than %d', self::MAX_LIMIT));
-            }
-        }
-
-        if ($offset !== null) {
-            if (!preg_match('/^\d+$/', $offset)) {
-                throw new UnprocessableEntityHttpException('Offset must be numeric');
-            }
-        }
     }
 
     public function find(int $timestamp, Request $request): Response
     {
         $this->logger->debug('Call find payments endpoint');
 
-        $this->validateRequest($request);
+        $this->validatePaginationRequest($request, self::MAX_LIMIT);
 
         $force = (bool)$request->get('force', false);
         $recalculate = (bool)$request->get('recalculate', false);
@@ -72,14 +47,16 @@ class PaymentController extends AbstractController
                 $this->paymentCalculateCommand->execute($timestamp, $force);
             }
             $dto = $this->paymentFetchCommand->execute($timestamp, $limit, $offset);
-        } catch (FetchingException $exception) {
+        } catch (ReportNotFoundException $exception) {
+            throw new NotFoundHttpException($exception->getMessage());
+        } catch (ReportNotCompleteException $exception) {
             throw new UnprocessableEntityHttpException($exception->getMessage());
         }
 
         if (!$dto->isCalculated()) {
-            throw new NotFoundHttpException('Report is not calculated yet');
+            throw new HttpException(425, 'Report is not calculated yet');
         }
 
-        return new JsonResponse(['payments' => $dto->getPayments()]);
+        return new JsonResponse(['data' => $dto->getPayments()]);
     }
 }

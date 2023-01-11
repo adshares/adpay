@@ -18,20 +18,11 @@ final class EventUpdateCommand
 
     private const HOUR = 3600;
 
-    private EventRepository $eventRepository;
-
-    private PaymentReportRepository $paymentReportRepository;
-
-    private LoggerInterface $logger;
-
     public function __construct(
-        EventRepository $eventRepository,
-        PaymentReportRepository $paymentReportRepository,
-        LoggerInterface $logger
+        private readonly EventRepository $eventRepository,
+        private readonly PaymentReportRepository $paymentReportRepository,
+        private readonly LoggerInterface $logger
     ) {
-        $this->eventRepository = $eventRepository;
-        $this->paymentReportRepository = $paymentReportRepository;
-        $this->logger = $logger;
     }
 
     public function execute(EventUpdateDTO $dto): int
@@ -52,7 +43,7 @@ final class EventUpdateCommand
             $end = min(self::HOUR - 1, $noticeEnd - $timestamp);
 
             $this->lock("PaymentReport.{$timestamp}", true);
-            $report = $this->paymentReportRepository->fetch($timestamp);
+            $report = $this->paymentReportRepository->fetchOrCreate($timestamp);
             $report->addInterval($type, $start, $end);
             $this->paymentReportRepository->save($report);
             $this->release();

@@ -16,7 +16,7 @@ use Doctrine\DBAL\Exception as DBALException;
 
 final class DoctrinePaymentReportRepository extends DoctrineModelUpdater implements PaymentReportRepository
 {
-    public function fetch(int $id): PaymentReport
+    public function fetch(int $id): ?PaymentReport
     {
         try {
             $result =
@@ -28,14 +28,30 @@ final class DoctrinePaymentReportRepository extends DoctrineModelUpdater impleme
             throw new DomainRepositoryException($exception->getMessage());
         }
 
-        if ($result !== false) {
-            $report = PaymentReportMapper::fill($result);
-        } else {
+        return $result !== false ? PaymentReportMapper::fill($result) : null;
+    }
+
+    public function fetchOrCreate(int $id): PaymentReport
+    {
+        if (null === ($report = $this->fetch($id))) {
             $report = new PaymentReport($id, PaymentReportStatus::createIncomplete());
             $this->save($report);
         }
-
         return $report;
+    }
+
+    public function fetchAll(): PaymentReportCollection
+    {
+        return $this->fetchQuery();
+    }
+
+    public function fetchById(int ...$ids): PaymentReportCollection
+    {
+        $conditions = [];
+        foreach ($ids as $id) {
+            $conditions[] = $id;
+        }
+        return $this->fetchQuery('id IN (?)', [$conditions], [Connection::PARAM_INT_ARRAY]);
     }
 
     public function fetchByStatus(PaymentReportStatus ...$statuses): PaymentReportCollection
@@ -44,23 +60,7 @@ final class DoctrinePaymentReportRepository extends DoctrineModelUpdater impleme
         foreach ($statuses as $status) {
             $conditions[] = $status->getStatus();
         }
-
-        try {
-            $result = $this->db->fetchAllAssociative(
-                sprintf('SELECT * FROM %s WHERE status IN (?)', PaymentReportMapper::table()),
-                [$conditions],
-                [Connection::PARAM_STR_ARRAY]
-            );
-        } catch (DBALException $exception) {
-            throw new DomainRepositoryException($exception->getMessage());
-        }
-
-        $reports = new PaymentReportCollection();
-        foreach ($result as $row) {
-            $reports->add(PaymentReportMapper::fill($row));
-        }
-
-        return $reports;
+        return $this->fetchQuery('status IN (?)', [$conditions], [Connection::PARAM_INT_ARRAY]);
     }
 
     public function save(PaymentReport $report): void
@@ -101,5 +101,31 @@ final class DoctrinePaymentReportRepository extends DoctrineModelUpdater impleme
             $this->db->rollBack();
             throw new DomainRepositoryException($exception->getMessage());
         }
+    }
+
+    private function fillCollection(array $result): PaymentReportCollection
+    {
+        $reports = new PaymentReportCollection();
+        foreach ($result as $row) {
+            $reports->add(PaymentReportMapper::fill($row));
+        }
+        return $reports;
+    }
+
+    private function fetchQuery(
+        ?string $condition = null,
+        array $params = [],
+        array $types = []
+    ): PaymentReportCollection {
+        try {
+            $result = $this->db->fetchAllAssociative(
+                sprintf('SELECT * FROM %s WHERE %s', PaymentReportMapper::table(), $condition ?? '1=1'),
+                $params,
+                $types
+            );
+        } catch (DBALException $exception) {
+            throw new DomainRepositoryException($exception->getMessage());
+        }
+        return $this->fillCollection($result);
     }
 }

@@ -9,7 +9,7 @@ use App\Domain\Repository\PaymentReportRepository;
 use App\Domain\ValueObject\PaymentReportStatus;
 use Psr\Log\LoggerInterface;
 
-final class ReportFetchCommand
+final class ReportFetchCompletedCommand
 {
     public function __construct(
         private readonly PaymentReportRepository $paymentReportRepository,
@@ -17,12 +17,10 @@ final class ReportFetchCommand
     ) {
     }
 
-    public function execute(int ...$ids): PaymentReportFetchDTO
+    public function execute(): PaymentReportFetchDTO
     {
-        $this->logger->debug('Running fetch reports command');
-        $reports = empty($ids) ?
-            $this->paymentReportRepository->fetchAll() :
-            $this->paymentReportRepository->fetchById(...$ids);
+        $this->logger->debug('Running fetch completed report command');
+        $reports = $this->paymentReportRepository->fetchByStatus(PaymentReportStatus::createComplete());
         return new PaymentReportFetchDTO($reports);
     }
 }
