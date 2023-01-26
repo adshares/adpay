@@ -22,16 +22,31 @@ final class PaymentReportFetchDTOTest extends TestCase
     {
         $dto = new PaymentReportFetchDTO(
             new PaymentReportCollection(
-                self::report(1),
-                self::report(2)
+                self::report(1, PaymentReportStatus::createComplete()),
+                self::report(2, PaymentReportStatus::createCalculated()),
+                self::report(3, PaymentReportStatus::createIncomplete())
             )
         );
-        $this->assertCount(2, $dto->getReportIds());
-        $this->assertEquals([1, 2], $dto->getReportIds());
+        $this->assertCount(3, $dto->getReportIds());
+        $this->assertEquals([1, 2, 3], $dto->getReportIds());
+        $this->assertEquals([
+            [
+                'id' => 1,
+                'status' => 'complete',
+            ],
+            [
+                'id' => 2,
+                'status' => 'calculated',
+            ],
+            [
+                'id' => 3,
+                'status' => 'incomplete',
+            ]
+        ], $dto->getReports());
     }
 
-    private static function report(int $id): PaymentReport
+    private static function report(int $id, PaymentReportStatus $status): PaymentReport
     {
-        return new PaymentReport($id, PaymentReportStatus::createComplete());
+        return new PaymentReport($id, $status);
     }
 }

@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] - 2022-01-25
+### Added
+- Fetch reports
+### Changed
+- URL to fetch payments
+- Data key in fetch payments response
+### Fixed
+- Remove logging 4XX errors
+
 ## [1.4.2] - 2022-12-15
 ### Fixed
 - Default medium value
@@ -83,7 +92,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rewriting from Python to PHP
 
 
-[Unreleased]: https://github.com/adshares/adpay/compare/v1.4.2...HEAD
+[Unreleased]: https://github.com/adshares/adpay/compare/v1.2.0...HEAD
+[1.5.0]: https://github.com/adshares/adpay/compare/v1.4.2...v1.5.0
 [1.4.2]: https://github.com/adshares/adpay/compare/v1.4.1...v1.4.2
 [1.4.1]: https://github.com/adshares/adpay/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/adshares/adpay/compare/v1.3.3...v1.4.0
