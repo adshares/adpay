@@ -290,6 +290,11 @@ final class PaymentCalculatorTest extends TestCase
         $this->statusForAll(PaymentStatus::INVALID_TARGETING, [], ['filters' => ['exclude' => ['e1' => ['e1_v3']]]]);
     }
 
+    public function testAdsTxtInvalid(): void
+    {
+        $this->statusForAll(PaymentStatus::INVALID_ADS_TXT, ['ads_txt' => 0]);
+    }
+
     public function testSimpleEvents(): void
     {
         $campaigns = new CampaignCollection(self::campaign([], [self::banner()], [self::conversion()]));
@@ -1388,7 +1393,7 @@ final class PaymentCalculatorTest extends TestCase
     }
 
     private function statusForAll(
-        int $status,
+        int $expectedStatus,
         array $eventData = [],
         array $campaignData = [],
         array $bannerData = [],
@@ -1399,13 +1404,13 @@ final class PaymentCalculatorTest extends TestCase
         );
 
         $payment = $this->single($campaigns, self::viewEvent($eventData));
-        $this->assertEquals($status, $payment['status']);
+        $this->assertEquals($expectedStatus, $payment['status']);
 
         $payment = $this->single($campaigns, self::clickEvent($eventData));
-        $this->assertEquals($status, $payment['status']);
+        $this->assertEquals($expectedStatus, $payment['status']);
 
         $payment = $this->single($campaigns, self::conversionEvent($eventData));
-        $this->assertEquals($status, $payment['status']);
+        $this->assertEquals($expectedStatus, $payment['status']);
     }
 
     private function single(CampaignCollection $campaigns, array $event, array $config = []): array
@@ -1621,6 +1626,7 @@ final class PaymentCalculatorTest extends TestCase
             'human_score' => 0.9,
             'keywords' => ['r1' => ['r1_v1'], 'e1' => ['e1_v3']],
             'context' => [],
+            'ads_txt' => 1,
         ];
     }
 

@@ -232,6 +232,9 @@ abstract class EventUpdateDTOTest extends TestCase
             [[static::simpleEvent(['page_rank' => 1.0])]],
             [[static::simpleEvent(['page_rank' => -1.0])]],
             [[static::simpleEvent(['page_rank' => -1])]],
+            [[static::simpleEvent(['ads_txt' => 0])]],
+            [[static::simpleEvent(['ads_txt' => null])]],
+            [[static::simpleEvent([], 'ads_txt')]],
         ];
     }
 
@@ -311,6 +314,7 @@ abstract class EventUpdateDTOTest extends TestCase
             [[static::simpleEvent(['human_score' => -1])]],
             [[static::simpleEvent(['human_score' => 100])]],
             [[static::simpleEvent(['human_score' => 'invalid_value'])]],
+            [[static::simpleEvent(['ads_txt' => -1])]],
         ];
     }
 
@@ -331,6 +335,7 @@ abstract class EventUpdateDTOTest extends TestCase
                 'user_id' => '33c567e1396b4cadb52223a51796fd01',
                 'human_score' => 0.99,
                 'page_rank' => 1.0,
+                'ads_txt' => 1,
             ],
             $mergeData
         );

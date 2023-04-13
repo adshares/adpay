@@ -10,29 +10,21 @@ use DateTimeInterface;
 
 final class ImpressionCase
 {
-    /** @var Id */
-    private $id;
+    private Id $id;
 
-    /** @var DateTimeInterface */
-    private $time;
+    private DateTimeInterface $time;
 
-    /** @var Id */
-    private $publisherId;
+    private Id $publisherId;
 
-    /** @var ?Id */
-    private $zoneId;
+    private ?Id $zoneId;
 
-    /** @var Id */
-    private $advertiserId;
+    private Id $advertiserId;
 
-    /** @var Id */
-    private $campaignId;
+    private Id $campaignId;
 
-    /** @var Id */
-    private $bannerId;
+    private Id $bannerId;
 
-    /** @var Impression */
-    private $impression;
+    private Impression $impression;
 
     public function __construct(
         Id $id,
@@ -132,5 +124,10 @@ final class ImpressionCase
     public function getPageRank(): float
     {
         return $this->impression->getPageRank();
+    }
+
+    public function getAdsTxt(): ?int
+    {
+        return $this->impression->getAdsTxt();
     }
 }

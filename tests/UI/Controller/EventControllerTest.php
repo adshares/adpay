@@ -29,6 +29,7 @@ final class EventControllerTest extends WebTestCase
                     'user_id' => '33c567e1396b4cadb52223a51796fd01',
                     'page_rank' => 0.99,
                     'human_score' => 0.89,
+                    'ads_txt' => 1,
                 ],
             ],
         ];
@@ -90,6 +91,7 @@ final class EventControllerTest extends WebTestCase
                     'user_id' => '33c567e1396b4cadb52223a51796fd01',
                     'human_score' => 0.99,
                     'page_rank' => 0.8,
+                    'ads_txt' => 1,
                 ],
             ],
         ];
@@ -215,6 +217,7 @@ final class EventControllerTest extends WebTestCase
                     'user_id' => '33c567e1396b4cadb52223a51796fd01',
                     'human_score' => 0.99,
                     'page_rank' => 0.8,
+                    'ads_txt' => 1,
                 ],
             ],
         ];
@@ -243,6 +246,7 @@ final class EventControllerTest extends WebTestCase
                     'user_id' => '33c567e1396b4cadb52223a51796fd01',
                     'human_score' => 0.99,
                     'page_rank' => 0.8,
+                    'ads_txt' => 1,
                 ],
             ],
         ];

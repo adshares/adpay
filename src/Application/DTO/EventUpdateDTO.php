@@ -173,6 +173,7 @@ abstract class EventUpdateDTO
         $context = new Context(
             $input['human_score'],
             $input['page_rank'],
+            $input['ads_txt'] ?? null,
             $input['keywords'] ?? [],
             $input['context'] ?? []
         );

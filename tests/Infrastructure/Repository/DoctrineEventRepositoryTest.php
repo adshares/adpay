@@ -107,6 +107,7 @@ final class DoctrineEventRepositoryTest extends RepositoryTestCase
         $this->assertEquals('93c567e1396b4cadb52223a51796fd01', $event['user_id']);
         $this->assertEquals(0.98, $event['human_score']);
         $this->assertEquals(0.74, $event['page_rank']);
+        $this->assertEquals(1, $event['ads_txt']);
         $this->assertEquals(['a' => 'aaa'], $event['keywords']);
         $this->assertEquals(['b' => 'bbb'], $event['context']);
     }
@@ -137,6 +138,7 @@ final class DoctrineEventRepositoryTest extends RepositoryTestCase
         $this->assertEquals('93c567e1396b4cadb52223a51796fd01', $event['user_id']);
         $this->assertEquals(0.98, $event['human_score']);
         $this->assertEquals(0.74, $event['page_rank']);
+        $this->assertEquals(1, $event['ads_txt']);
         $this->assertEquals(['a' => 'aaa'], $event['keywords']);
         $this->assertEquals(['b' => 'bbb'], $event['context']);
     }
@@ -167,6 +169,7 @@ final class DoctrineEventRepositoryTest extends RepositoryTestCase
         $this->assertEquals('93c567e1396b4cadb52223a51796fd01', $event['user_id']);
         $this->assertEquals(0.98, $event['human_score']);
         $this->assertEquals(0.74, $event['page_rank']);
+        $this->assertEquals(1, $event['ads_txt']);
         $this->assertEquals(['a' => 'aaa'], $event['keywords']);
         $this->assertEquals(['b' => 'bbb'], $event['context']);
         $this->assertEquals('f2c567e1396b4cadb52223a51796fd01', $event['group_id']);
@@ -252,7 +255,7 @@ final class DoctrineEventRepositoryTest extends RepositoryTestCase
             new Id('73c567e1396b4cadb52223a51796fd01'),
             new Id('83c567e1396b4cadb52223a51796fd01'),
             new Id('93c567e1396b4cadb52223a51796fd01'),
-            new Context(0.98, 0.74, ['a' => 'aaa'], ['b' => 'bbb'])
+            new Context(0.98, 0.74, 1, ['a' => 'aaa'], ['b' => 'bbb'])
         );
 
         return new ImpressionCase(

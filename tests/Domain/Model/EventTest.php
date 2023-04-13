@@ -36,12 +36,13 @@ final class EventTest extends TestCase
         $context = ['a' => 123];
         $humanScore = 0.89;
         $pageRank = 0.99;
+        $adsTxt = 1;
 
         $impression = new Impression(
             new Id($impressionId),
             new Id($trackingId),
             new Id($userId),
-            new Context($humanScore, $pageRank, $keywords, $context)
+            new Context($humanScore, $pageRank, $adsTxt, $keywords, $context),
         );
 
         $case = new ImpressionCase(
