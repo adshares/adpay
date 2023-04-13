@@ -58,9 +58,11 @@ final class DoctrineEventRepositoryTest extends RepositoryTestCase
         );
         $this->assertCount(
             4,
-            $repository->fetchByTime(
-                DateTimeHelper::fromTimestamp($timestamp - 70),
-                DateTimeHelper::fromTimestamp($timestamp - 30)
+            self::iterableToArray(
+                $repository->fetchByTime(
+                    DateTimeHelper::fromTimestamp($timestamp - 70),
+                    DateTimeHelper::fromTimestamp($timestamp - 30),
+                )
             )
         );
         $this->assertEmpty(

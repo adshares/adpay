@@ -981,7 +981,7 @@ final class PaymentCalculatorTest extends TestCase
 
         $payments = (new PaymentCalculator($campaigns, $bidStrategies, $repository, $config))
             ->calculate($reportId, [self::viewEvent()]);
-        $this->assertCount(1, $payments);
+        $this->assertCount(1, [...$payments]);
     }
 
     public function testAutoCpmNoScore(): void
@@ -1177,7 +1177,7 @@ final class PaymentCalculatorTest extends TestCase
 
         $payments = (new PaymentCalculator($campaigns, $bidStrategies, $repository, $config))
             ->calculate($reportId, self::uniqueViewEvents($views));
-        $this->assertCount($views, $payments);
+        $this->assertCount($views, [...$payments]);
     }
 
     /**
