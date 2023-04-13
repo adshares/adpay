@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\UI\Controller;
 
+use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\AbstractBrowser;
 
@@ -33,7 +34,7 @@ final class ReportControllerTest extends WebTestCase
 
     public function testGetReports(): void
     {
-        $timestamp = 1673344800;
+        $timestamp = $this->getHourTimestamp();
         $client = self::createClient();
         $this->addEvents($client, $timestamp - 200, $timestamp + 8000);
 
@@ -67,7 +68,7 @@ final class ReportControllerTest extends WebTestCase
 
     public function testGetReportsByIds(): void
     {
-        $timestamp = 1673344800;
+        $timestamp = $this->getHourTimestamp();
         $client = self::createClient();
         $this->addEvents($client, $timestamp - 200, $timestamp + 8000);
 
@@ -122,5 +123,11 @@ final class ReportControllerTest extends WebTestCase
     {
         $client->request('GET', '/api/v1/reports?' . http_build_query($parameters));
         return $client;
+    }
+
+    private function getHourTimestamp(): int
+    {
+        $timestamp = (new DateTimeImmutable('-1 day'))->getTimestamp();
+        return (int)floor($timestamp / 3600) * 3600;
     }
 }
