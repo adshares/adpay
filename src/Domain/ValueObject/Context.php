@@ -8,17 +8,13 @@ use App\Domain\Exception\InvalidArgumentException;
 
 class Context
 {
-    /** @var float */
-    private $humanScore;
+    private float $humanScore;
 
-    /** @var float */
-    private $pageRank;
+    private float $pageRank;
 
-    /** @var array */
-    private $keywords;
+    private array $keywords;
 
-    /* @var array */
-    private $data;
+    private array $data;
 
     public function __construct(float $humanScore, float $pageRank, array $keywords = [], array $data = [])
     {
