@@ -1165,7 +1165,143 @@ final class PaymentCalculatorTest extends TestCase
                 $this->assertLessThan($previousCampaignCost->getScore(), $campaignCost->getScore());
                 $this->assertGreaterThan($previousCampaignCost->getMaxCpm(), $campaignCost->getMaxCpm());
                 $this->assertGreaterThan(1.0, $campaignCost->getCpmFactor());
-                $this->assertEquals($previousCampaignCost->getViews(), $campaignCost->getViews());
+                $this->assertEquals(5100, $campaignCost->getViews());
+                $this->assertGreaterThan($previousCampaignCost->getViewsCost(), $campaignCost->getViewsCost());
+                $this->assertEquals(0, $campaignCost->getClicks());
+                $this->assertEquals(0, $campaignCost->getClicksCost());
+                $this->assertEquals(0, $campaignCost->getConversions());
+                $this->assertEquals(0, $campaignCost->getConversionsCost());
+
+                return 1;
+            });
+
+        $payments = (new PaymentCalculator($campaigns, $bidStrategies, $repository, $config))
+            ->calculate($reportId, self::uniqueViewEvents($views));
+        $this->assertCount($views, [...$payments]);
+    }
+
+    public function testAutoCpmSmallViewIncreaseOnGreaterCpm(): void
+    {
+        $reportId = 7200;
+        $config = new PaymentCalculatorConfig();
+        $campaigns = new CampaignCollection(
+            self::campaign(
+                ['budget' => 190 * 10 ** 11, 'max_cpm' => null, 'max_cpc' => null],
+                [self::banner()],
+                [self::conversion()],
+            )
+        );
+        $bidStrategies = new BidStrategyCollection();
+
+        $repository = $this->createMock(CampaignCostRepository::class);
+        $previousViews = 5100;
+        $previousScore = $previousViews ** 2 / (4900 * $config->getAutoCpmDefault() / 1000);
+        $previousMaxCpm = (int)(1.1 * $config->getAutoCpmDefault());
+        $previousViewsCost = (int)($previousViews * 1.1 * $config->getAutoCpmDefault() / 1000);
+
+        $views = $previousViews + 200;
+
+        $previousCampaignCost = new CampaignCost(
+            $reportId - 3600,
+            new Id(self::CAMPAIGN_ID),
+            $previousScore,
+            $previousMaxCpm,
+            1.1,
+            $previousViews,
+            $previousViewsCost,
+            0,
+            0,
+            0,
+            0
+        );
+        $repository
+            ->expects($this->once())
+            ->method('fetch')
+            ->with($reportId, new Id(self::CAMPAIGN_ID))
+            ->willReturn($previousCampaignCost);
+        $repository
+            ->expects($this->once())
+            ->method('saveAll')
+            ->willReturnCallback(function ($campaignCostCollection) use ($reportId, $config, $previousCampaignCost) {
+                $this->assertTrue($campaignCostCollection instanceof CampaignCostCollection);
+                $this->assertCount(1, $campaignCostCollection);
+
+                /** @var CampaignCost $campaignCost */
+                $campaignCost = $campaignCostCollection->first();
+                $this->assertEquals($reportId, $campaignCost->getReportId());
+                $this->assertEquals(self::CAMPAIGN_ID, $campaignCost->getCampaignId()->toString());
+                $this->assertLessThan($previousCampaignCost->getScore(), $campaignCost->getScore());
+                $this->assertLessThan($previousCampaignCost->getMaxCpm(), $campaignCost->getMaxCpm());
+                $this->assertLessThan(1.0, $campaignCost->getCpmFactor());
+                $this->assertEquals(5300, $campaignCost->getViews());
+                $this->assertLessThan($previousCampaignCost->getViewsCost(), $campaignCost->getViewsCost());
+                $this->assertEquals(0, $campaignCost->getClicks());
+                $this->assertEquals(0, $campaignCost->getClicksCost());
+                $this->assertEquals(0, $campaignCost->getConversions());
+                $this->assertEquals(0, $campaignCost->getConversionsCost());
+
+                return 1;
+            });
+
+        $payments = (new PaymentCalculator($campaigns, $bidStrategies, $repository, $config))
+            ->calculate($reportId, self::uniqueViewEvents($views));
+        $this->assertCount($views, [...$payments]);
+    }
+
+    public function testAutoCpmBigViewIncreaseOnGreaterCpm(): void
+    {
+        $reportId = 7200;
+        $config = new PaymentCalculatorConfig();
+        $campaigns = new CampaignCollection(
+            self::campaign(
+                ['budget' => 190 * 10 ** 11, 'max_cpm' => null, 'max_cpc' => null],
+                [self::banner()],
+                [self::conversion()],
+            )
+        );
+        $bidStrategies = new BidStrategyCollection();
+
+        $repository = $this->createMock(CampaignCostRepository::class);
+        $previousViews = 5100;
+        $previousScore = $previousViews ** 2 / (4900 * $config->getAutoCpmDefault() / 1000);
+        $previousMaxCpm = (int)(1.1 * $config->getAutoCpmDefault());
+        $previousViewsCost = (int)($previousViews * 1.1 * $config->getAutoCpmDefault() / 1000);
+
+        $views = $previousViews + 900;
+
+        $previousCampaignCost = new CampaignCost(
+            $reportId - 3600,
+            new Id(self::CAMPAIGN_ID),
+            $previousScore,
+            $previousMaxCpm,
+            1.1,
+            $previousViews,
+            $previousViewsCost,
+            0,
+            0,
+            0,
+            0
+        );
+        $repository
+            ->expects($this->once())
+            ->method('fetch')
+            ->with($reportId, new Id(self::CAMPAIGN_ID))
+            ->willReturn($previousCampaignCost);
+        $repository
+            ->expects($this->once())
+            ->method('saveAll')
+            ->willReturnCallback(function ($campaignCostCollection) use ($reportId, $config, $previousCampaignCost) {
+                $this->assertTrue($campaignCostCollection instanceof CampaignCostCollection);
+                $this->assertCount(1, $campaignCostCollection);
+
+                /** @var CampaignCost $campaignCost */
+                $campaignCost = $campaignCostCollection->first();
+                $this->assertEquals($reportId, $campaignCost->getReportId());
+                $this->assertEquals(self::CAMPAIGN_ID, $campaignCost->getCampaignId()->toString());
+                $this->assertGreaterThan($previousCampaignCost->getScore(), $campaignCost->getScore());
+                $this->assertGreaterThan($previousCampaignCost->getMaxCpm(), $campaignCost->getMaxCpm());
+                $this->assertGreaterThan(1.0, $campaignCost->getCpmFactor());
+                $this->assertEquals(6000, $campaignCost->getViews());
                 $this->assertGreaterThan($previousCampaignCost->getViewsCost(), $campaignCost->getViewsCost());
                 $this->assertEquals(0, $campaignCost->getClicks());
                 $this->assertEquals(0, $campaignCost->getClicksCost());
