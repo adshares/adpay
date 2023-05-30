@@ -149,6 +149,8 @@ class PaymentCalculator
 
         if (null === $campaign) {
             return PaymentStatus::CAMPAIGN_NOT_FOUND;
+        } elseif (0 === $event['ads_txt']) {
+            return PaymentStatus::INVALID_ADS_TXT;
         }
 
         $caseTime = DateTimeHelper::fromString($event['case_time']);

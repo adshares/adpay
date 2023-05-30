@@ -30,6 +30,7 @@ abstract class EventMapper
             'user_id' => $event->getUserId()->toBin(),
             'human_score' => $event->getHumanScore(),
             'page_rank' => $event->getPageRank(),
+            'ads_txt' => $event->getAdsTxt(),
             'keywords' => $event->getKeywords(),
             'context' => $event->getContextData(),
         ];
@@ -52,6 +53,7 @@ abstract class EventMapper
             'user_id' => Types::BINARY,
             'human_score' => Types::FLOAT,
             'page_rank' => Types::FLOAT,
+            'ads_txt' => Types::INTEGER,
             'keywords' => Types::JSON,
             'context' => Types::JSON,
         ];
@@ -75,6 +77,7 @@ abstract class EventMapper
             'user_id' => bin2hex($row['user_id']),
             'human_score' => (float)$row['human_score'],
             'page_rank' => (float)$row['page_rank'],
+            'ads_txt' => $row['ads_txt'],
             'keywords' => json_decode($row['keywords'], true),
             'context' => json_decode($row['context'], true),
         ];

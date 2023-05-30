@@ -9,17 +9,13 @@ use App\Domain\ValueObject\Id;
 
 final class Impression
 {
-    /** @var Id */
-    private $id;
+    private Id $id;
 
-    /** @var Id */
-    private $trackingId;
+    private Id $trackingId;
 
-    /** @var Id */
-    private $userId;
+    private Id $userId;
 
-    /** @var Context */
-    private $context;
+    private Context $context;
 
     public function __construct(
         Id $id,
@@ -71,5 +67,10 @@ final class Impression
     public function getPageRank(): float
     {
         return $this->context->getPageRank();
+    }
+
+    public function getAdsTxt(): ?int
+    {
+        return $this->context->getAdsTxt();
     }
 }

@@ -12,17 +12,13 @@ use DateTimeInterface;
 
 abstract class Event
 {
-    /** @var Id */
-    private $id;
+    private Id $id;
 
-    /** @var EventType */
-    private $type;
+    private EventType $type;
 
-    /** @var DateTimeInterface */
-    private $time;
+    private DateTimeInterface $time;
 
-    /** @var ImpressionCase */
-    private $case;
+    private ImpressionCase $case;
 
     public function __construct(
         Id $id,
@@ -142,5 +138,10 @@ abstract class Event
     public function getPageRank(): float
     {
         return $this->case->getPageRank();
+    }
+
+    public function getAdsTxt(): ?int
+    {
+        return $this->case->getAdsTxt();
     }
 }
