@@ -22,6 +22,7 @@ final class ContextTest extends TestCase
 
         $humanScore = 0.89;
         $pageRank = 0.99;
+        $adsTxt = 1;
 
         $keywords = [
             'k1' => $k1,
@@ -35,7 +36,7 @@ final class ContextTest extends TestCase
             'cc' => $cc,
         ];
 
-        $context = new Context($humanScore, $pageRank, $keywords, $data);
+        $context = new Context($humanScore, $pageRank, $adsTxt, $keywords, $data);
 
         $this->assertInstanceOf(Context::class, $context);
         $this->assertEquals($humanScore, $context->getHumanScore());
@@ -53,7 +54,7 @@ final class ContextTest extends TestCase
 
     public function testCpaOnly(): void
     {
-        $context = new Context(0.89, -1, [], []);
+        $context = new Context(0.89, -1);
         $this->assertEquals(-1, $context->getPageRank());
     }
 
@@ -63,7 +64,7 @@ final class ContextTest extends TestCase
         new Context(-0.88, 1.0);
     }
 
-    public function testTooHightHumanScore(): void
+    public function testTooHighHumanScore(): void
     {
         $this->expectException(InvalidArgumentException::class);
         new Context(1.88, 1.0);
@@ -75,7 +76,7 @@ final class ContextTest extends TestCase
         new Context(1.0, -0.88);
     }
 
-    public function testTooHightPageRank(): void
+    public function testTooHighPageRank(): void
     {
         $this->expectException(InvalidArgumentException::class);
         new Context(1.0, 1.88);

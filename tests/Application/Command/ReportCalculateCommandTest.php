@@ -162,6 +162,7 @@ class ReportCalculateCommandTest extends TestCase
             'human_score' => 0.9,
             'keywords' => ['r1' => ['r1_v1'], 'e1' => ['e1_v3']],
             'context' => [],
+            'ads_txt' => 1,
         ];
     }
 }

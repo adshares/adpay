@@ -11,20 +11,15 @@ use App\Domain\ValueObject\PaymentStatus;
 
 final class Payment
 {
-    /** @var EventType */
-    private $eventType;
+    private EventType $eventType;
 
-    /** @var Id */
-    private $eventId;
+    private Id $eventId;
 
-    /** @var PaymentStatus */
-    private $status;
+    private PaymentStatus $status;
 
-    /** @var ?int */
-    private $value;
+    private ?int $value;
 
-    /** @var int */
-    private $reportId;
+    private ?int $reportId;
 
     public function __construct(
         EventType $eventType,
@@ -37,9 +32,7 @@ final class Payment
         $this->eventId = $eventId;
         $this->status = $status;
         $this->value = $value;
-        if ($reportId !== null) {
-            $this->reportId = $reportId;
-        }
+        $this->reportId = $reportId;
     }
 
     public function getReportId(): int
@@ -81,7 +74,7 @@ final class Payment
         return $this->status->isAccepted();
     }
 
-    public function getValue()
+    public function getValue(): ?int
     {
         return $this->value;
     }

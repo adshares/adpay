@@ -10,8 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 abstract class RepositoryTestCase extends KernelTestCase
 {
-    /** @var Connection */
-    protected $connection;
+    protected Connection $connection;
 
     protected function setUp(): void
     {

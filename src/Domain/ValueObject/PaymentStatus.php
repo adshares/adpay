@@ -22,6 +22,8 @@ final class PaymentStatus
 
     public const CONVERSION_NOT_FOUND = 6;
 
+    public const INVALID_ADS_TXT = 7;
+
     private static $labels = [
         self::ACCEPTED => 'accepted',
         self::CAMPAIGN_NOT_FOUND => 'rejected:campaign_not_found',
@@ -30,10 +32,10 @@ final class PaymentStatus
         self::BANNER_NOT_FOUND => 'rejected:banner_not_found',
         self::CAMPAIGN_OUTDATED => 'rejected:campaign_outdated',
         self::CONVERSION_NOT_FOUND => 'rejected:conversion_not_found',
+        self::INVALID_ADS_TXT => 'rejected:invalid_ads_txt',
     ];
 
-    /** @var ?int */
-    private $status;
+    private ?int $status;
 
     public function __construct(?int $status = null)
     {

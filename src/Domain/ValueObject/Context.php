@@ -8,20 +8,23 @@ use App\Domain\Exception\InvalidArgumentException;
 
 class Context
 {
-    /** @var float */
-    private $humanScore;
+    private float $humanScore;
 
-    /** @var float */
-    private $pageRank;
+    private float $pageRank;
 
-    /** @var array */
-    private $keywords;
+    private ?int $adsTxt;
 
-    /* @var array */
-    private $data;
+    private array $keywords;
 
-    public function __construct(float $humanScore, float $pageRank, array $keywords = [], array $data = [])
-    {
+    private array $data;
+
+    public function __construct(
+        float $humanScore,
+        float $pageRank,
+        ?int $adsTxt = null,
+        array $keywords = [],
+        array $data = [],
+    ) {
         if ($humanScore < 0 || $humanScore > 1) {
             throw InvalidArgumentException::fromArgument(
                 'human score',
@@ -36,9 +39,17 @@ class Context
                 'Must be in the range of <0, 1> or equal -1.'
             );
         }
+        if (null !== $adsTxt && 0 !== $adsTxt && 1 !== $adsTxt) {
+            throw InvalidArgumentException::fromArgument(
+                'ads txt',
+                (string)$adsTxt,
+                'Must be 0, 1 or null.'
+            );
+        }
 
         $this->humanScore = $humanScore;
         $this->pageRank = $pageRank;
+        $this->adsTxt = $adsTxt;
         $this->keywords = $keywords;
         $this->data = $data;
     }
@@ -51,6 +62,11 @@ class Context
     public function getPageRank(): float
     {
         return $this->pageRank;
+    }
+
+    public function getAdsTxt(): ?int
+    {
+        return $this->adsTxt;
     }
 
     public function getKeywords(): array
